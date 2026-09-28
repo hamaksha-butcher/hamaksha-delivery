@@ -127,11 +127,33 @@
                 <div class="grid grid-cols-2 gap-2 bg-amber-50 p-2 rounded-xl border border-amber-200">
                   <div>
                     <label class="block text-[10px] font-bold text-amber-900 mb-1">سعر الطلب (ج.م):</label>
-                    <input type="number" id="orderPrice" required placeholder="0" class="w-full border p-1.5 rounded-lg text-xs font-bold text-center">
+                    <input type="number" id="orderPrice" oninput="calculateTotalBill()" required placeholder="0" class="w-full border p-1.5 rounded-lg text-xs font-bold text-center">
                   </div>
                   <div>
                     <label class="block text-[10px] font-bold text-amber-900 mb-1">سعر التوصيل (ج.م):</label>
-                    <input type="number" id="deliveryPrice" value="20" required class="w-full border p-1.5 rounded-lg text-xs font-bold text-center">
+                    <input type="number" id="deliveryPrice" oninput="calculateTotalBill()" value="20" required class="w-full border p-1.5 rounded-lg text-xs font-bold text-center">
+                  </div>
+                </div>
+
+                <!-- 💳 قسم طرق الدفع والنسبة -->
+                <div class="bg-blue-50/60 p-2.5 rounded-xl border border-blue-200 space-y-2">
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <label class="block text-[10px] font-bold text-blue-900 mb-1">طريقة الدفع:</label>
+                      <select id="paymentMethod" onchange="calculateTotalBill()" class="w-full border p-1.5 rounded-lg text-xs font-bold bg-white">
+                        <option value="cash">💵 كاش مع المندوب</option>
+                        <option value="vodafone">📱 فودافون كاش (10ج/1000)</option>
+                        <option value="instapay">⚡ إنستا باي (1ج/1000)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-[10px] font-bold text-blue-900 mb-1">عمولة الدفع (ج.م):</label>
+                      <input type="number" id="paymentFee" oninput="calculateTotalBill(true)" value="0" class="w-full border p-1.5 rounded-lg text-xs font-bold text-center bg-white">
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center text-xs font-black text-red-700 bg-white p-2 rounded-lg border">
+                    <span>💳 إجمالي الفاتورة النهائي:</span>
+                    <span id="displayGrandTotal" class="font-mono text-sm">0 ج.م</span>
                   </div>
                 </div>
 
@@ -211,8 +233,8 @@
                   <tr>
                     <th class="p-2.5">الطلب والتاريخ</th>
                     <th class="p-2.5">العميل والتليفون</th>
-                    <th class="p-2.5">المندوب</th>
-                    <th class="p-2.5">المبلغ المطلوب</th>
+                    <th class="p-2.5">المندوب وطريقة الدفع</th>
+                    <th class="p-2.5">المبلغ والعمولة</th>
                     <th class="p-2.5">حالة الطلب</th>
                     <th class="p-2.5 text-center no-print">إجراءات</th>
                   </tr>
@@ -248,7 +270,7 @@
             <h3 id="statTotalOrders" class="text-2xl font-black text-red-700">0</h3>
           </div>
           <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
-            <p class="text-xs text-emerald-600 font-bold mb-1">إجمالي المبالغ المحصلة (كاش)</p>
+            <p class="text-xs text-emerald-600 font-bold mb-1">إجمالي المبالغ المحصلة</p>
             <h3 id="statTotalCash" class="text-2xl font-black text-emerald-700">0 ج.م</h3>
           </div>
           <div class="bg-amber-50 p-4 rounded-xl border border-amber-100">
@@ -323,8 +345,9 @@
         <div id="driverOrderCard" class="hidden bg-gray-50 p-4 rounded-xl border text-right space-y-3 text-xs">
           <p><b>العميل:</b> <span id="dCustName">--</span></p>
           <p><b>العنوان والطلبات:</b> <span id="dCustAddress">--</span></p>
+          <p><b>طريقة الدفع:</b> <span id="dPayMethod" class="font-bold text-blue-800">--</span></p>
           <div class="bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl font-bold text-emerald-900 flex justify-between">
-            <span>المبلغ المطلوب تحصيله كاش:</span>
+            <span>المبلغ المطلوب تحصيله شامل العمولة:</span>
             <span id="dTotalCash" class="font-mono text-sm">0 ج.م</span>
           </div>
           <p><b>الحالة الحالية:</b> <span id="dStatus" class="font-bold text-red-600">--</span></p>
@@ -395,7 +418,27 @@
 
   </main>
 
-  <!-- نافذة التعديل -->
+  <!-- نافذة تعديل بيانات ومستخدمين -->
+  <div id="editUserModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 text-right shadow-2xl border">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-sm text-gray-800">✏️ تعديل بيانات المستخدم</h3>
+        <button onclick="closeEditUserModal()" class="text-gray-400 hover:text-gray-600 font-bold">✕</button>
+      </div>
+      <input type="hidden" id="editUserId">
+      <div>
+        <label class="block text-[11px] font-bold text-gray-700 mb-1">اسم المستخدم</label>
+        <input type="text" id="editUserName" class="w-full border p-2.5 rounded-xl text-xs">
+      </div>
+      <div>
+        <label class="block text-[11px] font-bold text-gray-700 mb-1">كلمة المرور الجديدة</label>
+        <input type="password" id="editUserPass" class="w-full border p-2.5 rounded-xl text-xs">
+      </div>
+      <button onclick="saveEditUser()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">حفظ التغييرات 💾</button>
+    </div>
+  </div>
+
+  <!-- نافذة تعديل الطلب -->
   <div id="editOrderModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
     <div class="bg-white rounded-2xl p-6 w-full max-w-md space-y-4 text-right shadow-2xl border">
       <div class="flex justify-between items-center border-b pb-2">
@@ -510,7 +553,7 @@
 
     function canUser(action) {
       if(!currentUser) return false;
-      if(isSuperUser()) return true; // المالك asma معها كل الصلاحيات دائماً
+      if(isSuperUser()) return true; 
       if(currentUser.role === 'admin') {
         const p = currentUser.perms || {};
         return !!p[action];
@@ -582,7 +625,6 @@
         toggleAuthModal();
       }
 
-      // إظهار وإخفاء الأزرار والواجهات حسب صلاحيات الحساب الحالي
       updateUIByPermissions();
 
       if(user.role === 'admin') {
@@ -599,35 +641,30 @@
     }
 
     function updateUIByPermissions() {
-      // 1. صلاحية التقارير والداشبورد
       const analyticsTab = document.querySelector('.perm-analytics');
       if(analyticsTab) {
         if(canUser('analytics')) analyticsTab.classList.remove('hidden');
         else analyticsTab.classList.add('hidden');
       }
 
-      // 2. صلاحية قائمة الأسعار
       const pricesTab = document.querySelector('.perm-prices');
       if(pricesTab) {
         if(canUser('prices')) pricesTab.classList.remove('hidden');
         else pricesTab.classList.add('hidden');
       }
 
-      // 3. صلاحية زر إضافة أصناف بالأسعار
       const addPriceBtn = document.getElementById('addPriceBtn');
       if(addPriceBtn) {
         if(canUser('prices')) addPriceBtn.classList.remove('hidden');
         else addPriceBtn.classList.add('hidden');
       }
 
-      // 4. صلاحية إدارة المستخدمين والصلاحيات
       const usersCard = document.querySelector('.perm-users');
       if(usersCard) {
         if(canUser('users')) usersCard.classList.remove('hidden');
         else usersCard.classList.add('hidden');
       }
 
-      // 5. صلاحية الطباعة والتصدير
       const exportBtns = document.getElementById('exportActionBtns');
       if(exportBtns) {
         if(canUser('print')) exportBtns.classList.remove('hidden');
@@ -650,6 +687,32 @@
       document.getElementById('mainHeader').style.backgroundColor = primary;
       document.getElementById('mainHeader').style.borderColor = secondary;
       document.body.className = isDark ? "bg-zinc-900 text-white min-h-screen" : "bg-amber-50/40 min-h-screen text-gray-800";
+    }
+
+    // --- 💳 حساب طريقة الدفع والعمولة والتوتال ---
+    function calculateTotalBill(isManualFee = false) {
+      const orderPrice = Number(document.getElementById('orderPrice').value) || 0;
+      const deliveryPrice = Number(document.getElementById('deliveryPrice').value) || 0;
+      const method = document.getElementById('paymentMethod').value;
+      const feeInput = document.getElementById('paymentFee');
+
+      let fee = 0;
+      if (!isManualFee) {
+        if (method === 'vodafone') {
+          fee = Math.ceil(orderPrice / 1000) * 10;
+        } else if (method === 'instapay') {
+          fee = Math.ceil(orderPrice / 1000) * 1;
+        } else {
+          fee = 0;
+        }
+        feeInput.value = fee;
+      } else {
+        fee = Number(feeInput.value) || 0;
+      }
+
+      const grandTotal = orderPrice + deliveryPrice + fee;
+      document.getElementById('displayGrandTotal').innerText = grandTotal.toLocaleString('ar-EG') + ' ج.م';
+      return grandTotal;
     }
 
     // --- 🤖 التوزيع الذكي للمندوب ---
@@ -685,7 +748,7 @@
       }
     }
 
-    // --- إدارة المستخدمين وتعديل الصلاحيات الشاملة من قبل asma ---
+    // --- 👥 إدارة المستخدمين والمناديب وتعديل وحذف الحسابات ---
     function addUser() {
       if(!canUser('users')) return alert('عذراً، إضافة المستخدمين تتطلب صلاحية إدارة المستخدمين');
       const username = document.getElementById('newUserName').value.trim();
@@ -701,6 +764,33 @@
         document.getElementById('newUserName').value = '';
         document.getElementById('newUserPass').value = '';
         alert('تمت إضافة المستخدم بنجاح ✅');
+      });
+    }
+
+    function openEditUserModal(id) {
+      if(!canUser('users')) return alert('عذراً، تعديل الحسابات يتطلب صلاحية إدارة المستخدمين');
+      const u = allUsersCache[id];
+      if(!u) return;
+      document.getElementById('editUserId').value = id;
+      document.getElementById('editUserName').value = u.username || '';
+      document.getElementById('editUserPass').value = u.pass || '';
+      document.getElementById('editUserModal').classList.remove('hidden');
+    }
+
+    function closeEditUserModal() {
+      document.getElementById('editUserModal').classList.add('hidden');
+    }
+
+    function saveEditUser() {
+      const id = document.getElementById('editUserId').value;
+      const username = document.getElementById('editUserName').value.trim();
+      const pass = document.getElementById('editUserPass').value.trim();
+
+      if(!id || !username || !pass) return alert('يرجى ملء كافة البيانات');
+
+      db.ref('users/' + id).update({ username, pass }).then(() => {
+        alert('تم تعديل بيانات الحساب بنجاح ✅');
+        closeEditUserModal();
       });
     }
 
@@ -749,7 +839,12 @@
                   ${isAsma ? 'المالك الرئيسي' : (u.role === 'admin' ? 'أدمن فرعي' : 'مندوب')}
                 </span>
               </div>
-              ${!isAsma && canUser('users') ? `<button onclick="deleteUser('${id}')" class="text-red-600 hover:text-red-800 font-bold text-[10px]">🗑️ حذف الحساب</button>` : ''}
+              ${!isAsma && canUser('users') ? `
+                <div class="flex items-center gap-1">
+                  <button onclick="openEditUserModal('${id}')" class="text-blue-600 hover:text-blue-800 font-bold text-[10px]">✏️ تعديل</button>
+                  <button onclick="deleteUser('${id}')" class="text-red-600 hover:text-red-800 font-bold text-[10px]">🗑️ حذف</button>
+                </div>
+              ` : ''}
             </div>
 
             ${u.role === 'admin' && !isAsma ? `
@@ -801,6 +896,10 @@
       const address = document.getElementById('custAddress').value;
       const orderPrice = Number(document.getElementById('orderPrice').value) || 0;
       const deliveryPrice = Number(document.getElementById('deliveryPrice').value) || 0;
+      const paymentMethod = document.getElementById('paymentMethod').value;
+      const paymentFee = Number(document.getElementById('paymentFee').value) || 0;
+      const totalCash = orderPrice + deliveryPrice + paymentFee;
+
       const driver = document.getElementById('driverSelect').value;
       const now = new Date();
 
@@ -811,7 +910,9 @@
         address: address,
         orderPrice: orderPrice,
         deliveryPrice: deliveryPrice,
-        totalCash: orderPrice + deliveryPrice,
+        paymentMethod: paymentMethod,
+        paymentFee: paymentFee,
+        totalCash: totalCash,
         driver: driver,
         status: 'جاري تحضير اللحوم 🥩',
         rating: null,
@@ -822,13 +923,15 @@
         const baseUrl = window.location.href.split('?')[0];
         const trackUrl = `${baseUrl}?tab=track&id=${orderId}`;
         document.getElementById('trackingLink').value = trackUrl;
-        document.getElementById('waBtn').href = `https://wa.me/${phone}?text=${encodeURIComponent('أهلاً بك 🥩\nطلبك لدى جزارة حمكشة رقم: #' + orderId + '\nالإجمالي المطلوب كاش: ' + (orderPrice + deliveryPrice) + ' ج.م\nرابط التتبع الحي للمندوب والطلب:\n' + trackUrl)}`;
+        document.getElementById('waBtn').href = `https://wa.me/${phone}?text=${encodeURIComponent('أهلاً بك 🥩\nطلبك لدى جزارة حمكشة رقم: #' + orderId + '\nالإجمالي المطلوب شامل العمولة والتوصيل: ' + totalCash + ' ج.م\nرابط التتبع الحي للمندوب والطلب:\n' + trackUrl)}`;
         document.getElementById('result').classList.remove('hidden');
         document.getElementById('custOrderId').value = '';
         document.getElementById('custName').value = '';
         document.getElementById('custPhone').value = '';
         document.getElementById('custAddress').value = '';
         document.getElementById('orderPrice').value = '';
+        document.getElementById('paymentFee').value = '0';
+        document.getElementById('displayGrandTotal').innerText = '0 ج.م';
       });
     });
 
@@ -841,6 +944,12 @@
       applyFilters();
       if(!document.getElementById('sec-analytics').classList.contains('hidden')) renderAnalytics();
     });
+
+    function getPaymentText(method) {
+      if(method === 'vodafone') return '📱 فودافون كاش';
+      if(method === 'instapay') return '⚡ إنستا باي';
+      return '💵 كاش مع المندوب';
+    }
 
     function applyFilters() {
       const search = document.getElementById('searchFilter').value.toLowerCase();
@@ -859,7 +968,7 @@
         const displayName = item.customerName || item.name || 'غير محدد';
         const displayPhone = item.phone || '';
         const displayDriver = item.driver || 'غير محدد';
-        const totalCash = item.totalCash || ((item.orderPrice || 0) + (item.deliveryPrice || 0));
+        const totalCash = item.totalCash || ((item.orderPrice || 0) + (item.deliveryPrice || 0) + (item.paymentFee || 0));
 
         const matchSearch = !search || displayName.toLowerCase().includes(search) || displayId.toLowerCase().includes(search);
         const matchDriver = driver === 'ALL' || displayDriver === driver;
@@ -884,8 +993,14 @@
               <div class="font-bold">${displayName}</div>
               <div class="text-[10px] text-gray-500 font-mono" dir="ltr">${displayPhone}</div>
             </td>
-            <td class="p-2.5 font-semibold text-gray-700">${displayDriver}</td>
-            <td class="p-2.5 font-bold font-mono text-emerald-700">${totalCash} ج.م</td>
+            <td class="p-2.5">
+              <div class="font-semibold text-gray-800">${displayDriver}</div>
+              <div class="text-[10px] text-blue-800 font-bold">${getPaymentText(item.paymentMethod)}</div>
+            </td>
+            <td class="p-2.5">
+              <div class="font-bold font-mono text-emerald-700">${totalCash} ج.م</div>
+              ${item.paymentFee ? `<div class="text-[9px] text-gray-500">(عمولة: ${item.paymentFee}ج)</div>` : ''}
+            </td>
             <td class="p-2.5">
               <select onchange="updateOrderStatus('${key}', this.value)" class="border p-1 rounded text-[11px] font-bold bg-amber-50 no-print">
                 <option value="جاري تحضير اللحوم 🥩" ${item.status === 'جاري تحضير اللحوم 🥩' ? 'selected' : ''}>جاري التحضير 🥩</option>
@@ -963,7 +1078,7 @@
             periodDelivered++;
             driversStats[item.driver].delivered++;
             
-            const cash = item.totalCash || ((item.orderPrice || 0) + (item.deliveryPrice || 0));
+            const cash = item.totalCash || ((item.orderPrice || 0) + (item.deliveryPrice || 0) + (item.paymentFee || 0));
             periodTotalCash += cash;
             driversStats[item.driver].totalCash += cash;
           }
@@ -1142,7 +1257,7 @@
       if(!canUser('print')) return alert('عذراً، ليس لديك صلاحية تصدير البيانات.');
       if (filteredOrdersList.length === 0) return alert('لا توجد بيانات مطابقة للتصدير!');
 
-      let csvContent = "\uFEFFرقم الطلب,تاريخ الطلب,وقت الطلب,اسم العميل,رقم الهاتف,المندوب,الإجمالي الكاش,حالة الطلب,العنوان والطلبات\n";
+      let csvContent = "\uFEFFرقم الطلب,تاريخ الطلب,وقت الطلب,اسم العميل,رقم الهاتف,المندوب,طريقة الدفع,العمولة,الإجمالي النهائي,حالة الطلب,العنوان والطلبات\n";
 
       filteredOrdersList.forEach(item => {
         const row = [
@@ -1152,6 +1267,8 @@
           `"${item.displayName.replace(/"/g, '""')}"`,
           `"${item.displayPhone}"`,
           `"${item.displayDriver}"`,
+          `"${getPaymentText(item.paymentMethod)}"`,
+          `"${item.paymentFee || 0}"`,
           `"${item.totalCash || 0}"`,
           `"${item.status || ''}"`,
           `"${(item.address || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`
@@ -1183,8 +1300,8 @@
             <td>${item.date || ''}<br><small style="color:#666">${item.time || ''}</small></td>
             <td><b>${item.displayName}</b></td>
             <td dir="ltr" style="text-align:right;">${item.displayPhone}</td>
-            <td>${item.displayDriver}</td>
-            <td style="font-weight:bold; color:#047857;">${item.totalCash || 0} ج.م</td>
+            <td>${item.displayDriver}<br><small style="color:#1e3a8a; font-weight:bold;">${getPaymentText(item.paymentMethod)}</small></td>
+            <td style="font-weight:bold; color:#047857;">${item.totalCash || 0} ج.م ${item.paymentFee ? `<br><small style="color:#666">(عمولة: ${item.paymentFee}ج)</small>` : ''}</td>
             <td><span style="background:#fee2e2; color:#800020; padding:2px 6px; border-radius:4px; font-weight:bold; border:1px solid #fca5a5;">${item.status}</span></td>
             <td style="font-size:11px;">${item.address || '-'}</td>
           </tr>
@@ -1264,8 +1381,8 @@
                   <th>التاريخ والوقت</th>
                   <th>اسم العميل</th>
                   <th>رقم الهاتف</th>
-                  <th>المندوب</th>
-                  <th>التحصيل (كاش)</th>
+                  <th>المندوب والدفع</th>
+                  <th>التحصيل والعمولة</th>
                   <th>حالة الطلب</th>
                   <th>العنوان التفصيلي والطلبات</th>
                 </tr>
@@ -1295,13 +1412,14 @@
 
       const displayId = item.orderId || key;
       const phone = item.phone || '';
-      const totalCash = item.totalCash || ((item.orderPrice || 0) + (item.deliveryPrice || 0));
+      const totalCash = item.totalCash || ((item.orderPrice || 0) + (item.deliveryPrice || 0) + (item.paymentFee || 0));
       const baseUrl = window.location.href.split('?')[0];
       const trackUrl = `${baseUrl}?tab=track&id=${displayId}`;
 
       const text = `أهلاً بك 🥩
 طلبك لدى جزارة حمكشة رقم: #${displayId}
-المبلغ المطلوب تحصيله كاش: ${totalCash} ج.م
+طريقة الدفع: ${getPaymentText(item.paymentMethod)}
+المبلغ المطلوب تحصيله (شامل العمولة والتوصيل): ${totalCash} ج.م
 يمكنك تتبع حالة طلبك ومكان المندوب وتقييم الخدمة مباشرة عبر الرابط التالي:
 ${trackUrl}`;
 
@@ -1345,13 +1463,16 @@ ${trackUrl}`;
       const deliveryPrice = Number(document.getElementById('editDeliveryPrice').value) || 0;
       const driver = document.getElementById('editDriverSelect').value;
 
+      const existingOrder = allOrdersCache[key] || {};
+      const paymentFee = existingOrder.paymentFee || 0;
+
       db.ref('orders/' + key).update({
         customerName: name,
         phone: phone,
         address: address,
         orderPrice: orderPrice,
         deliveryPrice: deliveryPrice,
-        totalCash: orderPrice + deliveryPrice,
+        totalCash: orderPrice + deliveryPrice + paymentFee,
         driver: driver
       }).then(() => {
         alert('تم حفظ البيانات والتعديلات بنجاح ✅');
@@ -1373,7 +1494,8 @@ ${trackUrl}`;
         if(data) {
           document.getElementById('dCustName').innerText = data.customerName || data.name || '--';
           document.getElementById('dCustAddress').innerText = data.address || '--';
-          document.getElementById('dTotalCash').innerText = (data.totalCash || ((data.orderPrice || 0) + (data.deliveryPrice || 0))) + ' ج.م';
+          document.getElementById('dPayMethod').innerText = getPaymentText(data.paymentMethod);
+          document.getElementById('dTotalCash').innerText = (data.totalCash || ((data.orderPrice || 0) + (data.deliveryPrice || 0) + (data.paymentFee || 0))) + ' ج.م';
           document.getElementById('dStatus').innerText = data.status || '--';
           document.getElementById('driverStatusSelect').value = data.status || 'جاري تحضير اللحوم 🥩';
           document.getElementById('driverOrderCard').classList.remove('hidden');
