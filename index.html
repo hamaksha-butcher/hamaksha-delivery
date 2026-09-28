@@ -698,12 +698,12 @@
       filteredOrdersList.forEach(item => {
         tableRows += `
           <tr>
-            <td style="font-weight:bold; color:#dc2626;">#${item.displayId}</td>
+            <td style="font-weight:bold; color:#800020; font-family: monospace;">#${item.displayId}</td>
             <td>${item.date || ''}<br><small style="color:#666">${item.time || ''}</small></td>
             <td><b>${item.displayName}</b></td>
             <td dir="ltr" style="text-align:right;">${item.displayPhone}</td>
             <td>${item.displayDriver}</td>
-            <td><span style="background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px; font-weight:bold;">${item.status}</span></td>
+            <td><span style="background:#fee2e2; color:#800020; padding:2px 6px; border-radius:4px; font-weight:bold; border:1px solid #fca5a5;">${item.status}</span></td>
             <td style="font-size:11px;">${item.address || '-'}</td>
           </tr>
         `;
@@ -719,78 +719,171 @@
           <meta charset="UTF-8">
           <title>تقرير طلبات جزارة حمكشة 🥩</title>
           <style>
-            body { font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; padding: 20px; direction: rtl; text-align: right; background: #fff; color: #111; }
+            body { 
+              font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; 
+              padding: 20px; 
+              direction: rtl; 
+              text-align: right; 
+              background: #fff; 
+              color: #111;
+              position: relative;
+            }
             
-            /* الهيدر واللوجو */
-            .header-container { display: flex; justify-content: space-between; items-align: center; border-bottom: 3px solid #dc2626; padding-bottom: 12px; margin-bottom: 15px; }
-            .logo-section { display: flex; align-items: center; gap: 10px; }
-            .logo-icon { font-size: 42px; line-height: 1; }
-            .brand-name { font-size: 24px; font-weight: 900; color: #dc2626; margin: 0; }
-            .brand-sub { font-size: 11px; color: #f59e0b; font-weight: bold; margin: 0; }
+            /* اللوجو العنابي المطور خلفية مائية باهتة Watermark */
+            .watermark {
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              width: 380px;
+              height: 380px;
+              opacity: 0.05;
+              pointer-events: none;
+              z-index: 0;
+            }
+
+            .content-wrapper {
+              position: relative;
+              z-index: 1;
+            }
+
+            /* الهيدر واللوجو المستوحى من الصورة */
+            .header-container { 
+              display: flex; 
+              justify-content: space-between; 
+              align-items: center; 
+              border-bottom: 3px double #800020; 
+              padding-bottom: 12px; 
+              margin-bottom: 15px; 
+            }
+            .logo-section { display: flex; align-items: center; gap: 15px; }
             
-            .store-info { text-align: left; font-size: 11px; color: #444; font-weight: 600; line-height: 1.5; }
+            /* تصميم دائرة اللوجو بستايل الصورة (عنابي وذهبي) */
+            .logo-circle {
+              width: 85px;
+              height: 85px;
+              background: radial-gradient(circle, #a00028 0%, #600018 100%);
+              border: 3px solid #d4af37;
+              border-radius: 50%;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+              text-align: center;
+            }
+            .logo-title-top { font-size: 13px; font-weight: bold; line-height: 1; }
+            .logo-title-main { font-size: 18px; font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: -0.5px; }
+            .logo-since { font-size: 8px; background: #d4af37; color: #500010; padding: 1px 6px; border-radius: 10px; font-weight: bold; margin-top: 2px; }
+
+            .brand-text { display: flex; flex-direction: column; }
+            .brand-name { font-size: 26px; font-weight: 900; color: #800020; margin: 0; line-height: 1.1; }
+            .brand-sub { font-size: 12px; color: #d4af37; font-weight: bold; margin: 0; background: #800020; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-top: 4px; }
+            
+            /* بيانات الاتصال والعنوان المستخرجة من الصورة */
+            .store-info { 
+              text-align: left; 
+              font-size: 11px; 
+              color: #222; 
+              font-weight: 600; 
+              line-height: 1.6; 
+              background: #fafafa;
+              padding: 8px 12px;
+              border-radius: 8px;
+              border: 1px solid #eee;
+            }
             
             /* بطاقة الملخص */
-            .summary-bar { display: flex; justify-content: space-between; background: #fffbeb; border: 1px solid #fef3c7; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; font-size: 12px; font-weight: bold; color: #92400e; }
+            .summary-bar { 
+              display: flex; 
+              justify-content: space-between; 
+              background: #fffbeb; 
+              border: 1px solid #fef3c7; 
+              padding: 10px 15px; 
+              border-radius: 8px; 
+              margin-bottom: 15px; 
+              font-size: 12px; 
+              font-weight: bold; 
+              color: #92400e; 
+            }
             
             /* الجدول */
             table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-            th { background-color: #dc2626; color: white; border: 1px solid #b91c1c; padding: 8px; font-weight: bold; }
+            th { background-color: #800020; color: white; border: 1px solid #600018; padding: 8px; font-weight: bold; }
             td { border: 1px solid #e5e7eb; padding: 8px; text-align: right; }
-            tr:nth-child(even) { background-color: #f9fafb; }
+            tr:nth-child(even) { background-color: #fcfcfc; }
 
-            .footer-note { margin-top: 25px; text-align: center; font-size: 10px; color: #888; border-top: 1px dashed #ccc; padding-top: 8px; }
+            .footer-note { margin-top: 25px; text-align: center; font-size: 10px; color: #777; border-top: 1px dashed #ccc; padding-top: 8px; }
 
             @media print {
-              @page { size: A4 landscape; margin: 10mm; }
+              @page { size: A4 landscape; margin: 8mm; }
             }
           </style>
         </head>
         <body>
           
-          <!-- الهيدر ولوجو المحل -->
-          <div class="header-container">
-            <div class="logo-section">
-              <span class="logo-icon">🥩</span>
-              <div>
-                <h1 class="brand-name">جزارة حمكشة</h1>
-                <p class="brand-sub">أجود أنواع اللحوم الطازجة والتوصيل السريع</p>
+          <!-- اللوجو المائي الباهت خلفية للتقرير Watermark -->
+          <svg class="watermark" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="45" fill="#800020" stroke="#d4af37" stroke-width="3" />
+            <text x="50" y="40" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="bold">جزارة</text>
+            <text x="50" y="58" font-size="16" fill="#ffffff" text-anchor="middle" font-weight="900">حمكشة</text>
+            <text x="50" y="72" font-size="6" fill="#d4af37" text-anchor="middle" font-weight="bold">SINCE 1960</text>
+          </svg>
+
+          <div class="content-wrapper">
+            <!-- الهيدر ولوجو المحل ببيانات الصورة -->
+            <div class="header-container">
+              <div class="logo-section">
+                <!-- دائرة اللوجو العنابي والذهبي بنفس شكل الصورة -->
+                <div class="logo-circle">
+                  <span class="logo-title-top">جزارة</span>
+                  <span class="logo-title-main">حمكشة</span>
+                  <span class="logo-since">SINCE 1960</span>
+                </div>
+                <div class="brand-text">
+                  <h1 class="brand-name">جزارة حمكشة</h1>
+                  <div><span class="brand-sub">جودة مضمونة منذ ١٩٦٠ 🥩</span></div>
+                </div>
+              </div>
+
+              <!-- بيانات الفرع وأرقام التواصل المستخرجة من الصورة -->
+              <div class="store-info">
+                <div>📍 <b>العنوان:</b> الزقازيق، حي تاني، معهد فني تجاري[cite: 6]</div>
+                <div>📞 <b>تواصل:</b> 0552317739 | 0552321231 | 0552314867[cite: 6]</div>
+                <div>💬 <b>واتساب:</b> 01273091807[cite: 6]</div>
+                <div>📅 <b>التاريخ:</b> ${new Date().toLocaleDateString('ar-EG')}</div>
               </div>
             </div>
-            <div class="store-info">
-              <div>📍 <b>العنوان:</b> الفرع الرئيسي - جزارة حمكشة</div>
-              <div>📞 <b>تليفون / واتساب:</b> التواصل المباشر مع الإدارة</div>
-              <div>📅 <b>تاريخ التقرير:</b> ${new Date().toLocaleDateString('ar-EG')}</div>
+
+            <!-- شريط ملخص الفلترة -->
+            <div class="summary-bar">
+              <span>📋 <b>نوع التقرير:</b> تقرير الطلبات الحالية</span>
+              <span>👤 <b>الفئة:</b> ${driverInfo}</span>
+              <span>🔢 <b>إجمالي الطلبات:</b> ${filteredOrdersList.length} طلبات</span>
             </div>
-          </div>
 
-          <!-- شريط ملخص الفلترة -->
-          <div class="summary-bar">
-            <span>📋 <b>نوع التقرير:</b> تقرير الطلبات الحالية</span>
-            <span>👤 <b>الفئة:</b> ${driverInfo}</span>
-            <span>🔢 <b>إجمالي الطلبات:</b> ${filteredOrdersList.length} طلبات</span>
-          </div>
+            <!-- جدول البيانات -->
+            <table>
+              <thead>
+                <tr>
+                  <th>رقم الطلب</th>
+                  <th>التاريخ والوقت</th>
+                  <th>اسم العميل</th>
+                  <th>رقم الهاتف</th>
+                  <th>المندوب</th>
+                  <th>حالة الطلب</th>
+                  <th>العنوان التفصيلي والطلبات</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tableRows}
+              </tbody>
+            </table>
 
-          <!-- جدول البيانات -->
-          <table>
-            <thead>
-              <tr>
-                <th>رقم الطلب</th>
-                <th>التاريخ والوقت</th>
-                <th>اسم العميل</th>
-                <th>رقم الهاتف</th>
-                <th>المندوب</th>
-                <th>حالة الطلب</th>
-                <th>العنوان التفصيلي والطلبات</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${tableRows}
-            </tbody>
-          </table>
-
-          <div class="footer-note">
-            تم استخراج هذا التقرير آلياً من نظام إدارة جزارة حمكشة للتوصيل 🥩
+            <div class="footer-note">
+              تم استخراج هذا التقرير آلياً من نظام إدارة جزارة حمكشة - الزقازيق 🥩
+            </div>
           </div>
 
           <script>
