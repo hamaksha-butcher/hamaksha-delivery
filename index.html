@@ -96,7 +96,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="space-y-6 lg:col-span-1">
             
-            <!-- نموذج إضافة طلب معدل بإضافة الحسابات المالية وتوزيع الطلبات الذكي -->
+            <!-- نموذج إضافة طلب -->
             <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-3">
               <div class="flex items-center justify-between border-b pb-2">
                 <div class="flex items-center gap-2">
@@ -124,7 +124,6 @@
                   <textarea id="custAddress" rows="2" required placeholder="كيلو كفتة - الزقازيق حي تاني" class="w-full border p-2 rounded-xl text-xs"></textarea>
                 </div>
                 
-                <!-- إضافة الحسابات المالية (الحساب المالي للعهدة) -->
                 <div class="grid grid-cols-2 gap-2 bg-amber-50 p-2 rounded-xl border border-amber-200">
                   <div>
                     <label class="block text-[10px] font-bold text-amber-900 mb-1">سعر الطلب (ج.م):</label>
@@ -155,24 +154,24 @@
               </div>
             </div>
 
-            <!-- إدارة المستخدمين والمناديب -->
+            <!-- إدارة المستخدمين والتحكم في الصلاحيات (يتحكم بها الحساب الرئيسي asma) -->
             <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-3">
               <div class="flex items-center gap-2 border-b pb-2">
                 <span class="text-lg">👥</span>
-                <h2 class="text-sm font-bold text-gray-800">إضافة مستخدم أو مندوب</h2>
+                <h2 class="text-sm font-bold text-gray-800">إدارة حسابات النظام والصلاحيات</h2>
               </div>
               <div class="space-y-2 bg-gray-50 p-2.5 rounded-xl border">
                 <input type="text" id="newUserName" placeholder="اسم المستخدم" class="w-full border p-2 rounded-xl text-xs bg-white">
                 <input type="password" id="newUserPass" placeholder="كلمة المرور" class="w-full border p-2 rounded-xl text-xs bg-white">
                 <select id="newUserRole" class="w-full border p-2 rounded-xl text-xs bg-white">
-                  <option value="admin">مسؤول إدارة (أدمن)</option>
+                  <option value="admin">مسؤول إدارة (أدمن فرعي)</option>
                   <option value="driver">مندوب توصيل</option>
                 </select>
                 <button onclick="addUser()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded-xl text-xs shadow">
                   + إضافة لشبكة المستخدمين
                 </button>
               </div>
-              <div id="usersList" class="space-y-2 max-h-48 overflow-y-auto pt-1"></div>
+              <div id="usersList" class="space-y-2 max-h-56 overflow-y-auto pt-1"></div>
             </div>
           </div>
 
@@ -200,7 +199,7 @@
               <input type="date" id="dateFilter" onchange="applyFilters()" class="border p-2 rounded-lg text-xs bg-white">
             </div>
 
-            <div class="flex flex-wrap items-center justify-end gap-2 pt-1 no-print">
+            <div id="exportActionBtns" class="flex flex-wrap items-center justify-end gap-2 pt-1 no-print">
               <button onclick="exportToPDF()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">📄 تصدير PDF</button>
               <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">📊 تصدير Excel</button>
               <button onclick="printReport()" class="bg-slate-700 hover:bg-slate-800 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">🖨️ طباعة ورقية</button>
@@ -228,7 +227,7 @@
       </div>
     </section>
 
-    <!-- 📊 2️⃣ داشبورد التقييم والتحصيل المالي (معدل بالماليات والتقييمات) -->
+    <!-- 📊 2️⃣ داشبورد التقييم والتحصيل المالي -->
     <section id="sec-analytics" class="hidden space-y-6">
       <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 space-y-6">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b pb-4">
@@ -243,7 +242,6 @@
           </div>
         </div>
 
-        <!-- إحصائيات مالية وتشغيلية -->
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-center">
           <div class="bg-red-50 p-4 rounded-xl border border-red-100">
             <p class="text-xs text-red-600 font-bold mb-1">إجمالي طلبات الفترة</p>
@@ -263,7 +261,6 @@
           </div>
         </div>
 
-        <!-- جدول التقييم والماليات التفصيلي للمناديب -->
         <div class="overflow-x-auto rounded-xl border">
           <table class="w-full text-right text-xs">
             <thead class="bg-gray-100 font-bold border-b">
@@ -285,7 +282,7 @@
       </div>
     </section>
 
-    <!-- 🏷️ 3️⃣ قسم لوحة أسعار اللحوم الحية (Live Price List) -->
+    <!-- 🏷️ 3️⃣ قسم لوحة أسعار اللحوم الحية -->
     <section id="sec-prices" class="hidden space-y-6">
       <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 space-y-4">
         <div class="flex justify-between items-center border-b pb-3">
@@ -304,7 +301,7 @@
       </div>
     </section>
 
-    <!-- 4️⃣ واجهة المندوب (محدثة بعرض المبالغ المطلوب تحصيلها من العميل) -->
+    <!-- 4️⃣ واجهة المندوب -->
     <section id="sec-driver" class="hidden space-y-6">
       <div id="driverAuthLock" class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md mx-auto space-y-4 border">
         <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-3xl">🛵</div>
@@ -354,7 +351,7 @@
       </div>
     </section>
 
-    <!-- 5️⃣ تتبع العميل (محدث بنظام تقييم العميل للمندوب بالنجوم) -->
+    <!-- 5️⃣ تتبع العميل -->
     <section id="sec-track" class="hidden space-y-6 max-w-xl mx-auto">
       <div class="bg-white rounded-2xl shadow-lg p-5 border space-y-3">
         <label class="block text-xs font-bold text-gray-800">📌 أدخل رقم الطلب لتتبع حالة التوصيل:</label>
@@ -382,7 +379,6 @@
           أدخل رقم الطلب الخاص بك لمتابعة مسار المندوب.
         </div>
 
-        <!-- قسم تقييم العميل للمندوب (يظهر عند التسليم) -->
         <div id="ratingBox" class="hidden bg-amber-50 border border-amber-200 p-4 rounded-xl text-center space-y-2">
           <h4 class="font-bold text-xs text-amber-900">⭐ شاركنا تقييمك لخدمة التوصيل والجزارة:</h4>
           <div class="flex justify-center gap-2 text-2xl" id="starContainer">
@@ -399,7 +395,7 @@
 
   </main>
 
-  <!-- نافذة تسجيل الدخول والتعديل -->
+  <!-- نافذة التعديل -->
   <div id="editOrderModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
     <div class="bg-white rounded-2xl p-6 w-full max-w-md space-y-4 text-right shadow-2xl border">
       <div class="flex justify-between items-center border-b pb-2">
@@ -489,12 +485,38 @@
     let currentAnalyticsPeriod = 'daily';
     let currentTrackOrderId = null;
 
+    // إنشاء الحساب الرئيسي asma أوتوماتيكياً بصلاحيات مطلقة
     db.ref('users').once('value').then((snapshot) => {
-      if (!snapshot.exists()) {
-        const defaultAdminRef = db.ref('users').push();
-        defaultAdminRef.set({ username: 'admin', pass: 'admin123', role: 'admin' });
+      let hasAsma = false;
+      const users = snapshot.val() || {};
+      Object.keys(users).forEach(k => {
+        if(users[k].username === 'asma') hasAsma = true;
+      });
+
+      if (!hasAsma) {
+        db.ref('users').push({
+          username: 'asma',
+          pass: 'asma123',
+          role: 'admin',
+          isSuperAdmin: true,
+          perms: { edit: true, delete: true, print: true }
+        });
       }
     });
+
+    function isSuperUser() {
+      return currentUser && currentUser.username === 'asma';
+    }
+
+    function canUser(action) {
+      if(!currentUser) return false;
+      if(isSuperUser()) return true; // المالك asma معها كل الصلاحيات دائماً
+      if(currentUser.role === 'admin') {
+        const p = currentUser.perms || { edit: false, delete: false, print: false };
+        return !!p[action];
+      }
+      return false;
+    }
 
     function switchTab(tabName) {
       document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
@@ -533,7 +555,7 @@
       Object.keys(allUsersCache).forEach(id => {
         const u = allUsersCache[id];
         if(u.username === username && String(u.pass) === String(pass)) {
-          foundUser = u;
+          foundUser = { ...u, key: id };
         }
       });
 
@@ -548,9 +570,10 @@
       currentUser = user;
       localStorage.setItem('hamaksha_user', JSON.stringify(user));
 
-      document.getElementById('authBtn').innerText = `${user.role === 'admin' ? 'الأدمن' : 'المندوب'}: ${user.username} (خروج)`;
-      document.getElementById('activeUserBadge').innerText = `${user.username} (${user.role === 'admin' ? 'مسؤول أدمن' : 'مندوب توصيل'})`;
-      document.getElementById('activeUserBadge').className = `text-[11px] font-bold px-3 py-1 rounded-full ${user.role === 'admin' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`;
+      const roleTitle = isSuperUser() ? 'المالك الرئيسي (asma)' : (user.role === 'admin' ? 'مسؤول أدمن' : 'مندوب توصيل');
+      document.getElementById('authBtn').innerText = `${user.username} (خروج)`;
+      document.getElementById('activeUserBadge').innerText = `${user.username} (${roleTitle})`;
+      document.getElementById('activeUserBadge').className = `text-[11px] font-bold px-3 py-1 rounded-full ${isSuperUser() ? 'bg-amber-500 text-black' : (user.role === 'admin' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800')}`;
 
       if(!document.getElementById('authModal').classList.contains('hidden')) {
         toggleAuthModal();
@@ -560,12 +583,22 @@
         document.getElementById('adminAuthLock').classList.add('hidden');
         document.getElementById('adminContent').classList.remove('hidden');
         document.getElementById('addPriceBtn').classList.remove('hidden');
+
+        // التتحكم برؤية أزرار الطباعة والتقارير
+        const exportBtns = document.getElementById('exportActionBtns');
+        if(exportBtns) {
+          if(canUser('print')) exportBtns.classList.remove('hidden');
+          else exportBtns.classList.add('hidden');
+        }
+
         switchTab('admin');
       } else {
         document.getElementById('driverAuthLock').classList.add('hidden');
         document.getElementById('driverContent').classList.remove('hidden');
         switchTab('driver');
       }
+
+      applyFilters();
     }
 
     function checkSavedSession() {
@@ -585,7 +618,7 @@
       document.body.className = isDark ? "bg-zinc-900 text-white min-h-screen" : "bg-amber-50/40 min-h-screen text-gray-800";
     }
 
-    // --- 🤖 التوزيع الذكي للمندوب الأقل تحميلاً ---
+    // --- 🤖 التوزيع الذكي للمندوب ---
     function autoAssignSmartDriver() {
       const activeDriverCounts = {};
       Object.keys(allUsersCache).forEach(id => {
@@ -618,7 +651,7 @@
       }
     }
 
-    // --- إدارة المستخدمين ---
+    // --- إدارة المستخدمين وتعديل صلاحيات الأدمنز من قبل asma ---
     function addUser() {
       const username = document.getElementById('newUserName').value.trim();
       const pass = document.getElementById('newUserPass').value.trim();
@@ -626,14 +659,23 @@
 
       if (!username || !pass) return alert('يرجى ملء جميع البيانات');
 
-      db.ref('users').push({ username, pass, role }).then(() => {
+      db.ref('users').push({ 
+        username, pass, role,
+        perms: { edit: false, delete: false, print: false }
+      }).then(() => {
         document.getElementById('newUserName').value = '';
         document.getElementById('newUserPass').value = '';
         alert('تمت إضافة المستخدم بنجاح ✅');
       });
     }
 
+    function toggleAdminPermission(userKey, permType, isChecked) {
+      if(!isSuperUser()) return alert('عذراً، التحكم بالصلاحيات متاح فقط للحساب الرئيسي (asma)');
+      db.ref(`users/${userKey}/perms/${permType}`).set(isChecked);
+    }
+
     function deleteUser(userId) {
+      if(!isSuperUser()) return alert('عذراً، حذف الحسابات متاح فقط للحساب الرئيسي (asma)');
       if(confirm('هل تريد حذف هذا المستخدم بالفعل؟')) {
         db.ref('users/' + userId).remove();
       }
@@ -660,15 +702,38 @@
           });
           if(filterDriverDropdown) filterDriverDropdown.innerHTML += `<option value="${u.username}">${u.username}</option>`;
         }
+
+        const perms = u.perms || { edit: false, delete: false, print: false };
+        const isAsma = u.username === 'asma';
+
         list.innerHTML += `
-          <div class="flex items-center justify-between bg-white p-2 rounded-xl border text-xs shadow-sm">
-            <div class="flex items-center gap-1.5 overflow-hidden">
-              <span class="font-bold text-gray-800 truncate">${u.username}</span>
-              <span class="text-[9px] px-1.5 py-0.5 rounded-full ${u.role === 'admin' ? 'bg-red-100 text-red-700 font-bold' : 'bg-amber-100 text-amber-800 font-bold'}">
-                ${u.role === 'admin' ? 'أدمن' : 'مندوب'}
-              </span>
+          <div class="bg-white p-2.5 rounded-xl border text-xs shadow-sm space-y-2">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1.5 overflow-hidden">
+                <span class="font-bold text-gray-800 truncate">${u.username}</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded-full ${isAsma ? 'bg-amber-400 text-black font-bold' : (u.role === 'admin' ? 'bg-red-100 text-red-700 font-bold' : 'bg-amber-100 text-amber-800 font-bold')}">
+                  ${isAsma ? 'المالك الرئيسي' : (u.role === 'admin' ? 'أدمن فرعي' : 'مندوب')}
+                </span>
+              </div>
+              ${!isAsma && isSuperUser() ? `<button onclick="deleteUser('${id}')" class="text-red-600 hover:text-red-800 font-bold text-[10px]">🗑️ حذف</button>` : ''}
             </div>
-            <button onclick="deleteUser('${id}')" class="text-red-600 hover:text-red-800 font-bold text-xs p-1">🗑️ حذف</button>
+
+            ${u.role === 'admin' && !isAsma && isSuperUser() ? `
+              <div class="bg-amber-50 p-2 rounded-lg border border-amber-200 text-[10px] space-y-1">
+                <p class="font-bold text-amber-900">🔒 تحديد صلاحيات الأدمن (asma فقط):</p>
+                <div class="flex items-center gap-3 font-semibold">
+                  <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="checkbox" ${perms.edit ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'edit', this.checked)"> تعديل ✏️
+                  </label>
+                  <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="checkbox" ${perms.delete ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'delete', this.checked)"> حذف 🗑️
+                  </label>
+                  <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="checkbox" ${perms.print ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'print', this.checked)"> طباعة 🖨️
+                  </label>
+                </div>
+              </div>
+            ` : ''}
           </div>
         `;
       });
@@ -676,7 +741,7 @@
       checkSavedSession();
     });
 
-    // --- إدارة الطلبات المحدثة بالماليات ---
+    // --- إدارة الطلبات ---
     document.getElementById('orderForm').addEventListener('submit', (e) => {
       e.preventDefault();
       
@@ -757,6 +822,9 @@
           count++;
           filteredOrdersList.push({ key, ...item, displayId, displayName, displayPhone, displayDriver, totalCash });
 
+          const canEdit = canUser('edit');
+          const canDelete = canUser('delete');
+
           const tr = document.createElement('tr');
           tr.className = "hover:bg-gray-50 border-b";
           tr.innerHTML = `
@@ -780,8 +848,8 @@
             </td>
             <td class="p-2.5 text-center flex items-center justify-center gap-1 no-print">
               <button onclick="shareWhatsApp('${key}')" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-2 py-1 rounded text-[10px] font-bold shadow-sm flex items-center gap-0.5">💬 واتساب</button>
-              <button onclick="openEditModal('${key}')" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-2 py-1 rounded text-[10px] font-bold shadow-sm">تعديل ✏️</button>
-              <button onclick="deleteOrder('${key}')" class="bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded text-[10px] font-bold shadow-sm">حذف</button>
+              ${canEdit ? `<button onclick="openEditModal('${key}')" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-2 py-1 rounded text-[10px] font-bold shadow-sm">تعديل ✏️</button>` : ''}
+              ${canDelete ? `<button onclick="deleteOrder('${key}')" class="bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded text-[10px] font-bold shadow-sm">حذف 🗑️</button>` : ''}
             </td>
           `;
           tbody.appendChild(tr);
@@ -790,7 +858,7 @@
       document.getElementById('ordersCount').innerText = `${count} طلبات`;
     }
 
-    // --- 📊 تحليل وتقييم أداء المناديب المالي والتقييم بالنجوم ---
+    // --- 📊 تحليل وتقييم أداء المناديب ---
     function setAnalyticsPeriod(period) {
       currentAnalyticsPeriod = period;
       ['daily', 'weekly', 'monthly'].forEach(p => {
@@ -920,7 +988,7 @@
       });
     }
 
-    // --- 🏷️ قسم أسعار اللحوم الحية (Live Price List) ---
+    // --- 🏷️ قسم أسعار اللحوم ---
     function renderPrices() {
       db.ref('prices').on('value', (snap) => {
         const data = snap.val() || {};
@@ -957,6 +1025,7 @@
     }
 
     function openAddPriceModal() {
+      if(!canUser('edit')) return alert('عذراً، إضافة الأسعار تتطلب صلاحية الأدمن المصرح له.');
       const name = prompt('أدخل اسم الصنف الجديد:');
       const price = prompt('أدخل السعر (ج.م):');
       if(name && price) {
@@ -964,7 +1033,7 @@
       }
     }
 
-    // --- بحث وتتبع العميل والتقييم بالنجوم ---
+    // --- تتبع العميل والتقييم ---
     function searchCustomerOrder() {
       const id = document.getElementById('custSearchOrderId').value.trim();
       if(!id) return alert('يرجى إدخال رقم الطلب');
@@ -1013,10 +1082,14 @@
       });
     }
 
-    // --- بقية الدعم والطباعة ---
-    function printReport() { exportToPDF(); }
+    // --- الطباعة والتصدير المعزز بالصلاحيات ---
+    function printReport() { 
+      if(!canUser('print')) return alert('عذراً، ليس لديك صلاحية الطباعة.');
+      exportToPDF(); 
+    }
 
     function exportToExcel() {
+      if(!canUser('print')) return alert('عذراً، ليس لديك صلاحية تصدير البيانات.');
       if (filteredOrdersList.length === 0) return alert('لا توجد بيانات مطابقة للتصدير!');
 
       let csvContent = "\uFEFFرقم الطلب,تاريخ الطلب,وقت الطلب,اسم العميل,رقم الهاتف,المندوب,الإجمالي الكاش,حالة الطلب,العنوان والطلبات\n";
@@ -1047,6 +1120,7 @@
     }
 
     function exportToPDF() {
+      if(!canUser('print')) return alert('عذراً، ليس لديك صلاحية التصدير والطباعة.');
       if (filteredOrdersList.length === 0) return alert('لا توجد بيانات مطابقة للتصدير!');
 
       const printWindow = window.open('', '_blank');
@@ -1178,7 +1252,7 @@
       const text = `أهلاً بك 🥩
 طلبك لدى جزارة حمكشة رقم: #${displayId}
 المبلغ المطلوب تحصيله كاش: ${totalCash} ج.م
-يمكنك تتبع حالة طلبك ومكان المندوب تقييم الخدمة مباشرة عبر الرابط التالي:
+يمكنك تتبع حالة طلبك ومكان المندوب وتقييم الخدمة مباشرة عبر الرابط التالي:
 ${trackUrl}`;
 
       const waUrl = phone 
@@ -1189,6 +1263,7 @@ ${trackUrl}`;
     }
 
     function openEditModal(key) {
+      if(!canUser('edit')) return alert('عذراً، ليس لديك صلاحية التعديل.');
       const order = allOrdersCache[key];
       if(!order) return;
 
@@ -1209,6 +1284,7 @@ ${trackUrl}`;
     }
 
     function saveEditOrder() {
+      if(!canUser('edit')) return alert('عذراً، ليس لديك صلاحية حفظ التعديلات.');
       const key = document.getElementById('editKey').value;
       if(!key) return;
 
@@ -1234,6 +1310,7 @@ ${trackUrl}`;
     }
 
     function deleteOrder(id) {
+      if(!canUser('delete')) return alert('عذراً، ليس لديك صلاحية الحذف.');
       if(confirm(`هل تريد حذف هذا الطلب بشكل نهائي؟`)) db.ref('orders/' + id).remove();
     }
 
