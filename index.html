@@ -143,7 +143,7 @@
               </div>
 
               <div id="usersList" class="space-y-1.5 max-h-48 overflow-y-auto">
-                <!-- قائمة المستخدمين القادمة حياً من Firebase -->
+                <!-- قائمة المستخدمين -->
               </div>
             </div>
 
@@ -191,7 +191,7 @@
       </div>
     </section>
 
-    <!-- 2️⃣ واجهة المندوب -->
+    <!-- 2️⃣ واجهة المندوب المحدثة -->
     <section id="sec-driver" class="hidden space-y-6">
       <div id="driverAuthLock" class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md mx-auto space-y-4 border">
         <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-3xl">🛵</div>
@@ -201,7 +201,7 @@
       </div>
 
       <div id="driverContent" class="hidden max-w-xl mx-auto space-y-4 bg-white p-6 rounded-2xl shadow-xl border text-center">
-        <h2 class="text-lg font-bold">تتبع وبث الموقع الحي للمندوب 🛵</h2>
+        <h2 class="text-lg font-bold">إدارة حالة الطلب وبث الموقع 🛵</h2>
         <div class="space-y-2">
           <label class="block text-right text-xs font-bold text-gray-700">رقم الطلب:</label>
           <div class="flex gap-2">
@@ -210,14 +210,29 @@
           </div>
         </div>
 
-        <div id="driverOrderCard" class="hidden bg-gray-50 p-4 rounded-xl border text-right space-y-2 text-xs">
+        <div id="driverOrderCard" class="hidden bg-gray-50 p-4 rounded-xl border text-right space-y-3 text-xs">
           <p><b>العميل:</b> <span id="dCustName">--</span></p>
           <p><b>العنوان والطلبات:</b> <span id="dCustAddress">--</span></p>
           <p><b>الحالة الحالية:</b> <span id="dStatus" class="font-bold text-red-600">--</span></p>
+
+          <!-- التحكم اليدوي بالحالة -->
+          <div class="bg-white p-3 rounded-xl border space-y-1.5">
+            <label class="block font-bold text-gray-800">تغيير حالة الطلب يدوياً:</label>
+            <select id="driverStatusSelect" onchange="driverChangeStatus(this.value)" class="w-full border p-2 rounded-xl text-xs font-bold bg-amber-50">
+              <option value="جاري تحضير اللحوم 🥩">جاري تحضير اللحوم 🥩</option>
+              <option value="خرج للتوصيل 🛵">خرج للتوصيل 🛵</option>
+              <option value="تم التسليم بنجاح ✅">تم التسليم بنجاح ✅</option>
+            </select>
+          </div>
           
+          <!-- التحكم الاختياري ببث اللوكيشن -->
           <div class="pt-2 border-t space-y-2">
-            <button id="startBtn" onclick="startDelivery()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">📍 بدء التوصيل ومشاركة الموقع Live</button>
-            <button id="stopBtn" onclick="stopDelivery()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs hidden shadow">✅ تم التسليم بنجاح</button>
+            <button id="startBtn" onclick="startDelivery()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow flex justify-center items-center gap-1">
+              📍 بدء/إيقاف بث اللوكيشن الحي Live (اختياري)
+            </button>
+            <button id="stopBtn" onclick="stopDelivery()" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2.5 rounded-xl text-xs hidden shadow">
+              🛑 إيقاف مشاركة اللوكيشن فقط
+            </button>
           </div>
         </div>
         <div id="driverStatus" class="text-xs text-gray-500 font-semibold"></div>
@@ -313,7 +328,7 @@
     </div>
   </div>
 
-  <!-- Firebase JavaScript SDK v8 (النسخة القديمة المتوافقة المضمونة في مصر) -->
+  <!-- Firebase JavaScript SDK v8 (النسخة المتوافقة مع مصر) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -324,7 +339,6 @@
 
     firebase.initializeApp(firebaseConfig);
 
-    // إجبار الاتصال المباشر المتوافق عبر Long Polling لتخطي حظر شبكات مصر بدون VPN
     if (firebase.database.INTERNAL && firebase.database.INTERNAL.forceLongPolling) {
       firebase.database.INTERNAL.forceLongPolling();
     }
@@ -335,7 +349,6 @@
     let allUsersCache = {};
     let currentUser = null;
 
-    // --- التأكد من وجود حساب الأدمن افتراضياً عند أول تشغيل ---
     db.ref('users').once('value').then((snapshot) => {
       if (!snapshot.exists()) {
         const defaultAdminRef = db.ref('users').push();
@@ -358,7 +371,6 @@
       document.getElementById('authModal').classList.toggle('hidden');
     }
 
-    // --- تسجيل الدخول الديناميكي من قاعدة البيانات الحقيقية ---
     function performLogin() {
       const username = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPass').value.trim();
@@ -554,7 +566,6 @@
       document.getElementById('ordersCount').innerText = `${count} طلبات`;
     }
 
-    // --- مشاركة رابط الطلب عبر الواتساب ---
     function shareWhatsApp(key) {
       const item = allOrdersCache[key];
       if (!item) return;
@@ -576,7 +587,6 @@ ${trackUrl}`;
       window.open(waUrl, '_blank');
     }
 
-    // --- نافذة وظيفة التعديل على الطلب ---
     function openEditModal(key) {
       const order = allOrdersCache[key];
       if(!order) return;
@@ -619,7 +629,7 @@ ${trackUrl}`;
       if(confirm(`هل تريد حذف هذا الطلب بشكل نهائي؟`)) db.ref('orders/' + id).remove();
     }
 
-    // --- بحث وتتبع المندوب برقم الطلب ---
+    // --- بحث وتغير الحالة واختيار اللوكيشن للمندوب ---
     function fetchDriverOrder() {
       const id = document.getElementById('orderId').value.trim();
       if(!id) return alert('يرجى كتابة رقم الطلب');
@@ -630,6 +640,7 @@ ${trackUrl}`;
           document.getElementById('dCustName').innerText = data.customerName || data.name || '--';
           document.getElementById('dCustAddress').innerText = data.address || '--';
           document.getElementById('dStatus').innerText = data.status || '--';
+          document.getElementById('driverStatusSelect').value = data.status || 'جاري تحضير اللحوم 🥩';
           document.getElementById('driverOrderCard').classList.remove('hidden');
         } else {
           alert('عذراً، هذا الطلب غير موجود!');
@@ -638,19 +649,36 @@ ${trackUrl}`;
       });
     }
 
+    // تحكم المندوب اليدوي بالحالة
+    function driverChangeStatus(newStatus) {
+      const id = document.getElementById('orderId').value.trim();
+      if(!id) return;
+      db.ref('orders/' + id).update({ status: newStatus }).then(() => {
+        document.getElementById('driverStatus').innerText = "✅ تم تحديث حالة الطلب إلى: " + newStatus;
+      });
+    }
+
     let watchId = null;
     function startDelivery() {
       const id = document.getElementById('orderId').value.trim();
       if(!id) return alert('أدخل رقم الطلب أولاً');
       if (navigator.geolocation) {
+        if(watchId) {
+          navigator.geolocation.clearWatch(watchId);
+          watchId = null;
+          document.getElementById('driverStatus').innerText = "🛑 تم إيقاف بث الموقع الحي.";
+          document.getElementById('startBtn').innerText = "📍 بدء بث اللوكيشن الحي Live (اختياري)";
+          document.getElementById('stopBtn').classList.add('hidden');
+          return;
+        }
+
         watchId = navigator.geolocation.watchPosition((pos) => {
           db.ref('orders/' + id).update({
             lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-            status: 'خرج للتوصيل 🛵'
+            lng: pos.coords.longitude
           });
           document.getElementById('driverStatus').innerText = "📍 يتم الآن بث موقعك الحي بنجاح...";
-          document.getElementById('startBtn').classList.add('hidden');
+          document.getElementById('startBtn').innerText = "🔄 جاري بث اللوكيشن حياً...";
           document.getElementById('stopBtn').classList.remove('hidden');
         }, (err) => {
           alert('تعذر الوصول إلى نظام تحديد المواقع (GPS)');
@@ -661,13 +689,13 @@ ${trackUrl}`;
     }
 
     function stopDelivery() {
-      const id = document.getElementById('orderId').value.trim();
-      if(watchId) navigator.geolocation.clearWatch(watchId);
-      db.ref('orders/' + id).update({ status: 'تم التسليم بنجاح ✅' }).then(() => {
-        document.getElementById('driverStatus').innerText = "✅ تم إنهاء التوصيل وتسليم الطلب.";
-        document.getElementById('startBtn').classList.remove('hidden');
-        document.getElementById('stopBtn').classList.add('hidden');
-      });
+      if(watchId) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+      }
+      document.getElementById('driverStatus').innerText = "🛑 تم إيقاف بث الموقع الحي.";
+      document.getElementById('startBtn').innerText = "📍 بدء بث اللوكيشن الحي Live (اختياري)";
+      document.getElementById('stopBtn').classList.add('hidden');
     }
 
     // --- تتبع العميل ---
@@ -695,7 +723,7 @@ ${trackUrl}`;
               </div>
             `;
           } else {
-            document.getElementById('map').innerHTML = `⏳ الطلب قيد التحضير في الجزارة أو المندوب لم يبدأ التوصيل بعد.`;
+            document.getElementById('map').innerHTML = `⏳ الطلب قيد التحضير في الجزارة أو المندوب لم يقم بتفعيل اللوكيشن الحي بعد.`;
           }
         } else {
           alert('لم يتم العثور على طلب بهذا الرقم!');
@@ -703,7 +731,6 @@ ${trackUrl}`;
       });
     }
 
-    // القراءة التلقائية للروابط المباشرة عبر URL Query parameters
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       const tab = urlParams.get('tab');
