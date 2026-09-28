@@ -14,6 +14,17 @@
       --secondary-color: #f59e0b;
       --bg-color: #fffbeb;
     }
+    /* تنسيقات خاصة بالطباعة الورقية */
+    @media print {
+      header, #userBadgeBar, .no-print, #adminAuthLock, .theme-selector, #orderForm, #usersList, form, button, select, input {
+        display: none !important;
+      }
+      body { background: white !important; color: black !important; }
+      main { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+      .print-area { width: 100% !important; box-shadow: none !important; border: none !important; }
+      table { border-collapse: collapse !important; width: 100% !important; }
+      th, td { border: 1px solid #ddd !important; padding: 8px !important; text-align: right !important; }
+    }
   </style>
 </head>
 <body id="appBody" class="bg-amber-50/40 min-h-screen text-gray-800">
@@ -72,7 +83,7 @@
       <div id="adminContent" class="hidden space-y-6">
         
         <!-- قسم الثيمات -->
-        <div class="bg-white rounded-2xl shadow-md p-4 border border-amber-100 flex flex-wrap items-center justify-between gap-4">
+        <div class="bg-white rounded-2xl shadow-md p-4 border border-amber-100 flex flex-wrap items-center justify-between gap-4 theme-selector">
           <div class="flex items-center gap-2">
             <span class="text-xl">🎨</span>
             <h3 class="font-bold text-xs text-gray-800">تخصيص الثيم:</h3>
@@ -160,35 +171,57 @@
 
           </div>
 
-          <!-- جدول إدارة الطلبات وحالتها -->
-          <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 lg:col-span-2 space-y-4">
-            <div class="flex items-center justify-between border-b pb-3">
-              <h2 class="text-base font-bold text-gray-800">📊 سجل الطلبات وحالتها الحية</h2>
+          <!-- جدول إدارة الطلبات وحالتها ومجموعات الطباعة والتصدير -->
+          <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 lg:col-span-2 space-y-4 print-area">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-3">
+              <div>
+                <h2 class="text-base font-bold text-gray-800">📊 سجل الطلبات والتقارير الحية</h2>
+                <p class="text-[11px] text-gray-400 font-semibold">تقارير مخصصة للطباعة والتصدير</p>
+              </div>
               <span id="ordersCount" class="bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full">0 طلبات</span>
             </div>
 
-            <!-- الفلترة -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-gray-50 p-2.5 rounded-xl border">
-              <input type="text" id="searchFilter" oninput="applyFilters()" placeholder="🔍 ابحث برقم الطلب أو الاسم..." class="border p-2 rounded-lg text-xs bg-white">
+            <!-- الفلترة المتقدمة حسب المندوب / الحالة / التاريخ / البحث -->
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 bg-gray-50 p-2.5 rounded-xl border no-print">
+              <input type="text" id="searchFilter" oninput="applyFilters()" placeholder="🔍 بحث بالرقم أو العميل..." class="border p-2 rounded-lg text-xs bg-white">
+              
+              <select id="driverFilter" onchange="applyFilters()" class="border p-2 rounded-lg text-xs bg-white filter-driver-dropdown">
+                <option value="ALL">جميع المناديب</option>
+              </select>
+
               <select id="statusFilter" onchange="applyFilters()" class="border p-2 rounded-lg text-xs bg-white">
                 <option value="ALL">كل الحالات</option>
                 <option value="جاري تحضير اللحوم 🥩">جاري التحضير</option>
                 <option value="خرج للتوصيل 🛵">خرج للتوصيل</option>
                 <option value="تم التسليم بنجاح ✅">تم التسليم</option>
               </select>
+
               <input type="date" id="dateFilter" onchange="applyFilters()" class="border p-2 rounded-lg text-xs bg-white">
             </div>
 
-            <!-- جدول العرض -->
+            <!-- 🖨️ شريط أزرار الطباعة والتصدير (PDF / Excel / Paper) -->
+            <div class="flex flex-wrap items-center justify-end gap-2 pt-1 no-print">
+              <button onclick="exportToPDF()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">
+                📄 تصدير PDF
+              </button>
+              <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">
+                📊 تصدير Excel
+              </button>
+              <button onclick="printReport()" class="bg-slate-700 hover:bg-slate-800 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">
+                🖨️ طباعة ورقية
+              </button>
+            </div>
+
+            <!-- جدول العرض للطباعة والتقارير -->
             <div class="overflow-x-auto max-h-[480px] overflow-y-auto rounded-xl border">
-              <table class="w-full text-right text-xs">
+              <table id="reportsTable" class="w-full text-right text-xs">
                 <thead class="bg-gray-100 font-bold sticky top-0 border-b">
                   <tr>
                     <th class="p-2.5">الطلب والتاريخ</th>
-                    <th class="p-2.5">العميل</th>
-                    <th class="p-2.5">المندوب</th>
-                    <th class="p-2.5">تحديث الحالة</th>
-                    <th class="p-2.5 text-center">إجراءات</th>
+                    <th class="p-2.5">العميل والتليفون</th>
+                    <th class="p-2.5">المندوب المكلف</th>
+                    <th class="p-2.5">حالة الطلب</th>
+                    <th class="p-2.5 text-center no-print">إجراءات</th>
                   </tr>
                 </thead>
                 <tbody id="ordersTableBody" class="divide-y divide-gray-100">
@@ -284,7 +317,7 @@
   </main>
 
   <!-- نافذة التعديل على الطلب -->
-  <div id="editOrderModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+  <div id="editOrderModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
     <div class="bg-white rounded-2xl p-6 w-full max-w-md space-y-4 text-right shadow-2xl border">
       <div class="flex justify-between items-center border-b pb-2">
         <h3 class="font-bold text-sm text-gray-800">✏️ تعديل بيانات الطلب <span id="editModalOrderId" class="text-red-600 font-mono"></span></h3>
@@ -322,7 +355,7 @@
   </div>
 
   <!-- نافذة تسجيل الدخول الآمن برقم السر واسم المستخدم -->
-  <div id="authModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+  <div id="authModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
     <div class="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 text-right shadow-2xl">
       <div class="flex justify-between items-center border-b pb-2">
         <h3 class="font-bold text-sm">تسجيل الدخول الآمن للنظام</h3>
@@ -360,6 +393,7 @@
     let allOrdersCache = {};
     let allUsersCache = {};
     let currentUser = null;
+    let filteredOrdersList = [];
 
     db.ref('users').once('value').then((snapshot) => {
       if (!snapshot.exists()) {
@@ -457,7 +491,7 @@
       document.body.className = isDark ? "bg-zinc-900 text-white min-h-screen" : "bg-amber-50/40 min-h-screen text-gray-800";
     }
 
-    // --- إدارة المستخدمين ---
+    // --- إدارة المستخدمين والمناديب ---
     function addUser() {
       const username = document.getElementById('newUserName').value.trim();
       const pass = document.getElementById('newUserPass').value.trim();
@@ -481,11 +515,14 @@
     db.ref('users').on('value', (snap) => {
       allUsersCache = snap.val() || {};
       const dropdowns = document.querySelectorAll('.driver-dropdown');
+      const filterDriverDropdown = document.querySelector('.filter-driver-dropdown');
       const list = document.getElementById('usersList');
       
       dropdowns.forEach(select => {
         select.innerHTML = '<option value="غير محدد">حدد المندوب...</option>';
       });
+      if(filterDriverDropdown) filterDriverDropdown.innerHTML = '<option value="ALL">جميع المناديب</option>';
+      
       list.innerHTML = '';
 
       Object.keys(allUsersCache).forEach(id => {
@@ -494,6 +531,7 @@
           dropdowns.forEach(select => {
             select.innerHTML += `<option value="${u.username}">${u.username}</option>`;
           });
+          if(filterDriverDropdown) filterDriverDropdown.innerHTML += `<option value="${u.username}">${u.username}</option>`;
         }
         list.innerHTML += `
           <div class="flex items-center justify-between bg-white p-2 rounded-xl border text-xs shadow-sm">
@@ -511,7 +549,7 @@
       checkSavedSession();
     });
 
-    // --- الطلبات ---
+    // --- إدارة الطلبات والفلترة ---
     document.getElementById('orderForm').addEventListener('submit', (e) => {
       e.preventDefault();
       
@@ -558,24 +596,31 @@
 
     function applyFilters() {
       const search = document.getElementById('searchFilter').value.toLowerCase();
+      const driver = document.getElementById('driverFilter') ? document.getElementById('driverFilter').value : 'ALL';
       const status = document.getElementById('statusFilter').value;
       const date = document.getElementById('dateFilter').value;
       const tbody = document.getElementById('ordersTableBody');
       tbody.innerHTML = '';
 
+      filteredOrdersList = [];
       let count = 0;
+
       Object.keys(allOrdersCache).forEach(key => {
         const item = allOrdersCache[key];
         const displayId = item.orderId || key;
         const displayName = item.customerName || item.name || 'غير محدد';
         const displayPhone = item.phone || '';
+        const displayDriver = item.driver || 'غير محدد';
 
         const matchSearch = !search || displayName.toLowerCase().includes(search) || displayId.toLowerCase().includes(search);
+        const matchDriver = driver === 'ALL' || displayDriver === driver;
         const matchStatus = status === 'ALL' || item.status === status;
         const matchDate = !date || item.date === date;
 
-        if (matchSearch && matchStatus && matchDate) {
+        if (matchSearch && matchDriver && matchStatus && matchDate) {
           count++;
+          filteredOrdersList.push({ key, ...item, displayId, displayName, displayPhone, displayDriver });
+
           const tr = document.createElement('tr');
           tr.className = "hover:bg-gray-50 border-b";
           tr.innerHTML = `
@@ -587,15 +632,16 @@
               <div class="font-bold">${displayName}</div>
               <div class="text-[10px] text-gray-500 font-mono" dir="ltr">${displayPhone}</div>
             </td>
-            <td class="p-2.5 font-semibold text-gray-700">${item.driver || 'غير محدد'}</td>
+            <td class="p-2.5 font-semibold text-gray-700">${displayDriver}</td>
             <td class="p-2.5">
-              <select onchange="updateOrderStatus('${key}', this.value)" class="border p-1 rounded text-[11px] font-bold bg-amber-50">
+              <select onchange="updateOrderStatus('${key}', this.value)" class="border p-1 rounded text-[11px] font-bold bg-amber-50 no-print">
                 <option value="جاري تحضير اللحوم 🥩" ${item.status === 'جاري تحضير اللحوم 🥩' ? 'selected' : ''}>جاري التحضير 🥩</option>
                 <option value="خرج للتوصيل 🛵" ${item.status === 'خرج للتوصيل 🛵' ? 'selected' : ''}>خرج للتوصيل 🛵</option>
                 <option value="تم التسليم بنجاح ✅" ${item.status === 'تم التسليم بنجاح ✅' ? 'selected' : ''}>تم التسليم ✅</option>
               </select>
+              <span class="hidden print:inline font-bold">${item.status}</span>
             </td>
-            <td class="p-2.5 text-center flex items-center justify-center gap-1">
+            <td class="p-2.5 text-center flex items-center justify-center gap-1 no-print">
               <button onclick="shareWhatsApp('${key}')" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-2 py-1 rounded text-[10px] font-bold shadow-sm flex items-center gap-0.5">
                 💬 واتساب
               </button>
@@ -607,6 +653,110 @@
         }
       });
       document.getElementById('ordersCount').innerText = `${count} طلبات`;
+    }
+
+    // --- أزرار الطباعة والتصدير (PDF / Excel / Paper) ---
+    function printReport() {
+      window.print();
+    }
+
+    function exportToExcel() {
+      if (filteredOrdersList.length === 0) return alert('لا توجد بيانات مطابقة للتصدير!');
+
+      let csvContent = "\uFEFFرقم الطلب,تاريخ الطلب,وقت الطلب,اسم العميل,رقم الهاتف,المندوب,حالة الطلب,العنوان والطلبات\n";
+
+      filteredOrdersList.forEach(item => {
+        const row = [
+          `"${item.displayId}"`,
+          `"${item.date || ''}"`,
+          `"${item.time || ''}"`,
+          `"${item.displayName.replace(/"/g, '""')}"`,
+          `"${item.displayPhone}"`,
+          `"${item.displayDriver}"`,
+          `"${item.status || ''}"`,
+          `"${(item.address || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`
+        ];
+        csvContent += row.join(",") + "\n";
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `تقرير_طلبات_حمكشة_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function exportToPDF() {
+      if (filteredOrdersList.length === 0) return alert('لا توجد بيانات مطابقة للتصدير!');
+
+      const printWindow = window.open('', '_blank');
+      let tableRows = '';
+
+      filteredOrdersList.forEach(item => {
+        tableRows += `
+          <tr>
+            <td>#${item.displayId}</td>
+            <td>${item.date || ''} ${item.time || ''}</td>
+            <td>${item.displayName}</td>
+            <td dir="ltr" style="text-align:right;">${item.displayPhone}</td>
+            <td>${item.displayDriver}</td>
+            <td><b>${item.status}</b></td>
+            <td>${item.address || '-'}</td>
+          </tr>
+        `;
+      });
+
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html lang="ar" dir="rtl">
+        <head>
+          <meta charset="UTF-8">
+          <title>تقرير طلبات جزارة حمكشة 🥩</title>
+          <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; direction: rtl; text-align: right; }
+            h1 { color: #dc2626; text-align: center; margin-bottom: 5px; }
+            p.sub { text-align: center; color: #666; font-size: 12px; margin-top: 0; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
+            th, td { border: 1px solid #000; padding: 8px; text-align: right; }
+            th { background-color: #f3f4f6; font-weight: bold; }
+            @media print {
+              @page { size: A4 landscape; margin: 10mm; }
+            }
+          </style>
+        </head>
+        <body>
+          <h1>🥩 تقرير طلبات جزارة حمكشة</h1>
+          <p class="sub">تاريخ الاستخراج: ${new Date().toLocaleDateString('ar-EG')} - إجمالي الطلبات: ${filteredOrdersList.length}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>رقم الطلب</th>
+                <th>التاريخ والوقت</th>
+                <th>العميل</th>
+                <th>الهاتف</th>
+                <th>المندوب</th>
+                <th>الحالة</th>
+                <th>العنوان والتفاصيل</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRows}
+            </tbody>
+          </table>
+          <script>
+            window.onload = function() {
+              window.print();
+            }
+          <\/script>
+        </body>
+        </html>
+      `;
+
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
     }
 
     function shareWhatsApp(key) {
