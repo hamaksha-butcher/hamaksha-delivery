@@ -25,7 +25,7 @@
         <span class="text-4xl">🥩</span>
         <div>
           <h1 class="text-2xl font-black tracking-wide">جزارة حمكشة</h1>
-          <p class="text-xs text-amber-200 font-semibold">نظام إدارة الطلبات والمستخدمين والتوصيل العالمي</p>
+          <p class="text-xs text-amber-200 font-semibold">نظام إدارة الطلبات والتوصيل الآمن</p>
         </div>
       </div>
       
@@ -45,23 +45,16 @@
 
   <main class="max-w-6xl mx-auto p-4 sm:p-6 space-y-6">
 
-    <!-- ⚡ قسم أيقونات الدخول السريع لجميع المستخدمين -->
-    <section class="bg-white rounded-2xl shadow-md p-4 border border-amber-200 space-y-3">
-      <div class="flex items-center justify-between border-b pb-2">
-        <div class="flex items-center gap-2">
-          <span class="text-xl">⚡</span>
-          <h2 class="font-bold text-xs sm:text-sm text-gray-800">الدخول السريع بضغطة زر (اختر حسابك):</h2>
-        </div>
-        <span id="activeUserBadge" class="text-[11px] font-bold text-amber-800 bg-amber-100 px-2.5 py-1 rounded-full">
+    <!-- شريط عرض حالة الدخول للحساب الحالي -->
+    <div class="bg-white rounded-xl shadow-sm p-3 border border-amber-200 flex items-center justify-between">
+      <div class="flex items-center gap-2 text-xs font-bold text-gray-700">
+        <span>👤 الحساب النشط:</span>
+        <span id="activeUserBadge" class="text-amber-800 bg-amber-100 px-2.5 py-1 rounded-full">
           لم يتم تسجيل الدخول
         </span>
       </div>
-
-      <!-- شبكة أيقونات المستخدمين -->
-      <div id="quickLoginIcons" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 pt-1">
-        <!-- سيتم توليد أزرار المستخدمين هنا ديناميكياً -->
-      </div>
-    </section>
+      <div class="text-[11px] text-gray-400 font-semibold">🔒 نظام محمي ومقيد الصلاحيات</div>
+    </div>
 
     <!-- 1️⃣ لوحة تحكم الأدمن -->
     <section id="sec-admin" class="space-y-6">
@@ -70,9 +63,9 @@
           🔒
         </div>
         <h3 class="text-xl font-bold text-gray-800">صلاحية أدمن جزارة حمكشة</h3>
-        <p class="text-xs text-gray-500">اضغط على أيقونة حساب الأدمن في الأعلى أو سجل دخولك للوصول إلى لوحة التحكم.</p>
+        <p class="text-xs text-gray-500">سجل الدخول بحساب الأدمن الخاص بك للوصول إلى لوحة التحكم والبيانات.</p>
         <button onclick="toggleAuthModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm">
-          تسجيل الدخول كأدمن
+          تسجيل الدخول كأدمن 🔑
         </button>
       </div>
 
@@ -141,7 +134,7 @@
               </div>
             </div>
 
-            <!-- قسم إدارة وتدشين مستخدم جديد -->
+            <!-- قسم إدارة المستخدمين والمناديب -->
             <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-3">
               <div class="flex items-center gap-2 border-b pb-2">
                 <span class="text-lg">👥</span>
@@ -209,13 +202,13 @@
       </div>
     </section>
 
-    <!-- 2️⃣ واجهة المندوب المحدثة -->
+    <!-- 2️⃣ واجهة المندوب -->
     <section id="sec-driver" class="hidden space-y-6">
       <div id="driverAuthLock" class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md mx-auto space-y-4 border">
         <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-3xl">🛵</div>
         <h3 class="text-xl font-bold">واجهة المندوب</h3>
-        <p class="text-xs text-gray-500">اضغط على أيقونة حسابك من الأعلى لبدء متابعة طلباتك فوراً.</p>
-        <button onclick="toggleAuthModal()" class="w-full bg-amber-600 text-white font-bold py-3 rounded-xl shadow text-sm">تسجيل الدخول كمندوب</button>
+        <p class="text-xs text-gray-500">قم بتسجيل الدخول بحساب المندوب الخاص بك لبدء العمل على طلباتك.</p>
+        <button onclick="toggleAuthModal()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-xl shadow text-sm">تسجيل الدخول كمندوب 🔑</button>
       </div>
 
       <div id="driverContent" class="hidden max-w-xl mx-auto space-y-4 bg-white p-6 rounded-2xl shadow-xl border text-center">
@@ -257,10 +250,10 @@
       </div>
     </section>
 
-    <!-- 3️⃣ تتبع العميل -->
+    <!-- 3️⃣ تتبع العميل (الواجهة الآمنة المشفرة لحماية الخصوصية) -->
     <section id="sec-track" class="hidden space-y-6 max-w-xl mx-auto">
       <div class="bg-white rounded-2xl shadow-lg p-5 border space-y-3">
-        <label class="block text-xs font-bold text-gray-800">📌 إدخال رقم الطلب للبحث والتتبع:</label>
+        <label class="block text-xs font-bold text-gray-800">📌 أدخل رقم الطلب لتتبع حالة التوصيل:</label>
         <div class="flex gap-2">
           <input type="text" id="custSearchOrderId" placeholder="أدخل رقم الطلب (مثال: HAMKASHA-12345)" class="w-full border p-2.5 rounded-xl text-xs font-mono font-bold text-center bg-gray-50">
           <button onclick="searchCustomerOrder()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 rounded-xl text-xs whitespace-nowrap shadow">تتبع 🔍</button>
@@ -270,19 +263,20 @@
       <div id="trackResultCard" class="bg-white rounded-2xl shadow-xl p-6 border space-y-4">
         <div class="flex justify-between items-center border-b pb-2">
           <div>
-            <h2 class="text-base font-black text-red-700">تتبع طلب جزارة حمكشة 🥩</h2>
+            <h2 class="text-base font-black text-red-700">تتبع الطلب 🥩</h2>
             <p id="dispOrderId" class="text-xs font-mono text-gray-400">#---</p>
           </div>
           <span id="badgeStatus" class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">جاري المتابعة</span>
         </div>
+        
+        <!-- حماية البيانات: إخفاء اسم العميل وهاتفه وعنوانه عن العارض العام -->
         <div class="bg-gray-50 p-3 rounded-xl space-y-1 text-xs border">
-          <p class="flex justify-between"><span>العميل:</span> <b id="cName">-</b></p>
-          <p class="flex justify-between"><span>المندوب:</span> <b id="cDriver">-</b></p>
-          <p class="flex justify-between"><span>التاريخ والوقت:</span> <b id="cDate" class="font-mono">-</b></p>
-          <p class="flex justify-between"><span>الطلبات والعنوان:</span> <b id="cAddress">-</b></p>
+          <p class="flex justify-between"><span>المندوب المكلف:</span> <b id="cDriver" class="text-amber-800">-</b></p>
+          <p class="flex justify-between"><span>تاريخ الطلب:</span> <b id="cDate" class="font-mono text-gray-600">-</b></p>
         </div>
+
         <div id="map" class="bg-gray-100 border-2 border-dashed rounded-xl p-6 text-center text-xs text-gray-500">
-          أدخل رقم الطلب للبدء في تتبع التوصيل الحقيقي.
+          أدخل رقم الطلب الخاص بك لمتابعة مسار المندوب.
         </div>
       </div>
     </section>
@@ -327,11 +321,11 @@
     </div>
   </div>
 
-  <!-- نافذة تسجيل الدخول اليدوي -->
+  <!-- نافذة تسجيل الدخول الآمن برقم السر واسم المستخدم -->
   <div id="authModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 text-right shadow-2xl">
       <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-bold text-sm">تسجيل الدخول للنظام</h3>
+        <h3 class="font-bold text-sm">تسجيل الدخول الآمن للنظام</h3>
         <button onclick="toggleAuthModal()" class="text-gray-400 hover:text-gray-600 font-bold">✕</button>
       </div>
       <div>
@@ -391,7 +385,7 @@
 
     function handleAuthBtnClick() {
       if(currentUser) {
-        if(confirm('هل تريد تسجيل الخروج؟')) {
+        if(confirm('هل تريد تسجيل الخروج بالفعل؟')) {
           localStorage.removeItem('hamaksha_user');
           currentUser = null;
           location.reload();
@@ -422,28 +416,12 @@
       }
     }
 
-    // تسجيل الدخول السريع عند الضغط على أيقونة أي مستخدم
-    function quickLoginUser(username) {
-      let foundUser = null;
-      Object.keys(allUsersCache).forEach(id => {
-        const u = allUsersCache[id];
-        if(u.username === username) {
-          foundUser = u;
-        }
-      });
-
-      if(foundUser) {
-        loginSuccess(foundUser);
-      }
-    }
-
     function loginSuccess(user) {
       currentUser = user;
-      // حفظ البيانات في localStorage لمنع الخروج عند الـ Refresh
       localStorage.setItem('hamaksha_user', JSON.stringify(user));
 
       document.getElementById('authBtn').innerText = `${user.role === 'admin' ? 'الأدمن' : 'المندوب'}: ${user.username} (خروج)`;
-      document.getElementById('activeUserBadge').innerText = `الحساب الحالي: ${user.username} (${user.role === 'admin' ? 'أدمن' : 'مندوب'})`;
+      document.getElementById('activeUserBadge').innerText = `${user.username} (${user.role === 'admin' ? 'مسؤول أدمن' : 'مندوب توصيل'})`;
       document.getElementById('activeUserBadge').className = `text-[11px] font-bold px-3 py-1 rounded-full ${user.role === 'admin' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`;
 
       if(!document.getElementById('authModal').classList.contains('hidden')) {
@@ -459,10 +437,8 @@
         document.getElementById('driverContent').classList.remove('hidden');
         switchTab('driver');
       }
-      renderQuickLoginIcons();
     }
 
-    // استعادة الجلسة المحفوظة تلقائياً عند تحميل الصفحة
     function checkSavedSession() {
       const savedUser = localStorage.getItem('hamaksha_user');
       if(savedUser) {
@@ -480,7 +456,7 @@
       document.body.className = isDark ? "bg-zinc-900 text-white min-h-screen" : "bg-amber-50/40 min-h-screen text-gray-800";
     }
 
-    // --- إدارة المستخدمين ورسم أيقونات الدخول السريع ---
+    // --- إدارة المستخدمين ---
     function addUser() {
       const username = document.getElementById('newUserName').value.trim();
       const pass = document.getElementById('newUserPass').value.trim();
@@ -499,28 +475,6 @@
       if(confirm('هل تريد حذف هذا المستخدم بالفعل؟')) {
         db.ref('users/' + userId).remove();
       }
-    }
-
-    function renderQuickLoginIcons() {
-      const quickContainer = document.getElementById('quickLoginIcons');
-      quickContainer.innerHTML = '';
-
-      Object.keys(allUsersCache).forEach(id => {
-        const u = allUsersCache[id];
-        const isActive = currentUser && currentUser.username === u.username;
-        const icon = u.role === 'admin' ? '👑' : '🛵';
-        const colorClass = u.role === 'admin' 
-          ? (isActive ? 'bg-red-600 text-white border-red-700 ring-2 ring-red-400' : 'bg-red-50 text-red-900 hover:bg-red-100 border-red-200')
-          : (isActive ? 'bg-amber-500 text-white border-amber-600 ring-2 ring-amber-300' : 'bg-amber-50 text-amber-900 hover:bg-amber-100 border-amber-200');
-
-        quickContainer.innerHTML += `
-          <button onclick="quickLoginUser('${u.username}')" class="flex flex-col items-center justify-center p-2.5 rounded-xl border text-center transition-all shadow-sm ${colorClass}">
-            <span class="text-2xl mb-1">${icon}</span>
-            <span class="font-extrabold text-xs truncate w-full">${u.username}</span>
-            <span class="text-[9px] opacity-80 mt-0.5">${u.role === 'admin' ? 'أدمن' : 'مندوب'}</span>
-          </button>
-        `;
-      });
     }
 
     db.ref('users').on('value', (snap) => {
@@ -553,7 +507,6 @@
         `;
       });
 
-      renderQuickLoginIcons();
       checkSavedSession();
     });
 
@@ -718,7 +671,7 @@ ${trackUrl}`;
       if(confirm(`هل تريد حذف هذا الطلب بشكل نهائي؟`)) db.ref('orders/' + id).remove();
     }
 
-    // --- بحث وتغير الحالة واختيار اللوكيشن للمندوب ---
+    // --- بحث وتغير الحالة للمندوب ---
     function fetchDriverOrder() {
       const id = document.getElementById('orderId').value.trim();
       if(!id) return alert('يرجى كتابة رقم الطلب');
@@ -786,7 +739,7 @@ ${trackUrl}`;
       document.getElementById('stopBtn').classList.add('hidden');
     }
 
-    // --- تتبع العميل ---
+    // --- تتبع العميل (مشفر وآمن للبيانات) ---
     function searchCustomerOrder() {
       const id = document.getElementById('custSearchOrderId').value.trim();
       if(!id) return alert('يرجى إدخال رقم الطلب');
@@ -795,10 +748,8 @@ ${trackUrl}`;
         const data = snap.val();
         if(data) {
           document.getElementById('dispOrderId').innerText = '#' + (data.orderId || id);
-          document.getElementById('cName').innerText = data.customerName || data.name || '-';
-          document.getElementById('cDriver').innerText = data.driver || '-';
+          document.getElementById('cDriver').innerText = data.driver || 'جاري التحديد...';
           document.getElementById('cDate').innerText = (data.date || '') + ' ' + (data.time || '');
-          document.getElementById('cAddress').innerText = data.address || '-';
           document.getElementById('badgeStatus').innerText = data.status || 'جاري المتابعة';
 
           if(data.lat && data.lng) {
