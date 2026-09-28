@@ -548,14 +548,32 @@
     });
 
     function isSuperUser() {
-      return currentUser && currentUser.username === 'asma';
+      if (!currentUser) {
+        const savedUser = localStorage.getItem('hamaksha_user');
+        if (savedUser) {
+          try {
+            const u = JSON.parse(savedUser);
+            return u && u.username === 'asma';
+          } catch(e) {}
+        }
+        return false;
+      }
+      return currentUser.username === 'asma';
     }
 
     function canUser(action) {
-      if(!currentUser) return false;
-      if(isSuperUser()) return true; 
-      if(currentUser.role === 'admin') {
-        const p = currentUser.perms || {};
+      if (isSuperUser()) return true; 
+      
+      let u = currentUser;
+      if (!u) {
+        const savedUser = localStorage.getItem('hamaksha_user');
+        if (savedUser) {
+          try { u = JSON.parse(savedUser); } catch(e) {}
+        }
+      }
+
+      if (u && u.role === 'admin') {
+        const p = u.perms || {};
         return !!p[action];
       }
       return false;
@@ -638,6 +656,7 @@
       }
 
       applyFilters();
+      renderUsersList();
     }
 
     function updateUIByPermissions() {
@@ -805,8 +824,7 @@
       }
     }
 
-    db.ref('users').on('value', (snap) => {
-      allUsersCache = snap.val() || {};
+    function renderUsersList() {
       const dropdowns = document.querySelectorAll('.driver-dropdown');
       const filterDriverDropdown = document.querySelector('.filter-driver-dropdown');
       const list = document.getElementById('usersList');
@@ -816,7 +834,10 @@
       });
       if(filterDriverDropdown) filterDriverDropdown.innerHTML = '<option value="ALL">جميع المناديب</option>';
       
+      if(!list) return;
       list.innerHTML = '';
+
+      const userHasUserManagementPerm = canUser('users');
 
       Object.keys(allUsersCache).forEach(id => {
         const u = allUsersCache[id];
@@ -832,24 +853,25 @@
 
         list.innerHTML += `
           <div class="bg-white p-3 rounded-xl border text-xs shadow-sm space-y-2">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between gap-2">
               <div class="flex items-center gap-1.5 overflow-hidden">
                 <span class="font-bold text-gray-800 truncate">${u.username}</span>
                 <span class="text-[9px] px-1.5 py-0.5 rounded-full ${isAsma ? 'bg-amber-400 text-black font-bold' : (u.role === 'admin' ? 'bg-red-100 text-red-700 font-bold' : 'bg-amber-100 text-amber-800 font-bold')}">
                   ${isAsma ? 'المالك الرئيسي' : (u.role === 'admin' ? 'أدمن فرعي' : 'مندوب')}
                 </span>
               </div>
-              ${!isAsma && canUser('users') ? `
-                <div class="flex items-center gap-1">
-                  <button onclick="openEditUserModal('${id}')" class="text-blue-600 hover:text-blue-800 font-bold text-[10px]">✏️ تعديل</button>
-                  <button onclick="deleteUser('${id}')" class="text-red-600 hover:text-red-800 font-bold text-[10px]">🗑️ حذف</button>
+
+              ${!isAsma && userHasUserManagementPerm ? `
+                <div class="flex items-center gap-1 shrink-0">
+                  <button onclick="openEditUserModal('${id}')" class="bg-blue-50 text-blue-700 hover:bg-blue-100 px-2 py-1 rounded-lg font-bold text-[10px] border border-blue-200">✏️ تعديل</button>
+                  <button onclick="deleteUser('${id}')" class="bg-red-50 text-red-700 hover:bg-red-100 px-2 py-1 rounded-lg font-bold text-[10px] border border-red-200">🗑️ حذف</button>
                 </div>
               ` : ''}
             </div>
 
-            ${u.role === 'admin' && !isAsma ? `
+            ${u.role === 'admin' && !isAsma && isSuperUser() ? `
               <div class="bg-amber-50 p-2.5 rounded-lg border border-amber-200 text-[10px] space-y-1.5 mt-2">
-                <p class="font-bold text-amber-900 border-b border-amber-200 pb-1">⚙️ التحكم في صلاحيات الأدمن الفرعي:</p>
+                <p class="font-bold text-amber-900 border-b border-amber-200 pb-1">⚙️ التحكم في صلاحيات الأدمن الفرعي (خاص بـ asma):</p>
                 <div class="grid grid-cols-2 gap-1.5 font-semibold">
                   <label class="flex items-center gap-1 cursor-pointer">
                     <input type="checkbox" ${perms.edit ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'edit', this.checked)"> تعديل الطلبات ✏️
@@ -880,7 +902,11 @@
           </div>
         `;
       });
+    }
 
+    db.ref('users').on('value', (snap) => {
+      allUsersCache = snap.val() || {};
+      renderUsersList();
       checkSavedSession();
     });
 
