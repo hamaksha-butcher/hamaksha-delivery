@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام جزارة حمكشة - إدارة وتتبع الطلبات 🥩</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Cairo', sans-serif; transition: background-color 0.3s, color 0.3s; }
+    .tab-btn.active { background-color: var(--primary-color, #dc2626); color: white; }
+    :root {
+      --primary-color: #dc2626;
+      --secondary-color: #f59e0b;
+      --bg-color: #fffbeb;
+    }
+  </style>
+</head>
+<body id="appBody" class="bg-amber-50/40 min-h-screen text-gray-800">
+
+  <!-- Header / البراندينج -->
+  <header id="mainHeader" class="bg-red-700 text-white shadow-lg border-b-4 border-amber-500 transition-colors">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <span class="text-4xl">🥩</span>
+        <div>
+          <h1 class="text-2xl font-black tracking-wide">جزارة حمكشة</h1>
+          <p class="text-xs text-amber-200 font-semibold">نظام إدارة الطلبات والمستخدمين والتوصيل العالمي</p>
+        </div>
+      </div>
+      
+      <!-- شريط التنقل والولوج -->
+      <div class="flex items-center gap-2">
+        <div class="flex bg-black/20 p-1 rounded-xl text-xs font-bold">
+          <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn active px-3 py-2 rounded-lg transition-all">لوحة الإدارة 🔐</button>
+          <button onclick="switchTab('driver')" id="tab-driver" class="tab-btn px-3 py-2 rounded-lg transition-all">واجهة المندوب 🛵</button>
+          <button onclick="switchTab('track')" id="tab-track" class="tab-btn px-3 py-2 rounded-lg transition-all">تتبع العميل 📍</button>
+        </div>
+        <button id="authBtn" onclick="toggleAuthModal()" class="bg-amber-400 hover:bg-amber-500 text-red-950 font-bold px-3 py-2 rounded-xl text-xs shadow transition-all">
+          تسجيل الدخول
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto p-4 sm:p-6">
+
+    <!-- 1️⃣ لوحة تحكم الأدمن -->
+    <section id="sec-admin" class="space-y-6">
+      <div id="adminAuthLock" class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md mx-auto space-y-4 border border-red-100">
+        <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-3xl">
+          🔒
+        </div>
+        <h3 class="text-xl font-bold text-gray-800">صلاحية أدمن جزارة حمكشة</h3>
+        <p class="text-xs text-gray-500">يرجى تسجيل الدخول بحساب الأدمن لإدارة الطلبات والمستخدمين والمناديب.</p>
+        <button onclick="toggleAuthModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm">
+          تسجيل الدخول كأدمن
+        </button>
+      </div>
+
+      <div id="adminContent" class="hidden space-y-6">
+        
+        <!-- قسم الثيمات -->
+        <div class="bg-white rounded-2xl shadow-md p-4 border border-amber-100 flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🎨</span>
+            <h3 class="font-bold text-xs text-gray-800">تخصيص الثيم:</h3>
+          </div>
+          <div class="flex items-center gap-3">
+            <button onclick="changeTheme('#dc2626', '#f59e0b', '#fffbeb')" class="w-6 h-6 rounded-full bg-red-600 shadow" title="أحمر حمكشة"></button>
+            <button onclick="changeTheme('#1e3a8a', '#3b82f6', '#eff6ff')" class="w-6 h-6 rounded-full bg-blue-900 shadow" title="أزرق"></button>
+            <button onclick="changeTheme('#064e3b', '#10b981', '#ecfdf5')" class="w-6 h-6 rounded-full bg-emerald-900 shadow" title="أخضر"></button>
+            <button onclick="changeTheme('#18181b', '#f59e0b', '#27272a', true)" class="w-6 h-6 rounded-full bg-zinc-900 shadow" title="Dark Mode"></button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <!-- إضافة طلب وإدارة المستخدمين والمناديب -->
+          <div class="space-y-6 lg:col-span-1">
+            
+            <!-- نموذج إضافة طلب -->
+            <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-3">
+              <div class="flex items-center gap-2 border-b pb-2">
+                <span class="text-lg">📝</span>
+                <h2 class="text-sm font-bold text-gray-800">إضافة طلب جديد</h2>
+              </div>
+
+              <form id="orderForm" class="space-y-3">
+                <div>
+                  <label class="block text-[11px] font-bold text-gray-700 mb-1">رقم الطلب (اختياري)</label>
+                  <input type="text" id="custOrderId" placeholder="مثال: HAMKASHA-1001" class="w-full border p-2 rounded-xl text-xs font-mono">
+                </div>
+
+                <div>
+                  <label class="block text-[11px] font-bold text-gray-700 mb-1">اسم العميل</label>
+                  <input type="text" id="custName" required placeholder="مثال: الحاج أحمد" class="w-full border p-2 rounded-xl text-xs">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-gray-700 mb-1">رقم الهاتف الدولي (واتساب مع كود الدولة)</label>
+                  <input type="text" id="custPhone" required placeholder="مثال: 2010xxxxxxx أو 9665xxxxxxx" class="w-full border p-2 rounded-xl text-xs text-left" dir="ltr">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-gray-700 mb-1">العنوان والطلبات</label>
+                  <textarea id="custAddress" rows="2" required placeholder="كيلو كفتة + كيلو كندوز - شارع البحر" class="w-full border p-2 rounded-xl text-xs"></textarea>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-gray-700 mb-1">اختيار المندوب المكلف</label>
+                  <select id="driverSelect" class="w-full border p-2 rounded-xl text-xs bg-white driver-dropdown">
+                    <option value="غير محدد">جاري انتظار تحديد المندوب...</option>
+                  </select>
+                </div>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">
+                  🚀 تسجيل الطلب وإنشاء الرابط
+                </button>
+              </form>
+
+              <div id="result" class="mt-3 hidden border-t border-dashed pt-3 space-y-2">
+                <input type="text" id="trackingLink" readonly class="w-full border p-2 rounded-xl bg-gray-50 text-[11px] font-mono">
+                <a id="waBtn" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs flex justify-center items-center gap-1">
+                  💬 إرسال عبر WhatsApp
+                </a>
+              </div>
+            </div>
+
+            <!-- قسم إدارة المستخدمين والمناديب -->
+            <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-3">
+              <div class="flex items-center gap-2 border-b pb-2">
+                <span class="text-lg">👥</span>
+                <h2 class="text-sm font-bold text-gray-800">إدارة المستخدمين والمناديب</h2>
+              </div>
+              
+              <div class="space-y-2 bg-gray-50 p-2.5 rounded-xl border">
+                <input type="text" id="newUserName" placeholder="اسم المستخدم (Username)" class="w-full border p-2 rounded-xl text-xs bg-white">
+                <input type="password" id="newUserPass" placeholder="كلمة المرور (Password)" class="w-full border p-2 rounded-xl text-xs bg-white">
+                <select id="newUserRole" class="w-full border p-2 rounded-xl text-xs bg-white">
+                  <option value="admin">مسؤول إدارة (أدمن)</option>
+                  <option value="driver">مندوب توصيل</option>
+                </select>
+                <button onclick="addUser()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded-xl text-xs">
+                  + إضافة مستخدم جديد
+                </button>
+              </div>
+
+              <div id="usersList" class="space-y-1.5 max-h-48 overflow-y-auto">
+                <!-- قائمة المستخدمين القادمة حياً من Firebase -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- جدول إدارة الطلبات وحالتها -->
+          <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 lg:col-span-2 space-y-4">
+            <div class="flex items-center justify-between border-b pb-3">
+              <h2 class="text-base font-bold text-gray-800">📊 سجل الطلبات وحالتها الحية</h2>
+              <span id="ordersCount" class="bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full">0 طلبات</span>
+            </div>
+
+            <!-- الفلترة -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-gray-50 p-2.5 rounded-xl border">
+              <input type="text" id="searchFilter" oninput="applyFilters()" placeholder="🔍 ابحث برقم الطلب أو الاسم..." class="border p-2 rounded-lg text-xs bg-white">
+              <select id="statusFilter" onchange="applyFilters()" class="border p-2 rounded-lg text-xs bg-white">
+                <option value="ALL">كل الحالات</option>
+                <option value="جاري تحضير اللحوم 🥩">جاري التحضير</option>
+                <option value="خرج للتوصيل 🛵">خرج للتوصيل</option>
+                <option value="تم التسليم بنجاح ✅">تم التسليم</option>
+              </select>
+              <input type="date" id="dateFilter" onchange="applyFilters()" class="border p-2 rounded-lg text-xs bg-white">
+            </div>
+
+            <!-- جدول العرض -->
+            <div class="overflow-x-auto max-h-[480px] overflow-y-auto rounded-xl border">
+              <table class="w-full text-right text-xs">
+                <thead class="bg-gray-100 font-bold sticky top-0 border-b">
+                  <tr>
+                    <th class="p-2.5">الطلب والتاريخ</th>
+                    <th class="p-2.5">العميل</th>
+                    <th class="p-2.5">المندوب</th>
+                    <th class="p-2.5">تحديث الحالة</th>
+                    <th class="p-2.5 text-center">إجراءات</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersTableBody" class="divide-y divide-gray-100">
+                  <tr><td colspan="5" class="p-4 text-center text-gray-400">جاري التحميل...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 2️⃣ واجهة المندوب -->
+    <section id="sec-driver" class="hidden space-y-6">
+      <div id="driverAuthLock" class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md mx-auto space-y-4 border">
+        <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-3xl">🛵</div>
+        <h3 class="text-xl font-bold">واجهة المندوب</h3>
+        <p class="text-xs text-gray-500">يرجى تسجيل الدخول بحساب المندوب لبدء التوصيل والمشاركة.</p>
+        <button onclick="toggleAuthModal()" class="w-full bg-amber-600 text-white font-bold py-3 rounded-xl shadow text-sm">تسجيل الدخول كمندوب</button>
+      </div>
+
+      <div id="driverContent" class="hidden max-w-xl mx-auto space-y-4 bg-white p-6 rounded-2xl shadow-xl border text-center">
+        <h2 class="text-lg font-bold">تتبع وبث الموقع الحي للمندوب 🛵</h2>
+        <div class="space-y-2">
+          <label class="block text-right text-xs font-bold text-gray-700">رقم الطلب:</label>
+          <div class="flex gap-2">
+            <input type="text" id="orderId" placeholder="أدخل رقم الطلب (مثال: HAMKASHA-12345)" class="w-full border p-2.5 rounded-xl text-center font-mono font-bold text-xs bg-gray-50">
+            <button onclick="fetchDriverOrder()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 rounded-xl text-xs whitespace-nowrap">بحث 🔍</button>
+          </div>
+        </div>
+
+        <div id="driverOrderCard" class="hidden bg-gray-50 p-4 rounded-xl border text-right space-y-2 text-xs">
+          <p><b>العميل:</b> <span id="dCustName">--</span></p>
+          <p><b>العنوان والطلبات:</b> <span id="dCustAddress">--</span></p>
+          <p><b>الحالة الحالية:</b> <span id="dStatus" class="font-bold text-red-600">--</span></p>
+          
+          <div class="pt-2 border-t space-y-2">
+            <button id="startBtn" onclick="startDelivery()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">📍 بدء التوصيل ومشاركة الموقع Live</button>
+            <button id="stopBtn" onclick="stopDelivery()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs hidden shadow">✅ تم التسليم بنجاح</button>
+          </div>
+        </div>
+        <div id="driverStatus" class="text-xs text-gray-500 font-semibold"></div>
+      </div>
+    </section>
+
+    <!-- 3️⃣ تتبع العميل -->
+    <section id="sec-track" class="hidden space-y-6 max-w-xl mx-auto">
+      <div class="bg-white rounded-2xl shadow-lg p-5 border space-y-3">
+        <label class="block text-xs font-bold text-gray-800">📌 إدخال رقم الطلب للبحث والتتبع:</label>
+        <div class="flex gap-2">
+          <input type="text" id="custSearchOrderId" placeholder="أدخل رقم الطلب (مثال: HAMKASHA-12345)" class="w-full border p-2.5 rounded-xl text-xs font-mono font-bold text-center bg-gray-50">
+          <button onclick="searchCustomerOrder()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 rounded-xl text-xs whitespace-nowrap shadow">تتبع 🔍</button>
+        </div>
+      </div>
+
+      <div id="trackResultCard" class="bg-white rounded-2xl shadow-xl p-6 border space-y-4">
+        <div class="flex justify-between items-center border-b pb-2">
+          <div>
+            <h2 class="text-base font-black text-red-700">تتبع طلب جزارة حمكشة 🥩</h2>
+            <p id="dispOrderId" class="text-xs font-mono text-gray-400">#---</p>
+          </div>
+          <span id="badgeStatus" class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">جاري المتابعة</span>
+        </div>
+        <div class="bg-gray-50 p-3 rounded-xl space-y-1 text-xs border">
+          <p class="flex justify-between"><span>العميل:</span> <b id="cName">-</b></p>
+          <p class="flex justify-between"><span>المندوب:</span> <b id="cDriver">-</b></p>
+          <p class="flex justify-between"><span>التاريخ والوقت:</span> <b id="cDate" class="font-mono">-</b></p>
+          <p class="flex justify-between"><span>الطلبات والعنوان:</span> <b id="cAddress">-</b></p>
+        </div>
+        <div id="map" class="bg-gray-100 border-2 border-dashed rounded-xl p-6 text-center text-xs text-gray-500">
+          أدخل رقم الطلب للبدء في تتبع التوصيل الحقيقي.
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- نافذة التعديل على الطلب (Edit Order Modal) -->
+  <div id="editOrderModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-md space-y-4 text-right shadow-2xl border">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-sm text-gray-800">✏️ تعديل بيانات الطلب <span id="editModalOrderId" class="text-red-600 font-mono"></span></h3>
+        <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 font-bold text-base">✕</button>
+      </div>
+
+      <input type="hidden" id="editKey">
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-gray-700 mb-1">اسم العميل:</label>
+          <input type="text" id="editCustName" class="w-full border p-2 rounded-xl">
+        </div>
+        <div>
+          <label class="block font-bold text-gray-700 mb-1">رقم الهاتف:</label>
+          <input type="text" id="editCustPhone" class="w-full border p-2 rounded-xl text-left" dir="ltr">
+        </div>
+        <div>
+          <label class="block font-bold text-gray-700 mb-1">العنوان والطلبات التفصيلية:</label>
+          <textarea id="editCustAddress" rows="3" class="w-full border p-2 rounded-xl"></textarea>
+        </div>
+        <div>
+          <label class="block font-bold text-gray-700 mb-1">المندوب المكلف:</label>
+          <select id="editDriverSelect" class="w-full border p-2 rounded-xl bg-white driver-dropdown">
+            <option value="غير محدد">حدد المندوب...</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-2 border-t">
+        <button onclick="saveEditOrder()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">حفظ التغييرات 💾</button>
+        <button onclick="closeEditModal()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 rounded-xl text-xs">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة تسجيل الدخول -->
+  <div id="authModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 text-right shadow-2xl">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-sm">تسجيل الدخول للنظام</h3>
+        <button onclick="toggleAuthModal()" class="text-gray-400 hover:text-gray-600 font-bold">✕</button>
+      </div>
+      <div>
+        <label class="block text-[11px] font-bold text-gray-700 mb-1">اسم المستخدم</label>
+        <input type="text" id="loginUser" placeholder="أدخل اسم المستخدم" class="w-full border p-2.5 rounded-xl text-xs">
+      </div>
+      <div>
+        <label class="block text-[11px] font-bold text-gray-700 mb-1">كلمة المرور</label>
+        <input type="password" id="loginPass" placeholder="أدخل كلمة المرور" class="w-full border p-2.5 rounded-xl text-xs">
+      </div>
+      <button onclick="performLogin()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">دخول 🔓</button>
+    </div>
+  </div>
+
+  <!-- Firebase JavaScript SDK v8 (النسخة القديمة المتوافقة المضمونة في مصر) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      databaseURL: "https://hamaksha-tracking-default-rtdb.europe-west1.firebasedatabase.app"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    // إجبار الاتصال المباشر المتوافق عبر Long Polling لتخطي حظر شبكات مصر بدون VPN
+    if (firebase.database.INTERNAL && firebase.database.INTERNAL.forceLongPolling) {
+      firebase.database.INTERNAL.forceLongPolling();
+    }
+
+    const db = firebase.database();
+
+    let allOrdersCache = {};
+    let allUsersCache = {};
+    let currentUser = null;
+
+    // --- التأكد من وجود حساب الأدمن افتراضياً عند أول تشغيل ---
+    db.ref('users').once('value').then((snapshot) => {
+      if (!snapshot.exists()) {
+        const defaultAdminRef = db.ref('users').push();
+        defaultAdminRef.set({
+          username: 'admin',
+          pass: 'admin123',
+          role: 'admin'
+        });
+      }
+    });
+
+    function switchTab(tabName) {
+      document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`sec-${tabName}`).classList.remove('hidden');
+      document.getElementById(`tab-${tabName}`).classList.add('active');
+    }
+
+    function toggleAuthModal() {
+      document.getElementById('authModal').classList.toggle('hidden');
+    }
+
+    // --- تسجيل الدخول الديناميكي من قاعدة البيانات الحقيقية ---
+    function performLogin() {
+      const username = document.getElementById('loginUser').value.trim();
+      const pass = document.getElementById('loginPass').value.trim();
+
+      if(!username || !pass) return alert('يرجى كتابة اسم المستخدم وكلمة المرور');
+
+      let foundUser = null;
+
+      Object.keys(allUsersCache).forEach(id => {
+        const u = allUsersCache[id];
+        if(u.username === username && String(u.pass) === String(pass)) {
+          foundUser = u;
+        }
+      });
+
+      if(foundUser) {
+        currentUser = foundUser;
+        loginSuccess(foundUser.role, foundUser.username);
+      } else {
+        alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
+      }
+    }
+
+    function loginSuccess(role, name) {
+      document.getElementById('authBtn').innerText = `${role === 'admin' ? 'الأدمن' : 'المندوب'}: ${name}`;
+      toggleAuthModal();
+
+      if(role === 'admin') {
+        document.getElementById('adminAuthLock').classList.add('hidden');
+        document.getElementById('adminContent').classList.remove('hidden');
+        switchTab('admin');
+      } else {
+        document.getElementById('driverAuthLock').classList.add('hidden');
+        document.getElementById('driverContent').classList.remove('hidden');
+        switchTab('driver');
+      }
+    }
+
+    function changeTheme(primary, secondary, bg, isDark = false) {
+      document.documentElement.style.setProperty('--primary-color', primary);
+      document.getElementById('mainHeader').style.backgroundColor = primary;
+      document.getElementById('mainHeader').style.borderColor = secondary;
+      document.body.className = isDark ? "bg-zinc-900 text-white min-h-screen" : "bg-amber-50/40 min-h-screen text-gray-800";
+    }
+
+    // --- إدارة المستخدمين ---
+    function addUser() {
+      const username = document.getElementById('newUserName').value.trim();
+      const pass = document.getElementById('newUserPass').value.trim();
+      const role = document.getElementById('newUserRole').value;
+
+      if (!username || !pass) return alert('يرجى ملء جميع البيانات');
+
+      db.ref('users').push({ username, pass, role }).then(() => {
+        document.getElementById('newUserName').value = '';
+        document.getElementById('newUserPass').value = '';
+        alert('تمت إضافة المستخدم بنجاح ✅');
+      });
+    }
+
+    function deleteUser(userId) {
+      if(confirm('هل تريد حذف هذا المستخدم بالفعل؟')) {
+        db.ref('users/' + userId).remove();
+      }
+    }
+
+    db.ref('users').on('value', (snap) => {
+      allUsersCache = snap.val() || {};
+      const dropdowns = document.querySelectorAll('.driver-dropdown');
+      const list = document.getElementById('usersList');
+      
+      dropdowns.forEach(select => {
+        select.innerHTML = '<option value="غير محدد">حدد المندوب...</option>';
+      });
+      list.innerHTML = '';
+
+      Object.keys(allUsersCache).forEach(id => {
+        const u = allUsersCache[id];
+        if(u.role === 'driver') {
+          dropdowns.forEach(select => {
+            select.innerHTML += `<option value="${u.username}">${u.username}</option>`;
+          });
+        }
+        list.innerHTML += `
+          <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border text-xs shadow-sm">
+            <div>
+              <span class="font-bold text-gray-800">${u.username}</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full ml-1 ${u.role === 'admin' ? 'bg-red-100 text-red-700 font-bold' : 'bg-amber-100 text-amber-800 font-bold'}">
+                ${u.role === 'admin' ? 'أدمن' : 'مندوب'}
+              </span>
+            </div>
+            <button onclick="deleteUser('${id}')" class="text-red-600 hover:text-red-800 font-bold text-[11px]">حذف 🗑️</button>
+          </div>
+        `;
+      });
+    });
+
+    // --- الطلبات ---
+    document.getElementById('orderForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const customId = document.getElementById('custOrderId').value.trim();
+      const orderId = customId ? customId : ('HAMKASHA-' + Math.floor(10000 + Math.random() * 90000));
+      
+      const name = document.getElementById('custName').value;
+      const phone = document.getElementById('custPhone').value;
+      const address = document.getElementById('custAddress').value;
+      const driver = document.getElementById('driverSelect').value;
+      const now = new Date();
+
+      db.ref('orders/' + orderId).set({
+        orderId: orderId,
+        customerName: name,
+        phone: phone,
+        address: address,
+        driver: driver,
+        status: 'جاري تحضير اللحوم 🥩',
+        date: now.toISOString().split('T')[0],
+        time: now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
+        lat: null, lng: null
+      }).then(() => {
+        const baseUrl = window.location.href.split('?')[0];
+        const trackUrl = `${baseUrl}?tab=track&id=${orderId}`;
+        document.getElementById('trackingLink').value = trackUrl;
+        document.getElementById('waBtn').href = `https://wa.me/${phone}?text=${encodeURIComponent('أهلاً بك 🥩\nطلبك لدى جزارة حمكشة رقم: #' + orderId + '\nرابط التتبع الحي للمندوب والطلب:\n' + trackUrl)}`;
+        document.getElementById('result').classList.remove('hidden');
+        document.getElementById('custOrderId').value = '';
+        document.getElementById('custName').value = '';
+        document.getElementById('custPhone').value = '';
+        document.getElementById('custAddress').value = '';
+      });
+    });
+
+    function updateOrderStatus(orderKey, newStatus) {
+      db.ref('orders/' + orderKey).update({ status: newStatus });
+    }
+
+    db.ref('orders').on('value', (snapshot) => {
+      allOrdersCache = snapshot.val() || {};
+      applyFilters();
+    });
+
+    function applyFilters() {
+      const search = document.getElementById('searchFilter').value.toLowerCase();
+      const status = document.getElementById('statusFilter').value;
+      const date = document.getElementById('dateFilter').value;
+      const tbody = document.getElementById('ordersTableBody');
+      tbody.innerHTML = '';
+
+      let count = 0;
+      Object.keys(allOrdersCache).forEach(key => {
+        const item = allOrdersCache[key];
+        const displayId = item.orderId || key;
+        const displayName = item.customerName || item.name || 'غير محدد';
+        const displayPhone = item.phone || '';
+
+        const matchSearch = !search || displayName.toLowerCase().includes(search) || displayId.toLowerCase().includes(search);
+        const matchStatus = status === 'ALL' || item.status === status;
+        const matchDate = !date || item.date === date;
+
+        if (matchSearch && matchStatus && matchDate) {
+          count++;
+          const tr = document.createElement('tr');
+          tr.className = "hover:bg-gray-50 border-b";
+          tr.innerHTML = `
+            <td class="p-2.5">
+              <div class="font-bold font-mono text-red-600">#${displayId}</div>
+              <div class="text-[10px] text-gray-400">${item.date || ''} ${item.time || ''}</div>
+            </td>
+            <td class="p-2.5">
+              <div class="font-bold">${displayName}</div>
+              <div class="text-[10px] text-gray-500 font-mono" dir="ltr">${displayPhone}</div>
+            </td>
+            <td class="p-2.5 font-semibold text-gray-700">${item.driver || 'غير محدد'}</td>
+            <td class="p-2.5">
+              <select onchange="updateOrderStatus('${key}', this.value)" class="border p-1 rounded text-[11px] font-bold bg-amber-50">
+                <option value="جاري تحضير اللحوم 🥩" ${item.status === 'جاري تحضير اللحوم 🥩' ? 'selected' : ''}>جاري التحضير 🥩</option>
+                <option value="خرج للتوصيل 🛵" ${item.status === 'خرج للتوصيل 🛵' ? 'selected' : ''}>خرج للتوصيل 🛵</option>
+                <option value="تم التسليم بنجاح ✅" ${item.status === 'تم التسليم بنجاح ✅' ? 'selected' : ''}>تم التسليم ✅</option>
+              </select>
+            </td>
+            <td class="p-2.5 text-center flex items-center justify-center gap-1">
+              <button onclick="shareWhatsApp('${key}')" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-2 py-1 rounded text-[10px] font-bold shadow-sm flex items-center gap-0.5">
+                💬 واتساب
+              </button>
+              <button onclick="openEditModal('${key}')" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-2 py-1 rounded text-[10px] font-bold shadow-sm">تعديل ✏️</button>
+              <button onclick="deleteOrder('${key}')" class="bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded text-[10px] font-bold shadow-sm">حذف</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        }
+      });
+      document.getElementById('ordersCount').innerText = `${count} طلبات`;
+    }
+
+    // --- مشاركة رابط الطلب عبر الواتساب ---
+    function shareWhatsApp(key) {
+      const item = allOrdersCache[key];
+      if (!item) return;
+
+      const displayId = item.orderId || key;
+      const phone = item.phone || '';
+      const baseUrl = window.location.href.split('?')[0];
+      const trackUrl = `${baseUrl}?tab=track&id=${displayId}`;
+
+      const text = `أهلاً بك 🥩
+طلبك لدى جزارة حمكشة رقم: #${displayId}
+يمكنك تتبع حالة طلبك ومكان المندوب مباشرة عبر الرابط التالي:
+${trackUrl}`;
+
+      const waUrl = phone 
+        ? `https://wa.me/${phone}?text=${encodeURIComponent(text)}`
+        : `https://wa.me/?text=${encodeURIComponent(text)}`;
+
+      window.open(waUrl, '_blank');
+    }
+
+    // --- نافذة وظيفة التعديل على الطلب ---
+    function openEditModal(key) {
+      const order = allOrdersCache[key];
+      if(!order) return;
+
+      document.getElementById('editKey').value = key;
+      document.getElementById('editModalOrderId').innerText = `#${order.orderId || key}`;
+      document.getElementById('editCustName').value = order.customerName || order.name || '';
+      document.getElementById('editCustPhone').value = order.phone || '';
+      document.getElementById('editCustAddress').value = order.address || '';
+      document.getElementById('editDriverSelect').value = order.driver || 'غير محدد';
+
+      document.getElementById('editOrderModal').classList.remove('hidden');
+    }
+
+    function closeEditModal() {
+      document.getElementById('editOrderModal').classList.add('hidden');
+    }
+
+    function saveEditOrder() {
+      const key = document.getElementById('editKey').value;
+      if(!key) return;
+
+      const name = document.getElementById('editCustName').value.trim();
+      const phone = document.getElementById('editCustPhone').value.trim();
+      const address = document.getElementById('editCustAddress').value.trim();
+      const driver = document.getElementById('editDriverSelect').value;
+
+      db.ref('orders/' + key).update({
+        customerName: name,
+        phone: phone,
+        address: address,
+        driver: driver
+      }).then(() => {
+        alert('تم حفظ البيانات بنجاح ✅');
+        closeEditModal();
+      });
+    }
+
+    function deleteOrder(id) {
+      if(confirm(`هل تريد حذف هذا الطلب بشكل نهائي؟`)) db.ref('orders/' + id).remove();
+    }
+
+    // --- بحث وتتبع المندوب برقم الطلب ---
+    function fetchDriverOrder() {
+      const id = document.getElementById('orderId').value.trim();
+      if(!id) return alert('يرجى كتابة رقم الطلب');
+      
+      db.ref('orders/' + id).on('value', (snap) => {
+        const data = snap.val();
+        if(data) {
+          document.getElementById('dCustName').innerText = data.customerName || data.name || '--';
+          document.getElementById('dCustAddress').innerText = data.address || '--';
+          document.getElementById('dStatus').innerText = data.status || '--';
+          document.getElementById('driverOrderCard').classList.remove('hidden');
+        } else {
+          alert('عذراً، هذا الطلب غير موجود!');
+          document.getElementById('driverOrderCard').classList.add('hidden');
+        }
+      });
+    }
+
+    let watchId = null;
+    function startDelivery() {
+      const id = document.getElementById('orderId').value.trim();
+      if(!id) return alert('أدخل رقم الطلب أولاً');
+      if (navigator.geolocation) {
+        watchId = navigator.geolocation.watchPosition((pos) => {
+          db.ref('orders/' + id).update({
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+            status: 'خرج للتوصيل 🛵'
+          });
+          document.getElementById('driverStatus').innerText = "📍 يتم الآن بث موقعك الحي بنجاح...";
+          document.getElementById('startBtn').classList.add('hidden');
+          document.getElementById('stopBtn').classList.remove('hidden');
+        }, (err) => {
+          alert('تعذر الوصول إلى نظام تحديد المواقع (GPS)');
+        }, { enableHighAccuracy: true });
+      } else {
+        alert('المتصفح لا يدعم تحديد الموقع الجغرافي');
+      }
+    }
+
+    function stopDelivery() {
+      const id = document.getElementById('orderId').value.trim();
+      if(watchId) navigator.geolocation.clearWatch(watchId);
+      db.ref('orders/' + id).update({ status: 'تم التسليم بنجاح ✅' }).then(() => {
+        document.getElementById('driverStatus').innerText = "✅ تم إنهاء التوصيل وتسليم الطلب.";
+        document.getElementById('startBtn').classList.remove('hidden');
+        document.getElementById('stopBtn').classList.add('hidden');
+      });
+    }
+
+    // --- تتبع العميل ---
+    function searchCustomerOrder() {
+      const id = document.getElementById('custSearchOrderId').value.trim();
+      if(!id) return alert('يرجى إدخال رقم الطلب');
+
+      db.ref('orders/' + id).on('value', (snap) => {
+        const data = snap.val();
+        if(data) {
+          document.getElementById('dispOrderId').innerText = '#' + (data.orderId || id);
+          document.getElementById('cName').innerText = data.customerName || data.name || '-';
+          document.getElementById('cDriver').innerText = data.driver || '-';
+          document.getElementById('cDate').innerText = (data.date || '') + ' ' + (data.time || '');
+          document.getElementById('cAddress').innerText = data.address || '-';
+          document.getElementById('badgeStatus').innerText = data.status || 'جاري المتابعة';
+
+          if(data.lat && data.lng) {
+            document.getElementById('map').innerHTML = `
+              <div class="space-y-2">
+                <p class="font-bold text-emerald-600">🛵 المندوب في الطريق إليك الآن!</p>
+                <a href="https://www.google.com/maps?q=${data.lat},${data.lng}" target="_blank" class="inline-block bg-red-600 text-white font-bold px-4 py-2 rounded-xl text-xs shadow">
+                  📍 فتح موقع المندوب الحي على Google Maps
+                </a>
+              </div>
+            `;
+          } else {
+            document.getElementById('map').innerHTML = `⏳ الطلب قيد التحضير في الجزارة أو المندوب لم يبدأ التوصيل بعد.`;
+          }
+        } else {
+          alert('لم يتم العثور على طلب بهذا الرقم!');
+        }
+      });
+    }
+
+    // القراءة التلقائية للروابط المباشرة عبر URL Query parameters
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tab = urlParams.get('tab');
+      const orderId = urlParams.get('id');
+
+      if(tab === 'track' && orderId) {
+        switchTab('track');
+        document.getElementById('custSearchOrderId').value = orderId;
+        searchCustomerOrder();
+      }
+    });
+  </script>
+</body>
+</html>
