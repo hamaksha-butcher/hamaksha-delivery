@@ -43,8 +43,8 @@
       <div class="flex items-center gap-2">
         <div class="flex bg-black/20 p-1 rounded-xl text-xs font-bold flex-wrap">
           <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn active px-3 py-2 rounded-lg transition-all">لوحة الإدارة 🔐</button>
-          <button onclick="switchTab('analytics')" id="tab-analytics" class="tab-btn px-3 py-2 rounded-lg transition-all">تقييم وحسابات المناديب 📊</button>
-          <button onclick="switchTab('prices')" id="tab-prices" class="tab-btn px-3 py-2 rounded-lg transition-all">قائمة الأسعار 🏷️</button>
+          <button onclick="switchTab('analytics')" id="tab-analytics" class="tab-btn px-3 py-2 rounded-lg transition-all super-admin-only hidden">تقييم وحسابات المناديب 📊</button>
+          <button onclick="switchTab('prices')" id="tab-prices" class="tab-btn px-3 py-2 rounded-lg transition-all super-admin-only hidden">قائمة الأسعار 🏷️</button>
           <button onclick="switchTab('driver')" id="tab-driver" class="tab-btn px-3 py-2 rounded-lg transition-all">واجهة المندوب 🛵</button>
           <button onclick="switchTab('track')" id="tab-track" class="tab-btn px-3 py-2 rounded-lg transition-all">تتبع العميل 📍</button>
         </div>
@@ -96,7 +96,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="space-y-6 lg:col-span-1">
             
-            <!-- نموذج إضافة طلب -->
+            <!-- نموذج إضافة طلب (متاح للجميع) -->
             <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-3">
               <div class="flex items-center justify-between border-b pb-2">
                 <div class="flex items-center gap-2">
@@ -154,11 +154,11 @@
               </div>
             </div>
 
-            <!-- إدارة المستخدمين والتحكم في الصلاحيات (يتحكم بها الحساب الرئيسي asma) -->
-            <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-3">
+            <!-- إدارة المستخدمين (خاصة وحصرية للمالك الرئيسي asma فقط) -->
+            <div id="usersManagementCard" class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-3 super-admin-only hidden">
               <div class="flex items-center gap-2 border-b pb-2">
-                <span class="text-lg">👥</span>
-                <h2 class="text-sm font-bold text-gray-800">إدارة حسابات النظام والصلاحيات</h2>
+                <span class="text-lg">👑</span>
+                <h2 class="text-sm font-bold text-gray-800">إدارة حسابات النظام والصلاحيات (asma)</h2>
               </div>
               <div class="space-y-2 bg-gray-50 p-2.5 rounded-xl border">
                 <input type="text" id="newUserName" placeholder="اسم المستخدم" class="w-full border p-2 rounded-xl text-xs bg-white">
@@ -179,8 +179,8 @@
           <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 lg:col-span-2 space-y-4 print-area">
             <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-3">
               <div>
-                <h2 class="text-base font-bold text-gray-800">📊 سجل الطلبات والتقارير الحية</h2>
-                <p class="text-[11px] text-gray-400 font-semibold">تقارير مخصصة للطباعة والتصدير والحسابات</p>
+                <h2 class="text-base font-bold text-gray-800">📊 سجل الطلبات الحية</h2>
+                <p class="text-[11px] text-gray-400 font-semibold">استعراض وتتبع الطلبات المسجلة</p>
               </div>
               <span id="ordersCount" class="bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full">0 طلبات</span>
             </div>
@@ -199,7 +199,7 @@
               <input type="date" id="dateFilter" onchange="applyFilters()" class="border p-2 rounded-lg text-xs bg-white">
             </div>
 
-            <div id="exportActionBtns" class="flex flex-wrap items-center justify-end gap-2 pt-1 no-print">
+            <div id="exportActionBtns" class="flex flex-wrap items-center justify-end gap-2 pt-1 no-print hidden">
               <button onclick="exportToPDF()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">📄 تصدير PDF</button>
               <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">📊 تصدير Excel</button>
               <button onclick="printReport()" class="bg-slate-700 hover:bg-slate-800 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">🖨️ طباعة ورقية</button>
@@ -227,12 +227,12 @@
       </div>
     </section>
 
-    <!-- 📊 2️⃣ داشبورد التقييم والتحصيل المالي -->
+    <!-- 📊 2️⃣ داشبورد التقييم والتحصيل المالي (خاصة بـ asma فقط) -->
     <section id="sec-analytics" class="hidden space-y-6">
       <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 space-y-6">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b pb-4">
           <div>
-            <h2 class="text-lg font-black text-red-700">📈 داشبورد أداء وتحصيل المناديب المالي</h2>
+            <h2 class="text-lg font-black text-red-700">📈 داشبورد أداء وتحصيل المناديب المالي (المالك)</h2>
             <p class="text-xs text-gray-500 font-semibold">متابعة الأداء، النسب المئوية، تقييمات العملاء، والعهدة المالية المحصلة كاش</p>
           </div>
           <div class="flex bg-gray-100 p-1 rounded-xl text-xs font-bold border">
@@ -282,7 +282,7 @@
       </div>
     </section>
 
-    <!-- 🏷️ 3️⃣ قسم لوحة أسعار اللحوم الحية -->
+    <!-- 🏷️ 3️⃣ قسم لوحة أسعار اللحوم الحية (خاصة بـ asma فقط) -->
     <section id="sec-prices" class="hidden space-y-6">
       <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 space-y-4">
         <div class="flex justify-between items-center border-b pb-3">
@@ -570,7 +570,7 @@
       currentUser = user;
       localStorage.setItem('hamaksha_user', JSON.stringify(user));
 
-      const roleTitle = isSuperUser() ? 'المالك الرئيسي (asma)' : (user.role === 'admin' ? 'مسؤول أدمن' : 'مندوب توصيل');
+      const roleTitle = isSuperUser() ? 'المالك الرئيسي (asma)' : (user.role === 'admin' ? 'أدمن فرعي' : 'مندوب توصيل');
       document.getElementById('authBtn').innerText = `${user.username} (خروج)`;
       document.getElementById('activeUserBadge').innerText = `${user.username} (${roleTitle})`;
       document.getElementById('activeUserBadge').className = `text-[11px] font-bold px-3 py-1 rounded-full ${isSuperUser() ? 'bg-amber-500 text-black' : (user.role === 'admin' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800')}`;
@@ -579,12 +579,23 @@
         toggleAuthModal();
       }
 
+      // إظهار/إخفاء الميزات الخاصة بالمالك asma حصرياً
+      const superAdminElements = document.querySelectorAll('.super-admin-only');
+      superAdminElements.forEach(el => {
+        if(isSuperUser()) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+      });
+
       if(user.role === 'admin') {
         document.getElementById('adminAuthLock').classList.add('hidden');
         document.getElementById('adminContent').classList.remove('hidden');
-        document.getElementById('addPriceBtn').classList.remove('hidden');
 
-        // التتحكم برؤية أزرار الطباعة والتقارير
+        if(isSuperUser()) {
+          document.getElementById('addPriceBtn').classList.remove('hidden');
+        } else {
+          document.getElementById('addPriceBtn').classList.add('hidden');
+        }
+
         const exportBtns = document.getElementById('exportActionBtns');
         if(exportBtns) {
           if(canUser('print')) exportBtns.classList.remove('hidden');
@@ -653,6 +664,7 @@
 
     // --- إدارة المستخدمين وتعديل صلاحيات الأدمنز من قبل asma ---
     function addUser() {
+      if(!isSuperUser()) return alert('عذراً، إضافة المستخدمين حصرية للحساب الرئيسي (asma)');
       const username = document.getElementById('newUserName').value.trim();
       const pass = document.getElementById('newUserPass').value.trim();
       const role = document.getElementById('newUserRole').value;
@@ -720,7 +732,7 @@
 
             ${u.role === 'admin' && !isAsma && isSuperUser() ? `
               <div class="bg-amber-50 p-2 rounded-lg border border-amber-200 text-[10px] space-y-1">
-                <p class="font-bold text-amber-900">🔒 تحديد صلاحيات الأدمن (asma فقط):</p>
+                <p class="font-bold text-amber-900">🔒 منح صلاحيات استثنائية للأدمن الفرعي:</p>
                 <div class="flex items-center gap-3 font-semibold">
                   <label class="flex items-center gap-1 cursor-pointer">
                     <input type="checkbox" ${perms.edit ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'edit', this.checked)"> تعديل ✏️
@@ -870,6 +882,7 @@
     }
 
     function renderAnalytics() {
+      if(!isSuperUser()) return;
       const now = new Date();
       const todayStr = now.toISOString().split('T')[0];
 
@@ -1025,7 +1038,7 @@
     }
 
     function openAddPriceModal() {
-      if(!canUser('edit')) return alert('عذراً، إضافة الأسعار تتطلب صلاحية الأدمن المصرح له.');
+      if(!isSuperUser()) return alert('عذراً، إضافة تعديل الأسعار متاح حشرياً للمالك الرئيسي (asma).');
       const name = prompt('أدخل اسم الصنف الجديد:');
       const price = prompt('أدخل السعر (ج.م):');
       if(name && price) {
@@ -1082,7 +1095,7 @@
       });
     }
 
-    // --- الطباعة والتصدير المعزز بالصلاحيات ---
+    // --- الطباعة والتصدير ---
     function printReport() { 
       if(!canUser('print')) return alert('عذراً، ليس لديك صلاحية الطباعة.');
       exportToPDF(); 
@@ -1304,7 +1317,7 @@ ${trackUrl}`;
         totalCash: orderPrice + deliveryPrice,
         driver: driver
       }).then(() => {
-        alert('تم حفظ البيانات والتعديلات المالية بنجاح ✅');
+        alert('تم حفظ البيانات والتعديلات بنجاح ✅');
         closeEditModal();
       });
     }
