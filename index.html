@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام جزارة حمكشة - إدارة وتتبع الطلبات 🥩</title>
+  <title>نظام جزارة حمكشة - إدارة الطلبات وتقييم المناديب 🥩</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -14,7 +14,6 @@
       --secondary-color: #f59e0b;
       --bg-color: #fffbeb;
     }
-    /* تنسيقات خاصة بالطباعة الورقية */
     @media print {
       header, #userBadgeBar, .no-print, #adminAuthLock, .theme-selector, #orderForm, #usersList, form, button, select, input {
         display: none !important;
@@ -36,7 +35,7 @@
         <span class="text-4xl">🥩</span>
         <div>
           <h1 class="text-2xl font-black tracking-wide">جزارة حمكشة</h1>
-          <p class="text-xs text-amber-200 font-semibold">نظام إدارة الطلبات والتوصيل الآمن</p>
+          <p class="text-xs text-amber-200 font-semibold">نظام إدارة الطلبات وتقييم المناديب</p>
         </div>
       </div>
       
@@ -44,6 +43,7 @@
       <div class="flex items-center gap-2">
         <div class="flex bg-black/20 p-1 rounded-xl text-xs font-bold">
           <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn active px-3 py-2 rounded-lg transition-all">لوحة الإدارة 🔐</button>
+          <button onclick="switchTab('analytics')" id="tab-analytics" class="tab-btn px-3 py-2 rounded-lg transition-all">تقييم المناديب 📊</button>
           <button onclick="switchTab('driver')" id="tab-driver" class="tab-btn px-3 py-2 rounded-lg transition-all">واجهة المندوب 🛵</button>
           <button onclick="switchTab('track')" id="tab-track" class="tab-btn px-3 py-2 rounded-lg transition-all">تتبع العميل 📍</button>
         </div>
@@ -70,9 +70,7 @@
     <!-- 1️⃣ لوحة تحكم الأدمن -->
     <section id="sec-admin" class="space-y-6">
       <div id="adminAuthLock" class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md mx-auto space-y-4 border border-red-100">
-        <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-3xl">
-          🔒
-        </div>
+        <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-3xl">🔒</div>
         <h3 class="text-xl font-bold text-gray-800">صلاحية أدمن جزارة حمكشة</h3>
         <p class="text-xs text-gray-500">سجل الدخول بحساب الأدمن الخاص بك للوصول إلى لوحة التحكم والبيانات.</p>
         <button onclick="toggleAuthModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm">
@@ -81,7 +79,6 @@
       </div>
 
       <div id="adminContent" class="hidden space-y-6">
-        
         <!-- قسم الثيمات -->
         <div class="bg-white rounded-2xl shadow-md p-4 border border-amber-100 flex flex-wrap items-center justify-between gap-4 theme-selector">
           <div class="flex items-center gap-2">
@@ -97,34 +94,29 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          <!-- إضافة طلب وإدارة المستخدمين والمناديب -->
           <div class="space-y-6 lg:col-span-1">
-            
             <!-- نموذج إضافة طلب -->
             <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-3">
               <div class="flex items-center gap-2 border-b pb-2">
                 <span class="text-lg">📝</span>
                 <h2 class="text-sm font-bold text-gray-800">إضافة طلب جديد</h2>
               </div>
-
               <form id="orderForm" class="space-y-3">
                 <div>
                   <label class="block text-[11px] font-bold text-gray-700 mb-1">رقم الطلب (اختياري)</label>
                   <input type="text" id="custOrderId" placeholder="مثال: HAMKASHA-1001" class="w-full border p-2 rounded-xl text-xs font-mono">
                 </div>
-
                 <div>
                   <label class="block text-[11px] font-bold text-gray-700 mb-1">اسم العميل</label>
                   <input type="text" id="custName" required placeholder="مثال: الحاج أحمد" class="w-full border p-2 rounded-xl text-xs">
                 </div>
                 <div>
-                  <label class="block text-[11px] font-bold text-gray-700 mb-1">رقم الهاتف الدولي (واتساب مع كود الدولة)</label>
-                  <input type="text" id="custPhone" required placeholder="مثال: 2010xxxxxxx أو 9665xxxxxxx" class="w-full border p-2 rounded-xl text-xs text-left" dir="ltr">
+                  <label class="block text-[11px] font-bold text-gray-700 mb-1">رقم الهاتف الدولي (واتساب)</label>
+                  <input type="text" id="custPhone" required placeholder="مثال: 01273091807" class="w-full border p-2 rounded-xl text-xs text-left" dir="ltr">
                 </div>
                 <div>
                   <label class="block text-[11px] font-bold text-gray-700 mb-1">العنوان والطلبات</label>
-                  <textarea id="custAddress" rows="2" required placeholder="كيلو كفتة + كيلو کندوز - شارع البحر" class="w-full border p-2 rounded-xl text-xs"></textarea>
+                  <textarea id="custAddress" rows="2" required placeholder="كيلو كفتة - الزقازيق حي تاني" class="w-full border p-2 rounded-xl text-xs"></textarea>
                 </div>
                 <div>
                   <label class="block text-[11px] font-bold text-gray-700 mb-1">اختيار المندوب المكلف</label>
@@ -136,7 +128,6 @@
                   🚀 تسجيل الطلب وإنشاء الرابط
                 </button>
               </form>
-
               <div id="result" class="mt-3 hidden border-t border-dashed pt-3 space-y-2">
                 <input type="text" id="trackingLink" readonly class="w-full border p-2 rounded-xl bg-gray-50 text-[11px] font-mono">
                 <a id="waBtn" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs flex justify-center items-center gap-1">
@@ -145,16 +136,15 @@
               </div>
             </div>
 
-            <!-- قسم إدارة المستخدمين والمناديب -->
+            <!-- قسم إدارة المستخدمين -->
             <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-3">
               <div class="flex items-center gap-2 border-b pb-2">
                 <span class="text-lg">👥</span>
-                <h2 class="text-sm font-bold text-gray-800">إضافة مستخدم أو مندوب جديد</h2>
+                <h2 class="text-sm font-bold text-gray-800">إضافة مستخدم أو مندوب</h2>
               </div>
-              
               <div class="space-y-2 bg-gray-50 p-2.5 rounded-xl border">
-                <input type="text" id="newUserName" placeholder="اسم المستخدم (Username)" class="w-full border p-2 rounded-xl text-xs bg-white">
-                <input type="password" id="newUserPass" placeholder="كلمة المرور (Password)" class="w-full border p-2 rounded-xl text-xs bg-white">
+                <input type="text" id="newUserName" placeholder="اسم المستخدم" class="w-full border p-2 rounded-xl text-xs bg-white">
+                <input type="password" id="newUserPass" placeholder="كلمة المرور" class="w-full border p-2 rounded-xl text-xs bg-white">
                 <select id="newUserRole" class="w-full border p-2 rounded-xl text-xs bg-white">
                   <option value="admin">مسؤول إدارة (أدمن)</option>
                   <option value="driver">مندوب توصيل</option>
@@ -163,15 +153,11 @@
                   + إضافة لشبكة المستخدمين
                 </button>
               </div>
-
-              <div id="usersList" class="space-y-2 max-h-48 overflow-y-auto pt-1">
-                <!-- قائمة إدارة المستخدمين -->
-              </div>
+              <div id="usersList" class="space-y-2 max-h-48 overflow-y-auto pt-1"></div>
             </div>
-
           </div>
 
-          <!-- جدول إدارة الطلبات وحالتها ومجموعات الطباعة والتصدير -->
+          <!-- جدول إدارة الطلبات -->
           <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 lg:col-span-2 space-y-4 print-area">
             <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-3">
               <div>
@@ -181,38 +167,26 @@
               <span id="ordersCount" class="bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full">0 طلبات</span>
             </div>
 
-            <!-- الفلترة المتقدمة حسب المندوب / الحالة / التاريخ / البحث -->
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 bg-gray-50 p-2.5 rounded-xl border no-print">
               <input type="text" id="searchFilter" oninput="applyFilters()" placeholder="🔍 بحث بالرقم أو العميل..." class="border p-2 rounded-lg text-xs bg-white">
-              
               <select id="driverFilter" onchange="applyFilters()" class="border p-2 rounded-lg text-xs bg-white filter-driver-dropdown">
                 <option value="ALL">جميع المناديب</option>
               </select>
-
               <select id="statusFilter" onchange="applyFilters()" class="border p-2 rounded-lg text-xs bg-white">
                 <option value="ALL">كل الحالات</option>
                 <option value="جاري تحضير اللحوم 🥩">جاري التحضير</option>
                 <option value="خرج للتوصيل 🛵">خرج للتوصيل</option>
                 <option value="تم التسليم بنجاح ✅">تم التسليم</option>
               </select>
-
               <input type="date" id="dateFilter" onchange="applyFilters()" class="border p-2 rounded-lg text-xs bg-white">
             </div>
 
-            <!-- 🖨️ شريط أزرار الطباعة والتصدير (PDF / Excel / Paper) -->
             <div class="flex flex-wrap items-center justify-end gap-2 pt-1 no-print">
-              <button onclick="exportToPDF()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">
-                📄 تصدير PDF
-              </button>
-              <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">
-                📊 تصدير Excel
-              </button>
-              <button onclick="printReport()" class="bg-slate-700 hover:bg-slate-800 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">
-                🖨️ طباعة ورقية
-              </button>
+              <button onclick="exportToPDF()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">📄 تصدير PDF</button>
+              <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">📊 تصدير Excel</button>
+              <button onclick="printReport()" class="bg-slate-700 hover:bg-slate-800 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">🖨️ طباعة ورقية</button>
             </div>
 
-            <!-- جدول العرض للطباعة والتقارير -->
             <div class="overflow-x-auto max-h-[480px] overflow-y-auto rounded-xl border">
               <table id="reportsTable" class="w-full text-right text-xs">
                 <thead class="bg-gray-100 font-bold sticky top-0 border-b">
@@ -230,12 +204,64 @@
               </table>
             </div>
           </div>
-
         </div>
       </div>
     </section>
 
-    <!-- 2️⃣ واجهة المندوب -->
+    <!-- 📊 2️⃣ داشبورد تقييم المناديب والنسب المئوية (جديد) -->
+    <section id="sec-analytics" class="hidden space-y-6">
+      <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 space-y-6">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b pb-4">
+          <div>
+            <h2 class="text-lg font-black text-red-700">📈 داشبورد تقييم أداء المناديب</h2>
+            <p class="text-xs text-gray-500 font-semibold">متابعة دقيقة للنسب المئوية ومعدلات التوصيل والبث الحي</p>
+          </div>
+          <!-- شريط اختيار النطاق الزمني -->
+          <div class="flex bg-gray-100 p-1 rounded-xl text-xs font-bold border">
+            <button onclick="setAnalyticsPeriod('daily')" id="time-daily" class="px-3 py-1.5 rounded-lg bg-red-600 text-white transition-all">يومي 📅</button>
+            <button onclick="setAnalyticsPeriod('weekly')" id="time-weekly" class="px-3 py-1.5 rounded-lg text-gray-600 transition-all">أسبوعي 🗓️</button>
+            <button onclick="setAnalyticsPeriod('monthly')" id="time-monthly" class="px-3 py-1.5 rounded-lg text-gray-600 transition-all">شهري 📆</button>
+          </div>
+        </div>
+
+        <!-- إحصائيات عامة -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+          <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+            <p class="text-xs text-red-600 font-bold mb-1">إجمالي طلبات الفترة</p>
+            <h3 id="statTotalOrders" class="text-2xl font-black text-red-700">0</h3>
+          </div>
+          <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+            <p class="text-xs text-emerald-600 font-bold mb-1">نسبة التسليم الناجح العام</p>
+            <h3 id="statDeliveredRate" class="text-2xl font-black text-emerald-700">0%</h3>
+          </div>
+          <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+            <p class="text-xs text-blue-600 font-bold mb-1">التزام بث اللوكيشن الحي</p>
+            <h3 id="statLiveTrackRate" class="text-2xl font-black text-blue-700">0%</h3>
+          </div>
+        </div>
+
+        <!-- جدول التقييم التفصيلي للمناديب -->
+        <div class="overflow-x-auto rounded-xl border">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-gray-100 font-bold border-b">
+              <tr>
+                <th class="p-3">اسم المندوب</th>
+                <th class="p-3">إجمالي الطلبات</th>
+                <th class="p-3">تم التسليم ✅</th>
+                <th class="p-3">بث اللوكيشن 📍</th>
+                <th class="p-3">معدل الإنجاز %</th>
+                <th class="p-3 text-center">التقييم النهائي</th>
+              </tr>
+            </thead>
+            <tbody id="driverAnalyticsBody" class="divide-y divide-gray-100">
+              <tr><td colspan="6" class="p-4 text-center text-gray-400">جاري حساب التقارير...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3️⃣ واجهة المندوب -->
     <section id="sec-driver" class="hidden space-y-6">
       <div id="driverAuthLock" class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md mx-auto space-y-4 border">
         <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-3xl">🛵</div>
@@ -259,7 +285,6 @@
           <p><b>العنوان والطلبات:</b> <span id="dCustAddress">--</span></p>
           <p><b>الحالة الحالية:</b> <span id="dStatus" class="font-bold text-red-600">--</span></p>
 
-          <!-- التحكم اليدوي بالحالة -->
           <div class="bg-white p-3 rounded-xl border space-y-1.5">
             <label class="block font-bold text-gray-800">تغيير حالة الطلب يدوياً:</label>
             <select id="driverStatusSelect" onchange="driverChangeStatus(this.value)" class="w-full border p-2 rounded-xl text-xs font-bold bg-amber-50">
@@ -269,7 +294,6 @@
             </select>
           </div>
           
-          <!-- التحكم ببث اللوكيشن -->
           <div class="pt-2 border-t space-y-2">
             <button id="startBtn" onclick="startDelivery()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow flex justify-center items-center gap-1">
               📍 بدء/إيقاف بث اللوكيشن الحي Live (اختياري)
@@ -283,7 +307,7 @@
       </div>
     </section>
 
-    <!-- 3️⃣ تتبع العميل (الواجهة المخصصة للعملاء) -->
+    <!-- 4️⃣ تتبع العميل -->
     <section id="sec-track" class="hidden space-y-6 max-w-xl mx-auto">
       <div class="bg-white rounded-2xl shadow-lg p-5 border space-y-3">
         <label class="block text-xs font-bold text-gray-800">📌 أدخل رقم الطلب لتتبع حالة التوصيل:</label>
@@ -302,7 +326,6 @@
           <span id="badgeStatus" class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">جاري المتابعة</span>
         </div>
         
-        <!-- حماية البيانات: إخفاء اسم العميل وهاتفه وعنوانه عن العارض العام -->
         <div class="bg-gray-50 p-3 rounded-xl space-y-1 text-xs border">
           <p class="flex justify-between"><span>المندوب المكلف:</span> <b id="cDriver" class="text-amber-800">-</b></p>
           <p class="flex justify-between"><span>تاريخ الطلب:</span> <b id="cDate" class="font-mono text-gray-600">-</b></p>
@@ -316,7 +339,7 @@
 
   </main>
 
-  <!-- نافذة التعديل على الطلب -->
+  <!-- نافذة التعديل -->
   <div id="editOrderModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
     <div class="bg-white rounded-2xl p-6 w-full max-w-md space-y-4 text-right shadow-2xl border">
       <div class="flex justify-between items-center border-b pb-2">
@@ -354,7 +377,7 @@
     </div>
   </div>
 
-  <!-- نافذة تسجيل الدخول الآمن برقم السر واسم المستخدم -->
+  <!-- نافذة تسجيل الدخول -->
   <div id="authModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
     <div class="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 text-right shadow-2xl">
       <div class="flex justify-between items-center border-b pb-2">
@@ -394,15 +417,12 @@
     let allUsersCache = {};
     let currentUser = null;
     let filteredOrdersList = [];
+    let currentAnalyticsPeriod = 'daily';
 
     db.ref('users').once('value').then((snapshot) => {
       if (!snapshot.exists()) {
         const defaultAdminRef = db.ref('users').push();
-        defaultAdminRef.set({
-          username: 'admin',
-          pass: 'admin123',
-          role: 'admin'
-        });
+        defaultAdminRef.set({ username: 'admin', pass: 'admin123', role: 'admin' });
       }
     });
 
@@ -412,6 +432,10 @@
       document.getElementById(`sec-${tabName}`).classList.remove('hidden');
       const activeTabBtn = document.getElementById(`tab-${tabName}`);
       if(activeTabBtn) activeTabBtn.classList.add('active');
+
+      if(tabName === 'analytics') {
+        renderAnalytics();
+      }
     }
 
     function toggleAuthModal() {
@@ -491,7 +515,7 @@
       document.body.className = isDark ? "bg-zinc-900 text-white min-h-screen" : "bg-amber-50/40 min-h-screen text-gray-800";
     }
 
-    // --- إدارة المستخدمين والمناديب ---
+    // --- إدارة المستخدمين ---
     function addUser() {
       const username = document.getElementById('newUserName').value.trim();
       const pass = document.getElementById('newUserPass').value.trim();
@@ -549,7 +573,7 @@
       checkSavedSession();
     });
 
-    // --- إدارة الطلبات والفلترة ---
+    // --- إدارة الطلبات والجرداول ---
     document.getElementById('orderForm').addEventListener('submit', (e) => {
       e.preventDefault();
       
@@ -592,6 +616,9 @@
     db.ref('orders').on('value', (snapshot) => {
       allOrdersCache = snapshot.val() || {};
       applyFilters();
+      if(!document.getElementById('sec-analytics').classList.contains('hidden')) {
+        renderAnalytics();
+      }
     });
 
     function applyFilters() {
@@ -655,10 +682,131 @@
       document.getElementById('ordersCount').innerText = `${count} طلبات`;
     }
 
-    // --- أزرار الطباعة والتصدير (PDF / Excel / Paper) ---
-    function printReport() {
-      exportToPDF();
+    // --- 📊 تحليل وتقييم أداء المناديب (داشبورد النسب المئوية) ---
+    function setAnalyticsPeriod(period) {
+      currentAnalyticsPeriod = period;
+      ['daily', 'weekly', 'monthly'].forEach(p => {
+        const btn = document.getElementById(`time-${p}`);
+        if(p === period) {
+          btn.className = "px-3 py-1.5 rounded-lg bg-red-600 text-white transition-all";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-lg text-gray-600 transition-all";
+        }
+      });
+      renderAnalytics();
     }
+
+    function renderAnalytics() {
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+
+      // حصر المناديب المسجلين
+      const driversStats = {};
+      Object.keys(allUsersCache).forEach(id => {
+        const u = allUsersCache[id];
+        if(u.role === 'driver') {
+          driversStats[u.username] = { total: 0, delivered: 0, liveTracked: 0 };
+        }
+      });
+
+      let periodTotalOrders = 0;
+      let periodDelivered = 0;
+      let periodLiveTracked = 0;
+
+      Object.keys(allOrdersCache).forEach(key => {
+        const item = allOrdersCache[key];
+        if(!item.date) return;
+
+        const orderDate = new Date(item.date);
+        let inPeriod = false;
+
+        if(currentAnalyticsPeriod === 'daily') {
+          inPeriod = (item.date === todayStr);
+        } else if(currentAnalyticsPeriod === 'weekly') {
+          const diffDays = Math.floor((now - orderDate) / (1000 * 60 * 60 * 24));
+          inPeriod = (diffDays <= 7);
+        } else if(currentAnalyticsPeriod === 'monthly') {
+          inPeriod = (orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear());
+        }
+
+        if(inPeriod && item.driver && item.driver !== 'غير محدد') {
+          if(!driversStats[item.driver]) {
+            driversStats[item.driver] = { total: 0, delivered: 0, liveTracked: 0 };
+          }
+
+          periodTotalOrders++;
+          driversStats[item.driver].total++;
+
+          if(item.status === 'تم التسليم بنجاح ✅') {
+            periodDelivered++;
+            driversStats[item.driver].delivered++;
+          }
+
+          if(item.lat && item.lng) {
+            periodLiveTracked++;
+            driversStats[item.driver].liveTracked++;
+          }
+        }
+      });
+
+      // إحصائيات عامة
+      document.getElementById('statTotalOrders').innerText = periodTotalOrders;
+      document.getElementById('statDeliveredRate').innerText = periodTotalOrders ? Math.round((periodDelivered / periodTotalOrders) * 100) + '%' : '0%';
+      document.getElementById('statLiveTrackRate').innerText = periodDelivered ? Math.round((periodLiveTracked / periodDelivered) * 100) + '%' : '0%';
+
+      // رسم جدول المناديب
+      const analyticsBody = document.getElementById('driverAnalyticsBody');
+      analyticsBody.innerHTML = '';
+
+      const driversList = Object.keys(driversStats);
+      if(driversList.length === 0) {
+        analyticsBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400">لا يوجد مناديب مسجلين في النظام.</td></tr>`;
+        return;
+      }
+
+      driversList.forEach(driverName => {
+        const st = driversStats[driverName];
+        const completionPct = st.total ? Math.round((st.delivered / st.total) * 100) : 0;
+        const liveTrackPct = st.delivered ? Math.round((st.liveTracked / st.delivered) * 100) : 0;
+        
+        // حساب التقييم الموزون (50% إنجاز + 30% بث حي + 20% نشاط)
+        const totalScore = Math.round((completionPct * 0.7) + (liveTrackPct * 0.3));
+
+        let badgeColor = "bg-gray-100 text-gray-700";
+        let ratingLabel = "لم يحدد";
+
+        if(st.total > 0) {
+          if(totalScore >= 85) { badgeColor = "bg-emerald-100 text-emerald-800"; ratingLabel = "ممتاز 🌟"; }
+          else if(totalScore >= 70) { badgeColor = "bg-blue-100 text-blue-800"; ratingLabel = "جيد جداً 👍"; }
+          else if(totalScore >= 50) { badgeColor = "bg-amber-100 text-amber-800"; ratingLabel = "متوسط ⚠️"; }
+          else { badgeColor = "bg-red-100 text-red-800"; ratingLabel = "ضعيف ❌"; }
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-gray-50 border-b";
+        tr.innerHTML = `
+          <td class="p-3 font-bold text-gray-800">${driverName}</td>
+          <td class="p-3 font-mono font-bold">${st.total}</td>
+          <td class="p-3 font-mono text-emerald-600 font-bold">${st.delivered}</td>
+          <td class="p-3 font-mono text-blue-600 font-bold">${st.liveTracked}</td>
+          <td class="p-3">
+            <div class="flex items-center gap-2">
+              <div class="w-16 bg-gray-200 rounded-full h-2 overflow-hidden">
+                <div class="bg-red-600 h-2 rounded-full" style="width: ${completionPct}%"></div>
+              </div>
+              <span class="font-mono font-bold text-xs">${completionPct}%</span>
+            </div>
+          </td>
+          <td class="p-3 text-center">
+            <span class="px-3 py-1 rounded-full text-xs font-bold ${badgeColor}">${ratingLabel} (${totalScore}%)</span>
+          </td>
+        `;
+        analyticsBody.appendChild(tr);
+      });
+    }
+
+    // --- الطباعة والتصدير ---
+    function printReport() { exportToPDF(); }
 
     function exportToExcel() {
       if (filteredOrdersList.length === 0) return alert('لا توجد بيانات مطابقة للتصدير!');
@@ -719,111 +867,28 @@
           <meta charset="UTF-8">
           <title>تقرير طلبات جزارة حمكشة 🥩</title>
           <style>
-            body { 
-              font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif; 
-              padding: 20px; 
-              direction: rtl; 
-              text-align: right; 
-              background: #fff; 
-              color: #111;
-              position: relative;
-            }
-            
-            /* اللوجو العنابي المطور خلفية مائية باهتة Watermark */
-            .watermark {
-              position: fixed;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -50%);
-              width: 380px;
-              height: 380px;
-              opacity: 0.05;
-              pointer-events: none;
-              z-index: 0;
-            }
-
-            .content-wrapper {
-              position: relative;
-              z-index: 1;
-            }
-
-            /* الهيدر واللوجو المستوحى من الصورة */
-            .header-container { 
-              display: flex; 
-              justify-content: space-between; 
-              align-items: center; 
-              border-bottom: 3px double #800020; 
-              padding-bottom: 12px; 
-              margin-bottom: 15px; 
-            }
+            body { font-family: 'Cairo', sans-serif; padding: 20px; direction: rtl; text-align: right; background: #fff; color: #111; position: relative; }
+            .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 380px; height: 380px; opacity: 0.05; pointer-events: none; z-index: 0; }
+            .content-wrapper { position: relative; z-index: 1; }
+            .header-container { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px double #800020; padding-bottom: 12px; margin-bottom: 15px; }
             .logo-section { display: flex; align-items: center; gap: 15px; }
-            
-            /* تصميم دائرة اللوجو بستايل الصورة (عنابي وذهبي) */
-            .logo-circle {
-              width: 85px;
-              height: 85px;
-              background: radial-gradient(circle, #a00028 0%, #600018 100%);
-              border: 3px solid #d4af37;
-              border-radius: 50%;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              color: white;
-              box-shadow: 0 4px 6px rgba(0,0,0,0.15);
-              text-align: center;
-            }
+            .logo-circle { width: 85px; height: 85px; background: radial-gradient(circle, #a00028 0%, #600018 100%); border: 3px solid #d4af37; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; }
             .logo-title-top { font-size: 13px; font-weight: bold; line-height: 1; }
-            .logo-title-main { font-size: 18px; font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: -0.5px; }
+            .logo-title-main { font-size: 18px; font-weight: 900; color: #fff; line-height: 1.1; }
             .logo-since { font-size: 8px; background: #d4af37; color: #500010; padding: 1px 6px; border-radius: 10px; font-weight: bold; margin-top: 2px; }
-
-            .brand-text { display: flex; flex-direction: column; }
-            .brand-name { font-size: 26px; font-weight: 900; color: #800020; margin: 0; line-height: 1.1; }
-            .brand-sub { font-size: 12px; color: #d4af37; font-weight: bold; margin: 0; background: #800020; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-top: 4px; }
-            
-            /* بيانات الاتصال والعنوان المستخرجة من الصورة */
-            .store-info { 
-              text-align: left; 
-              font-size: 11px; 
-              color: #222; 
-              font-weight: 600; 
-              line-height: 1.6; 
-              background: #fafafa;
-              padding: 8px 12px;
-              border-radius: 8px;
-              border: 1px solid #eee;
-            }
-            
-            /* بطاقة الملخص */
-            .summary-bar { 
-              display: flex; 
-              justify-content: space-between; 
-              background: #fffbeb; 
-              border: 1px solid #fef3c7; 
-              padding: 10px 15px; 
-              border-radius: 8px; 
-              margin-bottom: 15px; 
-              font-size: 12px; 
-              font-weight: bold; 
-              color: #92400e; 
-            }
-            
-            /* الجدول */
+            .brand-name { font-size: 26px; font-weight: 900; color: #800020; margin: 0; }
+            .brand-sub { font-size: 12px; color: #d4af37; font-weight: bold; background: #800020; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-top: 4px; }
+            .store-info { text-align: left; font-size: 11px; color: #222; font-weight: 600; line-height: 1.6; background: #fafafa; padding: 8px 12px; border-radius: 8px; border: 1px solid #eee; }
+            .summary-bar { display: flex; justify-content: space-between; background: #fffbeb; border: 1px solid #fef3c7; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; font-size: 12px; font-weight: bold; color: #92400e; }
             table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
             th { background-color: #800020; color: white; border: 1px solid #600018; padding: 8px; font-weight: bold; }
             td { border: 1px solid #e5e7eb; padding: 8px; text-align: right; }
             tr:nth-child(even) { background-color: #fcfcfc; }
-
             .footer-note { margin-top: 25px; text-align: center; font-size: 10px; color: #777; border-top: 1px dashed #ccc; padding-top: 8px; }
-
-            @media print {
-              @page { size: A4 landscape; margin: 8mm; }
-            }
+            @media print { @page { size: A4 landscape; margin: 8mm; } }
           </style>
         </head>
         <body>
-          
-          <!-- اللوجو المائي الباهت خلفية للتقرير Watermark -->
           <svg class="watermark" viewBox="0 0 100 100">
             <circle cx="50" cy="50" r="45" fill="#800020" stroke="#d4af37" stroke-width="3" />
             <text x="50" y="40" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="bold">جزارة</text>
@@ -832,38 +897,32 @@
           </svg>
 
           <div class="content-wrapper">
-            <!-- الهيدر ولوجو المحل ببيانات الصورة -->
             <div class="header-container">
               <div class="logo-section">
-                <!-- دائرة اللوجو العنابي والذهبي بنفس شكل الصورة -->
                 <div class="logo-circle">
                   <span class="logo-title-top">جزارة</span>
                   <span class="logo-title-main">حمكشة</span>
                   <span class="logo-since">SINCE 1960</span>
                 </div>
-                <div class="brand-text">
+                <div>
                   <h1 class="brand-name">جزارة حمكشة</h1>
-                  <div><span class="brand-sub">جودة مضمونة منذ ١٩٦٠ 🥩</span></div>
+                  <span class="brand-sub">جودة مضمونة منذ ١٩٦٠ 🥩</span>
                 </div>
               </div>
-
-              <!-- بيانات الفرع وأرقام التواصل المستخرجة من الصورة -->
               <div class="store-info">
-                <div>📍 <b>العنوان:</b> الزقازيق، حي تاني، معهد فني تجاري[cite: 6]</div>
-                <div>📞 <b>تواصل:</b> 0552317739 | 0552321231 | 0552314867[cite: 6]</div>
-                <div>💬 <b>واتساب:</b> 01273091807[cite: 6]</div>
+                <div>📍 <b>العنوان:</b> الزقازيق، حي تاني، معهد فني تجاري</div>
+                <div>📞 <b>تواصل:</b> 0552317739 | 0552321231 | 0552314867</div>
+                <div>💬 <b>واتساب:</b> 01273091807</div>
                 <div>📅 <b>التاريخ:</b> ${new Date().toLocaleDateString('ar-EG')}</div>
               </div>
             </div>
 
-            <!-- شريط ملخص الفلترة -->
             <div class="summary-bar">
               <span>📋 <b>نوع التقرير:</b> تقرير الطلبات الحالية</span>
               <span>👤 <b>الفئة:</b> ${driverInfo}</span>
               <span>🔢 <b>إجمالي الطلبات:</b> ${filteredOrdersList.length} طلبات</span>
             </div>
 
-            <!-- جدول البيانات -->
             <table>
               <thead>
                 <tr>
@@ -881,15 +940,11 @@
               </tbody>
             </table>
 
-            <div class="footer-note">
-              تم استخراج هذا التقرير آلياً من نظام إدارة جزارة حمكشة - الزقازيق 🥩
-            </div>
+            <div class="footer-note">تم استخراج هذا التقرير آلياً من نظام إدارة جزارة حمكشة - الزقازيق 🥩</div>
           </div>
 
           <script>
-            window.onload = function() {
-              window.print();
-            }
+            window.onload = function() { window.print(); }
           <\/script>
         </body>
         </html>
@@ -1030,7 +1085,7 @@ ${trackUrl}`;
       document.getElementById('stopBtn').classList.add('hidden');
     }
 
-    // --- تتبع العميل (مشفر وآمن للبيانات) ---
+    // --- تتبع العميل ---
     function searchCustomerOrder() {
       const id = document.getElementById('custSearchOrderId').value.trim();
       if(!id) return alert('يرجى إدخال رقم الطلب');
@@ -1061,14 +1116,13 @@ ${trackUrl}`;
       });
     }
 
-    // --- التوجيه التلقائي وإخفاء الشريط العلوي عند فتح رابط العميل ---
+    // --- التوجيه التلقائي عند فتح رابط العميل ---
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       const tab = urlParams.get('tab');
       const orderId = urlParams.get('id');
 
       if(tab === 'track') {
-        // إخفاء الهيدر وشريط الحساب فوراً عن العميل
         const mainHeader = document.getElementById('mainHeader');
         if(mainHeader) mainHeader.style.display = 'none';
 
