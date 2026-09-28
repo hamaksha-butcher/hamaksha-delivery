@@ -36,7 +36,7 @@
           <button onclick="switchTab('driver')" id="tab-driver" class="tab-btn px-3 py-2 rounded-lg transition-all">واجهة المندوب 🛵</button>
           <button onclick="switchTab('track')" id="tab-track" class="tab-btn px-3 py-2 rounded-lg transition-all">تتبع العميل 📍</button>
         </div>
-        <button id="authBtn" onclick="toggleAuthModal()" class="bg-amber-400 hover:bg-amber-500 text-red-950 font-bold px-3 py-2 rounded-xl text-xs shadow transition-all">
+        <button id="authBtn" onclick="handleAuthBtnClick()" class="bg-amber-400 hover:bg-amber-500 text-red-950 font-bold px-3 py-2 rounded-xl text-xs shadow transition-all">
           تسجيل الدخول
         </button>
       </div>
@@ -123,11 +123,11 @@
               </div>
             </div>
 
-            <!-- قسم إدارة المستخدمين والمناديب -->
+            <!-- قسم إدارة المستخدمين والمناديب بضغطة زر -->
             <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-3">
               <div class="flex items-center gap-2 border-b pb-2">
                 <span class="text-lg">👥</span>
-                <h2 class="text-sm font-bold text-gray-800">إدارة المستخدمين والمناديب</h2>
+                <h2 class="text-sm font-bold text-gray-800">إدارة المستخدمين والتبديل السريع</h2>
               </div>
               
               <div class="space-y-2 bg-gray-50 p-2.5 rounded-xl border">
@@ -142,8 +142,8 @@
                 </button>
               </div>
 
-              <div id="usersList" class="space-y-1.5 max-h-48 overflow-y-auto">
-                <!-- قائمة المستخدمين -->
+              <div id="usersList" class="space-y-2 max-h-56 overflow-y-auto pt-1">
+                <!-- قائمة المستخدمين وأزرار التبديل السريع -->
               </div>
             </div>
 
@@ -271,7 +271,7 @@
 
   </main>
 
-  <!-- نافذة التعديل على الطلب (Edit Order Modal) -->
+  <!-- نافذة التعديل على الطلب -->
   <div id="editOrderModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl p-6 w-full max-w-md space-y-4 text-right shadow-2xl border">
       <div class="flex justify-between items-center border-b pb-2">
@@ -328,7 +328,7 @@
     </div>
   </div>
 
-  <!-- Firebase JavaScript SDK v8 (النسخة المتوافقة مع مصر) -->
+  <!-- Firebase JavaScript SDK v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -371,6 +371,18 @@
       document.getElementById('authModal').classList.toggle('hidden');
     }
 
+    function handleAuthBtnClick() {
+      if(currentUser) {
+        if(confirm('هل تريد تسجيل الخروج؟')) {
+          localStorage.removeItem('hamaksha_user');
+          currentUser = null;
+          location.reload();
+        }
+      } else {
+        toggleAuthModal();
+      }
+    }
+
     function performLogin() {
       const username = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPass').value.trim();
@@ -387,18 +399,38 @@
       });
 
       if(foundUser) {
-        currentUser = foundUser;
-        loginSuccess(foundUser.role, foundUser.username);
+        loginSuccess(foundUser);
       } else {
         alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
       }
     }
 
-    function loginSuccess(role, name) {
-      document.getElementById('authBtn').innerText = `${role === 'admin' ? 'الأدمن' : 'المندوب'}: ${name}`;
-      toggleAuthModal();
+    // تسجيل الدخول المباشر بضغطة زر من القائمة للأدمن
+    function quickLoginUser(username) {
+      let foundUser = null;
+      Object.keys(allUsersCache).forEach(id => {
+        const u = allUsersCache[id];
+        if(u.username === username) {
+          foundUser = u;
+        }
+      });
 
-      if(role === 'admin') {
+      if(foundUser) {
+        loginSuccess(foundUser);
+      }
+    }
+
+    function loginSuccess(user) {
+      currentUser = user;
+      // حفظ الجلسة محلياً لمنع الخروج عند الـ Refresh
+      localStorage.setItem('hamaksha_user', JSON.stringify(user));
+
+      document.getElementById('authBtn').innerText = `${user.role === 'admin' ? 'الأدمن' : 'المندوب'}: ${user.username} (خروج)`;
+      if(!document.getElementById('authModal').classList.contains('hidden')) {
+        toggleAuthModal();
+      }
+
+      if(user.role === 'admin') {
         document.getElementById('adminAuthLock').classList.add('hidden');
         document.getElementById('adminContent').classList.remove('hidden');
         switchTab('admin');
@@ -409,6 +441,17 @@
       }
     }
 
+    // استعادة جلسة الدخول تلقائياً
+    function checkSavedSession() {
+      const savedUser = localStorage.getItem('hamaksha_user');
+      if(savedUser) {
+        try {
+          const user = JSON.parse(savedUser);
+          loginSuccess(user);
+        } catch(e) {}
+      }
+    }
+
     function changeTheme(primary, secondary, bg, isDark = false) {
       document.documentElement.style.setProperty('--primary-color', primary);
       document.getElementById('mainHeader').style.backgroundColor = primary;
@@ -416,7 +459,7 @@
       document.body.className = isDark ? "bg-zinc-900 text-white min-h-screen" : "bg-amber-50/40 min-h-screen text-gray-800";
     }
 
-    // --- إدارة المستخدمين ---
+    // --- إدارة المستخدمين والتبديل السريع ---
     function addUser() {
       const username = document.getElementById('newUserName').value.trim();
       const pass = document.getElementById('newUserPass').value.trim();
@@ -455,17 +498,24 @@
           });
         }
         list.innerHTML += `
-          <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border text-xs shadow-sm">
-            <div>
-              <span class="font-bold text-gray-800">${u.username}</span>
-              <span class="text-[10px] px-2 py-0.5 rounded-full ml-1 ${u.role === 'admin' ? 'bg-red-100 text-red-700 font-bold' : 'bg-amber-100 text-amber-800 font-bold'}">
+          <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border text-xs shadow-sm gap-1">
+            <div class="flex items-center gap-1.5 overflow-hidden">
+              <span class="font-bold text-gray-800 truncate">${u.username}</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded-full ${u.role === 'admin' ? 'bg-red-100 text-red-700 font-bold' : 'bg-amber-100 text-amber-800 font-bold'}">
                 ${u.role === 'admin' ? 'أدمن' : 'مندوب'}
               </span>
             </div>
-            <button onclick="deleteUser('${id}')" class="text-red-600 hover:text-red-800 font-bold text-[11px]">حذف 🗑️</button>
+            <div class="flex items-center gap-1">
+              <button onclick="quickLoginUser('${u.username}')" class="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded-lg text-[10px] font-bold shadow-sm whitespace-nowrap">
+                ⚡ دخول
+              </button>
+              <button onclick="deleteUser('${id}')" class="text-red-600 hover:text-red-800 font-bold text-[11px] p-1">🗑️</button>
+            </div>
           </div>
         `;
       });
+
+      checkSavedSession();
     });
 
     // --- الطلبات ---
@@ -649,7 +699,6 @@ ${trackUrl}`;
       });
     }
 
-    // تحكم المندوب اليدوي بالحالة
     function driverChangeStatus(newStatus) {
       const id = document.getElementById('orderId').value.trim();
       if(!id) return;
