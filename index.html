@@ -43,8 +43,8 @@
       <div class="flex items-center gap-2">
         <div class="flex bg-black/20 p-1 rounded-xl text-xs font-bold flex-wrap">
           <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn active px-3 py-2 rounded-lg transition-all">لوحة الإدارة 🔐</button>
-          <button onclick="switchTab('analytics')" id="tab-analytics" class="tab-btn px-3 py-2 rounded-lg transition-all super-admin-only hidden">تقييم وحسابات المناديب 📊</button>
-          <button onclick="switchTab('prices')" id="tab-prices" class="tab-btn px-3 py-2 rounded-lg transition-all super-admin-only hidden">قائمة الأسعار 🏷️</button>
+          <button onclick="switchTab('analytics')" id="tab-analytics" class="tab-btn px-3 py-2 rounded-lg transition-all perm-analytics hidden">تقييم وحسابات المناديب 📊</button>
+          <button onclick="switchTab('prices')" id="tab-prices" class="tab-btn px-3 py-2 rounded-lg transition-all perm-prices hidden">قائمة الأسعار 🏷️</button>
           <button onclick="switchTab('driver')" id="tab-driver" class="tab-btn px-3 py-2 rounded-lg transition-all">واجهة المندوب 🛵</button>
           <button onclick="switchTab('track')" id="tab-track" class="tab-btn px-3 py-2 rounded-lg transition-all">تتبع العميل 📍</button>
         </div>
@@ -96,7 +96,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="space-y-6 lg:col-span-1">
             
-            <!-- نموذج إضافة طلب (متاح للجميع) -->
+            <!-- نموذج إضافة طلب -->
             <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-3">
               <div class="flex items-center justify-between border-b pb-2">
                 <div class="flex items-center gap-2">
@@ -154,11 +154,11 @@
               </div>
             </div>
 
-            <!-- إدارة المستخدمين (خاصة وحصرية للمالك الرئيسي asma فقط) -->
-            <div id="usersManagementCard" class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-3 super-admin-only hidden">
+            <!-- إدارة المستخدمين والصلاحيات -->
+            <div id="usersManagementCard" class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-3 perm-users hidden">
               <div class="flex items-center gap-2 border-b pb-2">
                 <span class="text-lg">👑</span>
-                <h2 class="text-sm font-bold text-gray-800">إدارة حسابات النظام والصلاحيات (asma)</h2>
+                <h2 class="text-sm font-bold text-gray-800">إدارة حسابات النظام والصلاحيات</h2>
               </div>
               <div class="space-y-2 bg-gray-50 p-2.5 rounded-xl border">
                 <input type="text" id="newUserName" placeholder="اسم المستخدم" class="w-full border p-2 rounded-xl text-xs bg-white">
@@ -171,7 +171,7 @@
                   + إضافة لشبكة المستخدمين
                 </button>
               </div>
-              <div id="usersList" class="space-y-2 max-h-56 overflow-y-auto pt-1"></div>
+              <div id="usersList" class="space-y-2 max-h-64 overflow-y-auto pt-1"></div>
             </div>
           </div>
 
@@ -227,12 +227,12 @@
       </div>
     </section>
 
-    <!-- 📊 2️⃣ داشبورد التقييم والتحصيل المالي (خاصة بـ asma فقط) -->
+    <!-- 📊 2️⃣ داشبورد التقييم والتحصيل المالي -->
     <section id="sec-analytics" class="hidden space-y-6">
       <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 space-y-6">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b pb-4">
           <div>
-            <h2 class="text-lg font-black text-red-700">📈 داشبورد أداء وتحصيل المناديب المالي (المالك)</h2>
+            <h2 class="text-lg font-black text-red-700">📈 داشبورد أداء وتحصيل المناديب المالي</h2>
             <p class="text-xs text-gray-500 font-semibold">متابعة الأداء، النسب المئوية، تقييمات العملاء، والعهدة المالية المحصلة كاش</p>
           </div>
           <div class="flex bg-gray-100 p-1 rounded-xl text-xs font-bold border">
@@ -282,7 +282,7 @@
       </div>
     </section>
 
-    <!-- 🏷️ 3️⃣ قسم لوحة أسعار اللحوم الحية (خاصة بـ asma فقط) -->
+    <!-- 🏷️ 3️⃣ قسم لوحة أسعار اللحوم الحية -->
     <section id="sec-prices" class="hidden space-y-6">
       <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 space-y-4">
         <div class="flex justify-between items-center border-b pb-3">
@@ -485,7 +485,7 @@
     let currentAnalyticsPeriod = 'daily';
     let currentTrackOrderId = null;
 
-    // إنشاء الحساب الرئيسي asma أوتوماتيكياً بصلاحيات مطلقة
+    // إنشاء الحساب الرئيسي asma أوتوماتيكياً بصلاحيات كاملة مطلقة
     db.ref('users').once('value').then((snapshot) => {
       let hasAsma = false;
       const users = snapshot.val() || {};
@@ -499,7 +499,7 @@
           pass: 'asma123',
           role: 'admin',
           isSuperAdmin: true,
-          perms: { edit: true, delete: true, print: true }
+          perms: { edit: true, delete: true, print: true, analytics: true, prices: true, users: true }
         });
       }
     });
@@ -512,13 +512,16 @@
       if(!currentUser) return false;
       if(isSuperUser()) return true; // المالك asma معها كل الصلاحيات دائماً
       if(currentUser.role === 'admin') {
-        const p = currentUser.perms || { edit: false, delete: false, print: false };
+        const p = currentUser.perms || {};
         return !!p[action];
       }
       return false;
     }
 
     function switchTab(tabName) {
+      if(tabName === 'analytics' && !canUser('analytics')) return alert('عذراً، لا تملك صلاحية الاطلاع على التقارير والداشبورد.');
+      if(tabName === 'prices' && !canUser('prices')) return alert('عذراً، لا تملك صلاحية الاطلاع على قائمة الأسعار.');
+
       document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.getElementById(`sec-${tabName}`).classList.remove('hidden');
@@ -579,29 +582,12 @@
         toggleAuthModal();
       }
 
-      // إظهار/إخفاء الميزات الخاصة بالمالك asma حصرياً
-      const superAdminElements = document.querySelectorAll('.super-admin-only');
-      superAdminElements.forEach(el => {
-        if(isSuperUser()) el.classList.remove('hidden');
-        else el.classList.add('hidden');
-      });
+      // إظهار وإخفاء الأزرار والواجهات حسب صلاحيات الحساب الحالي
+      updateUIByPermissions();
 
       if(user.role === 'admin') {
         document.getElementById('adminAuthLock').classList.add('hidden');
         document.getElementById('adminContent').classList.remove('hidden');
-
-        if(isSuperUser()) {
-          document.getElementById('addPriceBtn').classList.remove('hidden');
-        } else {
-          document.getElementById('addPriceBtn').classList.add('hidden');
-        }
-
-        const exportBtns = document.getElementById('exportActionBtns');
-        if(exportBtns) {
-          if(canUser('print')) exportBtns.classList.remove('hidden');
-          else exportBtns.classList.add('hidden');
-        }
-
         switchTab('admin');
       } else {
         document.getElementById('driverAuthLock').classList.add('hidden');
@@ -610,6 +596,43 @@
       }
 
       applyFilters();
+    }
+
+    function updateUIByPermissions() {
+      // 1. صلاحية التقارير والداشبورد
+      const analyticsTab = document.querySelector('.perm-analytics');
+      if(analyticsTab) {
+        if(canUser('analytics')) analyticsTab.classList.remove('hidden');
+        else analyticsTab.classList.add('hidden');
+      }
+
+      // 2. صلاحية قائمة الأسعار
+      const pricesTab = document.querySelector('.perm-prices');
+      if(pricesTab) {
+        if(canUser('prices')) pricesTab.classList.remove('hidden');
+        else pricesTab.classList.add('hidden');
+      }
+
+      // 3. صلاحية زر إضافة أصناف بالأسعار
+      const addPriceBtn = document.getElementById('addPriceBtn');
+      if(addPriceBtn) {
+        if(canUser('prices')) addPriceBtn.classList.remove('hidden');
+        else addPriceBtn.classList.add('hidden');
+      }
+
+      // 4. صلاحية إدارة المستخدمين والصلاحيات
+      const usersCard = document.querySelector('.perm-users');
+      if(usersCard) {
+        if(canUser('users')) usersCard.classList.remove('hidden');
+        else usersCard.classList.add('hidden');
+      }
+
+      // 5. صلاحية الطباعة والتصدير
+      const exportBtns = document.getElementById('exportActionBtns');
+      if(exportBtns) {
+        if(canUser('print')) exportBtns.classList.remove('hidden');
+        else exportBtns.classList.add('hidden');
+      }
     }
 
     function checkSavedSession() {
@@ -662,9 +685,9 @@
       }
     }
 
-    // --- إدارة المستخدمين وتعديل صلاحيات الأدمنز من قبل asma ---
+    // --- إدارة المستخدمين وتعديل الصلاحيات الشاملة من قبل asma ---
     function addUser() {
-      if(!isSuperUser()) return alert('عذراً، إضافة المستخدمين حصرية للحساب الرئيسي (asma)');
+      if(!canUser('users')) return alert('عذراً، إضافة المستخدمين تتطلب صلاحية إدارة المستخدمين');
       const username = document.getElementById('newUserName').value.trim();
       const pass = document.getElementById('newUserPass').value.trim();
       const role = document.getElementById('newUserRole').value;
@@ -673,7 +696,7 @@
 
       db.ref('users').push({ 
         username, pass, role,
-        perms: { edit: false, delete: false, print: false }
+        perms: { edit: false, delete: false, print: false, analytics: false, prices: false, users: false }
       }).then(() => {
         document.getElementById('newUserName').value = '';
         document.getElementById('newUserPass').value = '';
@@ -682,12 +705,12 @@
     }
 
     function toggleAdminPermission(userKey, permType, isChecked) {
-      if(!isSuperUser()) return alert('عذراً، التحكم بالصلاحيات متاح فقط للحساب الرئيسي (asma)');
+      if(!isSuperUser()) return alert('عذراً، التحكم بالصلاحيات متاح فقط للـ Super Admin (asma)');
       db.ref(`users/${userKey}/perms/${permType}`).set(isChecked);
     }
 
     function deleteUser(userId) {
-      if(!isSuperUser()) return alert('عذراً، حذف الحسابات متاح فقط للحساب الرئيسي (asma)');
+      if(!canUser('users')) return alert('عذراً، حذف الحسابات تتطلب صلاحية إدارة المستخدمين');
       if(confirm('هل تريد حذف هذا المستخدم بالفعل؟')) {
         db.ref('users/' + userId).remove();
       }
@@ -715,11 +738,11 @@
           if(filterDriverDropdown) filterDriverDropdown.innerHTML += `<option value="${u.username}">${u.username}</option>`;
         }
 
-        const perms = u.perms || { edit: false, delete: false, print: false };
+        const perms = u.perms || {};
         const isAsma = u.username === 'asma';
 
         list.innerHTML += `
-          <div class="bg-white p-2.5 rounded-xl border text-xs shadow-sm space-y-2">
+          <div class="bg-white p-3 rounded-xl border text-xs shadow-sm space-y-2">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-1.5 overflow-hidden">
                 <span class="font-bold text-gray-800 truncate">${u.username}</span>
@@ -727,21 +750,35 @@
                   ${isAsma ? 'المالك الرئيسي' : (u.role === 'admin' ? 'أدمن فرعي' : 'مندوب')}
                 </span>
               </div>
-              ${!isAsma && isSuperUser() ? `<button onclick="deleteUser('${id}')" class="text-red-600 hover:text-red-800 font-bold text-[10px]">🗑️ حذف</button>` : ''}
+              ${!isAsma && canUser('users') ? `<button onclick="deleteUser('${id}')" class="text-red-600 hover:text-red-800 font-bold text-[10px]">🗑️ حذف الحساب</button>` : ''}
             </div>
 
             ${u.role === 'admin' && !isAsma && isSuperUser() ? `
-              <div class="bg-amber-50 p-2 rounded-lg border border-amber-200 text-[10px] space-y-1">
-                <p class="font-bold text-amber-900">🔒 منح صلاحيات استثنائية للأدمن الفرعي:</p>
-                <div class="flex items-center gap-3 font-semibold">
+              <div class="bg-amber-50 p-2.5 rounded-lg border border-amber-200 text-[10px] space-y-1.5">
+                <p class="font-bold text-amber-900 border-b border-amber-200 pb-1">⚙️ التحكم في صلاحيات هذا الأدمن الفرعي (خاص بـ asma):</p>
+                <div class="grid grid-cols-2 gap-1.5 font-semibold">
                   <label class="flex items-center gap-1 cursor-pointer">
-                    <input type="checkbox" ${perms.edit ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'edit', this.checked)"> تعديل ✏️
+                    <input type="checkbox" ${perms.edit ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'edit', this.checked)"> تعديل الطلبات ✏️
                   </label>
+
                   <label class="flex items-center gap-1 cursor-pointer">
-                    <input type="checkbox" ${perms.delete ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'delete', this.checked)"> حذف 🗑️
+                    <input type="checkbox" ${perms.delete ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'delete', this.checked)"> حذف الطلبات 🗑️
                   </label>
+
                   <label class="flex items-center gap-1 cursor-pointer">
-                    <input type="checkbox" ${perms.print ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'print', this.checked)"> طباعة 🖨️
+                    <input type="checkbox" ${perms.print ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'print', this.checked)"> طباعة وتصدير 🖨️
+                  </label>
+
+                  <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="checkbox" ${perms.analytics ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'analytics', this.checked)"> التقارير والداشبورد 📊
+                  </label>
+
+                  <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="checkbox" ${perms.prices ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'prices', this.checked)"> تعديل الأسعار 🏷️
+                  </label>
+
+                  <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="checkbox" ${perms.users ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'users', this.checked)"> إدارة المستخدمين 👥
                   </label>
                 </div>
               </div>
@@ -882,7 +919,7 @@
     }
 
     function renderAnalytics() {
-      if(!isSuperUser()) return;
+      if(!canUser('analytics')) return;
       const now = new Date();
       const todayStr = now.toISOString().split('T')[0];
 
@@ -1003,6 +1040,7 @@
 
     // --- 🏷️ قسم أسعار اللحوم ---
     function renderPrices() {
+      if(!canUser('prices')) return;
       db.ref('prices').on('value', (snap) => {
         const data = snap.val() || {};
         const container = document.getElementById('priceListContainer');
@@ -1038,7 +1076,7 @@
     }
 
     function openAddPriceModal() {
-      if(!isSuperUser()) return alert('عذراً، إضافة تعديل الأسعار متاح حشرياً للمالك الرئيسي (asma).');
+      if(!canUser('prices')) return alert('عذراً، ليس لديك صلاحية تعديل أو إضافة أسعار.');
       const name = prompt('أدخل اسم الصنف الجديد:');
       const price = prompt('أدخل السعر (ج.م):');
       if(name && price) {
