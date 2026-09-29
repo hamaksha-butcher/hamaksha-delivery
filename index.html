@@ -60,6 +60,35 @@
     /* Leaflet fallback: keep the map/tile layers positioned correctly even if CDN CSS is delayed. */
     #dashboardMap { min-height: 420px; position: relative; }
     #dashboardMap .leaflet-container, #dashboardMap.leaflet-container { height: 100%; width: 100%; }
+    /* وضع العميل العام: يمنع ظهور أدوات المحل حتى لو كانت هناك جلسة محفوظة */
+    body.customer-public-mode #mainHeader,
+    body.customer-public-mode #userBadgeBar {
+      display: none !important;
+    }
+
+    body.customer-public-mode #authModal,
+    body.customer-public-mode #editUserModal,
+    body.customer-public-mode #editPriceModal,
+    body.customer-public-mode #editOrderModal,
+    body.customer-public-mode #customerPickerModal,
+    body.driver-private-mode #mainHeader,
+    body.driver-private-mode #userBadgeBar,
+    body.driver-private-mode #authModal,
+    body.driver-private-mode #editUserModal,
+    body.driver-private-mode #editPriceModal,
+    body.driver-private-mode #editOrderModal,
+    body.driver-private-mode #customerPickerModal {
+      display: none !important;
+    }
+
+    body.customer-public-mode main > section:not(#sec-track) {
+      display: none !important;
+    }
+
+    body.driver-private-mode main > section:not(#sec-driver) {
+      display: none !important;
+    }
+
     @media print {
       header, #userBadgeBar, .no-print, #adminAuthLock, .theme-selector, #orderForm, #usersList, form, button, select, input {
         display: none !important;
@@ -130,6 +159,7 @@
             <div>
               <h2 class="text-xl font-black text-red-700">📊 لوحة التحكم الرئيسية</h2>
               <p class="text-xs text-gray-500 font-semibold">ملخص حي للطلبات والتحصيل وحالة المناديب اليوم</p>
+              <p id="dashboardScopeNote" class="text-[10px] text-blue-600 mt-1 hidden">🔐 العرض الحالي مقيد بالطلبات التي أنشأها هذا المستخدم. يستطيع asma منح صلاحية عرض جميع المناديب والأوردرات.</p>
             </div>
             <span id="dashboardDate" class="bg-amber-100 text-amber-900 px-3 py-1.5 rounded-xl text-xs font-bold"></span>
           </div>
@@ -245,7 +275,13 @@
                 </div>
                 <div>
                   <label class="block text-[11px] font-bold text-gray-700 mb-1">رقم الهاتف (واتساب)</label>
-                  <input type="text" id="custPhone" required placeholder="مثال: 01273091807" class="w-full border p-2 rounded-xl text-xs text-left" dir="ltr">
+                  <input type="text" id="custPhone" required placeholder="مثال: 01273091807" class="w-full border p-2 rounded-xl text-xs text-left" dir="ltr" oninput="smartLookupCustomer(this.value)" onblur="smartLookupCustomer(this.value)">
+                  <input type="hidden" id="selectedCustomerKey" value="">
+                  <div class="flex flex-wrap items-center gap-2 mt-1.5">
+                    <button type="button" onclick="openCustomerPickerModal()" class="text-[10px] bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1.5 rounded-lg font-bold hover:bg-blue-100">👥 اختيار عميل من القاعدة</button>
+                    <button type="button" onclick="clearSelectedCustomer()" class="text-[10px] bg-gray-100 text-gray-600 border px-2.5 py-1.5 rounded-lg font-bold hover:bg-gray-200">➕ عميل جديد</button>
+                    <span id="customerLookupStatus" class="text-[10px] font-bold text-gray-400"></span>
+                  </div>
                 </div>
                 <div>
                   <label class="block text-[11px] font-bold text-gray-700 mb-1">العنوان والطلبات</label>
@@ -323,6 +359,26 @@
               </div>
               <div id="usersList" class="space-y-2 max-h-64 overflow-y-auto pt-1"></div>
             </div>
+            <!-- 👥 قاعدة بيانات العملاء + الربط الذكي بالطلبات -->
+            <div id="customerManagementCard" class="bg-white rounded-2xl shadow-xl p-5 border border-blue-100 space-y-3 perm-customers hidden">
+              <div class="flex items-center justify-between gap-2 border-b pb-2">
+                <div>
+                  <div class="flex items-center gap-2"><span class="text-lg">👥</span><h2 class="text-sm font-bold text-gray-800">قاعدة بيانات العملاء</h2></div>
+                  <p class="text-[10px] text-gray-400 mt-1">حفظ بيانات العملاء واستخدامها تلقائياً عند إنشاء الطلب</p>
+                </div>
+                <button type="button" onclick="resetCustomerManagementForm()" class="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-1.5 rounded-lg font-bold">+ عميل جديد</button>
+              </div>
+              <div class="space-y-2 bg-blue-50/60 p-3 rounded-xl border border-blue-100">
+                <input type="hidden" id="managedCustomerKey" value="">
+                <input type="text" id="managedCustomerName" placeholder="اسم العميل" class="w-full border p-2 rounded-xl text-xs bg-white">
+                <input type="text" id="managedCustomerPhone" placeholder="رقم الهاتف / واتساب" dir="ltr" class="w-full border p-2 rounded-xl text-xs bg-white text-left">
+                <textarea id="managedCustomerAddress" rows="2" placeholder="العنوان" class="w-full border p-2 rounded-xl text-xs bg-white"></textarea>
+                <button type="button" onclick="saveManagedCustomer()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl text-xs shadow">💾 حفظ بيانات العميل</button>
+              </div>
+              <input type="text" id="customerDatabaseSearch" oninput="renderCustomersList()" placeholder="🔎 بحث باسم العميل أو الهاتف" class="w-full border p-2 rounded-xl text-xs bg-gray-50">
+              <div id="customersList" class="space-y-2 max-h-80 overflow-y-auto pt-1"></div>
+            </div>
+
           </div>
 
           <!-- جدول إدارة الطلبات -->
@@ -502,7 +558,8 @@
       </div>
 
       <div id="driverContent" class="hidden max-w-xl mx-auto space-y-4 bg-white p-6 rounded-2xl shadow-xl border text-center">
-        <h2 class="text-lg font-bold">إدارة حالة الطلب والتحصيل المالي 🛵</h2>
+        <div class="flex items-center justify-between gap-2 border-b pb-3"><div class="text-right"><h2 class="text-lg font-bold">إدارة حالة الطلب والتحصيل المالي 🛵</h2><p class="text-[10px] text-gray-400">تظهر لك الطلبات المسندة إليك فقط</p></div><button onclick="handleAuthBtnClick()" class="text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-lg font-bold">خروج</button></div>
+        <div id="driverOrdersList" class="space-y-2 text-right"></div>
         <div class="space-y-2">
           <label class="block text-right text-xs font-bold text-gray-700">رقم الطلب:</label>
           <div class="flex gap-2">
@@ -543,54 +600,30 @@
       </div>
     </section>
 
-    <!-- 5️⃣ تتبع العميل والموقع والتقييم والتعليقات العامة -->
+    <!-- 5️⃣ واجهة العميل العامة: التحقق بالاسم/الهاتف + طلباته فقط + التتبع والتقييم -->
     <section id="sec-track" class="hidden space-y-6 max-w-xl mx-auto">
-      <div class="bg-white rounded-2xl shadow-lg p-5 border space-y-3">
-        <label class="block text-xs font-bold text-gray-800">📌 أدخل رقم الطلب لتتبع حالة التوصيل:</label>
-        <div class="flex gap-2">
-          <input type="text" id="custSearchOrderId" placeholder="أدخل رقم الطلب (مثال: 410 أو HAMKASHA-12345)" class="w-full border p-2.5 rounded-xl text-xs font-mono font-bold text-center bg-gray-50">
-          <button onclick="searchCustomerOrder()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 rounded-xl text-xs whitespace-nowrap shadow">تتبع 🔍</button>
+      <div class="bg-white rounded-2xl shadow-lg p-5 border space-y-4">
+        <div class="text-center">
+          <div class="text-3xl">🥩</div>
+          <h2 class="text-base font-black text-red-700 mt-1">تتبع طلبك - جزارة حمكشة</h2>
+          <p class="text-[10px] text-gray-500 font-semibold mt-1">اكتب اسمك أو رقم هاتفك لعرض الطلبات الخاصة بك فقط.</p>
         </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div><label class="block text-[10px] font-bold text-gray-700 mb-1">اسم العميل</label><input type="text" id="custIdentityName" placeholder="مثال: أحمد محمد" class="w-full border p-2.5 rounded-xl text-xs text-center bg-gray-50"></div>
+          <div><label class="block text-[10px] font-bold text-gray-700 mb-1">رقم الهاتف</label><input type="text" id="custIdentityPhone" placeholder="مثال: 01273091807" dir="ltr" class="w-full border p-2.5 rounded-xl text-xs text-center bg-gray-50"></div>
+        </div>
+        <p id="customerIdentityStatus" class="text-[10px] font-bold text-center text-gray-400"></p>
+        <button onclick="searchCustomerOrder()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs whitespace-nowrap shadow">عرض طلباتي 🔍</button>
       </div>
+      <div id="customerOrdersResults" class="space-y-3"><div class="bg-white rounded-2xl shadow-lg p-5 border text-center text-xs text-gray-400">أدخل اسمك أو رقم هاتفك ثم اضغط «عرض طلباتي».</div></div>
 
-      <div id="trackResultCard" class="bg-white rounded-2xl shadow-xl p-6 border space-y-4">
-        <div class="flex justify-between items-center border-b pb-2">
-          <div>
-            <h2 class="text-base font-black text-red-700">تتبع الطلب 🥩</h2>
-            <p id="dispOrderId" class="text-xs font-mono text-gray-400">#---</p>
-          </div>
-          <span id="badgeStatus" class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">جاري المتابعة</span>
-        </div>
-        
-        <div class="bg-gray-50 p-3 rounded-xl space-y-1 text-xs border">
-          <p class="flex justify-between"><span>المندوب المكلف:</span> <b id="cDriver" class="text-amber-800">-</b></p>
-          <p class="flex justify-between"><span>تاريخ الطلب:</span> <b id="cDate" class="formatted-date font-mono text-gray-600">-</b></p>
-        </div>
-
-        <!-- 🗺️ خيارات المندوب والعميل الخريطة -->
-        <div id="map" class="bg-gray-50 border border-amber-200 rounded-xl p-4 text-center text-xs text-gray-600 space-y-3">
-          <p id="mapTextInfo">أدخل رقم الطلب الخاص بك لمتابعة مسار المندوب.</p>
-
-          <!-- زر مشاركة موقع العميل مع المندوب -->
-          <div class="border-t pt-3 space-y-2">
-            <button id="custShareLocBtn" onclick="toggleCustomerLocationShare()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow flex justify-center items-center gap-1.5">
-              📍 مشاركة موقعي الحالي (GPS) مع المندوب
-            </button>
-            <p id="custLocStatus" class="text-[11px] font-bold text-emerald-700 hidden">✅ تم إرسال موقعك للمندوب بنجاح!</p>
-          </div>
-        </div>
-
-        <!-- ⭐ تقييم الخدمة والتعليق: ظاهر دائماً، ويُفتح الإرسال بعد التسليم -->
+      <div id="trackResultCard" class="hidden bg-white rounded-2xl shadow-xl p-6 border space-y-4">
+        <div class="flex justify-between items-center border-b pb-2"><div><h2 class="text-base font-black text-red-700">تتبع الطلب 🥩</h2><p id="dispOrderId" class="text-xs font-mono text-gray-400">#---</p></div><span id="badgeStatus" class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">جاري المتابعة</span></div>
+        <div class="bg-gray-50 p-3 rounded-xl space-y-1 text-xs border"><p class="flex justify-between"><span>المندوب المكلف:</span><b id="cDriver" class="text-amber-800">-</b></p><p class="flex justify-between"><span>تاريخ الطلب:</span><b id="cDate" class="formatted-date font-mono text-gray-600">-</b></p></div>
+        <div id="map" class="bg-gray-50 border border-amber-200 rounded-xl p-4 text-center text-xs text-gray-600 space-y-3"><p id="mapTextInfo">اختر أحد طلباتك لعرض حالة المندوب.</p><div class="border-t pt-3 space-y-2"><button id="custShareLocBtn" onclick="toggleCustomerLocationShare()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow flex justify-center items-center gap-1.5">📍 مشاركة موقعي الحالي (GPS) مع المندوب</button><p id="custLocStatus" class="text-[11px] font-bold text-emerald-700 hidden">✅ تم إرسال موقعك للمندوب بنجاح!</p></div></div>
         <div id="ratingBox" class="bg-amber-50 border border-amber-200 p-4 rounded-xl text-center space-y-3">
-          <div class="flex items-center justify-between gap-2 border-b border-amber-200 pb-2">
-            <h4 class="font-bold text-xs text-amber-900">⭐ تقييم خدمة التوصيل والمندوب</h4>
-            <span id="feedbackAvailabilityBadge" class="text-[10px] font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-600">🔒 متاح بعد التسليم</span>
-          </div>
-
-          <p id="feedbackLockedMsg" class="text-[10px] text-gray-600 font-semibold bg-white/70 border border-amber-100 rounded-lg p-2">
-            💡 يمكنك تقييم المندوب وكتابة تعليقك بعد تحول حالة الطلب إلى <b>تم التسليم بنجاح ✅</b>.
-          </p>
-
+          <div class="flex items-center justify-between gap-2 border-b border-amber-200 pb-2"><h4 class="font-bold text-xs text-amber-900">⭐ تقييم خدمة التوصيل والمندوب</h4><span id="feedbackAvailabilityBadge" class="text-[10px] font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-600">🔒 متاح بعد التسليم</span></div>
+          <p id="feedbackLockedMsg" class="text-[10px] text-gray-600 font-semibold bg-white/70 border border-amber-100 rounded-lg p-2">💡 يمكنك تقييم المندوب وكتابة تعليقك بعد تحول حالة الطلب إلى <b>تم التسليم بنجاح ✅</b>.</p>
           <div class="flex justify-center gap-2" id="starContainer" aria-label="اختيار تقييم من 1 إلى 5 نجوم">
             <button type="button" onclick="setStarRating(1)" onmouseenter="previewStarRating(1)" onmouseleave="restoreStarRating()" onfocus="previewStarRating(1)" onblur="restoreStarRating()" class="star-btn" title="1 نجمة" aria-label="تقييم نجمة واحدة" disabled>☆</button>
             <button type="button" onclick="setStarRating(2)" onmouseenter="previewStarRating(2)" onmouseleave="restoreStarRating()" onfocus="previewStarRating(2)" onblur="restoreStarRating()" class="star-btn" title="2 نجمتان" aria-label="تقييم نجمتين" disabled>☆</button>
@@ -598,29 +631,11 @@
             <button type="button" onclick="setStarRating(4)" onmouseenter="previewStarRating(4)" onmouseleave="restoreStarRating()" onfocus="previewStarRating(4)" onblur="restoreStarRating()" class="star-btn" title="4 نجوم" aria-label="تقييم أربع نجوم" disabled>☆</button>
             <button type="button" onclick="setStarRating(5)" onmouseenter="previewStarRating(5)" onmouseleave="restoreStarRating()" onfocus="previewStarRating(5)" onblur="restoreStarRating()" class="star-btn" title="5 نجوم" aria-label="تقييم خمس نجوم" disabled>☆</button>
           </div>
-
-          <div>
-            <label class="block text-right text-[11px] font-bold text-gray-700 mb-1">اكتب تعليقك أو رأيك في المندوب والخدمة:</label>
-            <textarea id="custCommentText" rows="2" placeholder="اكتب ملاحظاتك هنا..." class="w-full border p-2 rounded-xl text-xs bg-white" disabled></textarea>
-          </div>
-
-          <button id="submitFeedbackBtn" type="button" onclick="submitFullFeedback()" class="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-bold py-2 rounded-xl text-xs shadow" disabled>
-            إرسال التقييم والتعليق 🚀
-          </button>
-
+          <div><label class="block text-right text-[11px] font-bold text-gray-700 mb-1">اكتب تعليقك أو رأيك في المندوب والخدمة:</label><textarea id="custCommentText" rows="2" placeholder="اكتب ملاحظاتك هنا..." class="w-full border p-2 rounded-xl text-xs bg-white" disabled></textarea></div>
+          <button id="submitFeedbackBtn" type="button" onclick="submitFullFeedback()" class="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-bold py-2 rounded-xl text-xs shadow" disabled>إرسال التقييم والتعليق 🚀</button>
           <p id="ratingSubmittedMsg" class="text-xs text-emerald-700 font-bold hidden"></p>
         </div>
-
-        <!-- 💬 آراء وتعليقات العملاء المنشورة العامة -->
-        <div id="publicCommentsSection" class="pt-4 border-t space-y-3">
-          <h4 class="font-bold text-xs text-gray-800 flex items-center gap-1">
-            <span>💬 آراء وتقييمات العملاء العامة:</span>
-          </h4>
-          <div id="publicCommentsContainer" class="space-y-2 max-h-60 overflow-y-auto">
-            <p class="text-[11px] text-gray-400 text-center">لا توجد آراء منشورة حالياً.</p>
-          </div>
-        </div>
-
+        <div id="publicCommentsSection" class="pt-4 border-t space-y-3"><h4 class="font-bold text-xs text-gray-800 flex items-center gap-1"><span>💬 آراء وتقييمات العملاء العامة:</span></h4><div id="publicCommentsContainer" class="space-y-2 max-h-60 overflow-y-auto"><p class="text-[11px] text-gray-400 text-center">لا توجد آراء منشورة حالياً.</p></div></div>
       </div>
     </section>
 
@@ -718,6 +733,15 @@
     </div>
   </div>
 
+  <!-- نافذة اختيار عميل من قاعدة العملاء -->
+  <div id="customerPickerModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-md space-y-4 text-right shadow-2xl border">
+      <div class="flex justify-between items-center border-b pb-2"><div><h3 class="font-bold text-sm text-gray-800">👥 اختيار عميل محفوظ</h3><p class="text-[10px] text-gray-400 mt-1">سيتم ملء الاسم والهاتف والعنوان تلقائياً</p></div><button onclick="closeCustomerPickerModal()" class="text-gray-400 hover:text-gray-600 font-bold">✕</button></div>
+      <input type="text" id="customerPickerSearch" oninput="renderCustomerPickerList()" placeholder="🔎 ابحث بالاسم أو الهاتف" class="w-full border p-2.5 rounded-xl text-xs bg-gray-50">
+      <div id="customerPickerList" class="space-y-2 max-h-80 overflow-y-auto"></div>
+    </div>
+  </div>
+
   <div id="authModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
     <div class="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 text-right shadow-2xl">
       <div class="flex justify-between items-center border-b pb-2">
@@ -766,19 +790,35 @@
 
     const db = firebase.database();
 
+    const APP_MODE = new URLSearchParams(window.location.search).get('mode') === 'staff' ? 'staff' : 'customer';
     let allOrdersCache = {};
+    let driverOrdersCache = {};
     let allUsersCache = {};
+    let driverDirectoryCache = {};
+    let customersCache = {};
+    let publicCommentsCache = {};
     let currentUser = null;
     let filteredOrdersList = [];
     let currentAnalyticsPeriod = 'daily';
     let currentTrackOrderId = null;
+    let currentRequestedOrderId = new URLSearchParams(window.location.search).get('id') || '';
+    let currentTrackOrderStatus = null;
+    let currentCustomerVerified = false;
+    let currentCustomerSearchResults = {};
     let custWatchId = null;
     let selectedStarsCount = 0;
-    let currentTrackOrderStatus = null;
     let dashboardMap = null;
     let dashboardMapMarkers = [];
     let dashboardMapRoutes = [];
     let dashboardMapOrderPairs = {};
+    let staffOrdersRef = null;
+    let staffUsersRef = null;
+    let driverOrdersRef = null;
+    let driverDirectoryRef = null;
+    let customersRef = null;
+    let publicCommentsRef = null;
+    let customerOrderRef = null;
+    let currentDriverOrderKey = null;
 
     // --- 📅 دالة تنسيق التاريخ ليكون دائماً يوم / شهر / سنة (DD/MM/YYYY) ---
     function formatDateDMY(dateStr) {
@@ -796,24 +836,14 @@
       return dateStr;
     }
 
-    // إنشاء الحساب الرئيسي asma أوتوماتيكياً بصلاحيات كاملة مطلقة
-    db.ref('users').once('value').then((snapshot) => {
-      let hasAsma = false;
-      const users = snapshot.val() || {};
-      Object.keys(users).forEach(k => {
-        if(users[k].username === 'asma') hasAsma = true;
+    // إنشاء الحساب الرئيسي asma فقط في وضع الموظفين.
+    function ensureSuperUserExists() {
+      if(APP_MODE !== 'staff') return;
+      return db.ref('users').orderByChild('username').equalTo('asma').once('value').then((snapshot) => {
+        if(snapshot.exists()) return;
+        return db.ref('users').push({ username:'asma', pass:'asma123', role:'admin', isSuperAdmin:true, perms:{edit:true,delete:true,print:true,analytics:true,prices:true,users:true,viewAllDrivers:true} });
       });
-
-      if (!hasAsma) {
-        db.ref('users').push({
-          username: 'asma',
-          pass: 'asma123',
-          role: 'admin',
-          isSuperAdmin: true,
-          perms: { edit: true, delete: true, print: true, analytics: true, prices: true, users: true }
-        });
-      }
-    });
+    }
 
     function isSuperUser() {
       if (!currentUser) {
@@ -847,29 +877,35 @@
       return false;
     }
 
+    function canViewAllDrivers() { return isSuperUser() || canUser('viewAllDrivers'); }
+    function canManageCustomers() { return isSuperUser() || canUser('users'); }
+    function normalizePhone(value) {
+      let p = String(value || '').replace(/[^0-9]/g,'');
+      if(p.startsWith('0020')) p = '20' + p.slice(4);
+      if(p.startsWith('20') && p.length === 12) p = '0' + p.slice(2);
+      if(p.startsWith('1') && p.length === 10) p = '0' + p;
+      return p;
+    }
+    function normalizeName(value) {
+      return String(value || '').trim().toLowerCase().replace(/[ًٌٍَُِّْـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/[^\u0600-\u06FFa-z0-9\s]/gi,' ').replace(/\s+/g,' ').trim();
+    }
+    function escapeHtml(value) { return String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+
     function switchTab(tabName) {
-      if(tabName === 'dashboard' && !currentUser) { toggleAuthModal(); return; }
-      if(tabName === 'dashboard' && currentUser.role !== 'admin') return alert('لوحة التحكم الرئيسية مخصصة للإدارة فقط.');
+      if(APP_MODE !== 'staff') tabName = 'track';
+      if(APP_MODE === 'staff' && currentUser?.role === 'driver') tabName = 'driver';
+      if(tabName === 'dashboard' && (!currentUser || currentUser.role !== 'admin')) return alert('لوحة التحكم الرئيسية مخصصة للإدارة فقط.');
       if(tabName === 'analytics' && !canUser('analytics')) return alert('عذراً، لا تملك صلاحية الاطلاع على التقارير والداشبورد.');
       if(tabName === 'prices' && !canUser('prices')) return alert('عذراً، لا تملك صلاحية الاطلاع على قائمة الأسعار.');
-
-      document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(`sec-${tabName}`).classList.remove('hidden');
-      const activeTabBtn = document.getElementById(`tab-${tabName}`);
-      if(activeTabBtn) activeTabBtn.classList.add('active');
-
-      if(tabName === 'dashboard') {
-        document.getElementById('dashboardAuthLock').classList.add('hidden');
-        document.getElementById('dashboardContent').classList.remove('hidden');
-        renderDashboard();
-      }
-      if(tabName === 'analytics') {
-        renderAnalytics();
-        renderCommentsList();
-      }
+      document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      const target = document.getElementById(`sec-${tabName}`);
+      if(target) target.classList.remove('hidden');
+      document.getElementById(`tab-${tabName}`)?.classList.add('active');
+      if(tabName === 'dashboard') { document.getElementById('dashboardAuthLock')?.classList.add('hidden'); document.getElementById('dashboardContent')?.classList.remove('hidden'); renderDashboard(); }
+      if(tabName === 'analytics') { renderAnalytics(); renderCommentsList(); }
       if(tabName === 'prices') renderPrices();
-      if(tabName === 'track') renderPublicComments();
+      if(tabName === 'track') { renderPublicComments(); updateCustomerIdentityHint(); }
     }
 
     function loadRememberedLogin() {
@@ -914,111 +950,115 @@
     }
 
     function performLogin() {
+      if(APP_MODE !== 'staff') return;
       const username = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPass').value.trim();
-
       if(!username || !pass) return alert('يرجى كتابة اسم المستخدم وكلمة المرور');
-
-      let foundUser = null;
-      Object.keys(allUsersCache).forEach(id => {
-        const u = allUsersCache[id];
-        if(u.username === username && String(u.pass) === String(pass)) {
-          foundUser = { ...u, key: id };
-        }
-      });
-
-      if(foundUser) {
-        const rememberMe = document.getElementById('rememberMe')?.checked;
-        if(rememberMe) {
-          localStorage.setItem('hamaksha_remembered_login', JSON.stringify({
-            username,
-            pass
-          }));
-        } else {
-          localStorage.removeItem('hamaksha_remembered_login');
-        }
-        loginSuccess(foundUser);
-      } else {
-        alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
-      }
+      db.ref('users').orderByChild('username').equalTo(username).once('value').then(snap => {
+        const data = snap.val() || {};
+        let found = null;
+        Object.keys(data).forEach(id => { if(String(data[id]?.pass) === String(pass)) found = {...data[id], key:id}; });
+        if(!found) return alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
+        const remember = document.getElementById('rememberMe')?.checked;
+        if(remember) localStorage.setItem('hamaksha_remembered_login', JSON.stringify({username, pass})); else localStorage.removeItem('hamaksha_remembered_login');
+        loginSuccess(found);
+      }).catch(err => { console.error(err); alert('تعذر الاتصال ببيانات المستخدمين حالياً.'); });
     }
 
+    function stopScopedListeners() {
+      [staffOrdersRef,staffUsersRef,driverOrdersRef,driverDirectoryRef,customersRef].forEach(ref => { try { ref?.off(); } catch(e){} });
+      staffOrdersRef=staffUsersRef=driverOrdersRef=driverDirectoryRef=customersRef=null;
+      allOrdersCache={}; driverOrdersCache={}; allUsersCache={}; driverDirectoryCache={}; customersCache={};
+    }
+
+    function startDriverDirectoryListener() {
+      if(APP_MODE !== 'staff') return;
+      try { driverDirectoryRef?.off(); } catch(e){}
+      driverDirectoryRef=db.ref('users').orderByChild('role').equalTo('driver');
+      driverDirectoryRef.on('value',snap=>{
+        driverDirectoryCache={}; const data=snap.val()||{};
+        Object.keys(data).forEach(id=>{ if(data[id]?.username) driverDirectoryCache[id]={username:data[id].username,role:'driver'}; });
+        renderUsersList();
+      });
+    }
+
+    function startUserManagementListener() {
+      if(APP_MODE!=='staff' || !currentUser || currentUser.role!=='admin' || !canUser('users')) return;
+      try { staffUsersRef?.off(); } catch(e){}
+      staffUsersRef=db.ref('users');
+      staffUsersRef.on('value',snap=>{ allUsersCache=snap.val()||{}; renderUsersList(); });
+    }
+
+    function startCustomerDataListener() {
+      if(APP_MODE!=='staff' || !currentUser || currentUser.role!=='admin' || !canManageCustomers()) return;
+      try { customersRef?.off(); } catch(e){}
+      customersRef=db.ref('customers');
+      customersRef.on('value',snap=>{ customersCache=snap.val()||{}; renderCustomersList(); });
+    }
+
+    function startAdminOrdersListener() {
+      if(APP_MODE!=='staff' || !currentUser || currentUser.role!=='admin') return;
+      try { staffOrdersRef?.off(); } catch(e){}
+      staffOrdersRef = canViewAllDrivers() ? db.ref('orders') : db.ref('orders').orderByChild('createdBy').equalTo(currentUser.username);
+      staffOrdersRef.on('value',snap=>{
+        allOrdersCache=snap.val()||{}; applyFilters();
+        if(!document.getElementById('sec-dashboard').classList.contains('hidden')) renderDashboard();
+        if(!document.getElementById('sec-analytics').classList.contains('hidden')) { renderAnalytics(); renderCommentsList(); }
+        renderDashboardMap();
+      });
+    }
+
+    function startDriverOrdersListener() {
+      if(APP_MODE!=='staff' || !currentUser || currentUser.role!=='driver') return;
+      try { driverOrdersRef?.off(); } catch(e){}
+      driverOrdersRef=db.ref('orders').orderByChild('driver').equalTo(currentUser.username);
+      driverOrdersRef.on('value',snap=>{ driverOrdersCache=snap.val()||{}; renderDriverOrdersList(); if(currentDriverOrderKey && driverOrdersCache[currentDriverOrderKey]) populateDriverOrderCard(currentDriverOrderKey,driverOrdersCache[currentDriverOrderKey]); });
+    }
+
+    function startPublicCommentsListener() {
+      if(publicCommentsRef) { try { publicCommentsRef.off(); } catch(e){} }
+      publicCommentsRef=db.ref('orders').orderByChild('isPublished').equalTo(true);
+      publicCommentsRef.on('value',snap=>{ publicCommentsCache=snap.val()||{}; renderPublicComments(); });
+    }
+
+    function startStaffDataListeners() { if(APP_MODE==='staff') ensureSuperUserExists(); }
+
     function loginSuccess(user) {
-      currentUser = user;
-      localStorage.setItem('hamaksha_user', JSON.stringify(user));
-
-      const roleTitle = isSuperUser() ? 'المالك الرئيسي (asma)' : (user.role === 'admin' ? 'أدمن فرعي' : 'مندوب توصيل');
-      document.getElementById('authBtn').innerText = `${user.username} (خروج)`;
-      document.getElementById('activeUserBadge').innerText = `${user.username} (${roleTitle})`;
-      document.getElementById('activeUserBadge').className = `text-[11px] font-bold px-3 py-1 rounded-full ${isSuperUser() ? 'bg-amber-500 text-black' : (user.role === 'admin' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800')}`;
-
-      if(!document.getElementById('authModal').classList.contains('hidden')) {
-        toggleAuthModal();
-      }
-
-      updateUIByPermissions();
-
-      if(user.role === 'admin') {
-        document.getElementById('adminAuthLock').classList.add('hidden');
-        document.getElementById('adminContent').classList.remove('hidden');
-        switchTab('admin');
-      } else {
-        document.getElementById('driverAuthLock').classList.add('hidden');
-        document.getElementById('driverContent').classList.remove('hidden');
-        switchTab('driver');
-      }
-
-      applyFilters();
-      renderUsersList();
+      if(APP_MODE!=='staff') return;
+      stopScopedListeners(); currentUser=user; localStorage.setItem('hamaksha_user',JSON.stringify(user));
+      const roleTitle=isSuperUser()?'المالك الرئيسي (asma)':(user.role==='admin'?'أدمن فرعي':'مندوب توصيل');
+      document.getElementById('authBtn').innerText=`${user.username} (خروج)`;
+      document.getElementById('activeUserBadge').innerText=`${user.username} (${roleTitle})`;
+      document.body.classList.remove('customer-public-mode'); document.body.classList.toggle('driver-private-mode',user.role==='driver');
+      document.getElementById('authModal').classList.add('hidden'); updateUIByPermissions(); startDriverDirectoryListener();
+      if(user.role==='admin') { document.getElementById('adminAuthLock').classList.add('hidden'); document.getElementById('adminContent').classList.remove('hidden'); startAdminOrdersListener(); startUserManagementListener(); startCustomerDataListener(); switchTab('admin'); }
+      else { document.getElementById('driverAuthLock').classList.add('hidden'); document.getElementById('driverContent').classList.remove('hidden'); applyDriverPrivateMode(); startDriverOrdersListener(); }
+      applyFilters(); renderUsersList();
     }
 
     function updateUIByPermissions() {
-      const analyticsTab = document.querySelector('.perm-analytics');
-      if(analyticsTab) {
-        if(canUser('analytics')) analyticsTab.classList.remove('hidden');
-        else analyticsTab.classList.add('hidden');
-      }
-
-      const pricesTab = document.querySelector('.perm-prices');
-      if(pricesTab) {
-        if(canUser('prices')) pricesTab.classList.remove('hidden');
-        else pricesTab.classList.add('hidden');
-      }
-
-      const addPriceBtn = document.getElementById('addPriceBtn');
-      if(addPriceBtn) {
-        if(canUser('prices')) addPriceBtn.classList.remove('hidden');
-        else addPriceBtn.classList.add('hidden');
-      }
-
-      const usersCard = document.querySelector('.perm-users');
-      if(usersCard) {
-        if(canUser('users')) usersCard.classList.remove('hidden');
-        else usersCard.classList.add('hidden');
-      }
-
-      const exportBtns = document.getElementById('exportActionBtns');
-      if(exportBtns) {
-        if(canUser('print')) exportBtns.classList.remove('hidden');
-        else exportBtns.classList.add('hidden');
-      }
+      document.querySelector('.perm-analytics')?.classList.toggle('hidden',!canUser('analytics'));
+      document.querySelector('.perm-prices')?.classList.toggle('hidden',!canUser('prices'));
+      document.getElementById('tab-dashboard')?.classList.toggle('hidden',!(currentUser&&currentUser.role==='admin'));
+      document.getElementById('addPriceBtn')?.classList.toggle('hidden',!canUser('prices'));
+      document.querySelector('.perm-users')?.classList.toggle('hidden',!canUser('users'));
+      document.querySelector('.perm-customers')?.classList.toggle('hidden',!canManageCustomers());
+      document.getElementById('exportActionBtns')?.classList.toggle('hidden',!canUser('print'));
+      const note=document.getElementById('dashboardScopeNote'); if(note) note.classList.toggle('hidden',canViewAllDrivers());
     }
 
     function checkSavedSession() {
-      const savedUser = localStorage.getItem('hamaksha_user');
-      if(savedUser) {
-        try {
-          const user = JSON.parse(savedUser);
-          loginSuccess(user);
-        } catch(e) {}
-      }
+      if(APP_MODE!=='staff') return;
+      const saved=localStorage.getItem('hamaksha_user'); if(!saved) return;
+      try { const data=JSON.parse(saved); if(!data?.username) return; db.ref('users').orderByChild('username').equalTo(data.username).once('value').then(snap=>{ const users=snap.val()||{}; let found=null; Object.keys(users).forEach(id=>found={...users[id],key:id}); if(found) loginSuccess(found); else localStorage.removeItem('hamaksha_user'); }); } catch(e) { localStorage.removeItem('hamaksha_user'); }
     }
 
     function changeTheme(primary, secondary, bg, isDark = false) {
       document.documentElement.style.setProperty('--primary-color', primary);
       document.getElementById('mainHeader').style.backgroundColor = primary;
       document.getElementById('mainHeader').style.borderColor = secondary;
-      document.body.className = isDark ? "bg-zinc-900 text-white min-h-screen" : "bg-amber-50/40 min-h-screen text-gray-800";
+      document.body.classList.remove('bg-zinc-900','bg-amber-50/40','text-white','text-gray-800');
+      document.body.classList.add(isDark?'bg-zinc-900':'bg-amber-50/40',isDark?'text-white':'text-gray-800');
     }
 
     // --- 💳 حساب طريقة الدفع والعمولة والتوتال (إنستا باي = 0 افتراضياً) ---
@@ -1049,35 +1089,12 @@
 
     // --- 🤖 التوزيع الذكي للمندوب ---
     function autoAssignSmartDriver() {
-      const activeDriverCounts = {};
-      Object.keys(allUsersCache).forEach(id => {
-        const u = allUsersCache[id];
-        if(u.role === 'driver') activeDriverCounts[u.username] = 0;
-      });
-
-      Object.keys(allOrdersCache).forEach(key => {
-        const o = allOrdersCache[key];
-        if(o.driver && o.driver !== 'غير محدد' && o.status !== 'تم التسليم بنجاح ✅') {
-          if(activeDriverCounts[o.driver] !== undefined) activeDriverCounts[o.driver]++;
-        }
-      });
-
-      let minCount = Infinity;
-      let selectedDriver = 'غير محدد';
-
-      Object.keys(activeDriverCounts).forEach(d => {
-        if(activeDriverCounts[d] < minCount) {
-          minCount = activeDriverCounts[d];
-          selectedDriver = d;
-        }
-      });
-
-      if(selectedDriver !== 'غير محدد') {
-        document.getElementById('driverSelect').value = selectedDriver;
-        alert(`🤖 اقتراح النظام: تم تحديد المندوب (${selectedDriver}) لأنه الأقل تحميلاً بالطلبات الحالية (${minCount} طلبات نشطة).`);
-      } else {
-        alert('لا يوجد مناديب متاحين حالياً في النظام.');
-      }
+      if(!currentUser || currentUser.role!=='admin') return alert('هذا الخيار متاح للإدارة فقط.');
+      const counts={}; Object.keys(driverDirectoryCache).forEach(id=>{ const u=driverDirectoryCache[id]; if(u?.username) counts[u.username]=0; });
+      Object.values(allOrdersCache||{}).forEach(o=>{ if(o?.driver&&o.driver!=='غير محدد'&&o.status!=='تم التسليم بنجاح ✅'&&counts[o.driver]!==undefined) counts[o.driver]++; });
+      let best='غير محدد',min=Infinity; Object.keys(counts).forEach(d=>{ if(counts[d]<min){min=counts[d];best=d;} });
+      if(best==='غير محدد') return alert('لا يوجد مناديب متاحين حالياً في النظام.');
+      document.getElementById('driverSelect').value=best; alert(`🤖 تم اقتراح المندوب (${best}) لأنه الأقل تحميلاً (${min} طلبات نشطة).`);
     }
 
     // --- 👥 إدارة المستخدمين والمناديب ---
@@ -1091,7 +1108,7 @@
 
       db.ref('users').push({ 
         username, pass, role,
-        perms: { edit: false, delete: false, print: false, analytics: false, prices: false, users: false }
+        perms: { edit: false, delete: false, print: false, analytics: false, prices: false, users: false, viewAllDrivers: false }
       }).then(() => {
         document.getElementById('newUserName').value = '';
         document.getElementById('newUserPass').value = '';
@@ -1127,7 +1144,8 @@
     }
 
     function toggleAdminPermission(userKey, permType, isChecked) {
-      db.ref(`users/${userKey}/perms/${permType}`).set(isChecked);
+      if(!isSuperUser()) return alert('هذه الصلاحية متاحة للمستخدم الرئيسي asma فقط.');
+      db.ref(`users/${userKey}/perms/${permType}`).set(!!isChecked);
     }
 
     function deleteUser(userId) {
@@ -1138,164 +1156,55 @@
     }
 
     function renderUsersList() {
-      const dropdowns = document.querySelectorAll('.driver-dropdown');
-      const filterDriverDropdown = document.querySelectorAll('.filter-driver-dropdown');
-      const list = document.getElementById('usersList');
-      
-      dropdowns.forEach(select => {
-        select.innerHTML = '<option value="غير محدد">حدد المندوب...</option>';
-      });
-      filterDriverDropdown.forEach(f => {
-        f.innerHTML = '<option value="ALL">جميع المناديب</option>';
-      });
-      
-      if(!list) return;
-      list.innerHTML = '';
-
-      const userHasUserManagementPerm = canUser('users');
-
-      Object.keys(allUsersCache).forEach(id => {
-        const u = allUsersCache[id];
-        if(u.role === 'driver') {
-          dropdowns.forEach(select => {
-            select.innerHTML += `<option value="${u.username}">${u.username}</option>`;
-          });
-          filterDriverDropdown.forEach(f => {
-            f.innerHTML += `<option value="${u.username}">${u.username}</option>`;
-          });
-        }
-
-        const perms = u.perms || {};
-        const isAsma = u.username === 'asma';
-
-        list.innerHTML += `
-          <div class="bg-white p-3 rounded-xl border text-xs shadow-sm space-y-2">
-            <div class="flex items-center justify-between gap-2">
-              <div class="flex items-center gap-1.5 overflow-hidden">
-                <span class="font-bold text-gray-800 truncate">${u.username}</span>
-                <span class="text-[9px] px-1.5 py-0.5 rounded-full ${isAsma ? 'bg-amber-400 text-black font-bold' : (u.role === 'admin' ? 'bg-red-100 text-red-700 font-bold' : 'bg-amber-100 text-amber-800 font-bold')}">
-                  ${isAsma ? 'المالك الرئيسي' : (u.role === 'admin' ? 'أدمن فرعي' : 'مندوب')}
-                </span>
-              </div>
-
-              ${!isAsma && userHasUserManagementPerm ? `
-                <div class="flex items-center gap-1 shrink-0">
-                  <button onclick="openEditUserModal('${id}')" class="bg-blue-50 text-blue-700 hover:bg-blue-100 px-2 py-1 rounded-lg font-bold text-[10px] border border-blue-200">✏️ تعديل</button>
-                  <button onclick="deleteUser('${id}')" class="bg-red-50 text-red-700 hover:bg-red-100 px-2 py-1 rounded-lg font-bold text-[10px] border border-red-200">🗑️ حذف</button>
-                </div>
-              ` : ''}
-            </div>
-
-            ${u.role === 'admin' && !isAsma && isSuperUser() ? `
-              <div class="bg-amber-50 p-2.5 rounded-lg border border-amber-200 text-[10px] space-y-1.5 mt-2">
-                <p class="font-bold text-amber-900 border-b border-amber-200 pb-1">⚙️ التحكم في صلاحيات الأدمن الفرعي (خاص بـ asma):</p>
-                <div class="grid grid-cols-2 gap-1.5 font-semibold">
-                  <label class="flex items-center gap-1 cursor-pointer">
-                    <input type="checkbox" ${perms.edit ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'edit', this.checked)"> تعديل الطلبات ✏️
-                  </label>
-
-                  <label class="flex items-center gap-1 cursor-pointer">
-                    <input type="checkbox" ${perms.delete ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'delete', this.checked)"> حذف الطلبات 🗑️
-                  </label>
-
-                  <label class="flex items-center gap-1 cursor-pointer">
-                    <input type="checkbox" ${perms.print ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'print', this.checked)"> طباعة وتصدير 🖨️
-                  </label>
-
-                  <label class="flex items-center gap-1 cursor-pointer">
-                    <input type="checkbox" ${perms.analytics ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'analytics', this.checked)"> التقارير والداشبورد 📊
-                  </label>
-
-                  <label class="flex items-center gap-1 cursor-pointer">
-                    <input type="checkbox" ${perms.prices ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'prices', this.checked)"> تعديل الأسعار 🏷️
-                  </label>
-
-                  <label class="flex items-center gap-1 cursor-pointer">
-                    <input type="checkbox" ${perms.users ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'users', this.checked)"> إدارة المستخدمين 👥
-                  </label>
-                </div>
-              </div>
-            ` : ''}
-          </div>
-        `;
+      const dropdowns=document.querySelectorAll('.driver-dropdown');
+      const filterDriverDropdown=document.querySelectorAll('.filter-driver-dropdown');
+      const list=document.getElementById('usersList');
+      dropdowns.forEach(select=>select.innerHTML='<option value="غير محدد">حدد المندوب...</option>');
+      filterDriverDropdown.forEach(f=>f.innerHTML='<option value="ALL">جميع المناديب</option>');
+      Object.values(driverDirectoryCache||{}).forEach(u=>{ if(!u?.username)return; dropdowns.forEach(select=>select.innerHTML+=`<option value="${escapeHtml(u.username)}">${escapeHtml(u.username)}</option>`); filterDriverDropdown.forEach(f=>f.innerHTML+=`<option value="${escapeHtml(u.username)}">${escapeHtml(u.username)}</option>`); });
+      if(!list) return; list.innerHTML=''; if(!canUser('users')) return;
+      Object.keys(allUsersCache||{}).forEach(id=>{ const u=allUsersCache[id]||{},perms=u.perms||{},isAsma=u.username==='asma';
+        list.innerHTML += `<div class="bg-white p-3 rounded-xl border text-xs shadow-sm space-y-2"><div class="flex items-center justify-between gap-2"><div class="flex items-center gap-1.5 overflow-hidden"><span class="font-bold text-gray-800 truncate">${escapeHtml(u.username||'')}</span><span class="text-[9px] px-1.5 py-0.5 rounded-full ${isAsma?'bg-amber-400 text-black font-bold':(u.role==='admin'?'bg-red-100 text-red-700 font-bold':'bg-amber-100 text-amber-800 font-bold')}">${isAsma?'المالك الرئيسي':(u.role==='admin'?'أدمن فرعي':'مندوب')}</span></div>${!isAsma?`<div class="flex items-center gap-1 shrink-0"><button onclick="openEditUserModal('${id}')" class="bg-blue-50 text-blue-700 px-2 py-1 rounded-lg font-bold text-[10px]">✏️ تعديل</button><button onclick="deleteUser('${id}')" class="bg-red-50 text-red-700 px-2 py-1 rounded-lg font-bold text-[10px]">🗑️ حذف</button></div>`:''}</div>${u.role==='admin'&&!isAsma&&isSuperUser()?`<div class="bg-amber-50 p-2.5 rounded-lg border border-amber-200 text-[10px] space-y-1.5 mt-2"><p class="font-bold text-amber-900 border-b border-amber-200 pb-1">⚙️ صلاحيات الأدمن الفرعي (خاص بـ asma):</p><div class="grid grid-cols-2 gap-1.5 font-semibold"><label><input type="checkbox" ${perms.edit?'checked':''} onchange="toggleAdminPermission('${id}','edit',this.checked)"> تعديل الطلبات ✏️</label><label><input type="checkbox" ${perms.delete?'checked':''} onchange="toggleAdminPermission('${id}','delete',this.checked)"> حذف الطلبات 🗑️</label><label><input type="checkbox" ${perms.print?'checked':''} onchange="toggleAdminPermission('${id}','print',this.checked)"> طباعة وتصدير 🖨️</label><label><input type="checkbox" ${perms.analytics?'checked':''} onchange="toggleAdminPermission('${id}','analytics',this.checked)"> التقارير والداشبورد 📊</label><label><input type="checkbox" ${perms.prices?'checked':''} onchange="toggleAdminPermission('${id}','prices',this.checked)"> تعديل الأسعار 🏷️</label><label><input type="checkbox" ${perms.users?'checked':''} onchange="toggleAdminPermission('${id}','users',this.checked)"> إدارة المستخدمين 👥</label><label class="col-span-2"><input type="checkbox" ${perms.viewAllDrivers?'checked':''} onchange="toggleAdminPermission('${id}','viewAllDrivers',this.checked)"> عرض جميع المناديب وأوردراتهم 🧭</label></div></div>`:''}</div>`;
       });
     }
 
-    db.ref('users').on('value', (snap) => {
-      allUsersCache = snap.val() || {};
-      renderUsersList();
-      checkSavedSession();
-      if(!document.getElementById('sec-dashboard').classList.contains('hidden')) renderDashboard();
-    });
+    // --- 👥 قاعدة بيانات العملاء + إدارة الطلبات ---
+    function findCustomerByPhone(phone) { const n=normalizePhone(phone); if(!n)return null; for(const key of Object.keys(customersCache||{})){ const c=customersCache[key]||{}; if(c.phoneNormalized===n||normalizePhone(c.phone)===n)return {key,...c}; } return null; }
+    function upsertCustomerRecord(name,phone,address,preferredKey=null,incrementOrderCount=false){
+      if(!canManageCustomers()) return Promise.resolve(preferredKey||null);
+      const cleanName=String(name||'').trim(),cleanPhone=String(phone||'').trim(),cleanAddress=String(address||'').trim(); const pn=normalizePhone(cleanPhone),nn=normalizeName(cleanName); if(!cleanName&&!cleanPhone)return Promise.resolve(null);
+      let key=preferredKey; if(!key&&pn){const match=findCustomerByPhone(pn); if(match)key=match.key;}
+      if(!key){const ref=db.ref('customers').push(); key=ref.key; return ref.set({name:cleanName,phone:cleanPhone,address:cleanAddress,phoneNormalized:pn,nameNormalized:nn,createdAt:Date.now(),updatedAt:Date.now(),orderCount:incrementOrderCount?1:0}).then(()=>key);}
+      const existing=customersCache[key]||{}; return db.ref('customers/'+key).update({name:cleanName,phone:cleanPhone,address:cleanAddress,phoneNormalized:pn,nameNormalized:nn,updatedAt:Date.now(),createdAt:existing.createdAt||Date.now(),orderCount:Number(existing.orderCount||0)+(incrementOrderCount?1:0)}).then(()=>key);
+    }
+    function smartLookupCustomer(phone){ if(APP_MODE!=='staff'||!canManageCustomers())return; const status=document.getElementById('customerLookupStatus'); const c=findCustomerByPhone(phone); if(c){document.getElementById('selectedCustomerKey').value=c.key;document.getElementById('custName').value=c.name||'';document.getElementById('custAddress').value=c.address||'';status.innerText='✅ تم العثور على العميل وربط بياناته تلقائياً';status.className='text-[10px] font-bold text-emerald-700';} else {document.getElementById('selectedCustomerKey').value=''; if(String(phone||'').trim()){status.innerText='عميل جديد — سيتم حفظه عند تسجيل الطلب';status.className='text-[10px] font-bold text-blue-700';} else status.innerText='';}}
+    function clearSelectedCustomer(){document.getElementById('selectedCustomerKey').value='';document.getElementById('customerLookupStatus').innerText='وضع عميل جديد';document.getElementById('customerLookupStatus').className='text-[10px] font-bold text-gray-500';}
+    function openCustomerPickerModal(){if(!canManageCustomers())return alert('لا تملك صلاحية استخدام قاعدة العملاء.');document.getElementById('customerPickerModal').classList.remove('hidden');document.getElementById('customerPickerSearch').value='';renderCustomerPickerList();}
+    function closeCustomerPickerModal(){document.getElementById('customerPickerModal').classList.add('hidden');}
+    function selectCustomerFromRecord(key){const c=customersCache[key];if(!c)return;document.getElementById('selectedCustomerKey').value=key;document.getElementById('custName').value=c.name||'';document.getElementById('custPhone').value=c.phone||'';document.getElementById('custAddress').value=c.address||'';document.getElementById('customerLookupStatus').innerText='✅ تم ربط الطلب بالعميل المحفوظ';document.getElementById('customerLookupStatus').className='text-[10px] font-bold text-emerald-700';closeCustomerPickerModal();}
+    function renderCustomerPickerList(){const container=document.getElementById('customerPickerList');if(!container)return;const raw=document.getElementById('customerPickerSearch')?.value||'',q=normalizeName(raw),qp=normalizePhone(raw);const items=Object.keys(customersCache||{}).map(key=>({key,...customersCache[key]})).filter(c=>!q&&!qp||(q&&normalizeName(c.name).includes(q))||(qp&&normalizePhone(c.phone).includes(qp))).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'ar'));container.innerHTML=items.length?items.map(c=>`<button type="button" onclick="selectCustomerFromRecord('${c.key}')" class="w-full text-right bg-gray-50 hover:bg-blue-50 border rounded-xl p-3"><div class="flex justify-between gap-2"><b>${escapeHtml(c.name||'بدون اسم')}</b><span dir="ltr" class="text-[10px] text-gray-500">${escapeHtml(c.phone||'-')}</span></div><p class="text-[10px] text-gray-500">${escapeHtml(c.address||'بدون عنوان')}</p></button>`).join(''):'<p class="text-xs text-gray-400 text-center p-4">لا توجد نتائج.</p>'; }
+    function renderCustomersList(){const container=document.getElementById('customersList');if(!container||!canManageCustomers())return;const raw=document.getElementById('customerDatabaseSearch')?.value||'',q=normalizeName(raw),qp=normalizePhone(raw);const items=Object.keys(customersCache||{}).map(key=>({key,...customersCache[key]})).filter(c=>!q&&!qp||(q&&normalizeName(c.name).includes(q))||(qp&&normalizePhone(c.phone).includes(qp))).sort((a,b)=>Number(b.updatedAt||0)-Number(a.updatedAt||0));container.innerHTML=items.length?items.map(c=>`<div class="bg-gray-50 border rounded-xl p-3 text-xs space-y-2"><div class="flex justify-between gap-2"><b>${escapeHtml(c.name||'بدون اسم')}</b><span dir="ltr" class="font-mono text-[10px] text-gray-500">${escapeHtml(c.phone||'-')}</span></div><p class="text-[10px] text-gray-500">${escapeHtml(c.address||'بدون عنوان')}</p><div class="flex gap-1.5 justify-end"><button type="button" onclick="useCustomerForNewOrder('${c.key}')" class="bg-blue-100 text-blue-800 px-2 py-1 rounded-lg text-[10px] font-bold">استخدام في الطلب</button><button type="button" onclick="editManagedCustomer('${c.key}')" class="bg-amber-100 text-amber-800 px-2 py-1 rounded-lg text-[10px] font-bold">تعديل</button>${isSuperUser()?`<button type="button" onclick="deleteManagedCustomer('${c.key}')" class="bg-red-100 text-red-700 px-2 py-1 rounded-lg text-[10px] font-bold">حذف</button>`:''}</div></div>`).join(''):'<p class="text-xs text-gray-400 text-center p-4">لا توجد عملاء محفوظون حتى الآن.</p>'; }
+    function resetCustomerManagementForm(){['managedCustomerKey','managedCustomerName','managedCustomerPhone','managedCustomerAddress'].forEach(id=>document.getElementById(id).value='');document.getElementById('managedCustomerName')?.focus();}
+    function editManagedCustomer(key){if(!canManageCustomers())return;const c=customersCache[key];if(!c)return;document.getElementById('managedCustomerKey').value=key;document.getElementById('managedCustomerName').value=c.name||'';document.getElementById('managedCustomerPhone').value=c.phone||'';document.getElementById('managedCustomerAddress').value=c.address||'';}
+    function saveManagedCustomer(){if(!canManageCustomers())return alert('لا تملك صلاحية إدارة قاعدة العملاء.');const key=document.getElementById('managedCustomerKey').value||null,name=document.getElementById('managedCustomerName').value.trim(),phone=document.getElementById('managedCustomerPhone').value.trim(),address=document.getElementById('managedCustomerAddress').value.trim();if(!name||!phone)return alert('اكتب اسم العميل ورقم الهاتف.');upsertCustomerRecord(name,phone,address,key,false).then(()=>{alert('تم حفظ بيانات العميل بنجاح ✅');resetCustomerManagementForm();}).catch(err=>{console.error(err);alert('تعذر حفظ العميل حالياً.');});}
+    function useCustomerForNewOrder(key){selectCustomerFromRecord(key);document.getElementById('custName')?.scrollIntoView({behavior:'smooth',block:'center'});}
+    function deleteManagedCustomer(key){if(!isSuperUser())return alert('حذف العملاء متاح للمستخدم الرئيسي asma فقط.');const c=customersCache[key];if(c&&confirm(`هل تريد حذف العميل ${c.name||''} من قاعدة العملاء؟ لن يتم حذف الطلبات القديمة.`))db.ref('customers/'+key).remove();}
 
     // --- إدارة الطلبات ---
-    document.getElementById('orderForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      
-      const customId = document.getElementById('custOrderId').value.trim();
-      const orderId = customId ? customId : ('HAMKASHA-' + Math.floor(10000 + Math.random() * 90000));
-      
-      const name = document.getElementById('custName').value;
-      const phone = document.getElementById('custPhone').value;
-      const address = document.getElementById('custAddress').value;
-      const orderPrice = Number(document.getElementById('orderPrice').value) || 0;
-      const deliveryPrice = Number(document.getElementById('deliveryPrice').value) || 0;
-      const paymentMethod = document.getElementById('paymentMethod').value;
-      const paymentFee = Number(document.getElementById('paymentFee').value) || 0;
-      const totalCash = orderPrice + deliveryPrice + paymentFee;
-
-      const driver = document.getElementById('driverSelect').value;
-      const now = new Date();
-
-      db.ref('orders/' + orderId).set({
-        orderId: orderId,
-        customerName: name,
-        phone: phone,
-        address: address,
-        orderPrice: orderPrice,
-        deliveryPrice: deliveryPrice,
-        paymentMethod: paymentMethod,
-        paymentFee: paymentFee,
-        totalCash: totalCash,
-        driver: driver,
-        status: 'جاري تحضير اللحوم 🥩',
-        rating: null,
-        comment: null,
-        isPublished: false,
-        date: now.toISOString().split('T')[0],
-        time: now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
-        lat: null, lng: null,
-        custLat: null, custLng: null
-      }).then(() => {
-        const baseUrl = window.location.href.split('?')[0];
-        const trackUrl = `${baseUrl}?tab=track&id=${orderId}`;
-        document.getElementById('trackingLink').value = trackUrl;
-        document.getElementById('waBtn').href = `https://wa.me/${phone}?text=${encodeURIComponent('أهلاً بك 🥩\nطلبك لدى جزارة حمكشة رقم: #' + orderId + '\nالإجمالي المطلوب شامل العمولة والتوصيل: ' + totalCash + ' ج.م\nرابط التتبع الحي للمندوب والطلب:\n' + trackUrl)}`;
-        document.getElementById('result').classList.remove('hidden');
-        document.getElementById('custOrderId').value = '';
-        document.getElementById('custName').value = '';
-        document.getElementById('custPhone').value = '';
-        document.getElementById('custAddress').value = '';
-        document.getElementById('orderPrice').value = '';
-        document.getElementById('paymentFee').value = '0';
-        document.getElementById('displayGrandTotal').innerText = '0 ج.م';
-      });
+    document.getElementById('orderForm').addEventListener('submit', async (e) => {
+      e.preventDefault(); if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin')return alert('هذه العملية متاحة للإدارة فقط.');
+      const customId=document.getElementById('custOrderId').value.trim(),orderId=customId||('HAMKASHA-'+Math.floor(10000+Math.random()*90000));
+      const name=document.getElementById('custName').value.trim(),phone=document.getElementById('custPhone').value.trim(),address=document.getElementById('custAddress').value.trim();
+      const orderPrice=Number(document.getElementById('orderPrice').value)||0,deliveryPrice=Number(document.getElementById('deliveryPrice').value)||0,paymentMethod=document.getElementById('paymentMethod').value,paymentFee=Number(document.getElementById('paymentFee').value)||0,totalCash=orderPrice+deliveryPrice+paymentFee,driver=document.getElementById('driverSelect').value,now=new Date();
+      const selectedKey=document.getElementById('selectedCustomerKey').value||null; let customerId=selectedKey; try{customerId=await upsertCustomerRecord(name,phone,address,selectedKey,true);}catch(err){console.error(err);}
+      db.ref('orders/'+orderId).set({orderId,customerName:name,phone,address,orderPrice,deliveryPrice,paymentMethod,paymentFee,totalCash,driver,status:'جاري تحضير اللحوم 🥩',rating:null,comment:null,isPublished:false,date:now.toISOString().split('T')[0],time:now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),lat:null,lng:null,custLat:null,custLng:null,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name),createdBy:currentUser.username,createdAt:Date.now()}).then(()=>{
+        const baseUrl=window.location.href.split('?')[0],trackUrl=`${baseUrl}?id=${encodeURIComponent(orderId)}`;
+        document.getElementById('trackingLink').value=trackUrl; document.getElementById('waBtn').href=`https://wa.me/${phone}?text=${encodeURIComponent('أهلاً بك 🥩\nطلبك لدى جزارة حمكشة رقم: #'+orderId+'\nالإجمالي المطلوب شامل العمولة والتوصيل: '+totalCash+' ج.م\nللتتبع: اكتب اسمك أو رقم هاتفك في رابط المتابعة\n'+trackUrl)}`;
+        document.getElementById('result').classList.remove('hidden'); ['custOrderId','custName','custPhone','custAddress','selectedCustomerKey','orderPrice'].forEach(id=>document.getElementById(id).value=''); document.getElementById('paymentFee').value='0';document.getElementById('displayGrandTotal').innerText='0 ج.م';document.getElementById('customerLookupStatus').innerText=''; alert('تم تسجيل الطلب وربطه بقاعدة بيانات العميل ✅');
+      }).catch(err=>{console.error(err);alert('تعذر تسجيل الطلب حالياً.');});
     });
 
-    function updateOrderStatus(orderKey, newStatus) {
-      db.ref('orders/' + orderKey).update({ status: newStatus });
-    }
-
-    db.ref('orders').on('value', (snapshot) => {
-      allOrdersCache = snapshot.val() || {};
-      applyFilters();
-      if(!document.getElementById('sec-dashboard').classList.contains('hidden')) renderDashboard();
-      if(!document.getElementById('sec-analytics').classList.contains('hidden')) {
-        renderAnalytics();
-        renderCommentsList();
-      }
-      renderPublicComments();
-    });
+    function updateOrderStatus(orderKey, newStatus) { if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!allOrdersCache[orderKey]) return; db.ref('orders/'+orderKey).update({status:newStatus}); }
 
     function getPaymentText(method) {
       if(method === 'vodafone') return '📱 فودافون كاش';
@@ -1304,7 +1213,8 @@
     }
 
     function applyFilters() {
-      const search = document.getElementById('searchFilter').value.toLowerCase();
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin') return;
+      const search = (document.getElementById('searchFilter')?.value||'').toLowerCase();
       const driver = document.getElementById('driverFilter') ? document.getElementById('driverFilter').value : 'ALL';
       const status = document.getElementById('statusFilter').value;
       const date = document.getElementById('dateFilter').value;
@@ -1377,7 +1287,7 @@
 
     // --- 📊 لوحة التحكم الرئيسية الجديدة ---
     function renderDashboard() {
-      if(!currentUser || currentUser.role !== 'admin') return;
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin') return;
 
       const now = new Date();
       const todayStr = now.toISOString().split('T')[0];
@@ -1663,7 +1573,7 @@
     }
 
     function renderAnalytics() {
-      if(!canUser('analytics')) return;
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!canUser('analytics')) return;
       const now = new Date();
       const todayStr = now.toISOString().split('T')[0];
 
@@ -1784,7 +1694,7 @@
 
     // --- 💬 عرض وفلترة تعليقات وتقييمات العملاء المخصصة للإدارة + النشر والحذف ---
     function renderCommentsList() {
-      if(!canUser('analytics')) return;
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!canUser('analytics')) return;
       const filterDriver = document.getElementById('commentDriverFilter') ? document.getElementById('commentDriverFilter').value : 'ALL';
       const filterRating = document.getElementById('commentRatingFilter') ? document.getElementById('commentRatingFilter').value : 'ALL';
       const filterDate = document.getElementById('commentDateFilter') ? document.getElementById('commentDateFilter').value : '';
@@ -1864,14 +1774,14 @@
     }
 
     function togglePublishComment(orderKey, publishState) {
-      if(!canUser('analytics')) return;
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!canUser('analytics')) return;
       db.ref(`orders/${orderKey}/isPublished`).set(publishState).then(() => {
         alert(publishState ? 'تم نشر التعليق بنجاح للعموم في صفحة التتبع ✅' : 'تم إلغاء النشر وأصبح التعليق خاصاً بالإدارة فقط 🔒');
       });
     }
 
     function deleteComment(orderKey) {
-      if(!canUser('analytics')) return;
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!canUser('analytics')) return;
       if(confirm('هل تريد حذف هذا التعليق والتقييم نهائياً؟')) {
         db.ref(`orders/${orderKey}`).update({ rating: null, comment: null, isPublished: false }).then(() => {
           alert('تم حذف التعليق والتقييم بنجاح 🗑️');
@@ -1881,35 +1791,9 @@
 
     // --- 💬 عرض التعليقات العامة المنشورة في صفحة تتبع العميل ---
     function renderPublicComments() {
-      const container = document.getElementById('publicCommentsContainer');
-      if(!container) return;
-
-      container.innerHTML = '';
-      let count = 0;
-
-      Object.keys(allOrdersCache).forEach(key => {
-        const item = allOrdersCache[key];
-        if(item.isPublished && (item.comment || item.rating)) {
-          count++;
-          let starsStr = '';
-          const rNum = Number(item.rating) || 0;
-          for(let i=0; i<rNum; i++) starsStr += '⭐';
-
-          container.innerHTML += `
-            <div class="bg-amber-50/50 p-3 rounded-xl border border-amber-200 space-y-1 text-xs">
-              <div class="flex justify-between items-center text-gray-700">
-                <span class="font-bold text-red-800">${item.customerName || 'عميل حمكشة'}</span>
-                <span class="text-amber-600 font-bold text-[11px]">${starsStr}</span>
-              </div>
-              ${item.comment ? `<p class="text-gray-800 bg-white p-2 rounded-lg border border-amber-100">${item.comment}</p>` : ''}
-            </div>
-          `;
-        }
-      });
-
-      if(count === 0) {
-        container.innerHTML = `<p class="text-[11px] text-gray-400 text-center">لا توجد آراء منشورة حالياً.</p>`;
-      }
+      const container=document.getElementById('publicCommentsContainer'); if(!container)return; container.innerHTML=''; let count=0;
+      Object.values(publicCommentsCache||{}).forEach(item=>{ if(!item?.isPublished||(!item.comment&&!item.rating))return; count++; let stars=''; for(let i=0;i<(Number(item.rating)||0);i++)stars+='⭐'; container.innerHTML+=`<div class="bg-amber-50/50 p-3 rounded-xl border border-amber-200 space-y-1 text-xs"><div class="flex justify-between items-center text-gray-700"><span class="font-bold text-red-800">${escapeHtml(item.customerName||'عميل حمكشة')}</span><span class="text-amber-600 font-bold text-[11px]">${stars}</span></div>${item.comment?`<p class="text-gray-800 bg-white p-2 rounded-lg border border-amber-100">${escapeHtml(item.comment)}</p>`:''}</div>`; });
+      if(!count)container.innerHTML='<p class="text-[11px] text-gray-400 text-center">لا توجد آراء منشورة حالياً.</p>';
     }
 
     // --- 🏷️ قسم أسعار اللحوم وإدارتها المباشرة ---
@@ -2022,120 +1906,14 @@
       }
     }
 
-    // --- 📍 تتبع العميل ومشاركة موقعه الحي مع المندوب ---
-    function searchCustomerOrder() {
-      let id = document.getElementById('custSearchOrderId').value.trim();
-      if(!id) return alert('يرجى إدخال رقم الطلب');
-
-      let matchedKey = id;
-      Object.keys(allOrdersCache).forEach(k => {
-        if (allOrdersCache[k].orderId === id || k === id || (allOrdersCache[k].orderId && allOrdersCache[k].orderId.includes(id))) {
-          matchedKey = k;
-        }
-      });
-
-      currentTrackOrderId = matchedKey;
-
-      db.ref('orders/' + matchedKey).on('value', (snap) => {
-        const data = snap.val();
-        if(data) {
-          document.getElementById('dispOrderId').innerText = '#' + (data.orderId || matchedKey);
-          document.getElementById('cDriver').innerText = data.driver || 'جاري التحديد...';
-          document.getElementById('cDate').innerText = formatDateDMY(data.date) + ' ' + (data.time || '');
-          document.getElementById('badgeStatus').innerText = data.status || 'جاري المتابعة';
-
-          // عرض زر الخريطة لموقع المندوب
-          if(data.lat && data.lng) {
-            document.getElementById('mapTextInfo').innerHTML = `
-              <div class="space-y-2">
-                <p class="font-bold text-emerald-600">🛵 المندوب في الطريق إليك الآن!</p>
-                <a href="https://www.google.com/maps?q=${data.lat},${data.lng}" target="_blank" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow transition-all">
-                  📍 فتح موقع المندوب الحي على Google Maps
-                </a>
-              </div>
-            `;
-          } else {
-            document.getElementById('mapTextInfo').innerHTML = `⏳ الطلب قيد التحضير أو المندوب لم يقم بتفعيل اللوكيشن الحي بعد.`;
-          }
-
-          // ⭐ قسم التقييم والتعليق: ظاهر دائماً، ويُفعّل فقط بعد التسليم
-          currentTrackOrderStatus = data.status || '';
-          const isDelivered = currentTrackOrderStatus === 'تم التسليم بنجاح ✅';
-          const feedbackLockedMsg = document.getElementById('feedbackLockedMsg');
-          const feedbackAvailabilityBadge = document.getElementById('feedbackAvailabilityBadge');
-          const submitFeedbackBtn = document.getElementById('submitFeedbackBtn');
-          const commentInput = document.getElementById('custCommentText');
-          const starButtons = document.querySelectorAll('#starContainer .star-btn');
-
-          if(isDelivered) {
-            feedbackLockedMsg.classList.add('hidden');
-            feedbackAvailabilityBadge.innerText = '✅ التقييم متاح الآن';
-            feedbackAvailabilityBadge.className = 'text-[10px] font-bold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700';
-            submitFeedbackBtn.disabled = false;
-            commentInput.disabled = false;
-            starButtons.forEach(btn => {
-              btn.disabled = false;
-              btn.classList.remove('opacity-50', 'cursor-not-allowed');
-              btn.classList.add('cursor-pointer');
-            });
-
-            if(data.rating) {
-              selectedStarsCount = Number(data.rating) || 0;
-              highlightStarRating(selectedStarsCount);
-              document.getElementById('ratingSubmittedMsg').innerText = `✅ تم تسجيل تقييمك بـ (${data.rating} ⭐) بنجاح. يمكنك تحديث التقييم والتعليق عند الحاجة.`;
-              document.getElementById('ratingSubmittedMsg').classList.remove('hidden');
-            } else {
-              selectedStarsCount = 0;
-              highlightStarRating(0);
-              document.getElementById('ratingSubmittedMsg').classList.add('hidden');
-            }
-
-            commentInput.value = data.comment || '';
-          } else {
-            feedbackLockedMsg.classList.remove('hidden');
-            feedbackAvailabilityBadge.innerText = '🔒 متاح بعد التسليم';
-            feedbackAvailabilityBadge.className = 'text-[10px] font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-600';
-            submitFeedbackBtn.disabled = true;
-            commentInput.disabled = true;
-            starButtons.forEach(btn => {
-              btn.disabled = true;
-              btn.classList.add('opacity-50', 'cursor-not-allowed');
-              btn.classList.remove('hover:scale-125', 'cursor-pointer');
-            });
-          }
-        } else {
-          alert('لم يتم العثور على طلب بهذا الرقم!');
-        }
-      });
-    }
-
-    function toggleCustomerLocationShare() {
-      if(!currentTrackOrderId) return alert('أدخل رقم الطلب وقم بالبحث أولاً لربط موقعك بطلبك!');
-      
-      if (navigator.geolocation) {
-        if(custWatchId) {
-          navigator.geolocation.clearWatch(custWatchId);
-          custWatchId = null;
-          document.getElementById('custShareLocBtn').innerText = "📍 مشاركة موقعي الحالي (GPS) مع المندوب";
-          document.getElementById('custLocStatus').classList.add('hidden');
-          return;
-        }
-
-        custWatchId = navigator.geolocation.watchPosition((pos) => {
-          db.ref('orders/' + currentTrackOrderId).update({
-            custLat: pos.coords.latitude,
-            custLng: pos.coords.longitude,
-            customerLocationUpdatedAt: Date.now()
-          });
-          document.getElementById('custShareLocBtn').innerText = "🔄 يتم تحديث مشاركة موقعك حياً...";
-          document.getElementById('custLocStatus').classList.remove('hidden');
-        }, (err) => {
-          alert('تعذر الوصول إلى موقعك الجغرافي (GPS)');
-        }, { enableHighAccuracy: true });
-      } else {
-        alert('متصفحك لا يدعم تحديد الموقع الجغرافي');
-      }
-    }
+    // --- 📍 تتبع العميل: بحث مقيد بالاسم/الهاتف ثم فتح الطلب المطابق فقط ---
+    function updateCustomerIdentityHint(){const el=document.getElementById('customerIdentityStatus');if(!el)return;el.innerText=currentRequestedOrderId?`🔐 لإظهار الطلب #${currentRequestedOrderId} اكتب اسم العميل أو رقم الهاتف أولاً.`:'';el.className='text-[10px] font-bold text-center text-blue-700';}
+    async function queryCustomerOrdersByIdentity(name,phone){const nn=normalizeName(name),pn=normalizePhone(phone);if(!nn&&!pn)throw new Error('IDENTITY_REQUIRED');const raw={};const merge=data=>Object.keys(data||{}).forEach(k=>raw[k]=data[k]);if(pn){merge((await db.ref('orders').orderByChild('phoneNormalized').equalTo(pn).once('value')).val()||{});merge((await db.ref('orders').orderByChild('phone').equalTo(phone).once('value')).val()||{});}if(nn){merge((await db.ref('orders').orderByChild('customerNameNormalized').equalTo(nn).once('value')).val()||{});merge((await db.ref('orders').orderByChild('customerName').equalTo(name).once('value')).val()||{});}const result={};Object.keys(raw).forEach(k=>{const o=raw[k]||{};if((!pn||normalizePhone(o.phone||'')===pn)&&(!nn||normalizeName(o.customerName||o.name||'')===nn))result[k]=o;});return result;}
+    function renderCustomerOrderResults(results){const container=document.getElementById('customerOrdersResults');if(!container)return;const keys=Object.keys(results||{}).sort((a,b)=>(`${results[b]?.date||''} ${results[b]?.time||''}`).localeCompare(`${results[a]?.date||''} ${results[a]?.time||''}`));if(!keys.length){container.innerHTML='<div class="bg-white rounded-2xl shadow-lg p-5 border text-center text-xs text-red-600 font-bold">لم نجد طلبات مطابقة للبيانات المدخلة.</div>';return;}container.innerHTML=keys.map(key=>{const o=results[key]||{},amount=Number(o.totalCash||((o.orderPrice||0)+(o.deliveryPrice||0)+(o.paymentFee||0)));return`<div class="bg-white rounded-2xl shadow-lg p-4 border border-amber-100 space-y-2"><div class="flex justify-between items-center gap-2"><b class="font-mono text-red-700">#${escapeHtml(o.orderId||key)}</b><span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full text-[10px] font-bold">${escapeHtml(o.status||'')}</span></div><div class="grid grid-cols-2 gap-2 text-[10px] bg-gray-50 rounded-xl p-2 border"><span>📅 ${escapeHtml(formatDateDMY(o.date||'-'))}</span><span>💰 ${amount.toLocaleString('ar-EG')} ج.م</span><span>🛵 ${escapeHtml(o.driver||'غير محدد')}</span><span>📍 ${o.lat&&o.lng?'الموقع متاح':'لا يوجد GPS'}</span></div><button type="button" onclick="openCustomerOrder('${key}')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-xl text-xs shadow">فتح وتتبع الطلب 📍</button></div>`;}).join('');}
+    async function searchCustomerOrder(){const name=document.getElementById('custIdentityName')?.value.trim()||'',phone=document.getElementById('custIdentityPhone')?.value.trim()||'',status=document.getElementById('customerIdentityStatus');if(!name&&!phone){status.innerText='⚠️ اكتب اسم العميل أو رقم الهاتف على الأقل.';return;}status.innerText='🔎 جارٍ البحث...';status.className='text-[10px] font-bold text-center text-blue-700';try{const results=await queryCustomerOrdersByIdentity(name,phone);currentCustomerSearchResults=results;currentCustomerVerified=Object.keys(results).length>0;renderCustomerOrderResults(results);status.innerText=currentCustomerVerified?`✅ تم التحقق — وجدنا ${Object.keys(results).length} طلب/طلبات.`:'❌ لا توجد طلبات مطابقة.';status.className=`text-[10px] font-bold text-center ${currentCustomerVerified?'text-emerald-700':'text-red-600'}`;if(currentRequestedOrderId&&results[currentRequestedOrderId])openCustomerOrder(currentRequestedOrderId);else if(Object.keys(results).length===1)openCustomerOrder(Object.keys(results)[0]);else document.getElementById('trackResultCard').classList.add('hidden');}catch(err){console.error(err);status.innerText='تعذر تنفيذ البحث حالياً.';}}
+    function openCustomerOrder(orderKey){if(!currentCustomerVerified||!currentCustomerSearchResults[orderKey])return alert('لا يمكن فتح هذا الطلب قبل التحقق من اسم العميل أو رقم الهاتف.');currentTrackOrderId=orderKey;if(customerOrderRef)try{customerOrderRef.off();}catch(e){}customerOrderRef=db.ref('orders/'+orderKey);customerOrderRef.on('value',snap=>{const data=snap.val();if(data)applyCustomerTrackData(data,orderKey);});}
+    function applyCustomerTrackData(data,orderKey){document.getElementById('trackResultCard').classList.remove('hidden');document.getElementById('dispOrderId').innerText='#'+(data.orderId||orderKey);document.getElementById('cDriver').innerText=data.driver||'جاري التحديد...';document.getElementById('cDate').innerText=formatDateDMY(data.date)+' '+(data.time||'');document.getElementById('badgeStatus').innerText=data.status||'جاري المتابعة';document.getElementById('mapTextInfo').innerHTML=data.lat&&data.lng?`<div class="space-y-2"><p class="font-bold text-emerald-600">🛵 المندوب في الطريق إليك الآن!</p><a href="https://www.google.com/maps?q=${encodeURIComponent(data.lat+','+data.lng)}" target="_blank" rel="noopener" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow">📍 فتح موقع المندوب الحي على Google Maps</a></div>`:'⏳ الطلب قيد التحضير أو المندوب لم يقم بتفعيل اللوكيشن الحي بعد.';currentTrackOrderStatus=data.status||'';const delivered=currentTrackOrderStatus==='تم التسليم بنجاح ✅',locked=document.getElementById('feedbackLockedMsg'),badge=document.getElementById('feedbackAvailabilityBadge'),submit=document.getElementById('submitFeedbackBtn'),comment=document.getElementById('custCommentText'),stars=document.querySelectorAll('#starContainer .star-btn');if(delivered){locked.classList.add('hidden');badge.innerText='✅ التقييم متاح الآن';badge.className='text-[10px] font-bold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700';submit.disabled=false;comment.disabled=false;stars.forEach(b=>b.disabled=false);selectedStarsCount=Number(data.rating||0);highlightStarRating(selectedStarsCount);comment.value=data.comment||'';const msg=document.getElementById('ratingSubmittedMsg');if(data.rating){msg.innerText=`✅ تم تسجيل تقييمك بـ (${data.rating} ⭐).`;msg.classList.remove('hidden');}else msg.classList.add('hidden');}else{locked.classList.remove('hidden');badge.innerText='🔒 متاح بعد التسليم';badge.className='text-[10px] font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-600';submit.disabled=true;comment.disabled=true;stars.forEach(b=>b.disabled=true);selectedStarsCount=0;highlightStarRating(0);comment.value='';document.getElementById('ratingSubmittedMsg').classList.add('hidden');}}
+    function toggleCustomerLocationShare(){if(!currentTrackOrderId||!currentCustomerVerified||!currentCustomerSearchResults[currentTrackOrderId])return alert('اختر طلبك أولاً من قائمة طلباتك.');if(!navigator.geolocation)return alert('متصفحك لا يدعم تحديد الموقع الجغرافي');if(custWatchId){navigator.geolocation.clearWatch(custWatchId);custWatchId=null;document.getElementById('custShareLocBtn').innerText='📍 مشاركة موقعي الحالي (GPS) مع المندوب';document.getElementById('custLocStatus').classList.add('hidden');return;}custWatchId=navigator.geolocation.watchPosition(pos=>{db.ref('orders/'+currentTrackOrderId).update({custLat:pos.coords.latitude,custLng:pos.coords.longitude,customerLocationUpdatedAt:Date.now()});document.getElementById('custShareLocBtn').innerText='🔄 يتم تحديث مشاركة موقعك حياً...';document.getElementById('custLocStatus').classList.remove('hidden');},()=>alert('تعذر الوصول إلى موقعك الجغرافي (GPS)'),{enableHighAccuracy:true});}
 
     function highlightStarRating(stars) {
       document.querySelectorAll('#starContainer .star-btn').forEach((btn, index) => {
@@ -2383,6 +2161,7 @@ ${trackUrl}`;
     }
 
     function openEditModal(key) {
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!allOrdersCache[key]) return;
       if(!canUser('edit')) return alert('عذراً، ليس لديك صلاحية التعديل.');
       const order = allOrdersCache[key];
       if(!order) return;
@@ -2403,131 +2182,32 @@ ${trackUrl}`;
       document.getElementById('editOrderModal').classList.add('hidden');
     }
 
-    function saveEditOrder() {
-      if(!canUser('edit')) return alert('عذراً، ليس لديك صلاحية حفظ التعديلات.');
-      const key = document.getElementById('editKey').value;
-      if(!key) return;
-
-      const name = document.getElementById('editCustName').value.trim();
-      const phone = document.getElementById('editCustPhone').value.trim();
-      const address = document.getElementById('editCustAddress').value.trim();
-      const orderPrice = Number(document.getElementById('editOrderPrice').value) || 0;
-      const deliveryPrice = Number(document.getElementById('editDeliveryPrice').value) || 0;
-      const driver = document.getElementById('editDriverSelect').value;
-
-      const existingOrder = allOrdersCache[key] || {};
-      const paymentFee = existingOrder.paymentFee || 0;
-
-      db.ref('orders/' + key).update({
-        customerName: name,
-        phone: phone,
-        address: address,
-        orderPrice: orderPrice,
-        deliveryPrice: deliveryPrice,
-        totalCash: orderPrice + deliveryPrice + paymentFee,
-        driver: driver
-      }).then(() => {
-        alert('تم حفظ البيانات والتعديلات بنجاح ✅');
-        closeEditModal();
-      });
+    async function saveEditOrder(){
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin')return;if(!canUser('edit'))return alert('عذراً، ليس لديك صلاحية حفظ التعديلات.');
+      const key=document.getElementById('editKey').value;if(!key||!allOrdersCache[key])return alert('لا تملك الوصول إلى هذا الطلب.');
+      const name=document.getElementById('editCustName').value.trim(),phone=document.getElementById('editCustPhone').value.trim(),address=document.getElementById('editCustAddress').value.trim();const orderPrice=Number(document.getElementById('editOrderPrice').value)||0,deliveryPrice=Number(document.getElementById('editDeliveryPrice').value)||0,driver=document.getElementById('editDriverSelect').value,paymentFee=Number(allOrdersCache[key]?.paymentFee||0);let customerId=allOrdersCache[key]?.customerId||null;try{customerId=await upsertCustomerRecord(name,phone,address,customerId,false);}catch(e){}
+      db.ref('orders/'+key).update({customerName:name,phone,address,orderPrice,deliveryPrice,totalCash:orderPrice+deliveryPrice+paymentFee,driver,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name)}).then(()=>{alert('تم حفظ البيانات والتعديلات بنجاح ✅');closeEditModal();});
     }
 
     function deleteOrder(id) {
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!allOrdersCache[id]) return;
       if(!canUser('delete')) return alert('عذراً، ليس لديك صلاحية الحذف.');
       if(confirm(`هل تريد حذف هذا الطلب بشكل نهائي؟`)) db.ref('orders/' + id).remove();
     }
 
-    function fetchDriverOrder() {
-      const id = document.getElementById('orderId').value.trim();
-      if(!id) return alert('يرجى كتابة رقم الطلب');
-      
-      db.ref('orders/' + id).on('value', (snap) => {
-        const data = snap.val();
-        if(data) {
-          document.getElementById('dCustName').innerText = data.customerName || data.name || '--';
-          document.getElementById('dCustAddress').innerText = data.address || '--';
-          document.getElementById('dPayMethod').innerText = getPaymentText(data.paymentMethod);
-          document.getElementById('dTotalCash').innerText = (data.totalCash || ((data.orderPrice || 0) + (data.deliveryPrice || 0) + (data.paymentFee || 0))) + ' ج.م';
-          document.getElementById('dStatus').innerText = data.status || '--';
-          document.getElementById('driverStatusSelect').value = data.status || 'جاري تحضير اللحوم 🥩';
-          document.getElementById('driverOrderCard').classList.remove('hidden');
-        } else {
-          alert('عذراً، هذا الطلب غير موجود!');
-          document.getElementById('driverOrderCard').classList.add('hidden');
-        }
-      });
-    }
+    function renderDriverOrdersList(){const c=document.getElementById('driverOrdersList');if(!c||!currentUser||currentUser.role!=='driver')return;const keys=Object.keys(driverOrdersCache||{}).sort((a,b)=>(`${driverOrdersCache[b]?.date||''} ${driverOrdersCache[b]?.time||''}`).localeCompare(`${driverOrdersCache[a]?.date||''} ${driverOrdersCache[a]?.time||''}`));c.innerHTML=keys.length?keys.map(k=>{const o=driverOrdersCache[k]||{};return`<button type="button" onclick="fetchDriverOrder('${k}')" class="w-full text-right bg-gray-50 hover:bg-amber-50 border rounded-xl p-3"><div class="flex justify-between"><b class="font-mono text-red-700">#${escapeHtml(o.orderId||k)}</b><span class="text-[10px] font-bold">${escapeHtml(o.status||'')}</span></div><div class="text-[10px] text-gray-600">👤 ${escapeHtml(o.customerName||'---')} • 💰 ${Number(o.totalCash||0).toLocaleString('ar-EG')} ج.م</div></button>`;}).join(''):'<p class="text-[10px] text-gray-400 text-center p-3">لا توجد طلبات مسندة إليك حالياً.</p>'; }
+    function getDriverOrderKeyFromInput(id){const typed=String(id||'').trim();if(!typed)return null;if(driverOrdersCache[typed])return typed;return Object.keys(driverOrdersCache).find(k=>driverOrdersCache[k]?.orderId===typed)||(Object.keys(driverOrdersCache).find(k=>String(driverOrdersCache[k]?.orderId||'').includes(typed))||null);}
+    function populateDriverOrderCard(key,data){currentDriverOrderKey=key;document.getElementById('orderId').value=data.orderId||key;document.getElementById('dCustName').innerText=data.customerName||data.name||'--';document.getElementById('dCustAddress').innerText=data.address||'--';document.getElementById('dPayMethod').innerText=getPaymentText(data.paymentMethod);document.getElementById('dTotalCash').innerText=(data.totalCash||((data.orderPrice||0)+(data.deliveryPrice||0)+(data.paymentFee||0)))+' ج.م';document.getElementById('dStatus').innerText=data.status||'--';document.getElementById('driverStatusSelect').value=data.status||'جاري تحضير اللحوم 🥩';document.getElementById('driverOrderCard').classList.remove('hidden');}
+    function fetchDriverOrder(keyOverride=null){if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='driver')return;const key=getDriverOrderKeyFromInput(keyOverride||document.getElementById('orderId').value.trim());if(!key)return alert('عذراً، هذا الطلب غير مسند إليك أو غير موجود ضمن طلباتك.');populateDriverOrderCard(key,driverOrdersCache[key]);}
+    function driverChangeStatus(newStatus){if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='driver')return;const key=currentDriverOrderKey||getDriverOrderKeyFromInput(document.getElementById('orderId').value.trim());if(!key||!driverOrdersCache[key])return alert('اختر طلباً من طلباتك أولاً.');db.ref('orders/'+key).update({status:newStatus}).then(()=>document.getElementById('driverStatus').innerText='✅ تم تحديث حالة الطلب إلى: '+newStatus);}
+    let watchId=null;
+    function startDelivery(){if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='driver')return;const key=currentDriverOrderKey||getDriverOrderKeyFromInput(document.getElementById('orderId').value.trim());if(!key||!driverOrdersCache[key])return alert('اختر طلباً من طلباتك أولاً.');if(!navigator.geolocation)return alert('المتصفح لا يدعم تحديد الموقع الجغرافي');if(watchId){navigator.geolocation.clearWatch(watchId);watchId=null;document.getElementById('driverStatus').innerText='🛑 تم إيقاف بث الموقع الحي.';document.getElementById('startBtn').innerText='📍 بدء بث اللوكيشن الحي Live (اختياري)';document.getElementById('stopBtn').classList.add('hidden');return;}watchId=navigator.geolocation.watchPosition(pos=>{db.ref('orders/'+key).update({lat:pos.coords.latitude,lng:pos.coords.longitude,locationUpdatedAt:Date.now()});document.getElementById('driverStatus').innerText='📍 يتم الآن بث موقعك الحي بنجاح...';document.getElementById('startBtn').innerText='🔄 جاري بث اللوكيشن حياً...';document.getElementById('stopBtn').classList.remove('hidden');},()=>alert('تعذر الوصول إلى نظام تحديد المواقع (GPS)'),{enableHighAccuracy:true});}
+    function stopDelivery(){if(watchId){navigator.geolocation.clearWatch(watchId);watchId=null;}document.getElementById('driverStatus').innerText='🛑 تم إيقاف بث الموقع الحي.';document.getElementById('startBtn').innerText='📍 بدء بث اللوكيشن الحي Live (اختياري)';document.getElementById('stopBtn').classList.add('hidden');}
 
-    function driverChangeStatus(newStatus) {
-      const id = document.getElementById('orderId').value.trim();
-      if(!id) return;
-      db.ref('orders/' + id).update({ status: newStatus }).then(() => {
-        document.getElementById('driverStatus').innerText = "✅ تم تحديث حالة الطلب إلى: " + newStatus;
-      });
-    }
-
-    let watchId = null;
-    function startDelivery() {
-      const id = document.getElementById('orderId').value.trim();
-      if(!id) return alert('أدخل رقم الطلب أولاً');
-      if (navigator.geolocation) {
-        if(watchId) {
-          navigator.geolocation.clearWatch(watchId);
-          watchId = null;
-          document.getElementById('driverStatus').innerText = "🛑 تم إيقاف بث الموقع الحي.";
-          document.getElementById('startBtn').innerText = "📍 بدء بث اللوكيشن الحي Live (اختياري)";
-          document.getElementById('stopBtn').classList.add('hidden');
-          return;
-        }
-
-        watchId = navigator.geolocation.watchPosition((pos) => {
-          db.ref('orders/' + id).update({
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-            locationUpdatedAt: Date.now()
-          });
-          document.getElementById('driverStatus').innerText = "📍 يتم الآن بث موقعك الحي بنجاح...";
-          document.getElementById('startBtn').innerText = "🔄 جاري بث اللوكيشن حياً...";
-          document.getElementById('stopBtn').classList.remove('hidden');
-        }, (err) => {
-          alert('تعذر الوصول إلى نظام تحديد المواقع (GPS)');
-        }, { enableHighAccuracy: true });
-      } else {
-        alert('المتصفح لا يدعم تحديد الموقع الجغرافي');
-      }
-    }
-
-    function stopDelivery() {
-      if(watchId) {
-        navigator.geolocation.clearWatch(watchId);
-        watchId = null;
-      }
-      document.getElementById('driverStatus').innerText = "🛑 تم إيقاف بث الموقع الحي.";
-      document.getElementById('startBtn').innerText = "📍 بدء بث اللوكيشن الحي Live (اختياري)";
-      document.getElementById('stopBtn').classList.add('hidden');
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      loadRememberedLogin();
-      const urlParams = new URLSearchParams(window.location.search);
-      const tab = urlParams.get('tab');
-      const orderId = urlParams.get('id');
-
-      if(tab === 'track') {
-        const mainHeader = document.getElementById('mainHeader');
-        if(mainHeader) mainHeader.style.display = 'none';
-
-        const userBadgeBar = document.getElementById('userBadgeBar');
-        if(userBadgeBar) userBadgeBar.style.display = 'none';
-
-        switchTab('track');
-
-        if(orderId) {
-          document.getElementById('custSearchOrderId').value = orderId;
-          searchCustomerOrder();
-        }
-      }
-    });
+    // --- 👤 أوضاع التطبيق ---
+    function applyCustomerPublicMode(){document.body.classList.remove('driver-private-mode');document.body.classList.add('customer-public-mode');document.getElementById('mainHeader')?.style.setProperty('display','none','important');document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');document.getElementById('authModal')?.classList.add('hidden');switchTab('track');updateCustomerIdentityHint();['custIdentityName','custIdentityPhone'].forEach(id=>document.getElementById(id)?.addEventListener('keydown',e=>{if(e.key==='Enter')searchCustomerOrder();}));}
+    function applyDriverPrivateMode(){document.body.classList.remove('customer-public-mode');document.body.classList.add('driver-private-mode');document.getElementById('mainHeader')?.style.setProperty('display','none','important');document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');switchTab('driver');}
+    window.addEventListener('DOMContentLoaded',()=>{startPublicCommentsListener();loadRememberedLogin();if(APP_MODE!=='staff')applyCustomerPublicMode();else{document.body.classList.remove('customer-public-mode');startStaffDataListeners();updateUIByPermissions();checkSavedSession();if(!currentUser)switchTab('admin');}});
   </script>
 </body>
 </html>
