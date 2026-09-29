@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام جزارة حمكشة - إدارة الطلبات والتقييم والتعليقات 🥩</title>
+  <title>نظام جزارة حمكشة - إدارة كاملة وتقييم وحسابات 🥩</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -13,27 +13,6 @@
       --primary-color: #dc2626;
       --secondary-color: #f59e0b;
       --bg-color: #fffbeb;
-    }
-    /* ضبط اتجاه حقول التاريخ لمنع انعكاس الصيغة */
-    input[type="date"] {
-      direction: ltr !important;
-      text-align: right !important;
-    }
-    .formatted-date {
-      direction: ltr !important;
-      display: inline-block;
-    }
-    /* تصميم النجوم الباهتة والمتفاعلة */
-    .star-item {
-      opacity: 0.3;
-      filter: grayscale(100%);
-      transition: all 0.2s ease-in-out;
-      cursor: pointer;
-    }
-    .star-item.active, .star-item.hovered {
-      opacity: 1 !important;
-      filter: grayscale(0%) !important;
-      transform: scale(1.2);
     }
     @media print {
       header, #userBadgeBar, .no-print, #adminAuthLock, .theme-selector, #orderForm, #usersList, form, button, select, input {
@@ -156,7 +135,7 @@
                   </div>
                 </div>
 
-                <!-- 💳 قسم طرق الدفع والنسبة المفتوحة -->
+                <!-- 💳 قسم طرق الدفع والنسبة -->
                 <div class="bg-blue-50/60 p-2.5 rounded-xl border border-blue-200 space-y-2">
                   <div class="grid grid-cols-2 gap-2">
                     <div>
@@ -164,7 +143,7 @@
                       <select id="paymentMethod" onchange="calculateTotalBill()" class="w-full border p-1.5 rounded-lg text-xs font-bold bg-white">
                         <option value="cash">💵 كاش مع المندوب</option>
                         <option value="vodafone">📱 فودافون كاش (10ج/1000)</option>
-                        <option value="instapay">⚡ إنستا باي (بدون رسوم إضافية)</option>
+                        <option value="instapay">⚡ إنستا باي (1ج/1000)</option>
                       </select>
                     </div>
                     <div>
@@ -239,7 +218,7 @@
                 <option value="خرج للتوصيل 🛵">خرج للتوصيل</option>
                 <option value="تم التسليم بنجاح ✅">تم التسليم</option>
               </select>
-              <input type="date" id="dateFilter" onchange="applyFilters()" dir="ltr" class="border p-2 rounded-lg text-xs bg-white text-right">
+              <input type="date" id="dateFilter" onchange="applyFilters()" class="border p-2 rounded-lg text-xs bg-white">
             </div>
 
             <div id="exportActionBtns" class="flex flex-wrap items-center justify-end gap-2 pt-1 no-print hidden">
@@ -270,7 +249,7 @@
       </div>
     </section>
 
-    <!-- 📊 2️⃣ داشبورد التقييم والتحصيل المالي والتعليقات (خاص بالإدارة) -->
+    <!-- 📊 2️⃣ داشبورد التقييم والتحصيل المالي -->
     <section id="sec-analytics" class="hidden space-y-6">
       <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 space-y-6">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b pb-4">
@@ -322,57 +301,16 @@
             </tbody>
           </table>
         </div>
-
-        <!-- 💬 قسم سجل تقييمات وتعليقات العملاء للإدارة فقط مع الفلترة والتحكم بالنشر/الحذف -->
-        <div class="pt-6 border-t space-y-4">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            <div>
-              <h3 class="font-bold text-sm text-gray-800">💬 سجل آرائك وتعليقات العملاء (إدارة النشر والحذف)</h3>
-              <p class="text-[11px] text-gray-500">متابعة الملاحظات، الموافقة على نشر التعليق للعامة في صفحة التتبع، أو حذفه</p>
-            </div>
-          </div>
-
-          <!-- أدوات فلترة التعليقات -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-amber-50/70 p-3 rounded-xl border border-amber-200">
-            <div>
-              <label class="block text-[10px] font-bold text-amber-900 mb-1">فلترة بالمندوب:</label>
-              <select id="commentDriverFilter" onchange="renderCommentsList()" class="w-full border p-2 rounded-lg text-xs bg-white filter-driver-dropdown">
-                <option value="ALL">جميع المناديب</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold text-amber-900 mb-1">فلترة بالتقييم (النجوم):</label>
-              <select id="commentRatingFilter" onchange="renderCommentsList()" class="w-full border p-2 rounded-lg text-xs bg-white">
-                <option value="ALL">كل التقييمات ⭐</option>
-                <option value="5">5 نجوم ⭐⭐⭐⭐⭐</option>
-                <option value="4">4 نجوم ⭐⭐⭐⭐</option>
-                <option value="3">3 نجوم ⭐⭐⭐</option>
-                <option value="2">نجمتان ⭐⭐</option>
-                <option value="1">نجمة واحدة ⭐</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold text-amber-900 mb-1">فلترة بالتاريخ:</label>
-              <input type="date" id="commentDateFilter" onchange="renderCommentsList()" dir="ltr" class="w-full border p-2 rounded-lg text-xs bg-white text-right">
-            </div>
-          </div>
-
-          <!-- قائمة الكروت والملاحظات -->
-          <div id="commentsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
-            <p class="text-xs text-gray-400 p-4 text-center col-span-2">جاري تحميل التعليقات...</p>
-          </div>
-        </div>
-
       </div>
     </section>
 
-    <!-- 🏷️ 3️⃣ قسم لوحة أسعار اللحوم وإدارتها المباشرة -->
+    <!-- 🏷️ 3️⃣ قسم لوحة أسعار اللحوم الحية -->
     <section id="sec-prices" class="hidden space-y-6">
       <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 space-y-4">
         <div class="flex justify-between items-center border-b pb-3">
           <div>
             <h2 class="text-lg font-black text-red-700">🏷️ قائمة أسعار اللحوم الحية (جزارة حمكشة)</h2>
-            <p class="text-xs text-gray-500 font-semibold">تحديث اليومية وإضافة أو تعديل الأسعار المباشرة في أي وقت</p>
+            <p class="text-xs text-gray-500 font-semibold">تحديث اليومية وتعديل الأسعار المباشرة</p>
           </div>
           <button id="addPriceBtn" onclick="openAddPriceModal()" class="hidden bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-2 rounded-xl shadow">
             + إضافة صنف جديد
@@ -436,12 +374,12 @@
       </div>
     </section>
 
-    <!-- 5️⃣ تتبع العميل والموقع والتقييم والتعليقات العامة -->
+    <!-- 5️⃣ تتبع العميل -->
     <section id="sec-track" class="hidden space-y-6 max-w-xl mx-auto">
       <div class="bg-white rounded-2xl shadow-lg p-5 border space-y-3">
         <label class="block text-xs font-bold text-gray-800">📌 أدخل رقم الطلب لتتبع حالة التوصيل:</label>
         <div class="flex gap-2">
-          <input type="text" id="custSearchOrderId" placeholder="أدخل رقم الطلب (مثال: 410 أو HAMKASHA-12345)" class="w-full border p-2.5 rounded-xl text-xs font-mono font-bold text-center bg-gray-50">
+          <input type="text" id="custSearchOrderId" placeholder="أدخل رقم الطلب (مثال: HAMKASHA-12345)" class="w-full border p-2.5 rounded-xl text-xs font-mono font-bold text-center bg-gray-50">
           <button onclick="searchCustomerOrder()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 rounded-xl text-xs whitespace-nowrap shadow">تتبع 🔍</button>
         </div>
       </div>
@@ -457,59 +395,24 @@
         
         <div class="bg-gray-50 p-3 rounded-xl space-y-1 text-xs border">
           <p class="flex justify-between"><span>المندوب المكلف:</span> <b id="cDriver" class="text-amber-800">-</b></p>
-          <p class="flex justify-between"><span>تاريخ الطلب:</span> <b id="cDate" class="formatted-date font-mono text-gray-600">-</b></p>
+          <p class="flex justify-between"><span>تاريخ الطلب:</span> <b id="cDate" class="font-mono text-gray-600">-</b></p>
         </div>
 
-        <!-- 🗺️ خيارات المندوب والعميل الخريطة -->
-        <div id="map" class="bg-gray-50 border border-amber-200 rounded-xl p-4 text-center text-xs text-gray-600 space-y-3">
-          <p id="mapTextInfo">أدخل رقم الطلب الخاص بك لمتابعة مسار المندوب.</p>
-
-          <!-- زر مشاركة موقع العميل مع المندوب -->
-          <div class="border-t pt-3 space-y-2">
-            <button id="custShareLocBtn" onclick="toggleCustomerLocationShare()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow flex justify-center items-center gap-1.5">
-              📍 مشاركة موقعي الحالي (GPS) مع المندوب
-            </button>
-            <p id="custLocStatus" class="text-[11px] font-bold text-emerald-700 hidden">✅ تم إرسال موقعك للمندوب بنجاح!</p>
-          </div>
+        <div id="map" class="bg-gray-100 border-2 border-dashed rounded-xl p-6 text-center text-xs text-gray-500">
+          أدخل رقم الطلب الخاص بك لمتابعة مسار المندوب.
         </div>
 
-        <!-- ⭐ قسم تقييم الخدمة والتعليقات المطور (نجوم باهتة حتى التحديد مع زر إرسال صريح) -->
-        <div id="ratingBox" class="hidden bg-amber-50 border border-amber-200 p-4 rounded-2xl text-center space-y-3 shadow-sm">
-          <h4 class="font-bold text-xs text-amber-900">⭐ تقييم خدمة التوصيل والمندوب:</h4>
-          <p class="text-[11px] text-gray-500 font-semibold">حدد عدد النجوم المعتمدة أولاً ثم انقر على زر "إرسال التقييم":</p>
-          
-          <div class="flex justify-center gap-2 text-3xl py-1 select-none" id="starContainer">
-            <span onclick="selectRatingStars(1)" onmouseover="hoverRatingStars(1)" onmouseout="resetRatingHover()" data-star="1" class="star-item" title="1 نجمة">⭐</span>
-            <span onclick="selectRatingStars(2)" onmouseover="hoverRatingStars(2)" onmouseout="resetRatingHover()" data-star="2" class="star-item" title="2 نجمة">⭐</span>
-            <span onclick="selectRatingStars(3)" onmouseover="hoverRatingStars(3)" onmouseout="resetRatingHover()" data-star="3" class="star-item" title="3 نجوم">⭐</span>
-            <span onclick="selectRatingStars(4)" onmouseover="hoverRatingStars(4)" onmouseout="resetRatingHover()" data-star="4" class="star-item" title="4 نجوم">⭐</span>
-            <span onclick="selectRatingStars(5)" onmouseover="hoverRatingStars(5)" onmouseout="resetRatingHover()" data-star="5" class="star-item" title="5 نجوم">⭐</span>
+        <div id="ratingBox" class="hidden bg-amber-50 border border-amber-200 p-4 rounded-xl text-center space-y-2">
+          <h4 class="font-bold text-xs text-amber-900">⭐ شاركنا تقييمك لخدمة التوصيل والجزارة:</h4>
+          <div class="flex justify-center gap-2 text-2xl" id="starContainer">
+            <button onclick="setStarRating(1)" class="hover:scale-125 transition-transform">⭐</button>
+            <button onclick="setStarRating(2)" class="hover:scale-125 transition-transform">⭐</button>
+            <button onclick="setStarRating(3)" class="hover:scale-125 transition-transform">⭐</button>
+            <button onclick="setStarRating(4)" class="hover:scale-125 transition-transform">⭐</button>
+            <button onclick="setStarRating(5)" class="hover:scale-125 transition-transform">⭐</button>
           </div>
-
-          <p id="selectedRatingText" class="text-[11px] font-bold text-amber-800 h-4">لم يتم تحديد النجوم بعد</p>
-
-          <div>
-            <label class="block text-right text-[11px] font-bold text-gray-700 mb-1">اكتب تعليقك أو رأيك في المندوب والخدمة (اختياري):</label>
-            <textarea id="custCommentText" rows="2" placeholder="اكتب ملاحظاتك هنا..." class="w-full border p-2 rounded-xl text-xs bg-white"></textarea>
-          </div>
-
-          <button onclick="submitFullFeedback()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all">
-            🚀 إرسال التقييم والتعليق
-          </button>
-
-          <p id="ratingSubmittedMsg" class="text-xs text-emerald-700 font-bold hidden">شكراً لك! تم تسجيل تقييمك بنجاح ✅</p>
+          <p id="ratingSubmittedMsg" class="text-xs text-emerald-700 font-bold hidden">شكراً لتقييمك! تم تسجيل التقييم بنجاح ✅</p>
         </div>
-
-        <!-- 💬 آراء وتعليقات العملاء المنشورة العامة -->
-        <div id="publicCommentsSection" class="pt-4 border-t space-y-3">
-          <h4 class="font-bold text-xs text-gray-800 flex items-center gap-1">
-            <span>💬 آراء وتقييمات العملاء العامة:</span>
-          </h4>
-          <div id="publicCommentsContainer" class="space-y-2 max-h-60 overflow-y-auto">
-            <p class="text-[11px] text-gray-400 text-center">لا توجد آراء منشورة حالياً.</p>
-          </div>
-        </div>
-
       </div>
     </section>
 
@@ -532,30 +435,6 @@
         <input type="password" id="editUserPass" class="w-full border p-2.5 rounded-xl text-xs">
       </div>
       <button onclick="saveEditUser()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">حفظ التغييرات 💾</button>
-    </div>
-  </div>
-
-  <!-- نافذة تعديل أو إضافة منتج -->
-  <div id="editPriceModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
-    <div class="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 text-right shadow-2xl border">
-      <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-bold text-sm text-gray-800" id="priceModalTitle">🏷️ تعديل سعر المنتج</h3>
-        <button onclick="closeEditPriceModal()" class="text-gray-400 hover:text-gray-600 font-bold">✕</button>
-      </div>
-      <input type="hidden" id="priceKey">
-      <div>
-        <label class="block text-[11px] font-bold text-gray-700 mb-1">اسم المنتج</label>
-        <input type="text" id="priceName" class="w-full border p-2.5 rounded-xl text-xs">
-      </div>
-      <div>
-        <label class="block text-[11px] font-bold text-gray-700 mb-1">السعر (ج.م)</label>
-        <input type="number" id="priceValue" class="w-full border p-2.5 rounded-xl text-xs font-mono font-bold">
-      </div>
-      <div>
-        <label class="block text-[11px] font-bold text-gray-700 mb-1">الوحدة</label>
-        <input type="text" id="priceUnit" value="كيلو" class="w-full border p-2.5 rounded-xl text-xs">
-      </div>
-      <button onclick="savePriceItem()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">حفظ الصنف 💾</button>
     </div>
   </div>
 
@@ -648,24 +527,6 @@
     let filteredOrdersList = [];
     let currentAnalyticsPeriod = 'daily';
     let currentTrackOrderId = null;
-    let custWatchId = null;
-    let selectedStarsCount = 0;
-
-    // --- 📅 دالة تنسيق التاريخ ليكون دائماً يوم / شهر / سنة (DD/MM/YYYY) ---
-    function formatDateDMY(dateStr) {
-      if(!dateStr) return '';
-      if(dateStr.includes('/')) {
-        const parts = dateStr.split('/');
-        if(parts[0].length === 4) return `${parts[2]}/${parts[1]}/${parts[0]}`;
-        return dateStr;
-      }
-      if(dateStr.includes('-')) {
-        const parts = dateStr.split('-');
-        if(parts[0].length === 4) return `${parts[2]}/${parts[1]}/${parts[0]}`;
-        return dateStr;
-      }
-      return dateStr;
-    }
 
     // إنشاء الحساب الرئيسي asma أوتوماتيكياً بصلاحيات كاملة مطلقة
     db.ref('users').once('value').then((snapshot) => {
@@ -728,12 +589,8 @@
       const activeTabBtn = document.getElementById(`tab-${tabName}`);
       if(activeTabBtn) activeTabBtn.classList.add('active');
 
-      if(tabName === 'analytics') {
-        renderAnalytics();
-        renderCommentsList();
-      }
+      if(tabName === 'analytics') renderAnalytics();
       if(tabName === 'prices') renderPrices();
-      if(tabName === 'track') renderPublicComments();
     }
 
     function toggleAuthModal() {
@@ -851,7 +708,7 @@
       document.body.className = isDark ? "bg-zinc-900 text-white min-h-screen" : "bg-amber-50/40 min-h-screen text-gray-800";
     }
 
-    // --- 💳 حساب طريقة الدفع والعمولة والتوتال (إنستا باي = 0 افتراضياً) ---
+    // --- 💳 حساب طريقة الدفع والعمولة والتوتال ---
     function calculateTotalBill(isManualFee = false) {
       const orderPrice = Number(document.getElementById('orderPrice').value) || 0;
       const deliveryPrice = Number(document.getElementById('deliveryPrice').value) || 0;
@@ -863,7 +720,7 @@
         if (method === 'vodafone') {
           fee = Math.ceil(orderPrice / 1000) * 10;
         } else if (method === 'instapay') {
-          fee = 0; // إلغاء نسبة الانستا باي أوتوماتيكياً
+          fee = Math.ceil(orderPrice / 1000) * 1;
         } else {
           fee = 0;
         }
@@ -910,7 +767,7 @@
       }
     }
 
-    // --- 👥 إدارة المستخدمين والمناديب ---
+    // --- 👥 إدارة المستخدمين والمناديب وتعديل وحذف الحسابات ---
     function addUser() {
       if(!canUser('users')) return alert('عذراً، إضافة المستخدمين تتطلب صلاحية إدارة المستخدمين');
       const username = document.getElementById('newUserName').value.trim();
@@ -969,15 +826,13 @@
 
     function renderUsersList() {
       const dropdowns = document.querySelectorAll('.driver-dropdown');
-      const filterDriverDropdown = document.querySelectorAll('.filter-driver-dropdown');
+      const filterDriverDropdown = document.querySelector('.filter-driver-dropdown');
       const list = document.getElementById('usersList');
       
       dropdowns.forEach(select => {
         select.innerHTML = '<option value="غير محدد">حدد المندوب...</option>';
       });
-      filterDriverDropdown.forEach(f => {
-        f.innerHTML = '<option value="ALL">جميع المناديب</option>';
-      });
+      if(filterDriverDropdown) filterDriverDropdown.innerHTML = '<option value="ALL">جميع المناديب</option>';
       
       if(!list) return;
       list.innerHTML = '';
@@ -990,9 +845,7 @@
           dropdowns.forEach(select => {
             select.innerHTML += `<option value="${u.username}">${u.username}</option>`;
           });
-          filterDriverDropdown.forEach(f => {
-            f.innerHTML += `<option value="${u.username}">${u.username}</option>`;
-          });
+          if(filterDriverDropdown) filterDriverDropdown.innerHTML += `<option value="${u.username}">${u.username}</option>`;
         }
 
         const perms = u.perms || {};
@@ -1089,12 +942,9 @@
         driver: driver,
         status: 'جاري تحضير اللحوم 🥩',
         rating: null,
-        comment: null,
-        isPublished: false,
         date: now.toISOString().split('T')[0],
         time: now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
-        lat: null, lng: null,
-        custLat: null, custLng: null
+        lat: null, lng: null
       }).then(() => {
         const baseUrl = window.location.href.split('?')[0];
         const trackUrl = `${baseUrl}?tab=track&id=${orderId}`;
@@ -1118,11 +968,7 @@
     db.ref('orders').on('value', (snapshot) => {
       allOrdersCache = snapshot.val() || {};
       applyFilters();
-      if(!document.getElementById('sec-analytics').classList.contains('hidden')) {
-        renderAnalytics();
-        renderCommentsList();
-      }
-      renderPublicComments();
+      if(!document.getElementById('sec-analytics').classList.contains('hidden')) renderAnalytics();
     });
 
     function getPaymentText(method) {
@@ -1167,9 +1013,7 @@
           tr.innerHTML = `
             <td class="p-2.5">
               <div class="font-bold font-mono text-red-600">#${displayId}</div>
-              <div class="text-[10px] text-gray-400">
-                <span class="formatted-date">${formatDateDMY(item.date)}</span> ${item.time || ''}
-              </div>
+              <div class="text-[10px] text-gray-400">${item.date || ''} ${item.time || ''}</div>
             </td>
             <td class="p-2.5">
               <div class="font-bold">${displayName}</div>
@@ -1334,148 +1178,16 @@
       });
     }
 
-    // --- 💬 عرض وفلترة تعليقات وتقييمات العملاء المخصصة للإدارة + النشر والحذف ---
-    function renderCommentsList() {
-      if(!canUser('analytics')) return;
-      const filterDriver = document.getElementById('commentDriverFilter') ? document.getElementById('commentDriverFilter').value : 'ALL';
-      const filterRating = document.getElementById('commentRatingFilter') ? document.getElementById('commentRatingFilter').value : 'ALL';
-      const filterDate = document.getElementById('commentDateFilter') ? document.getElementById('commentDateFilter').value : '';
-
-      const container = document.getElementById('commentsContainer');
-      container.innerHTML = '';
-
-      let count = 0;
-
-      Object.keys(allOrdersCache).forEach(key => {
-        const item = allOrdersCache[key];
-        
-        if(item.rating || item.comment) {
-          const driver = item.driver || 'غير محدد';
-          const rating = String(item.rating || '0');
-          const date = item.date || '';
-
-          const matchDriver = filterDriver === 'ALL' || driver === filterDriver;
-          const matchRating = filterRating === 'ALL' || rating === filterRating;
-          const matchDate = !filterDate || date === filterDate;
-
-          if(matchDriver && matchRating && matchDate) {
-            count++;
-            
-            let starsStr = '';
-            const rNum = Number(item.rating) || 0;
-            for(let i=0; i<rNum; i++) starsStr += '⭐';
-
-            const isPublished = !!item.isPublished;
-
-            container.innerHTML += `
-              <div class="bg-white p-3.5 rounded-xl border border-amber-200 shadow-sm space-y-2 text-xs">
-                <div class="flex justify-between items-center border-b pb-1.5">
-                  <div class="font-bold text-gray-800">
-                    <span>العميل: ${item.customerName || item.name || 'عميل حمكشة'}</span>
-                    <span class="text-[10px] font-mono text-gray-400 mr-2">#${item.orderId || key}</span>
-                  </div>
-                  <span class="formatted-date font-mono text-[10px] text-gray-500">${formatDateDMY(item.date)}</span>
-                </div>
-
-                <div class="flex justify-between items-center bg-amber-50 p-2 rounded-lg">
-                  <div>
-                    <span class="text-gray-600">المندوب:</span>
-                    <b class="text-red-700 mr-1">${driver}</b>
-                  </div>
-                  <div class="text-amber-600 font-bold">${starsStr || 'بدون تقييم'} (${item.rating || 0}/5)</div>
-                </div>
-
-                <div class="text-gray-700 pt-1">
-                  <span class="font-bold text-gray-900 block mb-0.5">💬 التعليق والرأي:</span>
-                  <p class="bg-gray-50 p-2 rounded-lg border text-gray-800">${item.comment || 'لم يقم العميل بكتابة تعليق نصي.'}</p>
-                </div>
-
-                <div class="flex justify-between items-center pt-2 border-t">
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded ${isPublished ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'}">
-                    ${isPublished ? '🌐 منشور للعموم' : '🔒 خاص بالإدارة فقط'}
-                  </span>
-                  
-                  <div class="flex items-center gap-1.5">
-                    <button onclick="togglePublishComment('${key}', ${!isPublished})" class="${isPublished ? 'bg-amber-100 text-amber-800 hover:bg-amber-200' : 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'} px-2.5 py-1 rounded text-[10px] font-bold">
-                      ${isPublished ? 'إلغاء النشر 🙈' : 'نشر للجميع 👁️'}
-                    </button>
-                    <button onclick="deleteComment('${key}')" class="bg-red-100 text-red-700 hover:bg-red-200 px-2.5 py-1 rounded text-[10px] font-bold">
-                      حذف 🗑️
-                    </button>
-                  </div>
-                </div>
-              </div>
-            `;
-          }
-        }
-      });
-
-      if(count === 0) {
-        container.innerHTML = `<p class="text-xs text-gray-400 p-4 text-center col-span-2">لا توجد تعليقات أو تقييمات مطابقة للفلتر المحدد.</p>`;
-      }
-    }
-
-    function togglePublishComment(orderKey, publishState) {
-      if(!canUser('analytics')) return;
-      db.ref(`orders/${orderKey}/isPublished`).set(publishState).then(() => {
-        alert(publishState ? 'تم نشر التعليق بنجاح للعموم في صفحة التتبع ✅' : 'تم إلغاء النشر وأصبح التعليق خاصاً بالإدارة فقط 🔒');
-      });
-    }
-
-    function deleteComment(orderKey) {
-      if(!canUser('analytics')) return;
-      if(confirm('هل تريد حذف هذا التعليق والتقييم نهائياً؟')) {
-        db.ref(`orders/${orderKey}`).update({ rating: null, comment: null, isPublished: false }).then(() => {
-          alert('تم حذف التعليق والتقييم بنجاح 🗑️');
-        });
-      }
-    }
-
-    // --- 💬 عرض التعليقات العامة المنشورة في صفحة تتبع العميل ---
-    function renderPublicComments() {
-      const container = document.getElementById('publicCommentsContainer');
-      if(!container) return;
-
-      container.innerHTML = '';
-      let count = 0;
-
-      Object.keys(allOrdersCache).forEach(key => {
-        const item = allOrdersCache[key];
-        if(item.isPublished && (item.comment || item.rating)) {
-          count++;
-          let starsStr = '';
-          const rNum = Number(item.rating) || 0;
-          for(let i=0; i<rNum; i++) starsStr += '⭐';
-
-          container.innerHTML += `
-            <div class="bg-amber-50/50 p-3 rounded-xl border border-amber-200 space-y-1 text-xs">
-              <div class="flex justify-between items-center text-gray-700">
-                <span class="font-bold text-red-800">${item.customerName || 'عميل حمكشة'}</span>
-                <span class="text-amber-600 font-bold text-[11px]">${starsStr}</span>
-              </div>
-              ${item.comment ? `<p class="text-gray-800 bg-white p-2 rounded-lg border border-amber-100">${item.comment}</p>` : ''}
-            </div>
-          `;
-        }
-      });
-
-      if(count === 0) {
-        container.innerHTML = `<p class="text-[11px] text-gray-400 text-center">لا توجد آراء منشورة حالياً.</p>`;
-      }
-    }
-
-    // --- 🏷️ قسم أسعار اللحوم وإدارتها المباشرة ---
-    let pricesCache = {};
-
+    // --- 🏷️ قسم أسعار اللحوم ---
     function renderPrices() {
       if(!canUser('prices')) return;
       db.ref('prices').on('value', (snap) => {
-        pricesCache = snap.val() || {};
+        const data = snap.val() || {};
         const container = document.getElementById('priceListContainer');
         container.innerHTML = '';
 
         const defaultPrices = [
-          { name: 'لحم کندوز ممتاز', price: 470, unit: 'كيلو' },
+          { name: 'لحم كندوز ممتاز', price: 470, unit: 'كيلو' },
           { name: 'لحم ضاني (فخده/كتف)', price: 460, unit: 'كيلو' },
           { name: 'كفتة حاتي جاهزة', price: 380, unit: 'كيلو' },
           { name: 'مفروم أحمر ممتاز', price: 460, unit: 'كيلو' },
@@ -1483,36 +1195,20 @@
           { name: 'سجق بلدي حمكشة', price: 380, unit: 'كيلو' }
         ];
 
-        if (Object.keys(pricesCache).length === 0) {
-          defaultPrices.forEach(dp => {
-            db.ref('prices').push(dp);
-          });
-          return;
-        }
+        const listToRender = Object.keys(data).length ? data : defaultPrices;
 
-        const canEditPrices = canUser('prices');
-
-        Object.keys(pricesCache).forEach(k => {
-          const item = pricesCache[k];
+        Object.keys(listToRender).forEach(k => {
+          const item = listToRender[k];
           container.innerHTML += `
-            <div class="bg-amber-50/60 p-4 rounded-2xl border border-amber-200 flex flex-col justify-between shadow-sm space-y-3">
-              <div class="flex items-center justify-between">
-                <div>
-                  <h4 class="font-bold text-sm text-gray-800">${item.name}</h4>
-                  <p class="text-xs text-gray-500 font-semibold">لكل ${item.unit || 'كيلو'}</p>
-                </div>
-                <div class="text-left">
-                  <span class="text-lg font-black text-red-700 font-mono">${item.price}</span>
-                  <span class="text-xs font-bold text-red-900">ج.م</span>
-                </div>
+            <div class="bg-amber-50/60 p-4 rounded-2xl border border-amber-200 flex items-center justify-between shadow-sm">
+              <div>
+                <h4 class="font-bold text-sm text-gray-800">${item.name}</h4>
+                <p class="text-xs text-gray-500 font-semibold">لكل ${item.unit || 'كيلو'}</p>
               </div>
-
-              ${canEditPrices ? `
-                <div class="flex items-center gap-1.5 pt-2 border-t border-amber-200/60 justify-end">
-                  <button onclick="openEditPriceModal('${k}')" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-sm">✏️ تعديل السعر</button>
-                  <button onclick="deletePriceItem('${k}')" class="bg-red-100 hover:bg-red-200 text-red-700 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-sm">🗑️ حذف</button>
-                </div>
-              ` : ''}
+              <div class="text-left">
+                <span class="text-lg font-black text-red-700 font-mono">${item.price}</span>
+                <span class="text-xs font-bold text-red-900">ج.م</span>
+              </div>
             </div>
           `;
         });
@@ -1521,108 +1217,47 @@
 
     function openAddPriceModal() {
       if(!canUser('prices')) return alert('عذراً، ليس لديك صلاحية تعديل أو إضافة أسعار.');
-      document.getElementById('priceKey').value = '';
-      document.getElementById('priceModalTitle').innerText = '➕ إضافة صنف لحوم جديد';
-      document.getElementById('priceName').value = '';
-      document.getElementById('priceValue').value = '';
-      document.getElementById('priceUnit').value = 'كيلو';
-      document.getElementById('editPriceModal').classList.remove('hidden');
-    }
-
-    function openEditPriceModal(key) {
-      if(!canUser('prices')) return alert('عذراً، ليس لديك صلاحية التعديل.');
-      const p = pricesCache[key];
-      if(!p) return;
-      document.getElementById('priceKey').value = key;
-      document.getElementById('priceModalTitle').innerText = '✏️ تعديل سعر المنتج';
-      document.getElementById('priceName').value = p.name || '';
-      document.getElementById('priceValue').value = p.price || 0;
-      document.getElementById('priceUnit').value = p.unit || 'كيلو';
-      document.getElementById('editPriceModal').classList.remove('hidden');
-    }
-
-    function closeEditPriceModal() {
-      document.getElementById('editPriceModal').classList.add('hidden');
-    }
-
-    function savePriceItem() {
-      if(!canUser('prices')) return;
-      const key = document.getElementById('priceKey').value;
-      const name = document.getElementById('priceName').value.trim();
-      const price = Number(document.getElementById('priceValue').value) || 0;
-      const unit = document.getElementById('priceUnit').value.trim() || 'كيلو';
-
-      if(!name || !price) return alert('يرجى كتابة اسم المنتج والسعر بشكل صحيح');
-
-      if(key) {
-        db.ref('prices/' + key).update({ name, price, unit }).then(() => {
-          alert('تم تحديث سعر المنتج بنجاح ✅');
-          closeEditPriceModal();
-        });
-      } else {
-        db.ref('prices').push({ name, price, unit }).then(() => {
-          alert('تمت إضافة المنتج الجديد للقائمة بنجاح ✅');
-          closeEditPriceModal();
-        });
+      const name = prompt('أدخل اسم الصنف الجديد:');
+      const price = prompt('أدخل السعر (ج.م):');
+      if(name && price) {
+        db.ref('prices').push({ name, price: Number(price), unit: 'كيلو' });
       }
     }
 
-    function deletePriceItem(key) {
-      if(!canUser('prices')) return;
-      if(confirm('هل تريد حذف هذا المنتج من قائمة الأسعار؟')) {
-        db.ref('prices/' + key).remove();
-      }
-    }
-
-    // --- 📍 تتبع العميل ومشاركة موقعه الحي مع المندوب ---
+    // --- تتبع العميل والتقييم ---
     function searchCustomerOrder() {
-      let id = document.getElementById('custSearchOrderId').value.trim();
+      const id = document.getElementById('custSearchOrderId').value.trim();
       if(!id) return alert('يرجى إدخال رقم الطلب');
 
-      let matchedKey = id;
-      Object.keys(allOrdersCache).forEach(k => {
-        if (allOrdersCache[k].orderId === id || k === id || (allOrdersCache[k].orderId && allOrdersCache[k].orderId.includes(id))) {
-          matchedKey = k;
-        }
-      });
+      currentTrackOrderId = id;
 
-      currentTrackOrderId = matchedKey;
-
-      db.ref('orders/' + matchedKey).on('value', (snap) => {
+      db.ref('orders/' + id).on('value', (snap) => {
         const data = snap.val();
         if(data) {
-          document.getElementById('dispOrderId').innerText = '#' + (data.orderId || matchedKey);
+          document.getElementById('dispOrderId').innerText = '#' + (data.orderId || id);
           document.getElementById('cDriver').innerText = data.driver || 'جاري التحديد...';
-          document.getElementById('cDate').innerText = formatDateDMY(data.date) + ' ' + (data.time || '');
+          document.getElementById('cDate').innerText = (data.date || '') + ' ' + (data.time || '');
           document.getElementById('badgeStatus').innerText = data.status || 'جاري المتابعة';
 
-          // عرض زر الخريطة لموقع المندوب
+          if(data.status === 'تم التسليم بنجاح ✅') {
+            document.getElementById('ratingBox').classList.remove('hidden');
+            if(data.rating) {
+              document.getElementById('ratingSubmittedMsg').innerText = `تم تسجيل تقييمك بـ (${data.rating} ⭐) بنجاح!`;
+              document.getElementById('ratingSubmittedMsg').classList.remove('hidden');
+            }
+          }
+
           if(data.lat && data.lng) {
-            document.getElementById('mapTextInfo').innerHTML = `
+            document.getElementById('map').innerHTML = `
               <div class="space-y-2">
                 <p class="font-bold text-emerald-600">🛵 المندوب في الطريق إليك الآن!</p>
-                <a href="https://www.google.com/maps?q=${data.lat},${data.lng}" target="_blank" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow transition-all">
+                <a href="https://www.google.com/maps?q=${data.lat},${data.lng}" target="_blank" class="inline-block bg-red-600 text-white font-bold px-4 py-2 rounded-xl text-xs shadow">
                   📍 فتح موقع المندوب الحي على Google Maps
                 </a>
               </div>
             `;
           } else {
-            document.getElementById('mapTextInfo').innerHTML = `⏳ الطلب قيد التحضير أو المندوب لم يقم بتفعيل اللوكيشن الحي بعد.`;
-          }
-
-          // ⚠️ يظهر صندوق التقييم فقط عند حالة "تم التسليم بنجاح ✅"
-          if(data.status === 'تم التسليم بنجاح ✅') {
-            document.getElementById('ratingBox').classList.remove('hidden');
-            if(data.rating) {
-              selectRatingStars(data.rating);
-              document.getElementById('ratingSubmittedMsg').innerText = `تم تسجيل تقييمك بـ (${data.rating} ⭐) بنجاح! شكراً لك.`;
-              document.getElementById('ratingSubmittedMsg').classList.remove('hidden');
-            }
-            if(data.comment) {
-              document.getElementById('custCommentText').value = data.comment;
-            }
-          } else {
-            document.getElementById('ratingBox').classList.add('hidden');
+            document.getElementById('map').innerHTML = `⏳ الطلب قيد التحضير في الجزارة أو المندوب لم يقم بتفعيل اللوكيشن الحي بعد.`;
           }
         } else {
           alert('لم يتم العثور على طلب بهذا الرقم!');
@@ -1630,76 +1265,10 @@
       });
     }
 
-    function toggleCustomerLocationShare() {
-      if(!currentTrackOrderId) return alert('أدخل رقم الطلب وقم بالبحث أولاً لربط موقعك بطلبك!');
-      
-      if (navigator.geolocation) {
-        if(custWatchId) {
-          navigator.geolocation.clearWatch(custWatchId);
-          custWatchId = null;
-          document.getElementById('custShareLocBtn').innerText = "📍 مشاركة موقعي الحالي (GPS) مع المندوب";
-          document.getElementById('custLocStatus').classList.add('hidden');
-          return;
-        }
-
-        custWatchId = navigator.geolocation.watchPosition((pos) => {
-          db.ref('orders/' + currentTrackOrderId).update({
-            custLat: pos.coords.latitude,
-            custLng: pos.coords.longitude
-          });
-          document.getElementById('custShareLocBtn').innerText = "🔄 يتم تحديث مشاركة موقعك حياً...";
-          document.getElementById('custLocStatus').classList.remove('hidden');
-        }, (err) => {
-          alert('تعذر الوصول إلى موقعك الجغرافي (GPS)');
-        }, { enableHighAccuracy: true });
-      } else {
-        alert('متصفحك لا يدعم تحديد الموقع الجغرافي');
-      }
-    }
-
-    // --- ⭐ دالة التفاعل والتحكم بنجوم التقييم الباهتة والمتشبعة ---
-    function hoverRatingStars(count) {
-      const stars = document.querySelectorAll('#starContainer .star-item');
-      stars.forEach((star, idx) => {
-        if (idx < count) {
-          star.classList.add('hovered');
-        } else {
-          star.classList.remove('hovered');
-        }
-      });
-    }
-
-    function resetRatingHover() {
-      const stars = document.querySelectorAll('#starContainer .star-item');
-      stars.forEach(star => star.classList.remove('hovered'));
-    }
-
-    function selectRatingStars(starsCount) {
-      selectedStarsCount = starsCount;
-      const stars = document.querySelectorAll('#starContainer .star-item');
-      stars.forEach((star, idx) => {
-        if (idx < starsCount) {
-          star.classList.add('active');
-        } else {
-          star.classList.remove('active');
-        }
-      });
-
-      const ratingTexts = ["", "سيء جداً 😞", "مقبول 😐", "جيد 👍", "ممتاز جداً 😄", "ممتاز فوق العادة 🌟"];
-      document.getElementById('selectedRatingText').innerText = `التقييم المحدد: ${starsCount} من 5 نجوم (${ratingTexts[starsCount]})`;
-    }
-
-    function submitFullFeedback() {
-      if(!currentTrackOrderId) return alert('يرجى تحديد رقم الطلب أولاً!');
-      if(selectedStarsCount === 0) return alert('يرجى تحديد عدد النجوم بالضغط عليها أولاً قبل الإرسال!');
-
-      const commentText = document.getElementById('custCommentText').value.trim();
-
-      db.ref('orders/' + currentTrackOrderId).update({
-        rating: selectedStarsCount,
-        comment: commentText
-      }).then(() => {
-        document.getElementById('ratingSubmittedMsg').innerText = `شكراً لك! تم تسجيل تقييمك بـ (${selectedStarsCount} ⭐) والملاحظات بنجاح ✅`;
+    function setStarRating(stars) {
+      if(!currentTrackOrderId) return;
+      db.ref('orders/' + currentTrackOrderId).update({ rating: stars }).then(() => {
+        document.getElementById('ratingSubmittedMsg').innerText = `شكراً لك! تم تسجيل تقييمك بـ (${stars} ⭐) بنجاح ✅`;
         document.getElementById('ratingSubmittedMsg').classList.remove('hidden');
       });
     }
@@ -1719,7 +1288,7 @@
       filteredOrdersList.forEach(item => {
         const row = [
           `"${item.displayId}"`,
-          `"${formatDateDMY(item.date)}"`,
+          `"${item.date || ''}"`,
           `"${item.time || ''}"`,
           `"${item.displayName.replace(/"/g, '""')}"`,
           `"${item.displayPhone}"`,
@@ -1754,7 +1323,7 @@
         tableRows += `
           <tr>
             <td style="font-weight:bold; color:#800020; font-family: monospace;">#${item.displayId}</td>
-            <td><span style="direction:ltr; display:inline-block;">${formatDateDMY(item.date)}</span><br><small style="color:#666">${item.time || ''}</small></td>
+            <td>${item.date || ''}<br><small style="color:#666">${item.time || ''}</small></td>
             <td><b>${item.displayName}</b></td>
             <td dir="ltr" style="text-align:right;">${item.displayPhone}</td>
             <td>${item.displayDriver}<br><small style="color:#1e3a8a; font-weight:bold;">${getPaymentText(item.paymentMethod)}</small></td>
@@ -1821,7 +1390,7 @@
                 <div>📍 <b>العنوان:</b> الزقازيق، حي تاني، معهد فني تجاري</div>
                 <div>📞 <b>تواصل:</b> 0552317739 | 0552321231 | 0552314867</div>
                 <div>💬 <b>واتساب:</b> 01273091807</div>
-                <div>📅 <b>التاريخ:</b> <span style="direction:ltr; display:inline-block;">${formatDateDMY(new Date().toISOString().split('T')[0])}</span></div>
+                <div>📅 <b>التاريخ:</b> ${new Date().toLocaleDateString('ar-EG')}</div>
               </div>
             </div>
 
@@ -2008,7 +1577,7 @@ ${trackUrl}`;
       }
       document.getElementById('driverStatus').innerText = "🛑 تم إيقاف بث الموقع الحي.";
       document.getElementById('startBtn').innerText = "📍 بدء بث اللوكيشن الحي Live (اختياري)";
-      document.getElementById('stopBtn').classList.remove('hidden');
+      document.getElementById('stopBtn').classList.add('hidden');
     }
 
     window.addEventListener('DOMContentLoaded', () => {
