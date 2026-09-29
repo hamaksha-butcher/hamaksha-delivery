@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>جزارة حماكشة - نظام إدارة المبيعات والتتبع</title>
+  <title>جزارة حمكشة - نظام إدارة المبيعات والتتبع</title>
   
   <!-- الخطوط والأيقونات -->
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- مكتبات Firebase -->
@@ -15,205 +15,256 @@
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
-    body { display: flex; height: 100vh; background-color: #f4f6f9; overflow: hidden; }
     
-    /* الجانب الأيمن - الهوية واللوجو */
-    .hero-section {
-      width: 50%;
-      background: linear-gradient(135deg, #4a0000 0%, #1a0000 100%);
-      color: #fff;
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at center, #2b0000 0%, #0d0000 100%);
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 40px;
-      text-align: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
     }
-    .logo-container {
-      width: 130px;
-      height: 130px;
-      border-radius: 50%;
-      background: #700000;
-      border: 3px solid #d4af37;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-    }
-    .logo-container h3 { font-size: 22px; color: #fff; font-weight: 700; margin: 0; }
-    .logo-container span { font-size: 10px; color: #d4af37; letter-spacing: 1px; }
 
-    .hero-title { font-size: 30px; font-weight: 700; margin-bottom: 6px; color: #fff; }
-    .hero-subtitle { font-size: 15px; color: #ccc; margin-bottom: 35px; }
-    
-    .feature-card {
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 12px;
-      padding: 14px 22px;
-      width: 85%;
-      max-width: 380px;
-      margin-bottom: 14px;
+    /* خلفية جمالية خفيفة */
+    body::before {
+      content: "";
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+      opacity: 0.15;
+      pointer-events: none;
+    }
+
+    /* كارت الدخول الرئيسي */
+    .main-card {
+      position: relative;
+      background: rgba(20, 20, 20, 0.75);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: 24px;
+      padding: 45px 35px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(183, 28, 28, 0.2);
+      text-align: center;
+      color: #fff;
+    }
+
+    /* اللوجو الخاص بنا */
+    .brand-logo {
+      width: 110px;
+      height: 110px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #800000, #400000);
+      border: 2px solid #d4af37;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 15px;
+      justify-content: center;
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+
+    .brand-logo h3 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      margin: 0;
+      line-height: 1.1;
+    }
+
+    .brand-logo span {
+      font-size: 10px;
+      color: #d4af37;
+      letter-spacing: 2px;
+      margin-top: 2px;
+      font-weight: 700;
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #b0b0b0;
+      margin-bottom: 30px;
+    }
+
+    /* الحقول والإدخال */
+    .input-group {
+      margin-bottom: 20px;
       text-align: right;
     }
-    .feature-card i { font-size: 22px; color: #e63946; }
-    .feature-card h4 { font-size: 15px; margin-bottom: 2px; }
-    .feature-card p { font-size: 12px; color: #aaa; }
 
-    /* الجانب الأيسر - فورم الدخول */
-    .login-section {
-      width: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 40px;
-      background-color: #f8f9fa;
+    .input-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #d4af37;
+      margin-bottom: 8px;
+      margin-right: 4px;
     }
-    .login-box {
-      background: #ffffff;
-      padding: 40px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-      width: 100%;
-      max-width: 400px;
+
+    .input-wrapper {
+      position: relative;
     }
-    .login-box h2 { font-size: 24px; font-weight: 700; color: #222; margin-bottom: 6px; }
-    .login-box p { font-size: 13px; color: #777; margin-bottom: 25px; }
-    
-    .input-group { margin-bottom: 18px; }
-    .input-group label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
-    .input-wrapper { position: relative; }
-    .input-wrapper i { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: #aaa; }
+
+    .input-wrapper i {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #888;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+
     .input-wrapper input {
       width: 100%;
-      padding: 12px 42px 12px 14px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
+      padding: 14px 45px 14px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
       font-size: 14px;
+      color: #fff;
       outline: none;
       transition: 0.3s;
     }
-    .input-wrapper input:focus { border-color: #b71c1c; box-shadow: 0 0 0 3px rgba(183, 28, 28, 0.1); }
 
-    .options-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; font-size: 13px; }
-    .remember-me { display: flex; align-items: center; gap: 8px; cursor: pointer; color: #555; }
-    .remember-me input { width: 16px; height: 16px; accent-color: #b71c1c; cursor: pointer; }
-    .forgot-pass { color: #888; text-decoration: none; }
-    .forgot-pass:hover { text-decoration: underline; }
+    .input-wrapper input:focus {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: #d4af37;
+      box-shadow: 0 0 12px rgba(212, 175, 55, 0.2);
+    }
 
+    .input-wrapper input:focus + i {
+      color: #d4af37;
+    }
+
+    /* تذكرني ونسيت كلمة المرور */
+    .options-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      font-size: 12px;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      color: #ccc;
+    }
+
+    .remember-me input {
+      width: 16px;
+      height: 16px;
+      accent-color: #b71c1c;
+      cursor: pointer;
+    }
+
+    .forgot-pass {
+      color: #888;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .forgot-pass:hover {
+      color: #d4af37;
+    }
+
+    /* زر الدخول */
     .btn-submit {
       width: 100%;
-      padding: 13px;
-      background: #b71c1c;
+      padding: 14px;
+      background: linear-gradient(135deg, #b71c1c 0%, #7f0000 100%);
       color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 15px;
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: 12px;
+      font-size: 16px;
       font-weight: 700;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 20px rgba(183, 28, 28, 0.4);
     }
-    .btn-submit:hover { background: #8e0000; }
 
-    .copyright { margin-top: 25px; text-align: center; font-size: 11px; color: #aaa; }
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(183, 28, 28, 0.6);
+      background: linear-gradient(135deg, #d32f2f 0%, #9a0000 100%);
+    }
 
-    @media (max-width: 850px) {
-      body { flex-direction: column; overflow: auto; }
-      .hero-section, .login-section { width: 100%; height: auto; padding: 30px 20px; }
+    .footer-text {
+      margin-top: 30px;
+      font-size: 11px;
+      color: #666;
+      letter-spacing: 1px;
     }
   </style>
 </head>
 <body>
 
-  <!-- القسم الأيمن: الهوية واللوجو -->
-  <div class="hero-section">
-    <div class="logo-container">
-      <h3>جزارة حماكشة</h3>
+  <div class="main-card">
+    <!-- اللوجو الخاص بـ جزارة حمكشة -->
+    <div class="brand-logo">
+      <h3>جزارة<br>حمكشة</h3>
       <span>SINCE 1998</span>
     </div>
-    <h1 class="hero-title">جزارة حماكشة</h1>
-    <p class="hero-subtitle">لحوم بلدي طازجة يومياً</p>
 
-    <div class="feature-card">
-      <i class="fa-solid fa-chart-line"></i>
-      <div>
-        <h4>المبيعات والتقارير</h4>
-        <p>متابعة يومية دقيقة للمبيعات</p>
-      </div>
-    </div>
+    <h2 class="title">تسجيل الدخول</h2>
+    <p class="subtitle">نظام إدارة المبيعات والتتبع الميداني</p>
 
-    <div class="feature-card">
-      <i class="fa-solid fa-truck-fast"></i>
-      <div>
-        <h4>التوصيل</h4>
-        <p>إدارة الطيارين والطلبات</p>
-      </div>
-    </div>
-
-    <div class="feature-card">
-      <i class="fa-solid fa-users-gear"></i>
-      <div>
-        <h4>صلاحيات الفريق</h4>
-        <p>تحكم أمن في المستخدمين</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- القسم الأيسر: كارت تسجيل الدخول -->
-  <div class="login-section">
-    <div class="login-box">
-      <h2>تسجيل الدخول</h2>
-      <p>أدخل بيانات حسابك للوصول إلى نظام نقاط البيع</p>
-
-      <form id="loginForm">
-        <div class="input-group">
-          <label>اسم المستخدم *</label>
-          <div class="input-wrapper">
-            <i class="fa-regular fa-user"></i>
-            <input type="text" id="username" placeholder="admin" required>
-          </div>
+    <form id="loginForm">
+      <div class="input-group">
+        <label>اسم المستخدم</label>
+        <div class="input-wrapper">
+          <input type="text" id="username" placeholder="أدخل اسم المستخدم" required>
+          <i class="fa-regular fa-user"></i>
         </div>
-
-        <div class="input-group">
-          <label>كلمة المرور *</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-lock"></i>
-            <input type="password" id="password" placeholder="••••••••" required>
-          </div>
-        </div>
-
-        <div class="options-row">
-          <label class="remember-me">
-            <input type="checkbox" id="rememberMe">
-            <span>تذكرني</span>
-          </label>
-          <a href="#" class="forgot-pass">نسيت كلمة المرور؟</a>
-        </div>
-
-        <button type="submit" class="btn-submit">دخول إلى النظام</button>
-      </form>
-
-      <div class="copyright">
-        HAMAKSHA POS v1.0<br>
-        جميع الحقوق محفوظة © 2026
       </div>
+
+      <div class="input-group">
+        <label>كلمة المرور</label>
+        <div class="input-wrapper">
+          <input type="password" id="password" placeholder="••••••••" required>
+          <i class="fa-solid fa-lock"></i>
+        </div>
+      </div>
+
+      <div class="options-row">
+        <label class="remember-me">
+          <input type="checkbox" id="rememberMe">
+          <span>تذكرني على هذا الجهاز</span>
+        </label>
+        <a href="#" class="forgot-pass">نسيت كلمة المرور؟</a>
+      </div>
+
+      <button type="submit" class="btn-submit">دخول للسيستم <i class="fa-solid fa-arrow-left mr-2"></i></button>
+    </form>
+
+    <div class="footer-text">
+      HAMAKSHA SYSTEM v2.0 • جميع الحقوق محفوظة © 2026
     </div>
   </div>
 
   <script>
-    // 1️⃣ إعدادات Firebase الخاص بمشروعك
+    // 1️⃣ إعدادات Firebase
     const firebaseConfig = {
       databaseURL: "https://hamaksha-tracking-default-rtdb.europe-west1.firebasedatabase.app"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // 2️⃣ استرجاع اسم المستخدم إذا كان قد حدد "تذكرني" سابقاً
+    // 2️⃣ استرجاع اسم المستخدم إذا كان خيار "تذكرني" مفحوصاً
     document.addEventListener("DOMContentLoaded", () => {
       const savedUser = localStorage.getItem("rememberedUsername");
       if (savedUser) {
@@ -222,7 +273,7 @@
       }
     });
 
-    // 3️⃣ معالجة تسجيل الدخول وحفظ البيانات
+    // 3️⃣ عملية الدخول والتوجيه المباشر
     document.getElementById("loginForm").addEventListener("submit", function(e) {
       e.preventDefault();
       
@@ -230,7 +281,6 @@
       const passwordInput = document.getElementById("password").value.trim();
       const rememberMe = document.getElementById("rememberMe").checked;
 
-      // التحقق من قاعدة البيانات
       db.ref('users').once('value').then((snapshot) => {
         const users = snapshot.val() || {};
         let authenticatedUser = null;
@@ -242,47 +292,45 @@
         });
 
         if (authenticatedUser) {
-          // حفظ خيار "تذكرني"
           if (rememberMe) {
             localStorage.setItem("rememberedUsername", usernameInput);
           } else {
             localStorage.removeItem("rememberedUsername");
           }
 
-          // حفظ اسم المستخدم النشط حالياً للجلسة
+          // تخزين اسم المستخدم النشط
           sessionStorage.setItem("currentUser", usernameInput);
           sessionStorage.setItem("userRole", authenticatedUser.role);
 
+          // إخفاء كارت الدخول وتمرير المستخدم للسيستم الرئيسي
           alert("تم تسجيل الدخول بنجاح! مرحباً بك يا " + usernameInput);
           
-          // يمكنك توجيهه للوحة التحكم هنا:
-          // window.location.href = "dashboard.html";
+          // يمكنك إما إعادة التوجيه لرابط صفحة اللوحة أو إخفاء الشاشة:
+          // window.location.href = "dashboard.html"; 
+          location.reload(); // لإعادة التحميل والدخول مباشرة
         } else {
-          alert("اسم المستخدم أو كلمة المرور غير صحيحة!");
+          alert("خطأ: اسم المستخدم أو كلمة المرور غير صحيحة!");
         }
       });
     });
 
-    // 4️⃣ دوال إنشاء وتعديل الطلبات ومتابعة السجل تلقائياً
-    
-    // إنشاء طلب جديد
+    // 4️⃣ دوال تسجيل المنشئ والمُعدّل للطلبات تلقائياً
     function createOrder(orderData) {
       const currentUser = sessionStorage.getItem("currentUser") || "مجهول";
       const now = new Date().toLocaleString("ar-EG");
 
       const newOrder = {
         ...orderData,
-        createdBy: currentUser,           // اسم المنشئ
-        createdAt: now,                   // وقت الإنشاء
-        editCount: 0,                     // عدد مرات التعديل
-        lastEditedBy: "-",                // اسم المعدل
-        lastEditedAt: "-"                 // وقت التعديل
+        createdBy: currentUser,           
+        createdAt: now,                   
+        editCount: 0,                     
+        lastEditedBy: "-",                
+        lastEditedAt: "-"                 
       };
 
       return db.ref('orders').push(newOrder);
     }
 
-    // تعديل طلب قائم وتحديث السجل
     function updateOrder(orderId, updatedFields) {
       const currentUser = sessionStorage.getItem("currentUser") || "مجهول";
       const now = new Date().toLocaleString("ar-EG");
@@ -293,14 +341,12 @@
 
         const updates = {
           ...updatedFields,
-          editCount: currentEditCount + 1, // زيادة عداد التعديلات
-          lastEditedBy: currentUser,      // اسم المستخدم المعدّل
-          lastEditedAt: now               // تاريخ ووقت التعديل
+          editCount: currentEditCount + 1, 
+          lastEditedBy: currentUser,      
+          lastEditedAt: now               
         };
 
-        db.ref('orders/' + orderId).update(updates).then(() => {
-          console.log("تم تحديث الطلب وسجل التعديل بنجاح.");
-        });
+        db.ref('orders/' + orderId).update(updates);
       });
     }
   </script>
