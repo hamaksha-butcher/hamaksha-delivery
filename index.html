@@ -5,11 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>جزارة حمكشة - نظام إدارة المبيعات والتتبع</title>
   
-  <!-- الخطوط والأيقونات -->
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- مكتبات Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -18,37 +16,34 @@
     
     body {
       min-height: 100vh;
+      background: #f4f6f9;
+      color: #333;
+    }
+
+    /* --- شاشة تسجيل الدخول --- */
+    #loginPage {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100vh;
       background: radial-gradient(circle at center, #2b0000 0%, #0d0000 100%);
       display: flex;
       align-items: center;
       justify-content: center;
+      z-index: 9999;
       padding: 20px;
-      position: relative;
-      overflow-x: hidden;
     }
 
-    body::before {
+    #loginPage::before {
       content: "";
       position: absolute;
-      width: 200%;
-      height: 200%;
+      width: 100%; height: 100%;
       background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
       opacity: 0.15;
       pointer-events: none;
     }
 
-    /* شاشة تسجيل الدخول */
-    #loginPage {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 10;
-    }
-
-    .main-card {
+    .login-card {
       position: relative;
-      background: rgba(20, 20, 20, 0.85);
+      background: rgba(20, 20, 20, 0.88);
       backdrop-filter: blur(15px);
       border: 1px solid rgba(212, 175, 55, 0.25);
       border-radius: 24px;
@@ -61,9 +56,8 @@
     }
 
     .brand-logo {
-      width: 100px;
-      height: 100px;
-      margin: 0 auto 18px;
+      width: 95px; height: 95px;
+      margin: 0 auto 15px;
       border-radius: 50%;
       background: linear-gradient(145deg, #800000, #400000);
       border: 2px solid #d4af37;
@@ -73,7 +67,6 @@
       justify-content: center;
       box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
     }
-
     .brand-logo h3 { font-size: 18px; font-weight: 800; color: #fff; margin: 0; line-height: 1.1; }
     .brand-logo span { font-size: 9px; color: #d4af37; letter-spacing: 2px; margin-top: 2px; font-weight: 700; }
 
@@ -82,10 +75,8 @@
 
     .input-group { margin-bottom: 18px; text-align: right; }
     .input-group label { display: block; font-size: 12px; font-weight: 700; color: #d4af37; margin-bottom: 6px; }
-
     .input-wrapper { position: relative; }
     .input-wrapper i { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: #888; font-size: 15px; }
-
     .input-wrapper input {
       width: 100%;
       padding: 12px 42px 12px 14px;
@@ -97,73 +88,58 @@
       outline: none;
       transition: 0.3s;
     }
-
-    .input-wrapper input:focus {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: #d4af37;
-      box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
-    }
+    .input-wrapper input:focus { border-color: #d4af37; box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
 
     .options-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; font-size: 12px; }
     .remember-me { display: flex; align-items: center; gap: 6px; cursor: pointer; color: #ccc; }
     .remember-me input { width: 15px; height: 15px; accent-color: #b71c1c; cursor: pointer; }
     .forgot-pass { color: #888; text-decoration: none; }
-    .forgot-pass:hover { color: #d4af37; }
 
     .btn-submit {
-      width: 100%;
-      padding: 13px;
+      width: 100%; padding: 13px;
       background: linear-gradient(135deg, #b71c1c 0%, #7f0000 100%);
-      color: white;
-      border: 1px solid rgba(212, 175, 55, 0.4);
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 5px 15px rgba(183, 28, 28, 0.4);
+      color: white; border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: 10px; font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: all 0.3s ease;
     }
+    .btn-submit:hover { transform: translateY(-2px); background: linear-gradient(135deg, #d32f2f 0%, #9a0000 100%); }
 
-    .btn-submit:hover {
-      transform: translateY(-2px);
-      background: linear-gradient(135deg, #d32f2f 0%, #9a0000 100%);
+    /* --- السيستم الداخلي (لوحة التحكم والجدول) --- */
+    #mainApp { display: none; padding: 20px; }
+    
+    header {
+      background: #800000; color: #fff;
+      padding: 15px 25px; border-radius: 12px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
+    
+    .btn-logout { background: #d4af37; color: #000; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-    .footer-text { margin-top: 25px; font-size: 10px; color: #666; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    
+    .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
+    .form-grid input, .form-grid select { padding: 10px; border: 1px solid #ddd; border-radius: 8px; outline: none; width: 100%; }
+    
+    .btn-add { background: #2e7d32; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
 
-    /* شاشة لوحة التحكم الرئيسية (تظهر بعد تسجيل الدخول) */
-    #dashboardPage {
-      display: none;
-      width: 100%;
-      max-width: 1100px;
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 25px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      z-index: 10;
-      color: #333;
-    }
-
-    .dash-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 15px;
-      border-bottom: 2px solid #f0f0f0;
-      margin-bottom: 20px;
-    }
-
-    .user-info { display: flex; align-items: center; gap: 10px; }
-    .user-badge { background: #b71c1c; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-    .btn-logout { background: #333; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; }
-    .btn-logout:hover { background: #000; }
+    /* جدول الطلبات */
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 12px; text-align: center; border-bottom: 1px solid #eee; font-size: 14px; }
+    th { background: #f8f9fa; color: #555; }
+    .badge-status { padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; }
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-delivered { background: #d4edda; color: #155724; }
+    
+    .audit-info { font-size: 11px; color: #666; display: block; margin-top: 4px; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; }
   </style>
 </head>
 <body>
 
-  <!-- 1️⃣ صفحة تسجيل الدخول -->
+  <!-- 1️⃣ شاشة تسجيل الدخول -->
   <div id="loginPage">
-    <div class="main-card">
+    <div class="login-card">
       <div class="brand-logo">
         <h3>جزارة<br>حمكشة</h3>
         <span>SINCE 1998</span>
@@ -197,33 +173,63 @@
           <a href="#" class="forgot-pass">نسيت كلمة المرور؟</a>
         </div>
 
-        <button type="submit" class="btn-submit">دخول للسيستم <i class="fa-solid fa-arrow-left mr-2"></i></button>
+        <button type="submit" class="btn-submit">دخول للسيستم <i class="fa-solid fa-arrow-left"></i></button>
       </form>
-
-      <div class="footer-text">
-        HAMAKSHA SYSTEM v2.0 • جميع الحقوق محفوظة © 2026
-      </div>
     </div>
   </div>
 
-  <!-- 2️⃣ لوحة التحكم الرئيسية (تظهر فوراً عند تسجيل الدخول) -->
-  <div id="dashboardPage">
-    <div class="dash-header">
-      <div>
-        <h2>لوحة التحكم - جزارة حمكشة 🥩</h2>
-        <p style="font-size: 13px; color: #666;">مرحباً بك في نظام إدارة المبيعات والطلبات</p>
-      </div>
-      <div class="user-info">
-        <span class="user-badge" id="displayUserRole">أدمن</span>
-        <span id="displayUsername" style="font-weight: bold;">-</span>
-        <button class="btn-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> خروج</button>
-      </div>
-    </div>
+  <!-- 2️⃣ التطبيق الداخلي والسيستم الكامل -->
+  <div id="mainApp">
+    <div class="container">
+      <header>
+        <div>
+          <h2>🥩 جزارة حمكشة - لوحة المتابعة</h2>
+          <small>مرحباً بك: <span id="activeUserDisplay">-</span> (<span id="activeRoleDisplay">-</span>)</small>
+        </div>
+        <button class="btn-logout" onclick="logout()">تسجيل الخروج</button>
+      </header>
 
-    <!-- هنا تضع محتوى السيستم والجدول والطلبات -->
-    <div style="padding: 40px; text-align: center; background: #f9f9f9; border-radius: 12px; border: 2px dashed #ddd;">
-      <h3>تم الوصول للسيستم بنجاح! 🎉</h3>
-      <p style="color: #666; margin-top: 10px;">جاهز لإضافة الفواتير والطلبات ومتابعة حركة التوصيل والتقييمات.</p>
+      <!-- نموذج إضافة أوردر جديد -->
+      <div class="card">
+        <h3 style="margin-bottom: 15px;">إضافة طلب جديد</h3>
+        <div class="form-grid">
+          <input type="text" id="custName" placeholder="اسم العميل">
+          <input type="text" id="custPhone" placeholder="رقم الهاتف">
+          <input type="text" id="custAddress" placeholder="العنوان والمنطقة">
+          <input type="text" id="orderDetails" placeholder="تفاصيل الطلب (الأوزان والأصناف)">
+          <input type="number" id="orderPrice" placeholder="الإجمالي (ج.م)">
+          <select id="driverSelect">
+            <option value="">اختر الديلفري</option>
+          </select>
+        </div>
+        <button class="btn-add" onclick="addNewOrder()">حفظ وإضافة الطلب</button>
+      </div>
+
+      <!-- جدول الطلبات -->
+      <div class="card">
+        <h3>قائمة الطلبات الحالية</h3>
+        <div style="overflow-x: auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>اسم العميل</th>
+                <th>رقم الهاتف</th>
+                <th>العنوان</th>
+                <th>الطلب</th>
+                <th>الإجمالي</th>
+                <th>الديلفري</th>
+                <th>الحالة</th>
+                <th>بيانات التعديل والمنشئ</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              <!-- يتم تحميل الطلبات هنا تلقائياً من Firebase -->
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -235,7 +241,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // التحقق عند التحميل إذا كان المستخدم مسجل دخوله من قبل
+    // عند فتح الصفحة
     document.addEventListener("DOMContentLoaded", () => {
       const savedUser = localStorage.getItem("rememberedUsername");
       if (savedUser) {
@@ -243,95 +249,177 @@
         document.getElementById("rememberMe").checked = true;
       }
 
-      // إذا كان مسجل دخول بالفعل في نفس الجلسة، اظهر السيستم مباشرة
       const activeUser = sessionStorage.getItem("currentUser");
       if (activeUser) {
-        showDashboard(activeUser, sessionStorage.getItem("userRole") || "أدمن");
+        openSystem(activeUser, sessionStorage.getItem("userRole") || "أدمن");
       }
     });
 
     // تسجيل الدخول
     document.getElementById("loginForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      
-      const usernameInput = document.getElementById("username").value.trim();
-      const passwordInput = document.getElementById("password").value.trim();
-      const rememberMe = document.getElementById("rememberMe").checked;
+      const uInput = document.getElementById("username").value.trim();
+      const pInput = document.getElementById("password").value.trim();
+      const rem = document.getElementById("rememberMe").checked;
 
       db.ref('users').once('value').then((snapshot) => {
         const users = snapshot.val() || {};
-        let authenticatedUser = null;
+        let found = null;
 
-        Object.keys(users).forEach(key => {
-          if (users[key].username === usernameInput && String(users[key].pass) === passwordInput) {
-            authenticatedUser = users[key];
+        Object.keys(users).forEach(k => {
+          if (users[k].username === uInput && String(users[k].pass) === pInput) {
+            found = users[k];
           }
         });
 
-        if (authenticatedUser) {
-          if (rememberMe) {
-            localStorage.setItem("rememberedUsername", usernameInput);
-          } else {
-            localStorage.removeItem("rememberedUsername");
-          }
+        if (found) {
+          if (rem) localStorage.setItem("rememberedUsername", uInput);
+          else localStorage.removeItem("rememberedUsername");
 
-          // حفظ الجلسة
-          sessionStorage.setItem("currentUser", usernameInput);
-          sessionStorage.setItem("userRole", authenticatedUser.role);
+          sessionStorage.setItem("currentUser", uInput);
+          sessionStorage.setItem("userRole", found.role);
 
-          // التوجيه المباشر وإظهار لوحة التحكم
-          showDashboard(usernameInput, authenticatedUser.role);
+          openSystem(uInput, found.role);
         } else {
           alert("خطأ: اسم المستخدم أو كلمة المرور غير صحيحة!");
         }
       });
     });
 
-    // دالة إظهار السيستم وإخفاء شاشة الدخول
-    function showDashboard(username, role) {
+    function openSystem(username, role) {
       document.getElementById("loginPage").style.display = "none";
-      document.getElementById("dashboardPage").style.display = "block";
-      document.getElementById("displayUsername").innerText = username;
-      document.getElementById("displayUserRole").innerText = role;
+      document.getElementById("mainApp").style.display = "block";
+      document.getElementById("activeUserDisplay").innerText = username;
+      document.getElementById("activeRoleDisplay").innerText = role;
+
+      loadDrivers();
+      loadOrders();
     }
 
-    // دالة تسجيل الخروج
     function logout() {
       sessionStorage.clear();
-      document.getElementById("dashboardPage").style.display = "none";
+      document.getElementById("mainApp").style.display = "none";
       document.getElementById("loginPage").style.display = "flex";
     }
 
-    // دوال تتبع المنشئ والمعدّل للطلبات
-    function createOrder(orderData) {
-      const currentUser = sessionStorage.getItem("currentUser") || "مجهول";
-      const now = new Date().toLocaleString("ar-EG");
-
-      return db.ref('orders').push({
-        ...orderData,
-        createdBy: currentUser,
-        createdAt: now,
-        editCount: 0,
-        lastEditedBy: "-",
-        lastEditedAt: "-"
+    // تحميل السائقين
+    function loadDrivers() {
+      db.ref('users').once('value').then(snapshot => {
+        const users = snapshot.val() || {};
+        const select = document.getElementById("driverSelect");
+        select.innerHTML = '<option value="">اختر الديلفري</option>';
+        Object.keys(users).forEach(k => {
+          if (users[k].role === 'driver') {
+            select.innerHTML += `<option value="${users[k].username}">${users[k].username}</option>`;
+          }
+        });
       });
     }
 
-    function updateOrder(orderId, updatedFields) {
+    // إضافة طلب وتسجيل المنشئ
+    function addNewOrder() {
       const currentUser = sessionStorage.getItem("currentUser") || "مجهول";
-      const now = new Date().toLocaleString("ar-EG");
+      const now = new Date();
+      // تنسيق التاريخ DD/MM/YYYY
+      const dateStr = String(now.getDate()).padStart(2, '0') + '/' + String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear() + ' ' + now.toLocaleTimeString('ar-EG');
 
-      db.ref('orders/' + orderId).once('value').then((snapshot) => {
-        const currentData = snapshot.val() || {};
-        const currentEditCount = currentData.editCount || 0;
+      const name = document.getElementById("custName").value;
+      const phone = document.getElementById("custPhone").value;
+      const address = document.getElementById("custAddress").value;
+      const details = document.getElementById("orderDetails").value;
+      const price = document.getElementById("orderPrice").value;
+      const driver = document.getElementById("driverSelect").value;
 
-        db.ref('orders/' + orderId).update({
-          ...updatedFields,
-          editCount: currentEditCount + 1,
-          lastEditedBy: currentUser,
-          lastEditedAt: now
+      if (!name || !price) {
+        alert("يرجى إدخال اسم العميل والسعر على الأقل!");
+        return;
+      }
+
+      db.ref('orders').push({
+        customerName: name,
+        phone: phone,
+        address: address,
+        details: details,
+        price: price,
+        driver: driver,
+        status: "جاري التوصيل",
+        createdBy: currentUser,
+        createdAt: dateStr,
+        editCount: 0,
+        lastEditedBy: "-",
+        lastEditedAt: "-"
+      }).then(() => {
+        alert("تمت إضافة الطلب بنجاح!");
+        document.getElementById("custName").value = "";
+        document.getElementById("custPhone").value = "";
+        document.getElementById("custAddress").value = "";
+        document.getElementById("orderDetails").value = "";
+        document.getElementById("orderPrice").value = "";
+      });
+    }
+
+    // تحميل الطلبات وعرض سجل التعديلات
+    function loadOrders() {
+      db.ref('orders').on('value', snapshot => {
+        const orders = snapshot.val() || {};
+        const tbody = document.getElementById("ordersTableBody");
+        tbody.innerHTML = "";
+
+        let index = 1;
+        Object.keys(orders).reverse().forEach(key => {
+          const item = orders[key];
+          
+          tbody.innerHTML += `
+            <tr>
+              <td>${index++}</td>
+              <td><b>${item.customerName || '-'}</b></td>
+              <td>${item.phone || '-'}</td>
+              <td>${item.address || '-'}</td>
+              <td>${item.details || '-'}</td>
+              <td>${item.price} ج.م</td>
+              <td>${item.driver || 'غير محدد'}</td>
+              <td><span class="badge-status ${item.status === 'تم التسليم' ? 'status-delivered' : 'status-pending'}">${item.status || 'معلق'}</span></td>
+              <td>
+                <small>بواسطة: <b>${item.createdBy || 'مجهول'}</b></small>
+                ${item.editCount > 0 ? `<span class="audit-info">تعديل (${item.editCount}) بواسطة ${item.lastEditedBy} في ${item.lastEditedAt}</span>` : ''}
+              </td>
+              <td>
+                <button onclick="editOrder('${key}')" style="background:#1976d2; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">تعديل</button>
+                <button onclick="deleteOrder('${key}')" style="background:#d32f2f; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">حذف</button>
+              </td>
+            </tr>
+          `;
         });
       });
+    }
+
+    // تعديل طلب مع تسجيل اسم المُعدّل وعدد مرات التعديل
+    function editOrder(orderId) {
+      const currentUser = sessionStorage.getItem("currentUser") || "مجهول";
+      const now = new Date();
+      const dateStr = String(now.getDate()).padStart(2, '0') + '/' + String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear() + ' ' + now.toLocaleTimeString('ar-EG');
+
+      const newPrice = prompt("أدخل السعر الجديد:");
+      if (newPrice !== null) {
+        db.ref('orders/' + orderId).once('value').then(snapshot => {
+          const data = snapshot.val() || {};
+          const currentCount = data.editCount || 0;
+
+          db.ref('orders/' + orderId).update({
+            price: newPrice,
+            editCount: currentCount + 1,
+            lastEditedBy: currentUser,
+            lastEditedAt: dateStr
+          });
+        });
+      }
+    }
+
+    // حذف طلب
+    function deleteOrder(orderId) {
+      if (confirm("هل أنت تأكد من حذف هذا الطلب؟")) {
+        db.ref('orders/' + orderId).remove();
+      }
     }
   </script>
 </body>
