@@ -27,7 +27,6 @@
       overflow-x: hidden;
     }
 
-    /* خلفية جمالية خفيفة */
     body::before {
       content: "";
       position: absolute;
@@ -38,26 +37,33 @@
       pointer-events: none;
     }
 
-    /* كارت الدخول الرئيسي */
+    /* شاشة تسجيل الدخول */
+    #loginPage {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+
     .main-card {
       position: relative;
-      background: rgba(20, 20, 20, 0.75);
+      background: rgba(20, 20, 20, 0.85);
       backdrop-filter: blur(15px);
       border: 1px solid rgba(212, 175, 55, 0.25);
       border-radius: 24px;
-      padding: 45px 35px;
+      padding: 40px 30px;
       width: 100%;
-      max-width: 440px;
+      max-width: 420px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(183, 28, 28, 0.2);
       text-align: center;
       color: #fff;
     }
 
-    /* اللوجو الخاص بنا */
     .brand-logo {
-      width: 110px;
-      height: 110px;
-      margin: 0 auto 20px;
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 18px;
       border-radius: 50%;
       background: linear-gradient(145deg, #800000, #400000);
       border: 2px solid #d4af37;
@@ -68,70 +74,24 @@
       box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
     }
 
-    .brand-logo h3 {
-      font-size: 20px;
-      font-weight: 800;
-      color: #fff;
-      margin: 0;
-      line-height: 1.1;
-    }
+    .brand-logo h3 { font-size: 18px; font-weight: 800; color: #fff; margin: 0; line-height: 1.1; }
+    .brand-logo span { font-size: 9px; color: #d4af37; letter-spacing: 2px; margin-top: 2px; font-weight: 700; }
 
-    .brand-logo span {
-      font-size: 10px;
-      color: #d4af37;
-      letter-spacing: 2px;
-      margin-top: 2px;
-      font-weight: 700;
-    }
+    .title { font-size: 22px; font-weight: 800; color: #ffffff; margin-bottom: 4px; }
+    .subtitle { font-size: 12px; color: #b0b0b0; margin-bottom: 25px; }
 
-    .title {
-      font-size: 24px;
-      font-weight: 800;
-      color: #ffffff;
-      margin-bottom: 6px;
-    }
+    .input-group { margin-bottom: 18px; text-align: right; }
+    .input-group label { display: block; font-size: 12px; font-weight: 700; color: #d4af37; margin-bottom: 6px; }
 
-    .subtitle {
-      font-size: 13px;
-      color: #b0b0b0;
-      margin-bottom: 30px;
-    }
-
-    /* الحقول والإدخال */
-    .input-group {
-      margin-bottom: 20px;
-      text-align: right;
-    }
-
-    .input-group label {
-      display: block;
-      font-size: 12px;
-      font-weight: 700;
-      color: #d4af37;
-      margin-bottom: 8px;
-      margin-right: 4px;
-    }
-
-    .input-wrapper {
-      position: relative;
-    }
-
-    .input-wrapper i {
-      position: absolute;
-      right: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #888;
-      font-size: 16px;
-      transition: 0.3s;
-    }
+    .input-wrapper { position: relative; }
+    .input-wrapper i { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: #888; font-size: 15px; }
 
     .input-wrapper input {
       width: 100%;
-      padding: 14px 45px 14px 16px;
+      padding: 12px 42px 12px 14px;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 12px;
+      border-radius: 10px;
       font-size: 14px;
       color: #fff;
       outline: none;
@@ -141,139 +101,156 @@
     .input-wrapper input:focus {
       background: rgba(255, 255, 255, 0.08);
       border-color: #d4af37;
-      box-shadow: 0 0 12px rgba(212, 175, 55, 0.2);
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
     }
 
-    .input-wrapper input:focus + i {
-      color: #d4af37;
-    }
+    .options-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; font-size: 12px; }
+    .remember-me { display: flex; align-items: center; gap: 6px; cursor: pointer; color: #ccc; }
+    .remember-me input { width: 15px; height: 15px; accent-color: #b71c1c; cursor: pointer; }
+    .forgot-pass { color: #888; text-decoration: none; }
+    .forgot-pass:hover { color: #d4af37; }
 
-    /* تذكرني ونسيت كلمة المرور */
-    .options-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
-      font-size: 12px;
-    }
-
-    .remember-me {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      color: #ccc;
-    }
-
-    .remember-me input {
-      width: 16px;
-      height: 16px;
-      accent-color: #b71c1c;
-      cursor: pointer;
-    }
-
-    .forgot-pass {
-      color: #888;
-      text-decoration: none;
-      transition: 0.3s;
-    }
-
-    .forgot-pass:hover {
-      color: #d4af37;
-    }
-
-    /* زر الدخول */
     .btn-submit {
       width: 100%;
-      padding: 14px;
+      padding: 13px;
       background: linear-gradient(135deg, #b71c1c 0%, #7f0000 100%);
       color: white;
       border: 1px solid rgba(212, 175, 55, 0.4);
-      border-radius: 12px;
-      font-size: 16px;
+      border-radius: 10px;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 6px 20px rgba(183, 28, 28, 0.4);
+      box-shadow: 0 5px 15px rgba(183, 28, 28, 0.4);
     }
 
     .btn-submit:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(183, 28, 28, 0.6);
       background: linear-gradient(135deg, #d32f2f 0%, #9a0000 100%);
     }
 
-    .footer-text {
-      margin-top: 30px;
-      font-size: 11px;
-      color: #666;
-      letter-spacing: 1px;
+    .footer-text { margin-top: 25px; font-size: 10px; color: #666; }
+
+    /* شاشة لوحة التحكم الرئيسية (تظهر بعد تسجيل الدخول) */
+    #dashboardPage {
+      display: none;
+      width: 100%;
+      max-width: 1100px;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      z-index: 10;
+      color: #333;
     }
+
+    .dash-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f0f0;
+      margin-bottom: 20px;
+    }
+
+    .user-info { display: flex; align-items: center; gap: 10px; }
+    .user-badge { background: #b71c1c; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+    .btn-logout { background: #333; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+    .btn-logout:hover { background: #000; }
   </style>
 </head>
 <body>
 
-  <div class="main-card">
-    <!-- اللوجو الخاص بـ جزارة حمكشة -->
-    <div class="brand-logo">
-      <h3>جزارة<br>حمكشة</h3>
-      <span>SINCE 1998</span>
+  <!-- 1️⃣ صفحة تسجيل الدخول -->
+  <div id="loginPage">
+    <div class="main-card">
+      <div class="brand-logo">
+        <h3>جزارة<br>حمكشة</h3>
+        <span>SINCE 1998</span>
+      </div>
+
+      <h2 class="title">تسجيل الدخول</h2>
+      <p class="subtitle">نظام إدارة المبيعات والتتبع الميداني</p>
+
+      <form id="loginForm">
+        <div class="input-group">
+          <label>اسم المستخدم</label>
+          <div class="input-wrapper">
+            <input type="text" id="username" placeholder="أدخل اسم المستخدم" required>
+            <i class="fa-regular fa-user"></i>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>كلمة المرور</label>
+          <div class="input-wrapper">
+            <input type="password" id="password" placeholder="••••••••" required>
+            <i class="fa-solid fa-lock"></i>
+          </div>
+        </div>
+
+        <div class="options-row">
+          <label class="remember-me">
+            <input type="checkbox" id="rememberMe">
+            <span>تذكرني على هذا الجهاز</span>
+          </label>
+          <a href="#" class="forgot-pass">نسيت كلمة المرور؟</a>
+        </div>
+
+        <button type="submit" class="btn-submit">دخول للسيستم <i class="fa-solid fa-arrow-left mr-2"></i></button>
+      </form>
+
+      <div class="footer-text">
+        HAMAKSHA SYSTEM v2.0 • جميع الحقوق محفوظة © 2026
+      </div>
+    </div>
+  </div>
+
+  <!-- 2️⃣ لوحة التحكم الرئيسية (تظهر فوراً عند تسجيل الدخول) -->
+  <div id="dashboardPage">
+    <div class="dash-header">
+      <div>
+        <h2>لوحة التحكم - جزارة حمكشة 🥩</h2>
+        <p style="font-size: 13px; color: #666;">مرحباً بك في نظام إدارة المبيعات والطلبات</p>
+      </div>
+      <div class="user-info">
+        <span class="user-badge" id="displayUserRole">أدمن</span>
+        <span id="displayUsername" style="font-weight: bold;">-</span>
+        <button class="btn-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> خروج</button>
+      </div>
     </div>
 
-    <h2 class="title">تسجيل الدخول</h2>
-    <p class="subtitle">نظام إدارة المبيعات والتتبع الميداني</p>
-
-    <form id="loginForm">
-      <div class="input-group">
-        <label>اسم المستخدم</label>
-        <div class="input-wrapper">
-          <input type="text" id="username" placeholder="أدخل اسم المستخدم" required>
-          <i class="fa-regular fa-user"></i>
-        </div>
-      </div>
-
-      <div class="input-group">
-        <label>كلمة المرور</label>
-        <div class="input-wrapper">
-          <input type="password" id="password" placeholder="••••••••" required>
-          <i class="fa-solid fa-lock"></i>
-        </div>
-      </div>
-
-      <div class="options-row">
-        <label class="remember-me">
-          <input type="checkbox" id="rememberMe">
-          <span>تذكرني على هذا الجهاز</span>
-        </label>
-        <a href="#" class="forgot-pass">نسيت كلمة المرور؟</a>
-      </div>
-
-      <button type="submit" class="btn-submit">دخول للسيستم <i class="fa-solid fa-arrow-left mr-2"></i></button>
-    </form>
-
-    <div class="footer-text">
-      HAMAKSHA SYSTEM v2.0 • جميع الحقوق محفوظة © 2026
+    <!-- هنا تضع محتوى السيستم والجدول والطلبات -->
+    <div style="padding: 40px; text-align: center; background: #f9f9f9; border-radius: 12px; border: 2px dashed #ddd;">
+      <h3>تم الوصول للسيستم بنجاح! 🎉</h3>
+      <p style="color: #666; margin-top: 10px;">جاهز لإضافة الفواتير والطلبات ومتابعة حركة التوصيل والتقييمات.</p>
     </div>
   </div>
 
   <script>
-    // 1️⃣ إعدادات Firebase
+    // إعدادات Firebase
     const firebaseConfig = {
       databaseURL: "https://hamaksha-tracking-default-rtdb.europe-west1.firebasedatabase.app"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // 2️⃣ استرجاع اسم المستخدم إذا كان خيار "تذكرني" مفحوصاً
+    // التحقق عند التحميل إذا كان المستخدم مسجل دخوله من قبل
     document.addEventListener("DOMContentLoaded", () => {
       const savedUser = localStorage.getItem("rememberedUsername");
       if (savedUser) {
         document.getElementById("username").value = savedUser;
         document.getElementById("rememberMe").checked = true;
       }
+
+      // إذا كان مسجل دخول بالفعل في نفس الجلسة، اظهر السيستم مباشرة
+      const activeUser = sessionStorage.getItem("currentUser");
+      if (activeUser) {
+        showDashboard(activeUser, sessionStorage.getItem("userRole") || "أدمن");
+      }
     });
 
-    // 3️⃣ عملية الدخول والتوجيه المباشر
+    // تسجيل الدخول
     document.getElementById("loginForm").addEventListener("submit", function(e) {
       e.preventDefault();
       
@@ -298,37 +275,46 @@
             localStorage.removeItem("rememberedUsername");
           }
 
-          // تخزين اسم المستخدم النشط
+          // حفظ الجلسة
           sessionStorage.setItem("currentUser", usernameInput);
           sessionStorage.setItem("userRole", authenticatedUser.role);
 
-          // إخفاء كارت الدخول وتمرير المستخدم للسيستم الرئيسي
-          alert("تم تسجيل الدخول بنجاح! مرحباً بك يا " + usernameInput);
-          
-          // يمكنك إما إعادة التوجيه لرابط صفحة اللوحة أو إخفاء الشاشة:
-          // window.location.href = "dashboard.html"; 
-          location.reload(); // لإعادة التحميل والدخول مباشرة
+          // التوجيه المباشر وإظهار لوحة التحكم
+          showDashboard(usernameInput, authenticatedUser.role);
         } else {
           alert("خطأ: اسم المستخدم أو كلمة المرور غير صحيحة!");
         }
       });
     });
 
-    // 4️⃣ دوال تسجيل المنشئ والمُعدّل للطلبات تلقائياً
+    // دالة إظهار السيستم وإخفاء شاشة الدخول
+    function showDashboard(username, role) {
+      document.getElementById("loginPage").style.display = "none";
+      document.getElementById("dashboardPage").style.display = "block";
+      document.getElementById("displayUsername").innerText = username;
+      document.getElementById("displayUserRole").innerText = role;
+    }
+
+    // دالة تسجيل الخروج
+    function logout() {
+      sessionStorage.clear();
+      document.getElementById("dashboardPage").style.display = "none";
+      document.getElementById("loginPage").style.display = "flex";
+    }
+
+    // دوال تتبع المنشئ والمعدّل للطلبات
     function createOrder(orderData) {
       const currentUser = sessionStorage.getItem("currentUser") || "مجهول";
       const now = new Date().toLocaleString("ar-EG");
 
-      const newOrder = {
+      return db.ref('orders').push({
         ...orderData,
-        createdBy: currentUser,           
-        createdAt: now,                   
-        editCount: 0,                     
-        lastEditedBy: "-",                
-        lastEditedAt: "-"                 
-      };
-
-      return db.ref('orders').push(newOrder);
+        createdBy: currentUser,
+        createdAt: now,
+        editCount: 0,
+        lastEditedBy: "-",
+        lastEditedAt: "-"
+      });
     }
 
     function updateOrder(orderId, updatedFields) {
@@ -339,14 +325,12 @@
         const currentData = snapshot.val() || {};
         const currentEditCount = currentData.editCount || 0;
 
-        const updates = {
+        db.ref('orders/' + orderId).update({
           ...updatedFields,
-          editCount: currentEditCount + 1, 
-          lastEditedBy: currentUser,      
-          lastEditedAt: now               
-        };
-
-        db.ref('orders/' + orderId).update(updates);
+          editCount: currentEditCount + 1,
+          lastEditedBy: currentUser,
+          lastEditedAt: now
+        });
       });
     }
   </script>
