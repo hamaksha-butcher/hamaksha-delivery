@@ -14,6 +14,15 @@
       --secondary-color: #f59e0b;
       --bg-color: #fffbeb;
     }
+    /* ضبط اتجاه حقول التاريخ لمنع انعكاس الصيغة */
+    input[type="date"] {
+      direction: ltr !important;
+      text-align: right !important;
+    }
+    .formatted-date {
+      direction: ltr !important;
+      display: inline-block;
+    }
     @media print {
       header, #userBadgeBar, .no-print, #adminAuthLock, .theme-selector, #orderForm, #usersList, form, button, select, input {
         display: none !important;
@@ -218,7 +227,7 @@
                 <option value="خرج للتوصيل 🛵">خرج للتوصيل</option>
                 <option value="تم التسليم بنجاح ✅">تم التسليم</option>
               </select>
-              <input type="date" id="dateFilter" onchange="applyFilters()" class="border p-2 rounded-lg text-xs bg-white">
+              <input type="date" id="dateFilter" onchange="applyFilters()" dir="ltr" class="border p-2 rounded-lg text-xs bg-white text-right">
             </div>
 
             <div id="exportActionBtns" class="flex flex-wrap items-center justify-end gap-2 pt-1 no-print hidden">
@@ -332,7 +341,7 @@
             </div>
             <div>
               <label class="block text-[10px] font-bold text-amber-900 mb-1">فلترة بالتاريخ:</label>
-              <input type="date" id="commentDateFilter" onchange="renderCommentsList()" class="w-full border p-2 rounded-lg text-xs bg-white">
+              <input type="date" id="commentDateFilter" onchange="renderCommentsList()" dir="ltr" class="w-full border p-2 rounded-lg text-xs bg-white text-right">
             </div>
           </div>
 
@@ -436,7 +445,7 @@
         
         <div class="bg-gray-50 p-3 rounded-xl space-y-1 text-xs border">
           <p class="flex justify-between"><span>المندوب المكلف:</span> <b id="cDriver" class="text-amber-800">-</b></p>
-          <p class="flex justify-between"><span>تاريخ الطلب:</span> <b id="cDate" class="font-mono text-gray-600">-</b></p>
+          <p class="flex justify-between"><span>تاريخ الطلب:</span> <b id="cDate" class="formatted-date font-mono text-gray-600">-</b></p>
         </div>
 
         <!-- 🗺️ خيارات المندوب والعميل الخريطة -->
@@ -627,6 +636,22 @@
     let currentTrackOrderId = null;
     let custWatchId = null;
     let selectedStarsCount = 0;
+
+    // --- 📅 دالة تنسيق التاريخ ليكون دائماً يوم / شهر / سنة (DD/MM/YYYY) ---
+    function formatDateDMY(dateStr) {
+      if(!dateStr) return '';
+      if(dateStr.includes('/')) {
+        const parts = dateStr.split('/');
+        if(parts[0].length === 4) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        return dateStr;
+      }
+      if(dateStr.includes('-')) {
+        const parts = dateStr.split('-');
+        if(parts[0].length === 4) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        return dateStr;
+      }
+      return dateStr;
+    }
 
     // إنشاء الحساب الرئيسي asma أوتوماتيكياً بصلاحيات كاملة مطلقة
     db.ref('users').once('value').then((snapshot) => {
@@ -1128,7 +1153,9 @@
           tr.innerHTML = `
             <td class="p-2.5">
               <div class="font-bold font-mono text-red-600">#${displayId}</div>
-              <div class="text-[10px] text-gray-400">${item.date || ''} ${item.time || ''}</div>
+              <div class="text-[10px] text-gray-400">
+                <span class="formatted-date">${formatDateDMY(item.date)}</span> ${item.time || ''}
+              </div>
             </td>
             <td class="p-2.5">
               <div class="font-bold">${displayName}</div>
@@ -1333,7 +1360,7 @@
                     <span>العميل: ${item.customerName || item.name || 'عميل حمكشة'}</span>
                     <span class="text-[10px] font-mono text-gray-400 mr-2">#${item.orderId || key}</span>
                   </div>
-                  <span class="font-mono text-[10px] text-gray-500">${item.date || ''}</span>
+                  <span class="formatted-date font-mono text-[10px] text-gray-500">${formatDateDMY(item.date)}</span>
                 </div>
 
                 <div class="flex justify-between items-center bg-amber-50 p-2 rounded-lg">
@@ -1552,7 +1579,7 @@
         if(data) {
           document.getElementById('dispOrderId').innerText = '#' + (data.orderId || matchedKey);
           document.getElementById('cDriver').innerText = data.driver || 'جاري التحديد...';
-          document.getElementById('cDate').innerText = (data.date || '') + ' ' + (data.time || '');
+          document.getElementById('cDate').innerText = formatDateDMY(data.date) + ' ' + (data.time || '');
           document.getElementById('badgeStatus').innerText = data.status || 'جاري المتابعة';
 
           // عرض زر الخريطة لموقع المندوب
@@ -1651,7 +1678,7 @@
       filteredOrdersList.forEach(item => {
         const row = [
           `"${item.displayId}"`,
-          `"${item.date || ''}"`,
+          `"${formatDateDMY(item.date)}"`,
           `"${item.time || ''}"`,
           `"${item.displayName.replace(/"/g, '""')}"`,
           `"${item.displayPhone}"`,
@@ -1686,7 +1713,7 @@
         tableRows += `
           <tr>
             <td style="font-weight:bold; color:#800020; font-family: monospace;">#${item.displayId}</td>
-            <td>${item.date || ''}<br><small style="color:#666">${item.time || ''}</small></td>
+            <td><span style="direction:ltr; display:inline-block;">${formatDateDMY(item.date)}</span><br><small style="color:#666">${item.time || ''}</small></td>
             <td><b>${item.displayName}</b></td>
             <td dir="ltr" style="text-align:right;">${item.displayPhone}</td>
             <td>${item.displayDriver}<br><small style="color:#1e3a8a; font-weight:bold;">${getPaymentText(item.paymentMethod)}</small></td>
@@ -1753,7 +1780,7 @@
                 <div>📍 <b>العنوان:</b> الزقازيق، حي تاني، معهد فني تجاري</div>
                 <div>📞 <b>تواصل:</b> 0552317739 | 0552321231 | 0552314867</div>
                 <div>💬 <b>واتساب:</b> 01273091807</div>
-                <div>📅 <b>التاريخ:</b> ${new Date().toLocaleDateString('ar-EG')}</div>
+                <div>📅 <b>التاريخ:</b> <span style="direction:ltr; display:inline-block;">${formatDateDMY(new Date().toISOString().split('T')[0])}</span></div>
               </div>
             </div>
 
