@@ -24,6 +24,7 @@
       direction: ltr !important;
       display: inline-block;
     }
+    .star-btn:disabled { pointer-events: none; }
     /* Leaflet fallback: keep the map/tile layers positioned correctly even if CDN CSS is delayed. */
     #dashboardMap { min-height: 420px; position: relative; }
     #dashboardMap .leaflet-container, #dashboardMap.leaflet-container { height: 100%; width: 100%; }
@@ -547,29 +548,35 @@
           </div>
         </div>
 
-        <!-- ⭐ قسم تقييم الخدمة والتعليقات (يظهر فقط عند حالة "تم التسليم بنجاح ✅") -->
-        <div id="ratingBox" class="hidden bg-amber-50 border border-amber-200 p-4 rounded-xl text-center space-y-3">
-          <h4 class="font-bold text-xs text-amber-900">⭐ تقييم خدمة التوصيل والمندوب:</h4>
-          <p class="text-[10px] text-gray-500 font-semibold">اختر عدد النجوم لتقييم تجربة التوصيل والمندوب</p>
-          
+        <!-- ⭐ تقييم الخدمة والتعليق: ظاهر دائماً، ويُفتح الإرسال بعد التسليم -->
+        <div id="ratingBox" class="bg-amber-50 border border-amber-200 p-4 rounded-xl text-center space-y-3">
+          <div class="flex items-center justify-between gap-2 border-b border-amber-200 pb-2">
+            <h4 class="font-bold text-xs text-amber-900">⭐ تقييم خدمة التوصيل والمندوب</h4>
+            <span id="feedbackAvailabilityBadge" class="text-[10px] font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-600">🔒 متاح بعد التسليم</span>
+          </div>
+
+          <p id="feedbackLockedMsg" class="text-[10px] text-gray-600 font-semibold bg-white/70 border border-amber-100 rounded-lg p-2">
+            💡 يمكنك تقييم المندوب وكتابة تعليقك بعد تحول حالة الطلب إلى <b>تم التسليم بنجاح ✅</b>.
+          </p>
+
           <div class="flex justify-center gap-2 text-2xl" id="starContainer">
-            <button onclick="setStarRating(1)" class="star-btn hover:scale-125 transition-transform" title="1 نجمة">⭐</button>
-            <button onclick="setStarRating(2)" class="star-btn hover:scale-125 transition-transform" title="2 نجمة">⭐</button>
-            <button onclick="setStarRating(3)" class="star-btn hover:scale-125 transition-transform" title="3 نجوم">⭐</button>
-            <button onclick="setStarRating(4)" class="star-btn hover:scale-125 transition-transform" title="4 نجوم">⭐</button>
-            <button onclick="setStarRating(5)" class="star-btn hover:scale-125 transition-transform" title="5 نجوم">⭐</button>
+            <button type="button" onclick="setStarRating(1)" class="star-btn opacity-50 cursor-not-allowed transition-transform" title="1 نجمة" disabled>⭐</button>
+            <button type="button" onclick="setStarRating(2)" class="star-btn opacity-50 cursor-not-allowed transition-transform" title="2 نجمة" disabled>⭐</button>
+            <button type="button" onclick="setStarRating(3)" class="star-btn opacity-50 cursor-not-allowed transition-transform" title="3 نجوم" disabled>⭐</button>
+            <button type="button" onclick="setStarRating(4)" class="star-btn opacity-50 cursor-not-allowed transition-transform" title="4 نجوم" disabled>⭐</button>
+            <button type="button" onclick="setStarRating(5)" class="star-btn opacity-50 cursor-not-allowed transition-transform" title="5 نجوم" disabled>⭐</button>
           </div>
 
           <div>
             <label class="block text-right text-[11px] font-bold text-gray-700 mb-1">اكتب تعليقك أو رأيك في المندوب والخدمة:</label>
-            <textarea id="custCommentText" rows="2" placeholder="اكتب ملاحظاتك هنا..." class="w-full border p-2 rounded-xl text-xs bg-white"></textarea>
+            <textarea id="custCommentText" rows="2" placeholder="اكتب ملاحظاتك هنا..." class="w-full border p-2 rounded-xl text-xs bg-white" disabled></textarea>
           </div>
 
-          <button onclick="submitFullFeedback()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs shadow">
+          <button id="submitFeedbackBtn" type="button" onclick="submitFullFeedback()" class="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-bold py-2 rounded-xl text-xs shadow" disabled>
             إرسال التقييم والتعليق 🚀
           </button>
 
-          <p id="ratingSubmittedMsg" class="text-xs text-emerald-700 font-bold hidden">شكراً لك! تم تسجيل تقييمك بنجاح ✅</p>
+          <p id="ratingSubmittedMsg" class="text-xs text-emerald-700 font-bold hidden"></p>
         </div>
 
         <!-- 💬 آراء وتعليقات العملاء المنشورة العامة -->
@@ -725,6 +732,7 @@
     let currentTrackOrderId = null;
     let custWatchId = null;
     let selectedStarsCount = 0;
+    let currentTrackOrderStatus = null;
     let dashboardMap = null;
     let dashboardMapMarkers = [];
     let dashboardMapRoutes = [];
@@ -1974,19 +1982,50 @@
             document.getElementById('mapTextInfo').innerHTML = `⏳ الطلب قيد التحضير أو المندوب لم يقم بتفعيل اللوكيشن الحي بعد.`;
           }
 
-          // ⚠️ يظهر صندوق التقييم فقط عند حالة "تم التسليم بنجاح ✅"
-          if(data.status === 'تم التسليم بنجاح ✅') {
-            document.getElementById('ratingBox').classList.remove('hidden');
+          // ⭐ قسم التقييم والتعليق: ظاهر دائماً، ويُفعّل فقط بعد التسليم
+          currentTrackOrderStatus = data.status || '';
+          const isDelivered = currentTrackOrderStatus === 'تم التسليم بنجاح ✅';
+          const feedbackLockedMsg = document.getElementById('feedbackLockedMsg');
+          const feedbackAvailabilityBadge = document.getElementById('feedbackAvailabilityBadge');
+          const submitFeedbackBtn = document.getElementById('submitFeedbackBtn');
+          const commentInput = document.getElementById('custCommentText');
+          const starButtons = document.querySelectorAll('#starContainer .star-btn');
+
+          if(isDelivered) {
+            feedbackLockedMsg.classList.add('hidden');
+            feedbackAvailabilityBadge.innerText = '✅ التقييم متاح الآن';
+            feedbackAvailabilityBadge.className = 'text-[10px] font-bold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700';
+            submitFeedbackBtn.disabled = false;
+            commentInput.disabled = false;
+            starButtons.forEach(btn => {
+              btn.disabled = false;
+              btn.classList.remove('opacity-50', 'cursor-not-allowed');
+              btn.classList.add('hover:scale-125', 'cursor-pointer');
+            });
+
             if(data.rating) {
-              selectedStarsCount = data.rating;
-              document.getElementById('ratingSubmittedMsg').innerText = `تم تسجيل تقييمك بـ (${data.rating} ⭐) بنجاح! شكراً لك.`;
+              selectedStarsCount = Number(data.rating) || 0;
+              highlightStarRating(selectedStarsCount);
+              document.getElementById('ratingSubmittedMsg').innerText = `✅ تم تسجيل تقييمك بـ (${data.rating} ⭐) بنجاح. يمكنك تحديث التقييم والتعليق عند الحاجة.`;
               document.getElementById('ratingSubmittedMsg').classList.remove('hidden');
+            } else {
+              selectedStarsCount = 0;
+              highlightStarRating(0);
+              document.getElementById('ratingSubmittedMsg').classList.add('hidden');
             }
-            if(data.comment) {
-              document.getElementById('custCommentText').value = data.comment;
-            }
+
+            commentInput.value = data.comment || '';
           } else {
-            document.getElementById('ratingBox').classList.add('hidden');
+            feedbackLockedMsg.classList.remove('hidden');
+            feedbackAvailabilityBadge.innerText = '🔒 متاح بعد التسليم';
+            feedbackAvailabilityBadge.className = 'text-[10px] font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-600';
+            submitFeedbackBtn.disabled = true;
+            commentInput.disabled = true;
+            starButtons.forEach(btn => {
+              btn.disabled = true;
+              btn.classList.add('opacity-50', 'cursor-not-allowed');
+              btn.classList.remove('hover:scale-125', 'cursor-pointer');
+            });
           }
         } else {
           alert('لم يتم العثور على طلب بهذا الرقم!');
@@ -2022,23 +2061,44 @@
       }
     }
 
+    function highlightStarRating(stars) {
+      document.querySelectorAll('#starContainer .star-btn').forEach((btn, index) => {
+        const starNumber = index + 1;
+        btn.classList.remove('scale-125', 'opacity-50', 'text-amber-500');
+        if(starNumber <= stars) {
+          btn.classList.add('scale-125', 'text-amber-500');
+        } else if(!btn.disabled) {
+          btn.classList.add('opacity-70');
+        }
+      });
+    }
+
     function setStarRating(stars) {
-      selectedStarsCount = stars;
-      alert(`تم اختيار ${stars} نجوم ⭐. اضغط زر (إرسال التقييم والتعليق) لحفظ التقييم.`);
+      if(currentTrackOrderStatus !== 'تم التسليم بنجاح ✅') {
+        return alert('يمكنك تقييم المندوب وكتابة التعليق بعد تسليم الطلب بنجاح ✅');
+      }
+      selectedStarsCount = Number(stars) || 0;
+      highlightStarRating(selectedStarsCount);
     }
 
     function submitFullFeedback() {
       if(!currentTrackOrderId) return alert('يرجى تحديد رقم الطلب أولاً!');
+      if(currentTrackOrderStatus !== 'تم التسليم بنجاح ✅') return alert('التقييم والتعليق متاحان بعد تسليم الطلب بنجاح ✅');
       if(selectedStarsCount === 0) return alert('يرجى اختيار عدد النجوم للتقييم أولاً!');
 
       const commentText = document.getElementById('custCommentText').value.trim();
 
       db.ref('orders/' + currentTrackOrderId).update({
         rating: selectedStarsCount,
-        comment: commentText
+        comment: commentText,
+        feedbackSubmittedAt: Date.now()
       }).then(() => {
         document.getElementById('ratingSubmittedMsg').innerText = `شكراً لك! تم تسجيل تقييمك بـ (${selectedStarsCount} ⭐) والملاحظات بنجاح ✅`;
         document.getElementById('ratingSubmittedMsg').classList.remove('hidden');
+        highlightStarRating(selectedStarsCount);
+      }).catch((error) => {
+        console.error(error);
+        alert('تعذر حفظ التقييم حالياً، حاول مرة أخرى.');
       });
     }
 
