@@ -51,6 +51,7 @@
       <!-- شريط التنقل والولوج -->
       <div class="flex items-center gap-2">
         <div class="flex bg-black/20 p-1 rounded-xl text-xs font-bold flex-wrap">
+          <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn px-3 py-2 rounded-lg transition-all">الرئيسية 📊</button>
           <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn active px-3 py-2 rounded-lg transition-all">لوحة الإدارة 🔐</button>
           <button onclick="switchTab('analytics')" id="tab-analytics" class="tab-btn px-3 py-2 rounded-lg transition-all perm-analytics hidden">تقييم وحسابات المناديب 📊</button>
           <button onclick="switchTab('prices')" id="tab-prices" class="tab-btn px-3 py-2 rounded-lg transition-all perm-prices hidden">قائمة الأسعار 🏷️</button>
@@ -76,6 +77,69 @@
       </div>
       <div class="text-[11px] text-gray-400 font-semibold">🔒 نظام محمي ومقيد الصلاحيات</div>
     </div>
+
+    <!-- 📊 لوحة التحكم الرئيسية الجديدة -->
+    <section id="sec-dashboard" class="hidden space-y-6">
+      <div id="dashboardAuthLock" class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md mx-auto space-y-4 border border-red-100">
+        <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-3xl">📊</div>
+        <h3 class="text-xl font-bold text-gray-800">لوحة التحكم الرئيسية</h3>
+        <p class="text-xs text-gray-500">سجل الدخول بحساب الإدارة لعرض الإحصائيات الحية.</p>
+        <button onclick="toggleAuthModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm">تسجيل الدخول 🔑</button>
+      </div>
+
+      <div id="dashboardContent" class="hidden space-y-6">
+        <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4">
+            <div>
+              <h2 class="text-xl font-black text-red-700">📊 لوحة التحكم الرئيسية</h2>
+              <p class="text-xs text-gray-500 font-semibold">ملخص حي للطلبات والتحصيل وحالة المناديب اليوم</p>
+            </div>
+            <span id="dashboardDate" class="bg-amber-100 text-amber-900 px-3 py-1.5 rounded-xl text-xs font-bold"></span>
+          </div>
+
+          <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mt-5">
+            <div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 text-center">
+              <div class="text-2xl">📦</div><p class="text-[11px] font-bold text-blue-700 mt-1">طلبات اليوم</p>
+              <div id="dashTodayOrders" class="text-2xl font-black text-blue-900 mt-1">0</div>
+            </div>
+            <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 text-center">
+              <div class="text-2xl">✅</div><p class="text-[11px] font-bold text-emerald-700 mt-1">تم التسليم</p>
+              <div id="dashDelivered" class="text-2xl font-black text-emerald-900 mt-1">0</div>
+            </div>
+            <div class="bg-amber-50 border border-amber-100 rounded-2xl p-4 text-center">
+              <div class="text-2xl">🛵</div><p class="text-[11px] font-bold text-amber-700 mt-1">قيد التوصيل</p>
+              <div id="dashOutForDelivery" class="text-2xl font-black text-amber-900 mt-1">0</div>
+            </div>
+            <div class="bg-red-50 border border-red-100 rounded-2xl p-4 text-center">
+              <div class="text-2xl">⏳</div><p class="text-[11px] font-bold text-red-700 mt-1">قيد التحضير</p>
+              <div id="dashPreparing" class="text-2xl font-black text-red-900 mt-1">0</div>
+            </div>
+            <div class="bg-purple-50 border border-purple-100 rounded-2xl p-4 text-center col-span-2 lg:col-span-1">
+              <div class="text-2xl">💰</div><p class="text-[11px] font-bold text-purple-700 mt-1">تحصيل اليوم</p>
+              <div id="dashCash" class="text-xl font-black text-purple-900 mt-1">0 ج.م</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100">
+            <div class="flex justify-between items-center border-b pb-3 mb-3">
+              <div><h3 class="font-black text-sm text-gray-800">🛵 حالة المناديب</h3><p class="text-[10px] text-gray-400">حسب الطلبات النشطة المسجلة</p></div>
+              <span id="dashDriverSummary" class="text-[10px] font-bold bg-gray-100 px-2 py-1 rounded-lg">0 مندوب</span>
+            </div>
+            <div id="dashboardDrivers" class="space-y-2 max-h-80 overflow-y-auto"></div>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100">
+            <div class="flex justify-between items-center border-b pb-3 mb-3">
+              <div><h3 class="font-black text-sm text-gray-800">⚠️ الطلبات النشطة</h3><p class="text-[10px] text-gray-400">آخر الطلبات التي تحتاج متابعة</p></div>
+              <button onclick="switchTab('admin')" class="text-[10px] bg-red-100 text-red-700 px-2.5 py-1 rounded-lg font-bold">فتح سجل الطلبات</button>
+            </div>
+            <div id="dashboardActiveOrders" class="space-y-2 max-h-80 overflow-y-auto"></div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- 1️⃣ لوحة تحكم الأدمن -->
     <section id="sec-admin" class="space-y-6">
@@ -705,6 +769,8 @@
     }
 
     function switchTab(tabName) {
+      if(tabName === 'dashboard' && !currentUser) { toggleAuthModal(); return; }
+      if(tabName === 'dashboard' && currentUser.role !== 'admin') return alert('لوحة التحكم الرئيسية مخصصة للإدارة فقط.');
       if(tabName === 'analytics' && !canUser('analytics')) return alert('عذراً، لا تملك صلاحية الاطلاع على التقارير والداشبورد.');
       if(tabName === 'prices' && !canUser('prices')) return alert('عذراً، لا تملك صلاحية الاطلاع على قائمة الأسعار.');
 
@@ -714,6 +780,11 @@
       const activeTabBtn = document.getElementById(`tab-${tabName}`);
       if(activeTabBtn) activeTabBtn.classList.add('active');
 
+      if(tabName === 'dashboard') {
+        document.getElementById('dashboardAuthLock').classList.add('hidden');
+        document.getElementById('dashboardContent').classList.remove('hidden');
+        renderDashboard();
+      }
       if(tabName === 'analytics') {
         renderAnalytics();
         renderCommentsList();
@@ -1041,6 +1112,7 @@
       allUsersCache = snap.val() || {};
       renderUsersList();
       checkSavedSession();
+      if(!document.getElementById('sec-dashboard').classList.contains('hidden')) renderDashboard();
     });
 
     // --- إدارة الطلبات ---
@@ -1104,6 +1176,7 @@
     db.ref('orders').on('value', (snapshot) => {
       allOrdersCache = snapshot.val() || {};
       applyFilters();
+      if(!document.getElementById('sec-dashboard').classList.contains('hidden')) renderDashboard();
       if(!document.getElementById('sec-analytics').classList.contains('hidden')) {
         renderAnalytics();
         renderCommentsList();
@@ -1187,6 +1260,108 @@
         }
       });
       document.getElementById('ordersCount').innerText = `${count} طلبات`;
+    }
+
+    // --- 📊 لوحة التحكم الرئيسية الجديدة ---
+    function renderDashboard() {
+      if(!currentUser || currentUser.role !== 'admin') return;
+
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+      const dateEl = document.getElementById('dashboardDate');
+      if(dateEl) dateEl.innerText = '📅 ' + formatDateDMY(todayStr);
+
+      let todayOrders = 0;
+      let delivered = 0;
+      let outForDelivery = 0;
+      let preparing = 0;
+      let todayCash = 0;
+      const driverStats = {};
+      const activeOrders = [];
+
+      Object.keys(allUsersCache).forEach(id => {
+        const u = allUsersCache[id];
+        if(u.role === 'driver') driverStats[u.username] = { active: 0, delivered: 0, totalToday: 0, lastOrder: null };
+      });
+
+      Object.keys(allOrdersCache).forEach(key => {
+        const o = allOrdersCache[key] || {};
+        if(o.date !== todayStr) return;
+
+        todayOrders++;
+        const total = Number(o.totalCash || ((o.orderPrice || 0) + (o.deliveryPrice || 0) + (o.paymentFee || 0))) || 0;
+
+        if(o.status === 'تم التسليم بنجاح ✅') {
+          delivered++;
+          todayCash += total;
+        } else if(o.status === 'خرج للتوصيل 🛵') {
+          outForDelivery++;
+          activeOrders.push({ key, ...o });
+        } else {
+          preparing++;
+          activeOrders.push({ key, ...o });
+        }
+
+        const driver = o.driver || 'غير محدد';
+        if(driver !== 'غير محدد') {
+          if(!driverStats[driver]) driverStats[driver] = { active: 0, delivered: 0, totalToday: 0, lastOrder: null };
+          driverStats[driver].totalToday++;
+          driverStats[driver].lastOrder = { key, ...o };
+          if(o.status === 'تم التسليم بنجاح ✅') driverStats[driver].delivered++;
+          else driverStats[driver].active++;
+        }
+      });
+
+      const setText = (id, value) => { const el = document.getElementById(id); if(el) el.innerText = value; };
+      setText('dashTodayOrders', todayOrders);
+      setText('dashDelivered', delivered);
+      setText('dashOutForDelivery', outForDelivery);
+      setText('dashPreparing', preparing);
+      setText('dashCash', todayCash.toLocaleString('ar-EG') + ' ج.م');
+
+      const driverNames = Object.keys(driverStats);
+      setText('dashDriverSummary', driverNames.length + ' مندوب');
+      const driversContainer = document.getElementById('dashboardDrivers');
+      driversContainer.innerHTML = '';
+
+      if(driverNames.length === 0) {
+        driversContainer.innerHTML = '<p class="text-xs text-gray-400 text-center p-4">لا يوجد مناديب مسجلين حالياً.</p>';
+      } else {
+        driverNames.forEach(name => {
+          const st = driverStats[name];
+          const state = st.active > 0 ? 'في توصيل' : 'متاح';
+          const stateClass = st.active > 0 ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800';
+          driversContainer.innerHTML += `
+            <div class="flex items-center justify-between gap-2 p-3 rounded-xl border bg-gray-50">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="text-xl">${st.active > 0 ? '🔵' : '🟢'}</span>
+                <div class="min-w-0"><div class="font-bold text-xs truncate">${name}</div><div class="text-[10px] text-gray-500">اليوم: ${st.totalToday} طلب | تم التسليم: ${st.delivered}</div></div>
+              </div>
+              <span class="shrink-0 px-2 py-1 rounded-lg text-[10px] font-bold ${stateClass}">${state}${st.active ? ' (' + st.active + ')' : ''}</span>
+            </div>`;
+        });
+      }
+
+      activeOrders.sort((a,b) => String(b.time || '').localeCompare(String(a.time || '')));
+      const ordersContainer = document.getElementById('dashboardActiveOrders');
+      ordersContainer.innerHTML = '';
+      if(activeOrders.length === 0) {
+        ordersContainer.innerHTML = '<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center text-xs font-bold text-emerald-800">🎉 لا توجد طلبات نشطة حالياً.</div>';
+      } else {
+        activeOrders.slice(0, 10).forEach(o => {
+          const statusClass = o.status === 'خرج للتوصيل 🛵' ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800';
+          ordersContainer.innerHTML += `
+            <div class="p-3 rounded-xl border bg-gray-50">
+              <div class="flex justify-between items-center gap-2">
+                <span class="font-mono font-black text-red-700 text-xs">#${o.orderId || o.key}</span>
+                <span class="px-2 py-1 rounded-lg text-[10px] font-bold ${statusClass}">${o.status || 'غير محدد'}</span>
+              </div>
+              <div class="flex justify-between gap-2 mt-2 text-[10px] text-gray-600">
+                <span>👤 ${o.customerName || 'عميل'}</span><span>🛵 ${o.driver || 'غير محدد'}</span><span class="font-bold">${Number(o.totalCash || 0).toLocaleString('ar-EG')} ج.م</span>
+              </div>
+            </div>`;
+        });
+      }
     }
 
     // --- 📊 تحليل وتقييم أداء المناديب ---
