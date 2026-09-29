@@ -6,7 +6,7 @@
   <title>نظام جزارة حمكشة - إدارة الطلبات والتقييم والتعليقات 🥩</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3t1+uQ4a8uV+5J6e5F4s9eJw6b0=" crossorigin=""/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <style>
     body { font-family: 'Cairo', sans-serif; transition: background-color 0.3s, color 0.3s; }
     .tab-btn.active { background-color: var(--primary-color, #dc2626); color: white; }
@@ -24,6 +24,9 @@
       direction: ltr !important;
       display: inline-block;
     }
+    /* Leaflet fallback: keep the map/tile layers positioned correctly even if CDN CSS is delayed. */
+    #dashboardMap { min-height: 420px; position: relative; }
+    #dashboardMap .leaflet-container, #dashboardMap.leaflet-container { height: 100%; width: 100%; }
     @media print {
       header, #userBadgeBar, .no-print, #adminAuthLock, .theme-selector, #orderForm, #usersList, form, button, select, input {
         display: none !important;
