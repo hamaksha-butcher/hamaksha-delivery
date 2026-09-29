@@ -249,7 +249,7 @@
       </div>
     </section>
 
-    <!-- 📊 2️⃣ داشبورد التقييم والتحصيل المالي والتعليقات (خاص بالإدارة فقط) -->
+    <!-- 📊 2️⃣ داشبورد التقييم والتحصيل المالي والتعليقات (خاص بالإدارة) -->
     <section id="sec-analytics" class="hidden space-y-6">
       <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 space-y-6">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b pb-4">
@@ -302,12 +302,12 @@
           </table>
         </div>
 
-        <!-- 💬 قسم سجل تقييمات وتعليقات العملاء للإدارة فقط مع الفلترة -->
+        <!-- 💬 قسم سجل تقييمات وتعليقات العملاء للإدارة فقط مع الفلترة والتحكم بالنشر/الحذف -->
         <div class="pt-6 border-t space-y-4">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div>
-              <h3 class="font-bold text-sm text-gray-800">💬 سجل آرائك وتعليقات العملاء حول المناديب (الإدارة فقط)</h3>
-              <p class="text-[11px] text-gray-500">متابعة كافة الملاحظات المكتوبة من العملاء وفلترتها حسب المندوب أو التقييم أو التاريخ</p>
+              <h3 class="font-bold text-sm text-gray-800">💬 سجل آرائك وتعليقات العملاء (إدارة النشر والحذف)</h3>
+              <p class="text-[11px] text-gray-500">متابعة الملاحظات، الموافقة على نشر التعليق للعامة في صفحة التتبع، أو حذفه</p>
             </div>
           </div>
 
@@ -415,7 +415,7 @@
       </div>
     </section>
 
-    <!-- 5️⃣ تتبع العميل والموقع والتقييم المباشر -->
+    <!-- 5️⃣ تتبع العميل والموقع والتقييم والتعليقات العامة -->
     <section id="sec-track" class="hidden space-y-6 max-w-xl mx-auto">
       <div class="bg-white rounded-2xl shadow-lg p-5 border space-y-3">
         <label class="block text-xs font-bold text-gray-800">📌 أدخل رقم الطلب لتتبع حالة التوصيل:</label>
@@ -466,7 +466,7 @@
           </div>
 
           <div>
-            <label class="block text-right text-[11px] font-bold text-gray-700 mb-1">اكتب تعليقك أو رأيك في المندوب والخدمة (للإدارة فقط):</label>
+            <label class="block text-right text-[11px] font-bold text-gray-700 mb-1">اكتب تعليقك أو رأيك في المندوب والخدمة:</label>
             <textarea id="custCommentText" rows="2" placeholder="اكتب ملاحظاتك هنا..." class="w-full border p-2 rounded-xl text-xs bg-white"></textarea>
           </div>
 
@@ -476,6 +476,17 @@
 
           <p id="ratingSubmittedMsg" class="text-xs text-emerald-700 font-bold hidden">شكراً لك! تم تسجيل تقييمك بنجاح ✅</p>
         </div>
+
+        <!-- 💬 آراء وتعليقات العملاء المنشورة العامة -->
+        <div id="publicCommentsSection" class="pt-4 border-t space-y-3">
+          <h4 class="font-bold text-xs text-gray-800 flex items-center gap-1">
+            <span>💬 آراء وتقييمات العملاء العامة:</span>
+          </h4>
+          <div id="publicCommentsContainer" class="space-y-2 max-h-60 overflow-y-auto">
+            <p class="text-[11px] text-gray-400 text-center">لا توجد آراء منشورة حالياً.</p>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -683,6 +694,7 @@
         renderCommentsList();
       }
       if(tabName === 'prices') renderPrices();
+      if(tabName === 'track') renderPublicComments();
     }
 
     function toggleAuthModal() {
@@ -1039,6 +1051,7 @@
         status: 'جاري تحضير اللحوم 🥩',
         rating: null,
         comment: null,
+        isPublished: false,
         date: now.toISOString().split('T')[0],
         time: now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
         lat: null, lng: null,
@@ -1070,6 +1083,7 @@
         renderAnalytics();
         renderCommentsList();
       }
+      renderPublicComments();
     });
 
     function getPaymentText(method) {
@@ -1279,7 +1293,7 @@
       });
     }
 
-    // --- 💬 عرض وفلترة تعليقات وتقييمات العملاء المخصصة للإدارة ---
+    // --- 💬 عرض وفلترة تعليقات وتقييمات العملاء المخصصة للإدارة + النشر والحذف ---
     function renderCommentsList() {
       if(!canUser('analytics')) return;
       const filterDriver = document.getElementById('commentDriverFilter') ? document.getElementById('commentDriverFilter').value : 'ALL';
@@ -1294,7 +1308,6 @@
       Object.keys(allOrdersCache).forEach(key => {
         const item = allOrdersCache[key];
         
-        // التحقق من وجود تقييم أو تعليق
         if(item.rating || item.comment) {
           const driver = item.driver || 'غير محدد';
           const rating = String(item.rating || '0');
@@ -1310,6 +1323,8 @@
             let starsStr = '';
             const rNum = Number(item.rating) || 0;
             for(let i=0; i<rNum; i++) starsStr += '⭐';
+
+            const isPublished = !!item.isPublished;
 
             container.innerHTML += `
               <div class="bg-white p-3.5 rounded-xl border border-amber-200 shadow-sm space-y-2 text-xs">
@@ -1333,6 +1348,21 @@
                   <span class="font-bold text-gray-900 block mb-0.5">💬 التعليق والرأي:</span>
                   <p class="bg-gray-50 p-2 rounded-lg border text-gray-800">${item.comment || 'لم يقم العميل بكتابة تعليق نصي.'}</p>
                 </div>
+
+                <div class="flex justify-between items-center pt-2 border-t">
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded ${isPublished ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'}">
+                    ${isPublished ? '🌐 منشور للعموم' : '🔒 خاص بالإدارة فقط'}
+                  </span>
+                  
+                  <div class="flex items-center gap-1.5">
+                    <button onclick="togglePublishComment('${key}', ${!isPublished})" class="${isPublished ? 'bg-amber-100 text-amber-800 hover:bg-amber-200' : 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'} px-2.5 py-1 rounded text-[10px] font-bold">
+                      ${isPublished ? 'إلغاء النشر 🙈' : 'نشر للجميع 👁️'}
+                    </button>
+                    <button onclick="deleteComment('${key}')" class="bg-red-100 text-red-700 hover:bg-red-200 px-2.5 py-1 rounded text-[10px] font-bold">
+                      حذف 🗑️
+                    </button>
+                  </div>
+                </div>
               </div>
             `;
           }
@@ -1341,6 +1371,55 @@
 
       if(count === 0) {
         container.innerHTML = `<p class="text-xs text-gray-400 p-4 text-center col-span-2">لا توجد تعليقات أو تقييمات مطابقة للفلتر المحدد.</p>`;
+      }
+    }
+
+    function togglePublishComment(orderKey, publishState) {
+      if(!canUser('analytics')) return;
+      db.ref(`orders/${orderKey}/isPublished`).set(publishState).then(() => {
+        alert(publishState ? 'تم نشر التعليق بنجاح للعموم في صفحة التتبع ✅' : 'تم إلغاء النشر وأصبح التعليق خاصاً بالإدارة فقط 🔒');
+      });
+    }
+
+    function deleteComment(orderKey) {
+      if(!canUser('analytics')) return;
+      if(confirm('هل تريد حذف هذا التعليق والتقييم نهائياً؟')) {
+        db.ref(`orders/${orderKey}`).update({ rating: null, comment: null, isPublished: false }).then(() => {
+          alert('تم حذف التعليق والتقييم بنجاح 🗑️');
+        });
+      }
+    }
+
+    // --- 💬 عرض التعليقات العامة المنشورة في صفحة تتبع العميل ---
+    function renderPublicComments() {
+      const container = document.getElementById('publicCommentsContainer');
+      if(!container) return;
+
+      container.innerHTML = '';
+      let count = 0;
+
+      Object.keys(allOrdersCache).forEach(key => {
+        const item = allOrdersCache[key];
+        if(item.isPublished && (item.comment || item.rating)) {
+          count++;
+          let starsStr = '';
+          const rNum = Number(item.rating) || 0;
+          for(let i=0; i<rNum; i++) starsStr += '⭐';
+
+          container.innerHTML += `
+            <div class="bg-amber-50/50 p-3 rounded-xl border border-amber-200 space-y-1 text-xs">
+              <div class="flex justify-between items-center text-gray-700">
+                <span class="font-bold text-red-800">${item.customerName || 'عميل حمكشة'}</span>
+                <span class="text-amber-600 font-bold text-[11px]">${starsStr}</span>
+              </div>
+              ${item.comment ? `<p class="text-gray-800 bg-white p-2 rounded-lg border border-amber-100">${item.comment}</p>` : ''}
+            </div>
+          `;
+        }
+      });
+
+      if(count === 0) {
+        container.innerHTML = `<p class="text-[11px] text-gray-400 text-center">لا توجد آراء منشورة حالياً.</p>`;
       }
     }
 
@@ -1552,7 +1631,7 @@
         rating: selectedStarsCount,
         comment: commentText
       }).then(() => {
-        document.getElementById('ratingSubmittedMsg').innerText = `شكراً لك! تم تسجيل تقييمك بـ (${selectedStarsCount} ⭐) الملاحظات بنجاح ✅`;
+        document.getElementById('ratingSubmittedMsg').innerText = `شكراً لك! تم تسجيل تقييمك بـ (${selectedStarsCount} ⭐) والملاحظات بنجاح ✅`;
         document.getElementById('ratingSubmittedMsg').classList.remove('hidden');
       });
     }
