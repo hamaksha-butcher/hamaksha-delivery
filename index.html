@@ -1,616 +1,523 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>جزارة حمكشة - نظام إدارة المبيعات والتتبع</title>
-
-  <!-- الخطوط والأيقونات -->
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- مكتبات Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-  <style>
-    :root {
-      --primary: #800000;
-      --primary-dark: #400000;
-      --accent: #d4af37;
-      --bg: #f4f6f9;
-      --card-bg: #ffffff;
-      --text: #333333;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    /* =========================================
-       1. شاشة تسجيل الدخول (التصميم الجديد)
-       ========================================= */
-    #loginPage {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100vh;
-      background: radial-gradient(circle at center, #2b0000 0%, #0d0000 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 99999;
-      padding: 20px;
-    }
-
-    #loginPage::before {
-      content: "";
-      position: absolute;
-      width: 100%; height: 100%;
-      background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
-      opacity: 0.15;
-      pointer-events: none;
-    }
-
-    .login-card {
-      position: relative;
-      background: rgba(20, 20, 20, 0.88);
-      backdrop-filter: blur(15px);
-      border: 1px solid rgba(212, 175, 55, 0.25);
-      border-radius: 24px;
-      padding: 40px 30px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(183, 28, 28, 0.2);
-      text-align: center;
-      color: #fff;
-    }
-
-    .brand-logo {
-      width: 95px; height: 95px;
-      margin: 0 auto 15px;
-      border-radius: 50%;
-      background: linear-gradient(145deg, #800000, #400000);
-      border: 2px solid #d4af37;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
-    }
-    .brand-logo h3 { font-size: 18px; font-weight: 800; color: #fff; margin: 0; line-height: 1.1; }
-    .brand-logo span { font-size: 9px; color: #d4af37; letter-spacing: 2px; margin-top: 2px; font-weight: 700; }
-
-    .login-title { font-size: 22px; font-weight: 800; color: #ffffff; margin-bottom: 4px; }
-    .login-subtitle { font-size: 12px; color: #b0b0b0; margin-bottom: 25px; }
-
-    .input-group { margin-bottom: 18px; text-align: right; }
-    .input-group label { display: block; font-size: 12px; font-weight: 700; color: #d4af37; margin-bottom: 6px; }
-    .input-wrapper { position: relative; }
-    .input-wrapper i { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: #888; font-size: 15px; }
-    .input-wrapper input {
-      width: 100%;
-      padding: 12px 42px 12px 14px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 10px;
-      font-size: 14px;
-      color: #fff;
-      outline: none;
-      transition: 0.3s;
-    }
-    .input-wrapper input:focus { border-color: #d4af37; box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
-
-    .options-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; font-size: 12px; }
-    .remember-me { display: flex; align-items: center; gap: 6px; cursor: pointer; color: #ccc; }
-    .remember-me input { width: 15px; height: 15px; accent-color: #b71c1c; cursor: pointer; }
-    .forgot-pass { color: #888; text-decoration: none; }
-
-    .btn-submit {
-      width: 100%; padding: 13px;
-      background: linear-gradient(135deg, #b71c1c 0%, #7f0000 100%);
-      color: white; border: 1px solid rgba(212, 175, 55, 0.4);
-      border-radius: 10px; font-size: 15px; font-weight: 700;
-      cursor: pointer; transition: all 0.3s ease;
-    }
-    .btn-submit:hover { transform: translateY(-2px); background: linear-gradient(135deg, #d32f2f 0%, #9a0000 100%); }
-
-    /* =========================================
-       2. السيستم الرئيسي والواجهة الداخلية الكاملة
-       ========================================= */
-    #mainApp { display: none; padding: 20px; }
-
-    header {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: #fff;
-      padding: 15px 25px;
-      border-radius: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    }
-
-    .user-badge {
-      background: var(--accent);
-      color: #000;
-      padding: 3px 10px;
-      border-radius: 15px;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .btn-logout {
-      background: #ffffff;
-      color: var(--primary);
-      border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .btn-logout:hover { background: #eee; }
-
-    .container { max-width: 1400px; margin: 0 auto; }
-
-    .card {
-      background: var(--card-bg);
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      margin-bottom: 20px;
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* نماذج إدخال البيانات */
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      margin-bottom: 15px;
-    }
-
-    .form-grid input, .form-grid select {
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      outline: none;
-      font-size: 14px;
-      width: 100%;
-    }
-
-    .form-grid input:focus, .form-grid select:focus {
-      border-color: var(--primary);
-    }
-
-    .btn-action {
-      background: #2e7d32;
-      color: #fff;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      width: 100%;
-      font-size: 15px;
-      transition: 0.2s;
-    }
-    .btn-action:hover { background: #1b5e20; }
-
-    /* الكروت الإحصائية */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-
-    .stat-card {
-      background: #fff;
-      padding: 15px;
-      border-radius: 10px;
-      border-right: 5px solid var(--primary);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    }
-
-    .stat-card h4 { font-size: 13px; color: #666; margin-bottom: 5px; }
-    .stat-card p { font-size: 20px; font-weight: 800; color: var(--primary); }
-
-    /* جدول الطلبات */
-    .table-responsive { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { padding: 12px; text-align: center; border-bottom: 1px solid #eee; font-size: 13px; }
-    th { background: #f8f9fa; color: #555; font-weight: 700; }
-    tr:hover { background: #fcfcfc; }
-
-    .badge-status {
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: bold;
-      display: inline-block;
-    }
-    .status-pending { background: #fff3cd; color: #856404; }
-    .status-delivered { background: #d4edda; color: #155724; }
-    .status-canceled { background: #f8d7da; color: #721c24; }
-
-    .audit-tag {
-      font-size: 10px;
-      color: #555;
-      background: #f0f0f0;
-      padding: 3px 6px;
-      border-radius: 4px;
-      display: block;
-      margin-top: 3px;
-    }
-
-    .btn-table {
-      border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 12px;
-      color: #fff;
-      margin: 2px;
-    }
-    .btn-edit { background: #1976d2; }
-    .btn-delete { background: #d32f2f; }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام جزارة حمكشة - إدارة الطلبات والتقييم والتعليقات 🥩</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Cairo', sans-serif; transition: background-color 0.3s, color 0.3s; }
+    .tab-btn.active { background-color: var(--primary-color, #dc2626); color: white; }
+    :root {
+      --primary-color: #dc2626;
+      --secondary-color: #f59e0b;
+      --bg-color: #fffbeb;
+    }
+    /* ضبط اتجاه حقول التاريخ لمنع انعكاس الصيغة */
+    input[type="date"] {
+      direction: ltr !important;
+      text-align: right !important;
+    }
+    .formatted-date {
+      direction: ltr !important;
+      display: inline-block;
+    }
+    /* تصميم النجوم الباهتة والمتفاعلة */
+    .star-item {
+      opacity: 0.3;
+      filter: grayscale(100%);
+      transition: all 0.2s ease-in-out;
+      cursor: pointer;
+    }
+    .star-item.active, .star-item.hovered {
+      opacity: 1 !important;
+      filter: grayscale(0%) !important;
+      transform: scale(1.2);
+    }
+    @media print {
+      header, #userBadgeBar, .no-print, #adminAuthLock, .theme-selector, #orderForm, #usersList, form, button, select, input {
+        display: none !important;
+      }
+      body { background: white !important; color: black !important; }
+      main { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+      .print-area { width: 100% !important; box-shadow: none !important; border: none !important; }
+      table { border-collapse: collapse !important; width: 100% !important; }
+      th, td { border: 1px solid #000 !important; padding: 8px !important; text-align: right !important; }
+    }
+  </style>
 </head>
-<body>
+<body id="appBody" class="bg-amber-50/40 min-h-screen text-gray-800">
 
-  <!-- =========================================
-       1. شاشة تسجيل الدخول
-       ========================================= -->
-  <div id="loginPage">
-    <div class="login-card">
-      <div class="brand-logo">
-        <h3>جزارة<br>حمكشة</h3>
-        <span>SINCE 1998</span>
-      </div>
+  <!-- Header / البراندينج والشريط العلوي -->
+  <header id="mainHeader" class="bg-red-700 text-white shadow-lg border-b-4 border-amber-500 transition-colors">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <span class="text-4xl">🥩</span>
+        <div>
+          <h1 class="text-2xl font-black tracking-wide">جزارة حمكشة</h1>
+          <p class="text-xs text-amber-200 font-semibold">نظام إدارة الطلبات والتقييم والحسابات المالية</p>
+        </div>
+      </div>
+      
+      <!-- شريط التنقل والولوج -->
+      <div class="flex items-center gap-2">
+        <div class="flex bg-black/20 p-1 rounded-xl text-xs font-bold flex-wrap">
+          <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn active px-3 py-2 rounded-lg transition-all">لوحة الإدارة 🔐</button>
+          <button onclick="switchTab('analytics')" id="tab-analytics" class="tab-btn px-3 py-2 rounded-lg transition-all perm-analytics hidden">تقييم وحسابات المناديب 📊</button>
+          <button onclick="switchTab('prices')" id="tab-prices" class="tab-btn px-3 py-2 rounded-lg transition-all perm-prices hidden">قائمة الأسعار 🏷️</button>
+          <button onclick="switchTab('driver')" id="tab-driver" class="tab-btn px-3 py-2 rounded-lg transition-all">واجهة المندوب 🛵</button>
+          <button onclick="switchTab('track')" id="tab-track" class="tab-btn px-3 py-2 rounded-lg transition-all">تتبع العميل 📍</button>
+        </div>
+        <button id="authBtn" onclick="handleAuthBtnClick()" class="bg-amber-400 hover:bg-amber-500 text-red-950 font-bold px-3 py-2 rounded-xl text-xs shadow transition-all">
+          تسجيل الدخول
+        </button>
+      </div>
+    </div>
+  </header>
 
-      <h2 class="login-title">تسجيل الدخول</h2>
-      <p class="login-subtitle">نظام إدارة المبيعات والتتبع الميداني</p>
+  <main class="max-w-6xl mx-auto p-4 sm:p-6 space-y-6">
 
-      <form id="loginForm">
-        <div class="input-group">
-          <label>اسم المستخدم</label>
-          <div class="input-wrapper">
-            <input type="text" id="username" placeholder="أدخل اسم المستخدم" required>
-            <i class="fa-regular fa-user"></i>
-          </div>
-        </div>
+    <!-- شريط عرض حالة الدخول للحساب الحالي -->
+    <div id="userBadgeBar" class="bg-white rounded-xl shadow-sm p-3 border border-amber-200 flex items-center justify-between">
+      <div class="flex items-center gap-2 text-xs font-bold text-gray-700">
+        <span>👤 الحساب النشط:</span>
+        <span id="activeUserBadge" class="text-amber-800 bg-amber-100 px-2.5 py-1 rounded-full">
+          لم يتم تسجيل الدخول
+        </span>
+      </div>
+      <div class="text-[11px] text-gray-400 font-semibold">🔒 نظام محمي ومقيد الصلاحيات</div>
+    </div>
 
-        <div class="input-group">
-          <label>كلمة المرور</label>
-          <div class="input-wrapper">
-            <input type="password" id="password" placeholder="••••••••" required>
-            <i class="fa-solid fa-lock"></i>
-          </div>
-        </div>
+    <!-- 1️⃣ لوحة تحكم الأدمن -->
+    <section id="sec-admin" class="space-y-6">
+      <div id="adminAuthLock" class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md mx-auto space-y-4 border border-red-100">
+        <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-3xl">🔒</div>
+        <h3 class="text-xl font-bold text-gray-800">صلاحية أدمن جزارة حمكشة</h3>
+        <p class="text-xs text-gray-500">سجل الدخول بحساب الأدمن الخاص بك للوصول إلى لوحة التحكم والبيانات.</p>
+        <button onclick="toggleAuthModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm">
+          تسجيل الدخول كأدمن 🔑
+        </button>
+      </div>
 
-        <div class="options-row">
-          <label class="remember-me">
-            <input type="checkbox" id="rememberMe">
-            <span>تذكرني على هذا الجهاز</span>
-          </label>
-          <a href="#" class="forgot-pass">نسيت كلمة المرور؟</a>
-        </div>
+      <div id="adminContent" class="hidden space-y-6">
+        <div class="bg-white rounded-2xl shadow-md p-4 border border-amber-100 flex flex-wrap items-center justify-between gap-4 theme-selector">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🎨</span>
+            <h3 class="font-bold text-xs text-gray-800">تخصيص الثيم:</h3>
+          </div>
+          <div class="flex items-center gap-3">
+            <button onclick="changeTheme('#dc2626', '#f59e0b', '#fffbeb')" class="w-6 h-6 rounded-full bg-red-600 shadow" title="أحمر حمكشة"></button>
+            <button onclick="changeTheme('#1e3a8a', '#3b82f6', '#eff6ff')" class="w-6 h-6 rounded-full bg-blue-900 shadow" title="أزرق"></button>
+            <button onclick="changeTheme('#064e3b', '#10b981', '#ecfdf5')" class="w-6 h-6 rounded-full bg-emerald-900 shadow" title="أخضر"></button>
+            <button onclick="changeTheme('#18181b', '#f59e0b', '#27272a', true)" class="w-6 h-6 rounded-full bg-zinc-900 shadow" title="Dark Mode"></button>
+          </div>
+        </div>
 
-        <button type="submit" class="btn-submit">دخول للسيستم <i class="fa-solid fa-arrow-left"></i></button>
-      </form>
-    </div>
-  </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="space-y-6 lg:col-span-1">
+            
+            <!-- نموذج إضافة طلب -->
+            <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-3">
+              <div class="flex items-center justify-between border-b pb-2">
+                <div class="flex items-center gap-2">
+                  <span class="text-lg">📝</span>
+                  <h2 class="text-sm font-bold text-gray-800">إضافة طلب جديد</h2>
+                </div>
+                <button type="button" onclick="autoAssignSmartDriver()" class="text-[10px] bg-amber-100 text-amber-800 px-2 py-1 rounded-lg font-bold hover:bg-amber-200">🤖 توزيع ذكي للمندوب</button>
+              </div>
 
-  <!-- =========================================
-       2. السيستم الكامل وتدفق البيانات
-       ========================================= -->
-  <div id="mainApp">
-    <div class="container">
-      <header>
-        <div>
-          <h2 style="font-weight: 800; font-size: 20px;">🥩 جزارة حمكشة - لوحة المتابعة العامة</h2>
-          <small>المستخدم: <b id="activeUserDisplay">-</b> | الصلاحية: <span class="user-badge" id="activeRoleDisplay">-</span></small>
-        </div>
-        <button class="btn-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
-      </header>
+              <form id="orderForm" class="space-y-3">
+                <div>
+                  <label class="block text-[11px] font-bold text-gray-700 mb-1">رقم الطلب (اختياري)</label>
+                  <input type="text" id="custOrderId" placeholder="مثال: HAMKASHA-1001" class="w-full border p-2 rounded-xl text-xs font-mono">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-gray-700 mb-1">اسم العميل</label>
+                  <input type="text" id="custName" required placeholder="مثال: الحاج أحمد" class="w-full border p-2 rounded-xl text-xs">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-gray-700 mb-1">رقم الهاتف (واتساب)</label>
+                  <input type="text" id="custPhone" required placeholder="مثال: 01273091807" class="w-full border p-2 rounded-xl text-xs text-left" dir="ltr">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-gray-700 mb-1">العنوان والطلبات</label>
+                  <textarea id="custAddress" rows="2" required placeholder="كيلو كفتة - الزقازيق حي تاني" class="w-full border p-2 rounded-xl text-xs"></textarea>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-2 bg-amber-50 p-2 rounded-xl border border-amber-200">
+                  <div>
+                    <label class="block text-[10px] font-bold text-amber-900 mb-1">سعر الطلب (ج.م):</label>
+                    <input type="number" id="orderPrice" oninput="calculateTotalBill()" required placeholder="0" class="w-full border p-1.5 rounded-lg text-xs font-bold text-center">
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold text-amber-900 mb-1">سعر التوصيل (ج.م):</label>
+                    <input type="number" id="deliveryPrice" oninput="calculateTotalBill()" value="20" required class="w-full border p-1.5 rounded-lg text-xs font-bold text-center">
+                  </div>
+                </div>
 
-      <!-- الإحصائيات العامة -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <h4>إجمالي الطلبات اليوم</h4>
-          <p id="statTotalOrders">0</p>
-        </div>
-        <div class="stat-card" style="border-color: #2e7d32;">
-          <h4>إجمالي المبيعات (ج.م)</h4>
-          <p id="statTotalSales">0</p>
-        </div>
-        <div class="stat-card" style="border-color: #ed6c02;">
-          <h4>الطلبات قيد التوصيل</h4>
-          <p id="statPendingOrders">0</p>
-        </div>
-        <div class="stat-card" style="border-color: #0288d1;">
-          <h4>الطلبات المكتملة</h4>
-          <p id="statDeliveredOrders">0</p>
-        </div>
-      </div>
+                <!-- 💳 قسم طرق الدفع والنسبة المفتوحة -->
+                <div class="bg-blue-50/60 p-2.5 rounded-xl border border-blue-200 space-y-2">
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <label class="block text-[10px] font-bold text-blue-900 mb-1">طريقة الدفع:</label>
+                      <select id="paymentMethod" onchange="calculateTotalBill()" class="w-full border p-1.5 rounded-lg text-xs font-bold bg-white">
+                        <option value="cash">💵 كاش مع المندوب</option>
+                        <option value="vodafone">📱 فودافون كاش (10ج/1000)</option>
+                        <option value="instapay">⚡ إنستا باي (بدون رسوم إضافية)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-[10px] font-bold text-blue-900 mb-1">عمولة الدفع (ج.م):</label>
+                      <input type="number" id="paymentFee" oninput="calculateTotalBill(true)" value="0" class="w-full border p-1.5 rounded-lg text-xs font-bold text-center bg-white">
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center text-xs font-black text-red-700 bg-white p-2 rounded-lg border">
+                    <span>💳 إجمالي الفاتورة النهائي:</span>
+                    <span id="displayGrandTotal" class="font-mono text-sm">0 ج.م</span>
+                  </div>
+                </div>
 
-      <!-- نموذج إضافة أوردر جديد -->
-      <div class="card">
-        <div class="card-title"><i class="fa-solid fa-cart-plus"></i> إضافة طلب جديد</div>
-        <div class="form-grid">
-          <input type="text" id="custName" placeholder="اسم العميل">
-          <input type="text" id="custPhone" placeholder="رقم الهاتف">
-          <input type="text" id="custAddress" placeholder="العنوان والمنطقة">
-          <input type="text" id="orderDetails" placeholder="تفاصيل الطلب (الأوزان والقطعيات)">
-          <input type="number" id="orderPrice" placeholder="السعر الإجمالي (ج.م)">
-          <select id="driverSelect">
-            <option value="">اختر الديلفري</option>
-          </select>
-        </div>
-        <button class="btn-action" onclick="addNewOrder()"><i class="fa-solid fa-check"></i> حفظ وإضافة الطلب</button>
-      </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-gray-700 mb-1">المندوب المكلف</label>
+                  <select id="driverSelect" class="w-full border p-2 rounded-xl text-xs bg-white driver-dropdown">
+                    <option value="غير محدد">حدد المندوب...</option>
+                  </select>
+                </div>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">
+                  🚀 تسجيل الطلب والحسابات
+                </button>
+              </form>
 
-      <!-- جدول الطلبات والبيانات -->
-      <div class="card">
-        <div class="card-title" style="justify-content: space-between;">
-          <span><i class="fa-solid fa-list-check"></i> قائمة الطلبات الحالية</span>
-          <input type="text" id="tableSearch" onkeyup="filterTable()" placeholder="بحث باسم العميل أو رقم الهاتف..." style="padding: 6px 12px; font-size: 12px; border-radius: 6px; border: 1px solid #ccc; width: 220px;">
-        </div>
+              <div id="result" class="mt-3 hidden border-t border-dashed pt-3 space-y-2">
+                <input type="text" id="trackingLink" readonly class="w-full border p-2 rounded-xl bg-gray-50 text-[11px] font-mono">
+                <a id="waBtn" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs flex justify-center items-center gap-1">
+                  💬 إرسال عبر WhatsApp
+                </a>
+              </div>
+            </div>
 
-        <div class="table-responsive">
-          <table id="ordersTable">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>اسم العميل</th>
-                <th>رقم الهاتف</th>
-                <th>العنوان</th>
-                <th>تفاصيل الطلب</th>
-                <th>الإجمالي</th>
-                <th>الديلفري</th>
-                <th>الحالة</th>
-                <th>سجل المنشئ والتعديل</th>
-                <th>إجراءات</th>
-              </tr>
-            </thead>
-            <tbody id="ordersTableBody">
-              <!-- يتم جلب البيانات هنا من Firebase -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
+            <!-- إدارة المستخدمين والصلاحيات -->
+            <div id="usersManagementCard" class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-3 perm-users hidden">
+              <div class="flex items-center gap-2 border-b pb-2">
+                <span class="text-lg">👑</span>
+                <h2 class="text-sm font-bold text-gray-800">إدارة حسابات النظام والصلاحيات</h2>
+              </div>
+              <div class="space-y-2 bg-gray-50 p-2.5 rounded-xl border">
+                <input type="text" id="newUserName" placeholder="اسم المستخدم" class="w-full border p-2 rounded-xl text-xs bg-white">
+                <input type="password" id="newUserPass" placeholder="كلمة المرور" class="w-full border p-2 rounded-xl text-xs bg-white">
+                <select id="newUserRole" class="w-full border p-2 rounded-xl text-xs bg-white">
+                  <option value="admin">مسؤول إدارة (أدمن فرعي)</option>
+                  <option value="driver">مندوب توصيل</option>
+                </select>
+                <button onclick="addUser()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded-xl text-xs shadow">
+                  + إضافة لشبكة المستخدمين
+                </button>
+              </div>
+              <div id="usersList" class="space-y-2 max-h-64 overflow-y-auto pt-1"></div>
+            </div>
+          </div>
 
-  <script>
-    // 1️⃣ إعدادات Firebase
-    const firebaseConfig = {
-      databaseURL: "https://hamaksha-tracking-default-rtdb.europe-west1.firebasedatabase.app"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+          <!-- جدول إدارة الطلبات -->
+          <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 lg:col-span-2 space-y-4 print-area">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-3">
+              <div>
+                <h2 class="text-base font-bold text-gray-800">📊 سجل الطلبات الحية</h2>
+                <p class="text-[11px] text-gray-400 font-semibold">استعراض وتتبع الطلبات المسجلة</p>
+              </div>
+              <span id="ordersCount" class="bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full">0 طلبات</span>
+            </div>
 
-    // 2️⃣ التهيئة والتحقق عند الفتح
-    document.addEventListener("DOMContentLoaded", () => {
-      const savedUser = localStorage.getItem("rememberedUsername");
-      if (savedUser) {
-        document.getElementById("username").value = savedUser;
-        document.getElementById("rememberMe").checked = true;
-      }
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 bg-gray-50 p-2.5 rounded-xl border no-print">
+              <input type="text" id="searchFilter" oninput="applyFilters()" placeholder="🔍 بحث بالرقم أو العميل..." class="border p-2 rounded-lg text-xs bg-white">
+              <select id="driverFilter" onchange="applyFilters()" class="border p-2 rounded-lg text-xs bg-white filter-driver-dropdown">
+                <option value="ALL">جميع المناديب</option>
+              </select>
+              <select id="statusFilter" onchange="applyFilters()" class="border p-2 rounded-lg text-xs bg-white">
+                <option value="ALL">كل الحالات</option>
+                <option value="جاري تحضير اللحوم 🥩">جاري التحضير</option>
+                <option value="خرج للتوصيل 🛵">خرج للتوصيل</option>
+                <option value="تم التسليم بنجاح ✅">تم التسليم</option>
+              </select>
+              <input type="date" id="dateFilter" onchange="applyFilters()" dir="ltr" class="border p-2 rounded-lg text-xs bg-white text-right">
+            </div>
 
-      const activeUser = sessionStorage.getItem("currentUser");
-      if (activeUser) {
-        openSystem(activeUser, sessionStorage.getItem("userRole") || "أدمن");
-      }
-    });
+            <div id="exportActionBtns" class="flex flex-wrap items-center justify-end gap-2 pt-1 no-print hidden">
+              <button onclick="exportToPDF()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">📄 تصدير PDF</button>
+              <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">📊 تصدير Excel</button>
+              <button onclick="printReport()" class="bg-slate-700 hover:bg-slate-800 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">🖨️ طباعة ورقية</button>
+            </div>
 
-    // 3️⃣ عملية تسجيل الدخول وتفعيل الفتح التلقائي المباشر
-    document.getElementById("loginForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const uInput = document.getElementById("username").value.trim();
-      const pInput = document.getElementById("password").value.trim();
-      const rem = document.getElementById("rememberMe").checked;
+            <div class="overflow-x-auto max-h-[480px] overflow-y-auto rounded-xl border">
+              <table id="reportsTable" class="w-full text-right text-xs">
+                <thead class="bg-gray-100 font-bold sticky top-0 border-b">
+                  <tr>
+                    <th class="p-2.5">الطلب والتاريخ</th>
+                    <th class="p-2.5">العميل والتليفون</th>
+                    <th class="p-2.5">المندوب وطريقة الدفع</th>
+                    <th class="p-2.5">المبلغ والعمولة</th>
+                    <th class="p-2.5">حالة الطلب</th>
+                    <th class="p-2.5 text-center no-print">إجراءات</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersTableBody" class="divide-y divide-gray-100">
+                  <tr><td colspan="6" class="p-4 text-center text-gray-400">جاري التحميل...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-      db.ref('users').once('value').then((snapshot) => {
-        const users = snapshot.val() || {};
-        let foundUser = null;
+    <!-- 📊 2️⃣ داشبورد التقييم والتحصيل المالي والتعليقات (خاص بالإدارة) -->
+    <section id="sec-analytics" class="hidden space-y-6">
+      <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 space-y-6">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b pb-4">
+          <div>
+            <h2 class="text-lg font-black text-red-700">📈 داشبورد أداء وتحصيل المناديب المالي</h2>
+            <p class="text-xs text-gray-500 font-semibold">متابعة الأداء، النسب المئوية، تقييمات العملاء، والعهدة المالية المحصلة كاش</p>
+          </div>
+          <div class="flex bg-gray-100 p-1 rounded-xl text-xs font-bold border">
+            <button onclick="setAnalyticsPeriod('daily')" id="time-daily" class="px-3 py-1.5 rounded-lg bg-red-600 text-white transition-all">يومي 📅</button>
+            <button onclick="setAnalyticsPeriod('weekly')" id="time-weekly" class="px-3 py-1.5 rounded-lg text-gray-600 transition-all">أسبوعي 🗓️</button>
+            <button onclick="setAnalyticsPeriod('monthly')" id="time-monthly" class="px-3 py-1.5 rounded-lg text-gray-600 transition-all">شهري 📆</button>
+          </div>
+        </div>
 
-        Object.keys(users).forEach(k => {
-          if (users[k].username === uInput && String(users[k].pass) === pInput) {
-            foundUser = users[k];
-          }
-        });
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-center">
+          <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+            <p class="text-xs text-red-600 font-bold mb-1">إجمالي طلبات الفترة</p>
+            <h3 id="statTotalOrders" class="text-2xl font-black text-red-700">0</h3>
+          </div>
+          <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+            <p class="text-xs text-emerald-600 font-bold mb-1">إجمالي المبالغ المحصلة</p>
+            <h3 id="statTotalCash" class="text-2xl font-black text-emerald-700">0 ج.م</h3>
+          </div>
+          <div class="bg-amber-50 p-4 rounded-xl border border-amber-100">
+            <p class="text-xs text-amber-800 font-bold mb-1">متوسط تقييم العملاء</p>
+            <h3 id="statAvgRating" class="text-2xl font-black text-amber-700">0 / 5 ⭐</h3>
+          </div>
+          <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+            <p class="text-xs text-blue-600 font-bold mb-1">نسبة التتبع والالتزام باللوكيشن</p>
+            <h3 id="statLiveTrackRate" class="text-2xl font-black text-blue-700">0%</h3>
+          </div>
+        </div>
 
-        if (foundUser) {
-          if (rem) localStorage.setItem("rememberedUsername", uInput);
-          else localStorage.removeItem("rememberedUsername");
+        <div class="overflow-x-auto rounded-xl border">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-gray-100 font-bold border-b">
+              <tr>
+                <th class="p-3">اسم المندوب</th>
+                <th class="p-3">إجمالي الطلبات</th>
+                <th class="p-3">تم التسليم ✅</th>
+                <th class="p-3">العهدة المباشرة المحصلة (ج.م)</th>
+                <th class="p-3">تقييم العملاء ⭐</th>
+                <th class="p-3">معدل الإنجاز %</th>
+                <th class="p-3 text-center">التقييم الشامل</th>
+              </tr>
+            </thead>
+            <tbody id="driverAnalyticsBody" class="divide-y divide-gray-100">
+              <tr><td colspan="7" class="p-4 text-center text-gray-400">جاري حساب التقارير...</td></tr>
+            </tbody>
+          </table>
+        </div>
 
-          sessionStorage.setItem("currentUser", uInput);
-          sessionStorage.setItem("userRole", foundUser.role);
+        <!-- 💬 قسم سجل تقييمات وتعليقات العملاء للإدارة فقط مع الفلترة والتحكم بالنشر/الحذف -->
+        <div class="pt-6 border-t space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+              <h3 class="font-bold text-sm text-gray-800">💬 سجل آرائك وتعليقات العملاء (إدارة النشر والحذف)</h3>
+              <p class="text-[11px] text-gray-500">متابعة الملاحظات، الموافقة على نشر التعليق للعامة في صفحة التتبع، أو حذفه</p>
+            </div>
+          </div>
 
-          openSystem(uInput, foundUser.role);
-        } else {
-          alert("خطأ: اسم المستخدم أو كلمة المرور غير صحيحة!");
-        }
-      });
-    });
+          <!-- أدوات فلترة التعليقات -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-amber-50/70 p-3 rounded-xl border border-amber-200">
+            <div>
+              <label class="block text-[10px] font-bold text-amber-900 mb-1">فلترة بالمندوب:</label>
+              <select id="commentDriverFilter" onchange="renderCommentsList()" class="w-full border p-2 rounded-lg text-xs bg-white filter-driver-dropdown">
+                <option value="ALL">جميع المناديب</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-amber-900 mb-1">فلترة بالتقييم (النجوم):</label>
+              <select id="commentRatingFilter" onchange="renderCommentsList()" class="w-full border p-2 rounded-lg text-xs bg-white">
+                <option value="ALL">كل التقييمات ⭐</option>
+                <option value="5">5 نجوم ⭐⭐⭐⭐⭐</option>
+                <option value="4">4 نجوم ⭐⭐⭐⭐</option>
+                <option value="3">3 نجوم ⭐⭐⭐</option>
+                <option value="2">نجمتان ⭐⭐</option>
+                <option value="1">نجمة واحدة ⭐</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-amber-900 mb-1">فلترة بالتاريخ:</label>
+              <input type="date" id="commentDateFilter" onchange="renderCommentsList()" dir="ltr" class="w-full border p-2 rounded-lg text-xs bg-white text-right">
+            </div>
+          </div>
 
-    // 4️⃣ دالة فتح السيستم وإخفاء شاشة تسجيل الدخول
-    function openSystem(username, role) {
-      document.getElementById("loginPage").style.display = "none";
-      document.getElementById("mainApp").style.display = "block";
-      document.getElementById("activeUserDisplay").innerText = username;
-      document.getElementById("activeRoleDisplay").innerText = role;
+          <!-- قائمة الكروت والملاحظات -->
+          <div id="commentsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
+            <p class="text-xs text-gray-400 p-4 text-center col-span-2">جاري تحميل التعليقات...</p>
+          </div>
+        </div>
 
-      loadDrivers();
-      loadOrders();
-    }
+      </div>
+    </section>
 
-    // 5️⃣ تسجيل الخروج
-    function logout() {
-      sessionStorage.clear();
-      document.getElementById("mainApp").style.display = "none";
-      document.getElementById("loginPage").style.display = "flex";
-    }
+    <!-- 🏷️ 3️⃣ قسم لوحة أسعار اللحوم وإدارتها المباشرة -->
+    <section id="sec-prices" class="hidden space-y-6">
+      <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 space-y-4">
+        <div class="flex justify-between items-center border-b pb-3">
+          <div>
+            <h2 class="text-lg font-black text-red-700">🏷️ قائمة أسعار اللحوم الحية (جزارة حمكشة)</h2>
+            <p class="text-xs text-gray-500 font-semibold">تحديث اليومية وإضافة أو تعديل الأسعار المباشرة في أي وقت</p>
+          </div>
+          <button id="addPriceBtn" onclick="openAddPriceModal()" class="hidden bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-2 rounded-xl shadow">
+            + إضافة صنف جديد
+          </button>
+        </div>
 
-    // 6️⃣ تحميل قائمة السائقين
-    function loadDrivers() {
-      db.ref('users').once('value').then(snapshot => {
-        const users = snapshot.val() || {};
-        const select = document.getElementById("driverSelect");
-        select.innerHTML = '<option value="">اختر الديلفري</option>';
-        Object.keys(users).forEach(k => {
-          if (users[k].role === 'driver') {
-            select.innerHTML += `<option value="${users[k].username}">${users[k].username}</option>`;
-          }
-        });
-      });
-    }
+        <div id="priceListContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <!-- كروت الأسعار -->
+        </div>
+      </div>
+    </section>
 
-    // 7️⃣ إضافة طلب جديد مع تسجيل اسم المنشئ والتاريخ
-    function addNewOrder() {
-      const currentUser = sessionStorage.getItem("currentUser") || "مجهول";
-      const now = new Date();
-      const dateStr = String(now.getDate()).padStart(2, '0') + '/' + String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear() + ' ' + now.toLocaleTimeString('ar-EG');
+    <!-- 4️⃣ واجهة المندوب -->
+    <section id="sec-driver" class="hidden space-y-6">
+      <div id="driverAuthLock" class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md mx-auto space-y-4 border">
+        <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-3xl">🛵</div>
+        <h3 class="text-xl font-bold">واجهة المندوب</h3>
+        <p class="text-xs text-gray-500">قم بتسجيل الدخول بحساب المندوب الخاص بك لبدء العمل على طلباتك.</p>
+        <button onclick="toggleAuthModal()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-xl shadow text-sm">تسجيل الدخول كمندوب 🔑</button>
+      </div>
 
-      const name = document.getElementById("custName").value.trim();
-      const phone = document.getElementById("custPhone").value.trim();
-      const address = document.getElementById("custAddress").value.trim();
-      const details = document.getElementById("orderDetails").value.trim();
-      const price = document.getElementById("orderPrice").value.trim();
-      const driver = document.getElementById("driverSelect").value;
+      <div id="driverContent" class="hidden max-w-xl mx-auto space-y-4 bg-white p-6 rounded-2xl shadow-xl border text-center">
+        <h2 class="text-lg font-bold">إدارة حالة الطلب والتحصيل المالي 🛵</h2>
+        <div class="space-y-2">
+          <label class="block text-right text-xs font-bold text-gray-700">رقم الطلب:</label>
+          <div class="flex gap-2">
+            <input type="text" id="orderId" placeholder="أدخل رقم الطلب (مثال: HAMKASHA-12345)" class="w-full border p-2.5 rounded-xl text-center font-mono font-bold text-xs bg-gray-50">
+            <button onclick="fetchDriverOrder()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 rounded-xl text-xs whitespace-nowrap">بحث 🔍</button>
+          </div>
+        </div>
 
-      if (!name || !price) {
-        alert("يرجى إدخال اسم العميل والسعر على الأقل!");
-        return;
-      }
+        <div id="driverOrderCard" class="hidden bg-gray-50 p-4 rounded-xl border text-right space-y-3 text-xs">
+          <p><b>العميل:</b> <span id="dCustName">--</span></p>
+          <p><b>العنوان والطلبات:</b> <span id="dCustAddress">--</span></p>
+          <p><b>طريقة الدفع:</b> <span id="dPayMethod" class="font-bold text-blue-800">--</span></p>
+          <div class="bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl font-bold text-emerald-900 flex justify-between">
+            <span>المبلغ المطلوب تحصيله شامل العمولة:</span>
+            <span id="dTotalCash" class="font-mono text-sm">0 ج.م</span>
+          </div>
+          <p><b>الحالة الحالية:</b> <span id="dStatus" class="font-bold text-red-600">--</span></p>
 
-      db.ref('orders').push({
-        customerName: name,
-        phone: phone,
-        address: address,
-        details: details,
-        price: parseFloat(price),
-        driver: driver,
-        status: "جاري التوصيل",
-        createdBy: currentUser,
-        createdAt: dateStr,
-        editCount: 0,
-        lastEditedBy: "-",
-        lastEditedAt: "-"
-      }).then(() => {
-        alert("تم إضافة الطلب بنجاح!");
-        document.getElementById("custName").value = "";
-        document.getElementById("custPhone").value = "";
-        document.getElementById("custAddress").value = "";
-        document.getElementById("orderDetails").value = "";
-        document.getElementById("orderPrice").value = "";
-      });
-    }
+          <div class="bg-white p-3 rounded-xl border space-y-1.5">
+            <label class="block font-bold text-gray-800">تغيير حالة الطلب يدوياً:</label>
+            <select id="driverStatusSelect" onchange="driverChangeStatus(this.value)" class="w-full border p-2 rounded-xl text-xs font-bold bg-amber-50">
+              <option value="جاري تحضير اللحوم 🥩">جاري تحضير اللحوم 🥩</option>
+              <option value="خرج للتوصيل 🛵">خرج للتوصيل 🛵</option>
+              <option value="تم التسليم بنجاح ✅">تم التسليم بنجاح ✅</option>
+            </select>
+          </div>
+          
+          <div class="pt-2 border-t space-y-2">
+            <button id="startBtn" onclick="startDelivery()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow flex justify-center items-center gap-1">
+              📍 بدء/إيقاف بث اللوكيشن الحي Live (اختياري)
+            </button>
+            <button id="stopBtn" onclick="stopDelivery()" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2.5 rounded-xl text-xs hidden shadow">
+              🛑 إيقاف مشاركة اللوكيشن فقط
+            </button>
+          </div>
+        </div>
+        <div id="driverStatus" class="text-xs text-gray-500 font-semibold"></div>
+      </div>
+    </section>
 
-    // 8️⃣ تحميل جدول الطلبات وحساب الإحصائيات
-    function loadOrders() {
-      db.ref('orders').on('value', snapshot => {
-        const orders = snapshot.val() || {};
-        const tbody = document.getElementById("ordersTableBody");
-        tbody.innerHTML = "";
+    <!-- 5️⃣ تتبع العميل والموقع والتقييم والتعليقات العامة -->
+    <section id="sec-track" class="hidden space-y-6 max-w-xl mx-auto">
+      <div class="bg-white rounded-2xl shadow-lg p-5 border space-y-3">
+        <label class="block text-xs font-bold text-gray-800">📌 أدخل رقم الطلب لتتبع حالة التوصيل:</label>
+        <div class="flex gap-2">
+          <input type="text" id="custSearchOrderId" placeholder="أدخل رقم الطلب (مثال: 410 أو HAMKASHA-12345)" class="w-full border p-2.5 rounded-xl text-xs font-mono font-bold text-center bg-gray-50">
+          <button onclick="searchCustomerOrder()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 rounded-xl text-xs whitespace-nowrap shadow">تتبع 🔍</button>
+        </div>
+      </div>
 
-        let count = 0;
-        let totalSales = 0;
-        let pending = 0;
-        let delivered = 0;
-        let idx = 1;
+      <div id="trackResultCard" class="bg-white rounded-2xl shadow-xl p-6 border space-y-4">
+        <div class="flex justify-between items-center border-b pb-2">
+          <div>
+            <h2 class="text-base font-black text-red-700">تتبع الطلب 🥩</h2>
+            <p id="dispOrderId" class="text-xs font-mono text-gray-400">#---</p>
+          </div>
+          <span id="badgeStatus" class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">جاري المتابعة</span>
+        </div>
+        
+        <div class="bg-gray-50 p-3 rounded-xl space-y-1 text-xs border">
+          <p class="flex justify-between"><span>المندوب المكلف:</span> <b id="cDriver" class="text-amber-800">-</b></p>
+          <p class="flex justify-between"><span>تاريخ الطلب:</span> <b id="cDate" class="formatted-date font-mono text-gray-600">-</b></p>
+        </div>
 
-        Object.keys(orders).reverse().forEach(key => {
-          const item = orders[key];
-          count++;
-          totalSales += parseFloat(item.price || 0);
+        <!-- 🗺️ خيارات المندوب والعميل الخريطة -->
+        <div id="map" class="bg-gray-50 border border-amber-200 rounded-xl p-4 text-center text-xs text-gray-600 space-y-3">
+          <p id="mapTextInfo">أدخل رقم الطلب الخاص بك لمتابعة مسار المندوب.</p>
 
-          if (item.status === 'تم التسليم') delivered++;
-          else pending++;
+          <!-- زر مشاركة موقع العميل مع المندوب -->
+          <div class="border-t pt-3 space-y-2">
+            <button id="custShareLocBtn" onclick="toggleCustomerLocationShare()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow flex justify-center items-center gap-1.5">
+              📍 مشاركة موقعي الحالي (GPS) مع المندوب
+            </button>
+            <p id="custLocStatus" class="text-[11px] font-bold text-emerald-700 hidden">✅ تم إرسال موقعك للمندوب بنجاح!</p>
+          </div>
+        </div>
 
-          tbody.innerHTML += `
-            <tr>
-              <td>${idx++}</td>
-              <td><b>${item.customerName || '-'}</b></td>
-              <td>${item.phone || '-'}</td>
-              <td>${item.address || '-'}</td>
-              <td>${item.details || '-'}</td>
-              <td><b>${item.price} ج.م</b></td>
-              <td>${item.driver || 'غير محدد'}</td>
-              <td><span class="badge-status ${item.status === 'تم التسليم' ? 'status-delivered' : 'status-pending'}">${item.status || 'معلق'}</span></td>
-              <td>
-                <small>بواسطة: <b>${item.createdBy || 'مجهول'}</b> (${item.createdAt || '-'})</small>
-                ${item.editCount > 0 ? `<span class="audit-tag">تعديل (${item.editCount}) بواسطة ${item.lastEditedBy} في ${item.lastEditedAt}</span>` : ''}
-              </td>
-              <td>
-                <button class="btn-table btn-edit" onclick="editOrder('${key}')">تعديل</button>
-                <button class="btn-table btn-delete" onclick="deleteOrder('${key}')">حذف</button>
-              </td>
-            </tr>
-          `;
-        });
+        <!-- ⭐ قسم تقييم الخدمة والتعليقات المطور (نجوم باهتة حتى التحديد مع زر إرسال صريح) -->
+        <div id="ratingBox" class="hidden bg-amber-50 border border-amber-200 p-4 rounded-2xl text-center space-y-3 shadow-sm">
+          <h4 class="font-bold text-xs text-amber-900">⭐ تقييم خدمة التوصيل والمندوب:</h4>
+          <p class="text-[11px] text-gray-500 font-semibold">حدد عدد النجوم المعتمدة أولاً ثم انقر على زر "إرسال التقييم":</p>
+          
+          <div class="flex justify-center gap-2 text-3xl py-1 select-none" id="starContainer">
+            <span onclick="selectRatingStars(1)" onmouseover="hoverRatingStars(1)" onmouseout="resetRatingHover()" data-star="1" class="star-item" title="1 نجمة">⭐</span>
+            <span onclick="selectRatingStars(2)" onmouseover="hoverRatingStars(2)" onmouseout="resetRatingHover()" data-star="2" class="star-item" title="2 نجمة">⭐</span>
+            <span onclick="selectRatingStars(3)" onmouseover="hoverRatingStars(3)" onmouseout="resetRatingHover()" data-star="3" class="star-item" title="3 نجوم">⭐</span>
+            <span onclick="selectRatingStars(4)" onmouseover="hoverRatingStars(4)" onmouseout="resetRatingHover()" data-star="4" class="star-item" title="4 نجوم">⭐</span>
+            <span onclick="selectRatingStars(5)" onmouseover="hoverRatingStars(5)" onmouseout="resetRatingHover()" data-star="5" class="star-item" title="5 نجوم">⭐</span>
+          </div>
 
-        // تحديث الكروت الإحصائية
-        document.getElementById("statTotalOrders").innerText = count;
-        document.getElementById("statTotalSales").innerText = totalSales.toLocaleString("ar-EG");
-        document.getElementById("statPendingOrders").innerText = pending;
-        document.getElementById("statDeliveredOrders").innerText = delivered;
-      });
-    }
+          <p id="selectedRatingText" class="text-[11px] font-bold text-amber-800 h-4">لم يتم تحديد النجوم بعد</p>
 
-    // 9️⃣ تعديل طلب مع التوثيق
-    function editOrder(orderId) {
-      const currentUser = sessionStorage.getItem("currentUser") || "مجهول";
-      const now = new Date();
-      const dateStr = String(now.getDate()).padStart(2, '0') + '/' + String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear() + ' ' + now.toLocaleTimeString('ar-EG');
+          <div>
+            <label class="block text-right text-[11px] font-bold text-gray-700 mb-1">اكتب تعليقك أو رأيك في المندوب والخدمة (اختياري):</label>
+            <textarea id="custCommentText" rows="2" placeholder="اكتب ملاحظاتك هنا..." class="w-full border p-2 rounded-xl text-xs bg-white"></textarea>
+          </div>
 
-      const newPrice = prompt("أدخل السعر الجديد للطلب:");
-      if (newPrice !== null && newPrice !== "") {
-        db.ref('orders/' + orderId).once('value').then(snapshot => {
-          const data = snapshot.val() || {};
-          const currentCount = data.editCount || 0;
+          <button onclick="submitFullFeedback()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all">
+            🚀 إرسال التقييم والتعليق
+          </button>
 
-          db.ref('orders/' + orderId).update({
-            price: parseFloat(newPrice),
-            editCount: currentCount + 1,
-            lastEditedBy: currentUser,
-            lastEditedAt: dateStr
-          });
-        });
-      }
-    }
+          <p id="ratingSubmittedMsg" class="text-xs text-emerald-700 font-bold hidden">شكراً لك! تم تسجيل تقييمك بنجاح ✅</p>
+        </div>
 
-    // 🔟 حذف طلب
-    function deleteOrder(orderId) {
-      if (confirm("هل أنت تأكد من حذف هذا الطلب نهائياً؟")) {
-        db.ref('orders/' + orderId).remove();
-      }
-    }
+        <!-- 💬 آراء وتعليقات العملاء المنشورة العامة -->
+        <div id="publicCommentsSection" class="pt-4 border-t space-y-3">
+          <h4 class="font-bold text-xs text-gray-800 flex items-center gap-1">
+            <span>💬 آراء وتقييمات العملاء العامة:</span>
+          </h4>
+          <div id="publicCommentsContainer" class="space-y-2 max-h-60 overflow-y-auto">
+            <p class="text-[11px] text-gray-400 text-center">لا توجد آراء منشورة حالياً.</p>
+          </div>
+        </div>
 
-    // فلترة الجدول بالبحث
-    function filterTable() {
-      const input = document.getElementById("tableSearch").value.toLowerCase();
-      const rows = document.querySelectorAll("#ordersTableBody tr");
-      rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        row.style.display = text.includes(input) ? "" : "none";
-      });
-    }
-  </script>
-</body>
-</html>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- نافذة تعديل بيانات ومستخدمين -->
+  <div id="editUserModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 text-right shadow-2xl border">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-sm text-gray-800">✏️ تعديل بيانات المستخدم</h3>
+        <button onclick="closeEditUserModal()"
