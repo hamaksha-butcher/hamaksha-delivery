@@ -4,23 +4,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>جزارة حمكشة - نظام إدارة المبيعات والتتبع</title>
-  
+
+  <!-- الخطوط والأيقونات -->
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
+
+  <!-- مكتبات Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
-    
-    body {
-      min-height: 100vh;
-      background: #f4f6f9;
-      color: #333;
+    :root {
+      --primary: #800000;
+      --primary-dark: #400000;
+      --accent: #d4af37;
+      --bg: #f4f6f9;
+      --card-bg: #ffffff;
+      --text: #333333;
     }
 
-    /* --- شاشة تسجيل الدخول --- */
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* =========================================
+       1. شاشة تسجيل الدخول (التصميم الجديد)
+       ========================================= */
     #loginPage {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100vh;
@@ -28,7 +41,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 9999;
+      z-index: 99999;
       padding: 20px;
     }
 
@@ -70,8 +83,8 @@
     .brand-logo h3 { font-size: 18px; font-weight: 800; color: #fff; margin: 0; line-height: 1.1; }
     .brand-logo span { font-size: 9px; color: #d4af37; letter-spacing: 2px; margin-top: 2px; font-weight: 700; }
 
-    .title { font-size: 22px; font-weight: 800; color: #ffffff; margin-bottom: 4px; }
-    .subtitle { font-size: 12px; color: #b0b0b0; margin-bottom: 25px; }
+    .login-title { font-size: 22px; font-weight: 800; color: #ffffff; margin-bottom: 4px; }
+    .login-subtitle { font-size: 12px; color: #b0b0b0; margin-bottom: 25px; }
 
     .input-group { margin-bottom: 18px; text-align: right; }
     .input-group label { display: block; font-size: 12px; font-weight: 700; color: #d4af37; margin-bottom: 6px; }
@@ -104,40 +117,164 @@
     }
     .btn-submit:hover { transform: translateY(-2px); background: linear-gradient(135deg, #d32f2f 0%, #9a0000 100%); }
 
-    /* --- السيستم الداخلي (لوحة التحكم والجدول) --- */
+    /* =========================================
+       2. السيستم الرئيسي والواجهة الداخلية الكاملة
+       ========================================= */
     #mainApp { display: none; padding: 20px; }
-    
-    header {
-      background: #800000; color: #fff;
-      padding: 15px 25px; border-radius: 12px;
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    
-    .btn-logout { background: #d4af37; color: #000; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-    .container { max-width: 1200px; margin: 0 auto; }
-    
-    .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
-    .form-grid input, .form-grid select { padding: 10px; border: 1px solid #ddd; border-radius: 8px; outline: none; width: 100%; }
-    
-    .btn-add { background: #2e7d32; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      padding: 15px 25px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+
+    .user-badge {
+      background: var(--accent);
+      color: #000;
+      padding: 3px 10px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .btn-logout {
+      background: #ffffff;
+      color: var(--primary);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-logout:hover { background: #eee; }
+
+    .container { max-width: 1400px; margin: 0 auto; }
+
+    .card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* نماذج إدخال البيانات */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .form-grid input, .form-grid select {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      outline: none;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    .form-grid input:focus, .form-grid select:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-action {
+      background: #2e7d32;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      font-size: 15px;
+      transition: 0.2s;
+    }
+    .btn-action:hover { background: #1b5e20; }
+
+    /* الكروت الإحصائية */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      border-right: 5px solid var(--primary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .stat-card h4 { font-size: 13px; color: #666; margin-bottom: 5px; }
+    .stat-card p { font-size: 20px; font-weight: 800; color: var(--primary); }
 
     /* جدول الطلبات */
+    .table-responsive { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { padding: 12px; text-align: center; border-bottom: 1px solid #eee; font-size: 14px; }
-    th { background: #f8f9fa; color: #555; }
-    .badge-status { padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; }
+    th, td { padding: 12px; text-align: center; border-bottom: 1px solid #eee; font-size: 13px; }
+    th { background: #f8f9fa; color: #555; font-weight: 700; }
+    tr:hover { background: #fcfcfc; }
+
+    .badge-status {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+      display: inline-block;
+    }
     .status-pending { background: #fff3cd; color: #856404; }
     .status-delivered { background: #d4edda; color: #155724; }
-    
-    .audit-info { font-size: 11px; color: #666; display: block; margin-top: 4px; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; }
+    .status-canceled { background: #f8d7da; color: #721c24; }
+
+    .audit-tag {
+      font-size: 10px;
+      color: #555;
+      background: #f0f0f0;
+      padding: 3px 6px;
+      border-radius: 4px;
+      display: block;
+      margin-top: 3px;
+    }
+
+    .btn-table {
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+      color: #fff;
+      margin: 2px;
+    }
+    .btn-edit { background: #1976d2; }
+    .btn-delete { background: #d32f2f; }
   </style>
 </head>
 <body>
 
-  <!-- 1️⃣ شاشة تسجيل الدخول -->
+  <!-- =========================================
+       1. شاشة تسجيل الدخول
+       ========================================= -->
   <div id="loginPage">
     <div class="login-card">
       <div class="brand-logo">
@@ -145,8 +282,8 @@
         <span>SINCE 1998</span>
       </div>
 
-      <h2 class="title">تسجيل الدخول</h2>
-      <p class="subtitle">نظام إدارة المبيعات والتتبع الميداني</p>
+      <h2 class="login-title">تسجيل الدخول</h2>
+      <p class="login-subtitle">نظام إدارة المبيعات والتتبع الميداني</p>
 
       <form id="loginForm">
         <div class="input-group">
@@ -178,54 +315,80 @@
     </div>
   </div>
 
-  <!-- 2️⃣ التطبيق الداخلي والسيستم الكامل -->
+  <!-- =========================================
+       2. السيستم الكامل وتدفق البيانات
+       ========================================= -->
   <div id="mainApp">
     <div class="container">
       <header>
         <div>
-          <h2>🥩 جزارة حمكشة - لوحة المتابعة</h2>
-          <small>مرحباً بك: <span id="activeUserDisplay">-</span> (<span id="activeRoleDisplay">-</span>)</small>
+          <h2 style="font-weight: 800; font-size: 20px;">🥩 جزارة حمكشة - لوحة المتابعة العامة</h2>
+          <small>المستخدم: <b id="activeUserDisplay">-</b> | الصلاحية: <span class="user-badge" id="activeRoleDisplay">-</span></small>
         </div>
-        <button class="btn-logout" onclick="logout()">تسجيل الخروج</button>
+        <button class="btn-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
       </header>
+
+      <!-- الإحصائيات العامة -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h4>إجمالي الطلبات اليوم</h4>
+          <p id="statTotalOrders">0</p>
+        </div>
+        <div class="stat-card" style="border-color: #2e7d32;">
+          <h4>إجمالي المبيعات (ج.م)</h4>
+          <p id="statTotalSales">0</p>
+        </div>
+        <div class="stat-card" style="border-color: #ed6c02;">
+          <h4>الطلبات قيد التوصيل</h4>
+          <p id="statPendingOrders">0</p>
+        </div>
+        <div class="stat-card" style="border-color: #0288d1;">
+          <h4>الطلبات المكتملة</h4>
+          <p id="statDeliveredOrders">0</p>
+        </div>
+      </div>
 
       <!-- نموذج إضافة أوردر جديد -->
       <div class="card">
-        <h3 style="margin-bottom: 15px;">إضافة طلب جديد</h3>
+        <div class="card-title"><i class="fa-solid fa-cart-plus"></i> إضافة طلب جديد</div>
         <div class="form-grid">
           <input type="text" id="custName" placeholder="اسم العميل">
           <input type="text" id="custPhone" placeholder="رقم الهاتف">
           <input type="text" id="custAddress" placeholder="العنوان والمنطقة">
-          <input type="text" id="orderDetails" placeholder="تفاصيل الطلب (الأوزان والأصناف)">
-          <input type="number" id="orderPrice" placeholder="الإجمالي (ج.م)">
+          <input type="text" id="orderDetails" placeholder="تفاصيل الطلب (الأوزان والقطعيات)">
+          <input type="number" id="orderPrice" placeholder="السعر الإجمالي (ج.م)">
           <select id="driverSelect">
             <option value="">اختر الديلفري</option>
           </select>
         </div>
-        <button class="btn-add" onclick="addNewOrder()">حفظ وإضافة الطلب</button>
+        <button class="btn-action" onclick="addNewOrder()"><i class="fa-solid fa-check"></i> حفظ وإضافة الطلب</button>
       </div>
 
-      <!-- جدول الطلبات -->
+      <!-- جدول الطلبات والبيانات -->
       <div class="card">
-        <h3>قائمة الطلبات الحالية</h3>
-        <div style="overflow-x: auto;">
-          <table>
+        <div class="card-title" style="justify-content: space-between;">
+          <span><i class="fa-solid fa-list-check"></i> قائمة الطلبات الحالية</span>
+          <input type="text" id="tableSearch" onkeyup="filterTable()" placeholder="بحث باسم العميل أو رقم الهاتف..." style="padding: 6px 12px; font-size: 12px; border-radius: 6px; border: 1px solid #ccc; width: 220px;">
+        </div>
+
+        <div class="table-responsive">
+          <table id="ordersTable">
             <thead>
               <tr>
                 <th>#</th>
                 <th>اسم العميل</th>
                 <th>رقم الهاتف</th>
                 <th>العنوان</th>
-                <th>الطلب</th>
+                <th>تفاصيل الطلب</th>
                 <th>الإجمالي</th>
                 <th>الديلفري</th>
                 <th>الحالة</th>
-                <th>بيانات التعديل والمنشئ</th>
+                <th>سجل المنشئ والتعديل</th>
                 <th>إجراءات</th>
               </tr>
             </thead>
             <tbody id="ordersTableBody">
-              <!-- يتم تحميل الطلبات هنا تلقائياً من Firebase -->
+              <!-- يتم جلب البيانات هنا من Firebase -->
             </tbody>
           </table>
         </div>
@@ -234,14 +397,14 @@
   </div>
 
   <script>
-    // إعدادات Firebase
+    // 1️⃣ إعدادات Firebase
     const firebaseConfig = {
       databaseURL: "https://hamaksha-tracking-default-rtdb.europe-west1.firebasedatabase.app"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // عند فتح الصفحة
+    // 2️⃣ التهيئة والتحقق عند الفتح
     document.addEventListener("DOMContentLoaded", () => {
       const savedUser = localStorage.getItem("rememberedUsername");
       if (savedUser) {
@@ -255,7 +418,7 @@
       }
     });
 
-    // تسجيل الدخول
+    // 3️⃣ عملية تسجيل الدخول وتفعيل الفتح التلقائي المباشر
     document.getElementById("loginForm").addEventListener("submit", function(e) {
       e.preventDefault();
       const uInput = document.getElementById("username").value.trim();
@@ -264,28 +427,29 @@
 
       db.ref('users').once('value').then((snapshot) => {
         const users = snapshot.val() || {};
-        let found = null;
+        let foundUser = null;
 
         Object.keys(users).forEach(k => {
           if (users[k].username === uInput && String(users[k].pass) === pInput) {
-            found = users[k];
+            foundUser = users[k];
           }
         });
 
-        if (found) {
+        if (foundUser) {
           if (rem) localStorage.setItem("rememberedUsername", uInput);
           else localStorage.removeItem("rememberedUsername");
 
           sessionStorage.setItem("currentUser", uInput);
-          sessionStorage.setItem("userRole", found.role);
+          sessionStorage.setItem("userRole", foundUser.role);
 
-          openSystem(uInput, found.role);
+          openSystem(uInput, foundUser.role);
         } else {
           alert("خطأ: اسم المستخدم أو كلمة المرور غير صحيحة!");
         }
       });
     });
 
+    // 4️⃣ دالة فتح السيستم وإخفاء شاشة تسجيل الدخول
     function openSystem(username, role) {
       document.getElementById("loginPage").style.display = "none";
       document.getElementById("mainApp").style.display = "block";
@@ -296,13 +460,14 @@
       loadOrders();
     }
 
+    // 5️⃣ تسجيل الخروج
     function logout() {
       sessionStorage.clear();
       document.getElementById("mainApp").style.display = "none";
       document.getElementById("loginPage").style.display = "flex";
     }
 
-    // تحميل السائقين
+    // 6️⃣ تحميل قائمة السائقين
     function loadDrivers() {
       db.ref('users').once('value').then(snapshot => {
         const users = snapshot.val() || {};
@@ -316,18 +481,17 @@
       });
     }
 
-    // إضافة طلب وتسجيل المنشئ
+    // 7️⃣ إضافة طلب جديد مع تسجيل اسم المنشئ والتاريخ
     function addNewOrder() {
       const currentUser = sessionStorage.getItem("currentUser") || "مجهول";
       const now = new Date();
-      // تنسيق التاريخ DD/MM/YYYY
       const dateStr = String(now.getDate()).padStart(2, '0') + '/' + String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear() + ' ' + now.toLocaleTimeString('ar-EG');
 
-      const name = document.getElementById("custName").value;
-      const phone = document.getElementById("custPhone").value;
-      const address = document.getElementById("custAddress").value;
-      const details = document.getElementById("orderDetails").value;
-      const price = document.getElementById("orderPrice").value;
+      const name = document.getElementById("custName").value.trim();
+      const phone = document.getElementById("custPhone").value.trim();
+      const address = document.getElementById("custAddress").value.trim();
+      const details = document.getElementById("orderDetails").value.trim();
+      const price = document.getElementById("orderPrice").value.trim();
       const driver = document.getElementById("driverSelect").value;
 
       if (!name || !price) {
@@ -340,7 +504,7 @@
         phone: phone,
         address: address,
         details: details,
-        price: price,
+        price: parseFloat(price),
         driver: driver,
         status: "جاري التوصيل",
         createdBy: currentUser,
@@ -349,7 +513,7 @@
         lastEditedBy: "-",
         lastEditedAt: "-"
       }).then(() => {
-        alert("تمت إضافة الطلب بنجاح!");
+        alert("تم إضافة الطلب بنجاح!");
         document.getElementById("custName").value = "";
         document.getElementById("custPhone").value = "";
         document.getElementById("custAddress").value = "";
@@ -358,55 +522,71 @@
       });
     }
 
-    // تحميل الطلبات وعرض سجل التعديلات
+    // 8️⃣ تحميل جدول الطلبات وحساب الإحصائيات
     function loadOrders() {
       db.ref('orders').on('value', snapshot => {
         const orders = snapshot.val() || {};
         const tbody = document.getElementById("ordersTableBody");
         tbody.innerHTML = "";
 
-        let index = 1;
+        let count = 0;
+        let totalSales = 0;
+        let pending = 0;
+        let delivered = 0;
+        let idx = 1;
+
         Object.keys(orders).reverse().forEach(key => {
           const item = orders[key];
-          
+          count++;
+          totalSales += parseFloat(item.price || 0);
+
+          if (item.status === 'تم التسليم') delivered++;
+          else pending++;
+
           tbody.innerHTML += `
             <tr>
-              <td>${index++}</td>
+              <td>${idx++}</td>
               <td><b>${item.customerName || '-'}</b></td>
               <td>${item.phone || '-'}</td>
               <td>${item.address || '-'}</td>
               <td>${item.details || '-'}</td>
-              <td>${item.price} ج.م</td>
+              <td><b>${item.price} ج.م</b></td>
               <td>${item.driver || 'غير محدد'}</td>
               <td><span class="badge-status ${item.status === 'تم التسليم' ? 'status-delivered' : 'status-pending'}">${item.status || 'معلق'}</span></td>
               <td>
-                <small>بواسطة: <b>${item.createdBy || 'مجهول'}</b></small>
-                ${item.editCount > 0 ? `<span class="audit-info">تعديل (${item.editCount}) بواسطة ${item.lastEditedBy} في ${item.lastEditedAt}</span>` : ''}
+                <small>بواسطة: <b>${item.createdBy || 'مجهول'}</b> (${item.createdAt || '-'})</small>
+                ${item.editCount > 0 ? `<span class="audit-tag">تعديل (${item.editCount}) بواسطة ${item.lastEditedBy} في ${item.lastEditedAt}</span>` : ''}
               </td>
               <td>
-                <button onclick="editOrder('${key}')" style="background:#1976d2; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">تعديل</button>
-                <button onclick="deleteOrder('${key}')" style="background:#d32f2f; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">حذف</button>
+                <button class="btn-table btn-edit" onclick="editOrder('${key}')">تعديل</button>
+                <button class="btn-table btn-delete" onclick="deleteOrder('${key}')">حذف</button>
               </td>
             </tr>
           `;
         });
+
+        // تحديث الكروت الإحصائية
+        document.getElementById("statTotalOrders").innerText = count;
+        document.getElementById("statTotalSales").innerText = totalSales.toLocaleString("ar-EG");
+        document.getElementById("statPendingOrders").innerText = pending;
+        document.getElementById("statDeliveredOrders").innerText = delivered;
       });
     }
 
-    // تعديل طلب مع تسجيل اسم المُعدّل وعدد مرات التعديل
+    // 9️⃣ تعديل طلب مع التوثيق
     function editOrder(orderId) {
       const currentUser = sessionStorage.getItem("currentUser") || "مجهول";
       const now = new Date();
       const dateStr = String(now.getDate()).padStart(2, '0') + '/' + String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear() + ' ' + now.toLocaleTimeString('ar-EG');
 
-      const newPrice = prompt("أدخل السعر الجديد:");
-      if (newPrice !== null) {
+      const newPrice = prompt("أدخل السعر الجديد للطلب:");
+      if (newPrice !== null && newPrice !== "") {
         db.ref('orders/' + orderId).once('value').then(snapshot => {
           const data = snapshot.val() || {};
           const currentCount = data.editCount || 0;
 
           db.ref('orders/' + orderId).update({
-            price: newPrice,
+            price: parseFloat(newPrice),
             editCount: currentCount + 1,
             lastEditedBy: currentUser,
             lastEditedAt: dateStr
@@ -415,11 +595,21 @@
       }
     }
 
-    // حذف طلب
+    // 🔟 حذف طلب
     function deleteOrder(orderId) {
-      if (confirm("هل أنت تأكد من حذف هذا الطلب؟")) {
+      if (confirm("هل أنت تأكد من حذف هذا الطلب نهائياً؟")) {
         db.ref('orders/' + orderId).remove();
       }
+    }
+
+    // فلترة الجدول بالبحث
+    function filterTable() {
+      const input = document.getElementById("tableSearch").value.toLowerCase();
+      const rows = document.querySelectorAll("#ordersTableBody tr");
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(input) ? "" : "none";
+      });
     }
   </script>
 </body>
