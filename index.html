@@ -1,566 +1,1995 @@
-# 📂 GitHub Workflow — Authentication System v2 Deployment
-
----
-
-## 📋 Quick Start
-
-```bash
-# 1. Create feature branch
-git checkout -b feat/auth-system-v2
-
-# 2. Add new authentication files
-git add auth-system-v2.html
-
-# 3. Update existing file with integrated auth module
-git add gemini-code-1790668570551.html
-
-# 4. Add documentation
-git add AUTH_INTEGRATION_GUIDE.md ARCHITECTURAL_WALKTHROUGH.md
-
-# 5. Commit with standardized message
-git commit -m "feat: implement enterprise-grade authentication system v2
-
-- Add modern, responsive login UI with Tailwind CSS
-- Implement 'Remember Me' feature with 30-day persistent sessions
-- Add password strength indicator and real-time validation
-- Implement session timeout management (30 min) with 5 min warning
-- Add login attempt throttling (5 attempts → 15 min lockout)
-- Implement offline detection with status indicator
-- Add support for biometric authentication (WebAuthn/FIDO2)
-- Improve error handling with specific, actionable messages
-- Add comprehensive documentation and integration guide
-
-BREAKING CHANGES:
-- Old authentication modal replaced with new enhanced version
-- Session state now persisted to localStorage (encrypted in production)
-
-Closes #42 (authentication system redesign)"
-
-# 6. Push to remote
-git push origin feat/auth-system-v2
-
-# 7. Create Pull Request on GitHub
-```
-
----
-
-## 📝 Commit Message Templates
-
-### Standard Format (Conventional Commits)
-```
-<type>(<scope>): <subject>
-
-<body>
-
-<footer>
-```
-
-### Feature: Authentication System
-```
-git commit -m "feat(auth): implement modern authentication system v2
-
-Summary of changes:
-- Item 1
-- Item 2
-
-Motivation and Context:
-This upgrade addresses security gaps and improves UX by...
-
-Related Issues:
-Closes #42
-Related to #41, #43
-
-Testing:
-- [ ] Tested on Chrome
-- [ ] Tested on Firefox
-- [ ] Tested on Safari
-- [ ] Tested on mobile (iOS/Android)
-- [ ] Tested offline mode
-- [ ] Tested session timeout
-- [ ] Tested 'Remember Me' across sessions"
-```
-
-### Bug Fix: Session Storage
-```
-git commit -m "fix(auth): improve session storage security
-
-Issue: User sessions were stored in plain Base64, which could be read if localStorage is compromised.
-
-Solution: Implemented encrypted session storage using AES-256 (crypto-js library).
-
-Impact:
-- BREAKING: Existing sessions will be invalidated (users need to login again)
-- Users should enable 'Remember Me' after upgrading
-- Performance: ~100ms additional encryption/decryption per session
-
-Security:
-- Fixes vulnerability: Session data exposure via localStorage
-- Requires HTTPS in production (for biometric auth)
-
-Closes #99"
-```
-
-### Documentation: Integration Guide
-```
-git commit -m "docs(auth): add comprehensive integration guide
-
-- Add AUTH_INTEGRATION_GUIDE.md with step-by-step integration instructions
-- Add ARCHITECTURAL_WALKTHROUGH.md with detailed feature explanations
-- Add GITHUB_WORKFLOW.md for deployment procedures
-- Add security best practices and configuration options
-
-This documentation covers:
-- Integration with existing codebase (2 approaches)
-- Firebase configuration for real authentication
-- Security hardening checklist
-- Production deployment procedures"
-```
-
----
-
-## 🔄 Branch Naming Convention
-
-```
-feat/                    New feature
-  auth-system-v2
-  remember-me-feature
-  biometric-auth
-
-fix/                     Bug fix
-  session-storage-security
-  password-validation-error
-  offline-detection
-
-docs/                    Documentation
-  auth-integration-guide
-  architecture-docs
-
-refactor/                Code refactoring
-  auth-state-management
-  form-validation-logic
-
-test/                    Testing additions
-  auth-unit-tests
-  login-flow-tests
-
-chore/                   Maintenance
-  dependency-updates
-  code-cleanup
-```
-
----
-
-## 📋 Pull Request Checklist
-
-### Before Submitting PR
-
-- [ ] **Code Quality**
-  - [ ] Code follows project style guide
-  - [ ] No console errors or warnings
-  - [ ] No commented-out code
-  - [ ] Variable names are descriptive
-  - [ ] Functions are properly documented
-
-- [ ] **Testing**
-  - [ ] Login form works on mobile
-  - [ ] Login form works on desktop
-  - [ ] "Remember Me" persists sessions correctly
-  - [ ] Session timeout works (test with reduced CONFIG)
-  - [ ] Password strength indicator updates in real-time
-  - [ ] Error messages display correctly
-  - [ ] Offline mode is detected
-  - [ ] Biometric option appears when available
-  - [ ] Dark mode works correctly
-  - [ ] Keyboard navigation works (Tab, Enter)
-
-- [ ] **Security**
-  - [ ] No credentials hardcoded in frontend
-  - [ ] Session data is encrypted (or plan for encryption)
-  - [ ] CSRF tokens implemented
-  - [ ] XSS prevention in place
-  - [ ] Password validation meets requirements
-  - [ ] No sensitive data logged to console
-  - [ ] HTTPS required for production noted
-
-- [ ] **Documentation**
-  - [ ] README updated (if needed)
-  - [ ] Integration guide provided
-  - [ ] Architecture documented
-  - [ ] Security considerations documented
-  - [ ] Breaking changes clearly marked
-  - [ ] Migration guide provided (if applicable)
-
-- [ ] **Performance**
-  - [ ] Page load time acceptable
-  - [ ] No memory leaks detected
-  - [ ] Animations are smooth (60fps)
-  - [ ] Form validation is responsive
-  - [ ] No unnecessary API calls
-
-- [ ] **Compatibility**
-  - [ ] Tested on Chrome 89+
-  - [ ] Tested on Firefox 88+
-  - [ ] Tested on Safari 14+
-  - [ ] Tested on Edge 89+
-  - [ ] Mobile responsive (tested at 320px, 768px, 1024px)
-  - [ ] Works in private/incognito mode
-  - [ ] Works without JavaScript (graceful degradation)
-
-### PR Description Template
-
-```markdown
-## Description
-Brief overview of what this PR does.
-
-## Related Issues
-Closes #42
-Related to #41, #43
-
-## Type of Change
-- [x] New feature (non-breaking change)
-- [ ] Breaking change
-- [ ] Bug fix (non-breaking change)
-- [ ] Documentation update
-
-## Changes Made
-- List specific changes
-- Item 2
-- Item 3
-
-## How to Test
-1. Step 1
-2. Step 2
-3. Verify X works
-
-## Screenshots (if applicable)
-[Add before/after screenshots of UI changes]
-
-## Checklist
-- [x] My code follows the project style guide
-- [x] I have performed a self-review
-- [x] I have tested on mobile and desktop
-- [x] I have updated documentation
-- [x] No new warnings generated
-- [x] Breaking changes documented
-
-## Security Considerations
-- [ ] No credentials in frontend
-- [ ] HTTPS required for production (biometric auth)
-- [ ] Session storage encrypted
-- [ ] CSRF protection implemented
-- [ ] XSS prevention implemented
-
-## Performance Impact
-- Page load: +0ms (optimized)
-- Login validation: +100ms (Firebase overhead, acceptable)
-- Session restore: <50ms (localStorage read)
-- Overall: Minimal impact, performance improvements expected
-
-## Browser Support
-- Chrome 89+: ✅
-- Firefox 88+: ✅
-- Safari 14+: ✅
-- Edge 89+: ✅
-- Mobile iOS: ✅
-- Mobile Android: ✅
-
-## Database/API Changes
-- No schema changes
-- No new endpoints required
-- Uses existing Firebase Auth API
-```
-
----
-
-## 🔍 Code Review Guidelines
-
-### What Reviewers Should Check
-
-#### Security (Must Pass)
-```
-☐ No hardcoded credentials
-☐ Session data encrypted appropriately
-☐ CSRF tokens on state-changing operations
-☐ XSS prevention implemented
-☐ SQL injection prevention (if applicable)
-☐ HTTPS enforced in production
-☐ Sensitive data not logged
-☐ Password handled securely (never stored in localStorage)
-```
-
-#### Performance (Should Pass)
-```
-☐ No excessive DOM manipulation
-☐ Efficient event listeners (debounced/throttled)
-☐ No memory leaks (timers cleared)
-☐ Minimal bundle size increase
-☐ Lazy loading where appropriate
-☐ Animations performant (60fps)
-```
-
-#### Code Quality (Should Pass)
-```
-☐ Functions are single-responsibility
-☐ Code is DRY (Don't Repeat Yourself)
-☐ Variables are descriptive
-☐ Comments explain WHY, not WHAT
-☐ No console.log() in production code
-☐ Error handling is comprehensive
-☐ State management is clear
-```
-
-#### Accessibility (Should Pass)
-```
-☐ ARIA labels present
-☐ Color contrast adequate (4.5:1)
-☐ Keyboard navigation works
-☐ Focus indicators visible
-☐ Error messages associated with inputs
-☐ Form labels properly connected to inputs
-```
-
----
-
-## 🚀 Deployment Pipeline
-
-### Environment Stages
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    DEVELOPMENT                              │
-│              (Your local machine)                           │
-│  Feature branch → Test locally → Commit → Push             │
-└──────────────────────────────────────────────────────────────┘
-                           ↓
-┌──────────────────────────────────────────────────────────────┐
-│                    STAGING                                   │
-│              (Pre-production server)                         │
-│  PR opened → Code review → Merge to develop → Auto-deploy  │
-└──────────────────────────────────────────────────────────────┘
-                           ↓
-┌──────────────────────────────────────────────────────────────┐
-│                    PRODUCTION                                │
-│              (Live server)                                   │
-│  Manual release → Tag version → Deploy → Monitor            │
-└──────────────────────────────────────────────────────────────┘
-```
-
-### Pre-Deployment Checklist
-
-```bash
-# 1. Update version number
-npm version minor  # Creates commit + tag
-
-# 2. Generate changelog
-npm run changelog
-git add CHANGELOG.md
-git commit -m "chore: update changelog for v2.1.0"
-
-# 3. Build for production
-npm run build
-
-# 4. Run security scan
-npm audit
-npm audit fix
-
-# 5. Run tests
-npm test
-
-# 6. Performance check
-npm run lighthouse
-
-# 7. Create release
-git tag -a v2.1.0 -m "Release version 2.1.0: Auth system v2 with Remember Me"
-git push origin v2.1.0
-
-# 8. Deploy
-firebase deploy
-```
-
----
-
-## 📊 Git Workflow Diagram
-
-```
-┌─ main branch (production)
-│  ├─ tag: v2.0.0 ← Production release
-│  └─ tag: v2.1.0 ← Production release
-│
-├─ develop branch (staging)
-│  ├─ feat/auth-system-v2 ─┐
-│  ├─ fix/session-storage ─┤─── Code Review ─── Merge
-│  └─ docs/auth-guide ─────┘
-│
-└─ Local branches (development)
-   ├─ feat/auth-system-v2 (WIP)
-   ├─ feat/biometric-auth (WIP)
-   └─ fix/password-validation (WIP)
-```
-
----
-
-## 🐛 Rollback Procedure
-
-If something goes wrong in production:
-
-```bash
-# 1. Identify the problematic commit
-git log --oneline | head -20
-
-# 2. Create hotfix branch
-git checkout -b hotfix/auth-regression main
-
-# 3. Revert the problematic commit
-git revert abc123def456  # Commit hash of the bad change
-
-# 4. Test the fix
-npm test
-
-# 5. Commit and push
-git commit --amend -m "hotfix: revert auth-system-v2 due to session persistence bug"
-git push origin hotfix/auth-regression
-
-# 6. Create emergency PR
-# (Mark as URGENT in title)
-
-# 7. After merge and testing
-git tag -a v2.0.1-hotfix -m "Hotfix: Session persistence issue"
-firebase deploy
-
-# 8. Post-mortem
-# Document what went wrong
-# Add test case to prevent regression
-```
-
----
-
-## 📚 Useful Git Commands
-
-```bash
-# View commit history with graph
-git log --graph --oneline --all
-
-# Find when a feature was added
-git log --grep="Remember Me" --oneline
-
-# Compare branches
-git diff develop..feat/auth-system-v2
-
-# Check what changed in a file
-git log -p auth-system-v2.html | head -100
-
-# Stash work in progress
-git stash
-git stash pop  # Restore later
-
-# View uncommitted changes
-git diff
-
-# View staged changes
-git diff --staged
-
-# Undo last commit (keep changes)
-git reset --soft HEAD~1
-
-# Undo last commit (discard changes)
-git reset --hard HEAD~1
-```
-
----
-
-## 🔔 CI/CD Configuration (.github/workflows/main.yml)
-
-```yaml
-name: Tests and Deployment
-
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ develop ]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام جزارة حمكشة - إدارة الطلبات والتقييم والتعليقات 🥩</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Cairo', sans-serif; transition: background-color 0.3s, color 0.3s; }
+    .tab-btn.active { background-color: var(--primary-color, #dc2626); color: white; }
+    :root {
+      --primary-color: #dc2626;
+      --secondary-color: #f59e0b;
+      --bg-color: #fffbeb;
+    }
+    /* ضبط اتجاه حقول التاريخ لمنع انعكاس الصيغة */
+    input[type="date"] {
+      direction: ltr !important;
+      text-align: right !important;
+    }
+    .formatted-date {
+      direction: ltr !important;
+      display: inline-block;
+    }
+    @media print {
+      header, #userBadgeBar, .no-print, #adminAuthLock, .theme-selector, #orderForm, #usersList, form, button, select, input {
+        display: none !important;
+      }
+      body { background: white !important; color: black !important; }
+      main { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+      .print-area { width: 100% !important; box-shadow: none !important; border: none !important; }
+      table { border-collapse: collapse !important; width: 100% !important; }
+      th, td { border: 1px solid #000 !important; padding: 8px !important; text-align: right !important; }
+    }
+  </style>
+</head>
+<body id="appBody" class="bg-amber-50/40 min-h-screen text-gray-800">
+
+  <!-- Header / البراندينج والشريط العلوي -->
+  <header id="mainHeader" class="bg-red-700 text-white shadow-lg border-b-4 border-amber-500 transition-colors">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <span class="text-4xl">🥩</span>
+        <div>
+          <h1 class="text-2xl font-black tracking-wide">جزارة حمكشة</h1>
+          <p class="text-xs text-amber-200 font-semibold">نظام إدارة الطلبات والتقييم والحسابات المالية</p>
+        </div>
+      </div>
       
-      - name: Setup Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
+      <!-- شريط التنقل والولوج -->
+      <div class="flex items-center gap-2">
+        <div class="flex bg-black/20 p-1 rounded-xl text-xs font-bold flex-wrap">
+          <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn active px-3 py-2 rounded-lg transition-all">لوحة الإدارة 🔐</button>
+          <button onclick="switchTab('analytics')" id="tab-analytics" class="tab-btn px-3 py-2 rounded-lg transition-all perm-analytics hidden">تقييم وحسابات المناديب 📊</button>
+          <button onclick="switchTab('prices')" id="tab-prices" class="tab-btn px-3 py-2 rounded-lg transition-all perm-prices hidden">قائمة الأسعار 🏷️</button>
+          <button onclick="switchTab('driver')" id="tab-driver" class="tab-btn px-3 py-2 rounded-lg transition-all">واجهة المندوب 🛵</button>
+          <button onclick="switchTab('track')" id="tab-track" class="tab-btn px-3 py-2 rounded-lg transition-all">تتبع العميل 📍</button>
+        </div>
+        <button id="authBtn" onclick="handleAuthBtnClick()" class="bg-amber-400 hover:bg-amber-500 text-red-950 font-bold px-3 py-2 rounded-xl text-xs shadow transition-all">
+          تسجيل الدخول
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto p-4 sm:p-6 space-y-6">
+
+    <!-- شريط عرض حالة الدخول للحساب الحالي -->
+    <div id="userBadgeBar" class="bg-white rounded-xl shadow-sm p-3 border border-amber-200 flex items-center justify-between">
+      <div class="flex items-center gap-2 text-xs font-bold text-gray-700">
+        <span>👤 الحساب النشط:</span>
+        <span id="activeUserBadge" class="text-amber-800 bg-amber-100 px-2.5 py-1 rounded-full">
+          لم يتم تسجيل الدخول
+        </span>
+      </div>
+      <div class="text-[11px] text-gray-400 font-semibold">🔒 نظام محمي ومقيد الصلاحيات</div>
+    </div>
+
+    <!-- 1️⃣ لوحة تحكم الأدمن -->
+    <section id="sec-admin" class="space-y-6">
+      <div id="adminAuthLock" class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md mx-auto space-y-4 border border-red-100">
+        <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-3xl">🔒</div>
+        <h3 class="text-xl font-bold text-gray-800">صلاحية أدمن جزارة حمكشة</h3>
+        <p class="text-xs text-gray-500">سجل الدخول بحساب الأدمن الخاص بك للوصول إلى لوحة التحكم والبيانات.</p>
+        <button onclick="toggleAuthModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm">
+          تسجيل الدخول كأدمن 🔑
+        </button>
+      </div>
+
+      <div id="adminContent" class="hidden space-y-6">
+        <div class="bg-white rounded-2xl shadow-md p-4 border border-amber-100 flex flex-wrap items-center justify-between gap-4 theme-selector">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🎨</span>
+            <h3 class="font-bold text-xs text-gray-800">تخصيص الثيم:</h3>
+          </div>
+          <div class="flex items-center gap-3">
+            <button onclick="changeTheme('#dc2626', '#f59e0b', '#fffbeb')" class="w-6 h-6 rounded-full bg-red-600 shadow" title="أحمر حمكشة"></button>
+            <button onclick="changeTheme('#1e3a8a', '#3b82f6', '#eff6ff')" class="w-6 h-6 rounded-full bg-blue-900 shadow" title="أزرق"></button>
+            <button onclick="changeTheme('#064e3b', '#10b981', '#ecfdf5')" class="w-6 h-6 rounded-full bg-emerald-900 shadow" title="أخضر"></button>
+            <button onclick="changeTheme('#18181b', '#f59e0b', '#27272a', true)" class="w-6 h-6 rounded-full bg-zinc-900 shadow" title="Dark Mode"></button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="space-y-6 lg:col-span-1">
+            
+            <!-- نموذج إضافة طلب -->
+            <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-3">
+              <div class="flex items-center justify-between border-b pb-2">
+                <div class="flex items-center gap-2">
+                  <span class="text-lg">📝</span>
+                  <h2 class="text-sm font-bold text-gray-800">إضافة طلب جديد</h2>
+                </div>
+                <button type="button" onclick="autoAssignSmartDriver()" class="text-[10px] bg-amber-100 text-amber-800 px-2 py-1 rounded-lg font-bold hover:bg-amber-200">🤖 توزيع ذكي للمندوب</button>
+              </div>
+
+              <form id="orderForm" class="space-y-3">
+                <div>
+                  <label class="block text-[11px] font-bold text-gray-700 mb-1">رقم الطلب (اختياري)</label>
+                  <input type="text" id="custOrderId" placeholder="مثال: HAMKASHA-1001" class="w-full border p-2 rounded-xl text-xs font-mono">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-gray-700 mb-1">اسم العميل</label>
+                  <input type="text" id="custName" required placeholder="مثال: الحاج أحمد" class="w-full border p-2 rounded-xl text-xs">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-gray-700 mb-1">رقم الهاتف (واتساب)</label>
+                  <input type="text" id="custPhone" required placeholder="مثال: 01273091807" class="w-full border p-2 rounded-xl text-xs text-left" dir="ltr">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-gray-700 mb-1">العنوان والطلبات</label>
+                  <textarea id="custAddress" rows="2" required placeholder="كيلو كفتة - الزقازيق حي تاني" class="w-full border p-2 rounded-xl text-xs"></textarea>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-2 bg-amber-50 p-2 rounded-xl border border-amber-200">
+                  <div>
+                    <label class="block text-[10px] font-bold text-amber-900 mb-1">سعر الطلب (ج.م):</label>
+                    <input type="number" id="orderPrice" oninput="calculateTotalBill()" required placeholder="0" class="w-full border p-1.5 rounded-lg text-xs font-bold text-center">
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold text-amber-900 mb-1">سعر التوصيل (ج.م):</label>
+                    <input type="number" id="deliveryPrice" oninput="calculateTotalBill()" value="20" required class="w-full border p-1.5 rounded-lg text-xs font-bold text-center">
+                  </div>
+                </div>
+
+                <!-- 💳 قسم طرق الدفع والنسبة المفتوحة -->
+                <div class="bg-blue-50/60 p-2.5 rounded-xl border border-blue-200 space-y-2">
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <label class="block text-[10px] font-bold text-blue-900 mb-1">طريقة الدفع:</label>
+                      <select id="paymentMethod" onchange="calculateTotalBill()" class="w-full border p-1.5 rounded-lg text-xs font-bold bg-white">
+                        <option value="cash">💵 كاش مع المندوب</option>
+                        <option value="vodafone">📱 فودافون كاش (10ج/1000)</option>
+                        <option value="instapay">⚡ إنستا باي (بدون رسوم إضافية)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-[10px] font-bold text-blue-900 mb-1">عمولة الدفع (ج.م):</label>
+                      <input type="number" id="paymentFee" oninput="calculateTotalBill(true)" value="0" class="w-full border p-1.5 rounded-lg text-xs font-bold text-center bg-white">
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center text-xs font-black text-red-700 bg-white p-2 rounded-lg border">
+                    <span>💳 إجمالي الفاتورة النهائي:</span>
+                    <span id="displayGrandTotal" class="font-mono text-sm">0 ج.م</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-[11px] font-bold text-gray-700 mb-1">المندوب المكلف</label>
+                  <select id="driverSelect" class="w-full border p-2 rounded-xl text-xs bg-white driver-dropdown">
+                    <option value="غير محدد">حدد المندوب...</option>
+                  </select>
+                </div>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl shadow text-xs">
+                  🚀 تسجيل الطلب والحسابات
+                </button>
+              </form>
+
+              <div id="result" class="mt-3 hidden border-t border-dashed pt-3 space-y-2">
+                <input type="text" id="trackingLink" readonly class="w-full border p-2 rounded-xl bg-gray-50 text-[11px] font-mono">
+                <a id="waBtn" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs flex justify-center items-center gap-1">
+                  💬 إرسال عبر WhatsApp
+                </a>
+              </div>
+            </div>
+
+            <!-- إدارة المستخدمين والصلاحيات -->
+            <div id="usersManagementCard" class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-3 perm-users hidden">
+              <div class="flex items-center gap-2 border-b pb-2">
+                <span class="text-lg">👑</span>
+                <h2 class="text-sm font-bold text-gray-800">إدارة حسابات النظام والصلاحيات</h2>
+              </div>
+              <div class="space-y-2 bg-gray-50 p-2.5 rounded-xl border">
+                <input type="text" id="newUserName" placeholder="اسم المستخدم" class="w-full border p-2 rounded-xl text-xs bg-white">
+                <input type="password" id="newUserPass" placeholder="كلمة المرور" class="w-full border p-2 rounded-xl text-xs bg-white">
+                <select id="newUserRole" class="w-full border p-2 rounded-xl text-xs bg-white">
+                  <option value="admin">مسؤول إدارة (أدمن فرعي)</option>
+                  <option value="driver">مندوب توصيل</option>
+                </select>
+                <button onclick="addUser()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded-xl text-xs shadow">
+                  + إضافة لشبكة المستخدمين
+                </button>
+              </div>
+              <div id="usersList" class="space-y-2 max-h-64 overflow-y-auto pt-1"></div>
+            </div>
+          </div>
+
+          <!-- جدول إدارة الطلبات -->
+          <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 lg:col-span-2 space-y-4 print-area">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-3">
+              <div>
+                <h2 class="text-base font-bold text-gray-800">📊 سجل الطلبات الحية</h2>
+                <p class="text-[11px] text-gray-400 font-semibold">استعراض وتتبع الطلبات المسجلة</p>
+              </div>
+              <span id="ordersCount" class="bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full">0 طلبات</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 bg-gray-50 p-2.5 rounded-xl border no-print">
+              <input type="text" id="searchFilter" oninput="applyFilters()" placeholder="🔍 بحث بالرقم أو العميل..." class="border p-2 rounded-lg text-xs bg-white">
+              <select id="driverFilter" onchange="applyFilters()" class="border p-2 rounded-lg text-xs bg-white filter-driver-dropdown">
+                <option value="ALL">جميع المناديب</option>
+              </select>
+              <select id="statusFilter" onchange="applyFilters()" class="border p-2 rounded-lg text-xs bg-white">
+                <option value="ALL">كل الحالات</option>
+                <option value="جاري تحضير اللحوم 🥩">جاري التحضير</option>
+                <option value="خرج للتوصيل 🛵">خرج للتوصيل</option>
+                <option value="تم التسليم بنجاح ✅">تم التسليم</option>
+              </select>
+              <input type="date" id="dateFilter" onchange="applyFilters()" dir="ltr" class="border p-2 rounded-lg text-xs bg-white text-right">
+            </div>
+
+            <div id="exportActionBtns" class="flex flex-wrap items-center justify-end gap-2 pt-1 no-print hidden">
+              <button onclick="exportToPDF()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">📄 تصدير PDF</button>
+              <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">📊 تصدير Excel</button>
+              <button onclick="printReport()" class="bg-slate-700 hover:bg-slate-800 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">🖨️ طباعة ورقية</button>
+            </div>
+
+            <div class="overflow-x-auto max-h-[480px] overflow-y-auto rounded-xl border">
+              <table id="reportsTable" class="w-full text-right text-xs">
+                <thead class="bg-gray-100 font-bold sticky top-0 border-b">
+                  <tr>
+                    <th class="p-2.5">الطلب والتاريخ</th>
+                    <th class="p-2.5">العميل والتليفون</th>
+                    <th class="p-2.5">المندوب وطريقة الدفع</th>
+                    <th class="p-2.5">المبلغ والعمولة</th>
+                    <th class="p-2.5">حالة الطلب</th>
+                    <th class="p-2.5 text-center no-print">إجراءات</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersTableBody" class="divide-y divide-gray-100">
+                  <tr><td colspan="6" class="p-4 text-center text-gray-400">جاري التحميل...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 📊 2️⃣ داشبورد التقييم والتحصيل المالي والتعليقات (خاص بالإدارة) -->
+    <section id="sec-analytics" class="hidden space-y-6">
+      <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 space-y-6">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b pb-4">
+          <div>
+            <h2 class="text-lg font-black text-red-700">📈 داشبورد أداء وتحصيل المناديب المالي</h2>
+            <p class="text-xs text-gray-500 font-semibold">متابعة الأداء، النسب المئوية، تقييمات العملاء، والعهدة المالية المحصلة كاش</p>
+          </div>
+          <div class="flex bg-gray-100 p-1 rounded-xl text-xs font-bold border">
+            <button onclick="setAnalyticsPeriod('daily')" id="time-daily" class="px-3 py-1.5 rounded-lg bg-red-600 text-white transition-all">يومي 📅</button>
+            <button onclick="setAnalyticsPeriod('weekly')" id="time-weekly" class="px-3 py-1.5 rounded-lg text-gray-600 transition-all">أسبوعي 🗓️</button>
+            <button onclick="setAnalyticsPeriod('monthly')" id="time-monthly" class="px-3 py-1.5 rounded-lg text-gray-600 transition-all">شهري 📆</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-center">
+          <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+            <p class="text-xs text-red-600 font-bold mb-1">إجمالي طلبات الفترة</p>
+            <h3 id="statTotalOrders" class="text-2xl font-black text-red-700">0</h3>
+          </div>
+          <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+            <p class="text-xs text-emerald-600 font-bold mb-1">إجمالي المبالغ المحصلة</p>
+            <h3 id="statTotalCash" class="text-2xl font-black text-emerald-700">0 ج.م</h3>
+          </div>
+          <div class="bg-amber-50 p-4 rounded-xl border border-amber-100">
+            <p class="text-xs text-amber-800 font-bold mb-1">متوسط تقييم العملاء</p>
+            <h3 id="statAvgRating" class="text-2xl font-black text-amber-700">0 / 5 ⭐</h3>
+          </div>
+          <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+            <p class="text-xs text-blue-600 font-bold mb-1">نسبة التتبع والالتزام باللوكيشن</p>
+            <h3 id="statLiveTrackRate" class="text-2xl font-black text-blue-700">0%</h3>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-gray-100 font-bold border-b">
+              <tr>
+                <th class="p-3">اسم المندوب</th>
+                <th class="p-3">إجمالي الطلبات</th>
+                <th class="p-3">تم التسليم ✅</th>
+                <th class="p-3">العهدة المباشرة المحصلة (ج.م)</th>
+                <th class="p-3">تقييم العملاء ⭐</th>
+                <th class="p-3">معدل الإنجاز %</th>
+                <th class="p-3 text-center">التقييم الشامل</th>
+              </tr>
+            </thead>
+            <tbody id="driverAnalyticsBody" class="divide-y divide-gray-100">
+              <tr><td colspan="7" class="p-4 text-center text-gray-400">جاري حساب التقارير...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 💬 قسم سجل تقييمات وتعليقات العملاء للإدارة فقط مع الفلترة والتحكم بالنشر/الحذف -->
+        <div class="pt-6 border-t space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+              <h3 class="font-bold text-sm text-gray-800">💬 سجل آرائك وتعليقات العملاء (إدارة النشر والحذف)</h3>
+              <p class="text-[11px] text-gray-500">متابعة الملاحظات، الموافقة على نشر التعليق للعامة في صفحة التتبع، أو حذفه</p>
+            </div>
+          </div>
+
+          <!-- أدوات فلترة التعليقات -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-amber-50/70 p-3 rounded-xl border border-amber-200">
+            <div>
+              <label class="block text-[10px] font-bold text-amber-900 mb-1">فلترة بالمندوب:</label>
+              <select id="commentDriverFilter" onchange="renderCommentsList()" class="w-full border p-2 rounded-lg text-xs bg-white filter-driver-dropdown">
+                <option value="ALL">جميع المناديب</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-amber-900 mb-1">فلترة بالتقييم (النجوم):</label>
+              <select id="commentRatingFilter" onchange="renderCommentsList()" class="w-full border p-2 rounded-lg text-xs bg-white">
+                <option value="ALL">كل التقييمات ⭐</option>
+                <option value="5">5 نجوم ⭐⭐⭐⭐⭐</option>
+                <option value="4">4 نجوم ⭐⭐⭐⭐</option>
+                <option value="3">3 نجوم ⭐⭐⭐</option>
+                <option value="2">نجمتان ⭐⭐</option>
+                <option value="1">نجمة واحدة ⭐</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-amber-900 mb-1">فلترة بالتاريخ:</label>
+              <input type="date" id="commentDateFilter" onchange="renderCommentsList()" dir="ltr" class="w-full border p-2 rounded-lg text-xs bg-white text-right">
+            </div>
+          </div>
+
+          <!-- قائمة الكروت والملاحظات -->
+          <div id="commentsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
+            <p class="text-xs text-gray-400 p-4 text-center col-span-2">جاري تحميل التعليقات...</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 🏷️ 3️⃣ قسم لوحة أسعار اللحوم وإدارتها المباشرة -->
+    <section id="sec-prices" class="hidden space-y-6">
+      <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 space-y-4">
+        <div class="flex justify-between items-center border-b pb-3">
+          <div>
+            <h2 class="text-lg font-black text-red-700">🏷️ قائمة أسعار اللحوم الحية (جزارة حمكشة)</h2>
+            <p class="text-xs text-gray-500 font-semibold">تحديث اليومية وإضافة أو تعديل الأسعار المباشرة في أي وقت</p>
+          </div>
+          <button id="addPriceBtn" onclick="openAddPriceModal()" class="hidden bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-2 rounded-xl shadow">
+            + إضافة صنف جديد
+          </button>
+        </div>
+
+        <div id="priceListContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <!-- كروت الأسعار -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 4️⃣ واجهة المندوب -->
+    <section id="sec-driver" class="hidden space-y-6">
+      <div id="driverAuthLock" class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md mx-auto space-y-4 border">
+        <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-3xl">🛵</div>
+        <h3 class="text-xl font-bold">واجهة المندوب</h3>
+        <p class="text-xs text-gray-500">قم بتسجيل الدخول بحساب المندوب الخاص بك لبدء العمل على طلباتك.</p>
+        <button onclick="toggleAuthModal()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-xl shadow text-sm">تسجيل الدخول كمندوب 🔑</button>
+      </div>
+
+      <div id="driverContent" class="hidden max-w-xl mx-auto space-y-4 bg-white p-6 rounded-2xl shadow-xl border text-center">
+        <h2 class="text-lg font-bold">إدارة حالة الطلب والتحصيل المالي 🛵</h2>
+        <div class="space-y-2">
+          <label class="block text-right text-xs font-bold text-gray-700">رقم الطلب:</label>
+          <div class="flex gap-2">
+            <input type="text" id="orderId" placeholder="أدخل رقم الطلب (مثال: HAMKASHA-12345)" class="w-full border p-2.5 rounded-xl text-center font-mono font-bold text-xs bg-gray-50">
+            <button onclick="fetchDriverOrder()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 rounded-xl text-xs whitespace-nowrap">بحث 🔍</button>
+          </div>
+        </div>
+
+        <div id="driverOrderCard" class="hidden bg-gray-50 p-4 rounded-xl border text-right space-y-3 text-xs">
+          <p><b>العميل:</b> <span id="dCustName">--</span></p>
+          <p><b>العنوان والطلبات:</b> <span id="dCustAddress">--</span></p>
+          <p><b>طريقة الدفع:</b> <span id="dPayMethod" class="font-bold text-blue-800">--</span></p>
+          <div class="bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl font-bold text-emerald-900 flex justify-between">
+            <span>المبلغ المطلوب تحصيله شامل العمولة:</span>
+            <span id="dTotalCash" class="font-mono text-sm">0 ج.م</span>
+          </div>
+          <p><b>الحالة الحالية:</b> <span id="dStatus" class="font-bold text-red-600">--</span></p>
+
+          <div class="bg-white p-3 rounded-xl border space-y-1.5">
+            <label class="block font-bold text-gray-800">تغيير حالة الطلب يدوياً:</label>
+            <select id="driverStatusSelect" onchange="driverChangeStatus(this.value)" class="w-full border p-2 rounded-xl text-xs font-bold bg-amber-50">
+              <option value="جاري تحضير اللحوم 🥩">جاري تحضير اللحوم 🥩</option>
+              <option value="خرج للتوصيل 🛵">خرج للتوصيل 🛵</option>
+              <option value="تم التسليم بنجاح ✅">تم التسليم بنجاح ✅</option>
+            </select>
+          </div>
+          
+          <div class="pt-2 border-t space-y-2">
+            <button id="startBtn" onclick="startDelivery()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow flex justify-center items-center gap-1">
+              📍 بدء/إيقاف بث اللوكيشن الحي Live (اختياري)
+            </button>
+            <button id="stopBtn" onclick="stopDelivery()" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2.5 rounded-xl text-xs hidden shadow">
+              🛑 إيقاف مشاركة اللوكيشن فقط
+            </button>
+          </div>
+        </div>
+        <div id="driverStatus" class="text-xs text-gray-500 font-semibold"></div>
+      </div>
+    </section>
+
+    <!-- 5️⃣ تتبع العميل والموقع والتقييم والتعليقات العامة -->
+    <section id="sec-track" class="hidden space-y-6 max-w-xl mx-auto">
+      <div class="bg-white rounded-2xl shadow-lg p-5 border space-y-3">
+        <label class="block text-xs font-bold text-gray-800">📌 أدخل رقم الطلب لتتبع حالة التوصيل:</label>
+        <div class="flex gap-2">
+          <input type="text" id="custSearchOrderId" placeholder="أدخل رقم الطلب (مثال: 410 أو HAMKASHA-12345)" class="w-full border p-2.5 rounded-xl text-xs font-mono font-bold text-center bg-gray-50">
+          <button onclick="searchCustomerOrder()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 rounded-xl text-xs whitespace-nowrap shadow">تتبع 🔍</button>
+        </div>
+      </div>
+
+      <div id="trackResultCard" class="bg-white rounded-2xl shadow-xl p-6 border space-y-4">
+        <div class="flex justify-between items-center border-b pb-2">
+          <div>
+            <h2 class="text-base font-black text-red-700">تتبع الطلب 🥩</h2>
+            <p id="dispOrderId" class="text-xs font-mono text-gray-400">#---</p>
+          </div>
+          <span id="badgeStatus" class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">جاري المتابعة</span>
+        </div>
+        
+        <div class="bg-gray-50 p-3 rounded-xl space-y-1 text-xs border">
+          <p class="flex justify-between"><span>المندوب المكلف:</span> <b id="cDriver" class="text-amber-800">-</b></p>
+          <p class="flex justify-between"><span>تاريخ الطلب:</span> <b id="cDate" class="formatted-date font-mono text-gray-600">-</b></p>
+        </div>
+
+        <!-- 🗺️ خيارات المندوب والعميل الخريطة -->
+        <div id="map" class="bg-gray-50 border border-amber-200 rounded-xl p-4 text-center text-xs text-gray-600 space-y-3">
+          <p id="mapTextInfo">أدخل رقم الطلب الخاص بك لمتابعة مسار المندوب.</p>
+
+          <!-- زر مشاركة موقع العميل مع المندوب -->
+          <div class="border-t pt-3 space-y-2">
+            <button id="custShareLocBtn" onclick="toggleCustomerLocationShare()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow flex justify-center items-center gap-1.5">
+              📍 مشاركة موقعي الحالي (GPS) مع المندوب
+            </button>
+            <p id="custLocStatus" class="text-[11px] font-bold text-emerald-700 hidden">✅ تم إرسال موقعك للمندوب بنجاح!</p>
+          </div>
+        </div>
+
+        <!-- ⭐ قسم تقييم الخدمة والتعليقات (يظهر فقط عند حالة "تم التسليم بنجاح ✅") -->
+        <div id="ratingBox" class="hidden bg-amber-50 border border-amber-200 p-4 rounded-xl text-center space-y-3">
+          <h4 class="font-bold text-xs text-amber-900">⭐ تقييم خدمة التوصيل والمندوب:</h4>
+          <p class="text-[10px] text-gray-500 font-semibold">اختر عدد النجوم لتقييم تجربة التوصيل والمندوب</p>
+          
+          <div class="flex justify-center gap-2 text-2xl" id="starContainer">
+            <button onclick="setStarRating(1)" class="star-btn hover:scale-125 transition-transform" title="1 نجمة">⭐</button>
+            <button onclick="setStarRating(2)" class="star-btn hover:scale-125 transition-transform" title="2 نجمة">⭐</button>
+            <button onclick="setStarRating(3)" class="star-btn hover:scale-125 transition-transform" title="3 نجوم">⭐</button>
+            <button onclick="setStarRating(4)" class="star-btn hover:scale-125 transition-transform" title="4 نجوم">⭐</button>
+            <button onclick="setStarRating(5)" class="star-btn hover:scale-125 transition-transform" title="5 نجوم">⭐</button>
+          </div>
+
+          <div>
+            <label class="block text-right text-[11px] font-bold text-gray-700 mb-1">اكتب تعليقك أو رأيك في المندوب والخدمة:</label>
+            <textarea id="custCommentText" rows="2" placeholder="اكتب ملاحظاتك هنا..." class="w-full border p-2 rounded-xl text-xs bg-white"></textarea>
+          </div>
+
+          <button onclick="submitFullFeedback()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs shadow">
+            إرسال التقييم والتعليق 🚀
+          </button>
+
+          <p id="ratingSubmittedMsg" class="text-xs text-emerald-700 font-bold hidden">شكراً لك! تم تسجيل تقييمك بنجاح ✅</p>
+        </div>
+
+        <!-- 💬 آراء وتعليقات العملاء المنشورة العامة -->
+        <div id="publicCommentsSection" class="pt-4 border-t space-y-3">
+          <h4 class="font-bold text-xs text-gray-800 flex items-center gap-1">
+            <span>💬 آراء وتقييمات العملاء العامة:</span>
+          </h4>
+          <div id="publicCommentsContainer" class="space-y-2 max-h-60 overflow-y-auto">
+            <p class="text-[11px] text-gray-400 text-center">لا توجد آراء منشورة حالياً.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- نافذة تعديل بيانات ومستخدمين -->
+  <div id="editUserModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 text-right shadow-2xl border">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-sm text-gray-800">✏️ تعديل بيانات المستخدم</h3>
+        <button onclick="closeEditUserModal()" class="text-gray-400 hover:text-gray-600 font-bold">✕</button>
+      </div>
+      <input type="hidden" id="editUserId">
+      <div>
+        <label class="block text-[11px] font-bold text-gray-700 mb-1">اسم المستخدم</label>
+        <input type="text" id="editUserName" class="w-full border p-2.5 rounded-xl text-xs">
+      </div>
+      <div>
+        <label class="block text-[11px] font-bold text-gray-700 mb-1">كلمة المرور الجديدة</label>
+        <input type="password" id="editUserPass" class="w-full border p-2.5 rounded-xl text-xs">
+      </div>
+      <button onclick="saveEditUser()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">حفظ التغييرات 💾</button>
+    </div>
+  </div>
+
+  <!-- نافذة تعديل أو إضافة منتج -->
+  <div id="editPriceModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 text-right shadow-2xl border">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-sm text-gray-800" id="priceModalTitle">🏷️ تعديل سعر المنتج</h3>
+        <button onclick="closeEditPriceModal()" class="text-gray-400 hover:text-gray-600 font-bold">✕</button>
+      </div>
+      <input type="hidden" id="priceKey">
+      <div>
+        <label class="block text-[11px] font-bold text-gray-700 mb-1">اسم المنتج</label>
+        <input type="text" id="priceName" class="w-full border p-2.5 rounded-xl text-xs">
+      </div>
+      <div>
+        <label class="block text-[11px] font-bold text-gray-700 mb-1">السعر (ج.م)</label>
+        <input type="number" id="priceValue" class="w-full border p-2.5 rounded-xl text-xs font-mono font-bold">
+      </div>
+      <div>
+        <label class="block text-[11px] font-bold text-gray-700 mb-1">الوحدة</label>
+        <input type="text" id="priceUnit" value="كيلو" class="w-full border p-2.5 rounded-xl text-xs">
+      </div>
+      <button onclick="savePriceItem()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">حفظ الصنف 💾</button>
+    </div>
+  </div>
+
+  <!-- نافذة تعديل الطلب -->
+  <div id="editOrderModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-md space-y-4 text-right shadow-2xl border">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-sm text-gray-800">✏️ تعديل بيانات الطلب <span id="editModalOrderId" class="text-red-600 font-mono"></span></h3>
+        <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 font-bold text-base">✕</button>
+      </div>
+
+      <input type="hidden" id="editKey">
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-gray-700 mb-1">اسم العميل:</label>
+          <input type="text" id="editCustName" class="w-full border p-2 rounded-xl">
+        </div>
+        <div>
+          <label class="block font-bold text-gray-700 mb-1">رقم الهاتف:</label>
+          <input type="text" id="editCustPhone" class="w-full border p-2 rounded-xl text-left" dir="ltr">
+        </div>
+        <div>
+          <label class="block font-bold text-gray-700 mb-1">العنوان والطلبات التفصيلية:</label>
+          <textarea id="editCustAddress" rows="3" class="w-full border p-2 rounded-xl"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-gray-700 mb-1">سعر الطلب:</label>
+            <input type="number" id="editOrderPrice" class="w-full border p-2 rounded-xl">
+          </div>
+          <div>
+            <label class="block font-bold text-gray-700 mb-1">سعر التوصيل:</label>
+            <input type="number" id="editDeliveryPrice" class="w-full border p-2 rounded-xl">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold text-gray-700 mb-1">المندوب المكلف:</label>
+          <select id="editDriverSelect" class="w-full border p-2 rounded-xl bg-white driver-dropdown">
+            <option value="غير محدد">حدد المندوب...</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-2 border-t">
+        <button onclick="saveEditOrder()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">حفظ التغييرات 💾</button>
+        <button onclick="closeEditModal()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 rounded-xl text-xs">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="authModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 text-right shadow-2xl">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-sm">تسجيل الدخول الآمن للنظام</h3>
+        <button onclick="toggleAuthModal()" class="text-gray-400 hover:text-gray-600 font-bold">✕</button>
+      </div>
+      <div>
+        <label class="block text-[11px] font-bold text-gray-700 mb-1">اسم المستخدم</label>
+        <input type="text" id="loginUser" placeholder="أدخل اسم المستخدم" class="w-full border p-2.5 rounded-xl text-xs">
+      </div>
+      <div>
+        <label class="block text-[11px] font-bold text-gray-700 mb-1">كلمة المرور</label>
+        <input type="password" id="loginPass" placeholder="أدخل كلمة المرور" class="w-full border p-2.5 rounded-xl text-xs">
+      </div>
+      <button onclick="performLogin()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">دخول 🔓</button>
+    </div>
+  </div>
+
+  <!-- Firebase JavaScript SDK v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      databaseURL: "https://hamaksha-tracking-default-rtdb.europe-west1.firebasedatabase.app"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    if (firebase.database.INTERNAL && firebase.database.INTERNAL.forceLongPolling) {
+      firebase.database.INTERNAL.forceLongPolling();
+    }
+
+    const db = firebase.database();
+
+    let allOrdersCache = {};
+    let allUsersCache = {};
+    let currentUser = null;
+    let filteredOrdersList = [];
+    let currentAnalyticsPeriod = 'daily';
+    let currentTrackOrderId = null;
+    let custWatchId = null;
+    let selectedStarsCount = 0;
+
+    // --- 📅 دالة تنسيق التاريخ ليكون دائماً يوم / شهر / سنة (DD/MM/YYYY) ---
+    function formatDateDMY(dateStr) {
+      if(!dateStr) return '';
+      if(dateStr.includes('/')) {
+        const parts = dateStr.split('/');
+        if(parts[0].length === 4) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        return dateStr;
+      }
+      if(dateStr.includes('-')) {
+        const parts = dateStr.split('-');
+        if(parts[0].length === 4) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        return dateStr;
+      }
+      return dateStr;
+    }
+
+    // إنشاء الحساب الرئيسي asma أوتوماتيكياً بصلاحيات كاملة مطلقة
+    db.ref('users').once('value').then((snapshot) => {
+      let hasAsma = false;
+      const users = snapshot.val() || {};
+      Object.keys(users).forEach(k => {
+        if(users[k].username === 'asma') hasAsma = true;
+      });
+
+      if (!hasAsma) {
+        db.ref('users').push({
+          username: 'asma',
+          pass: 'asma123',
+          role: 'admin',
+          isSuperAdmin: true,
+          perms: { edit: true, delete: true, print: true, analytics: true, prices: true, users: true }
+        });
+      }
+    });
+
+    function isSuperUser() {
+      if (!currentUser) {
+        const savedUser = localStorage.getItem('hamaksha_user');
+        if (savedUser) {
+          try {
+            const u = JSON.parse(savedUser);
+            return u && u.username === 'asma';
+          } catch(e) {}
+        }
+        return false;
+      }
+      return currentUser.username === 'asma';
+    }
+
+    function canUser(action) {
+      if (isSuperUser()) return true; 
       
-      - name: Install dependencies
-        run: npm ci
+      let u = currentUser;
+      if (!u) {
+        const savedUser = localStorage.getItem('hamaksha_user');
+        if (savedUser) {
+          try { u = JSON.parse(savedUser); } catch(e) {}
+        }
+      }
+
+      if (u && u.role === 'admin') {
+        const p = u.perms || {};
+        return !!p[action];
+      }
+      return false;
+    }
+
+    function switchTab(tabName) {
+      if(tabName === 'analytics' && !canUser('analytics')) return alert('عذراً، لا تملك صلاحية الاطلاع على التقارير والداشبورد.');
+      if(tabName === 'prices' && !canUser('prices')) return alert('عذراً، لا تملك صلاحية الاطلاع على قائمة الأسعار.');
+
+      document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`sec-${tabName}`).classList.remove('hidden');
+      const activeTabBtn = document.getElementById(`tab-${tabName}`);
+      if(activeTabBtn) activeTabBtn.classList.add('active');
+
+      if(tabName === 'analytics') {
+        renderAnalytics();
+        renderCommentsList();
+      }
+      if(tabName === 'prices') renderPrices();
+      if(tabName === 'track') renderPublicComments();
+    }
+
+    function toggleAuthModal() {
+      document.getElementById('authModal').classList.toggle('hidden');
+    }
+
+    function handleAuthBtnClick() {
+      if(currentUser) {
+        if(confirm('هل تريد تسجيل الخروج بالفعل؟')) {
+          localStorage.removeItem('hamaksha_user');
+          currentUser = null;
+          location.reload();
+        }
+      } else {
+        toggleAuthModal();
+      }
+    }
+
+    function performLogin() {
+      const username = document.getElementById('loginUser').value.trim();
+      const pass = document.getElementById('loginPass').value.trim();
+
+      if(!username || !pass) return alert('يرجى كتابة اسم المستخدم وكلمة المرور');
+
+      let foundUser = null;
+      Object.keys(allUsersCache).forEach(id => {
+        const u = allUsersCache[id];
+        if(u.username === username && String(u.pass) === String(pass)) {
+          foundUser = { ...u, key: id };
+        }
+      });
+
+      if(foundUser) {
+        loginSuccess(foundUser);
+      } else {
+        alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
+      }
+    }
+
+    function loginSuccess(user) {
+      currentUser = user;
+      localStorage.setItem('hamaksha_user', JSON.stringify(user));
+
+      const roleTitle = isSuperUser() ? 'المالك الرئيسي (asma)' : (user.role === 'admin' ? 'أدمن فرعي' : 'مندوب توصيل');
+      document.getElementById('authBtn').innerText = `${user.username} (خروج)`;
+      document.getElementById('activeUserBadge').innerText = `${user.username} (${roleTitle})`;
+      document.getElementById('activeUserBadge').className = `text-[11px] font-bold px-3 py-1 rounded-full ${isSuperUser() ? 'bg-amber-500 text-black' : (user.role === 'admin' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800')}`;
+
+      if(!document.getElementById('authModal').classList.contains('hidden')) {
+        toggleAuthModal();
+      }
+
+      updateUIByPermissions();
+
+      if(user.role === 'admin') {
+        document.getElementById('adminAuthLock').classList.add('hidden');
+        document.getElementById('adminContent').classList.remove('hidden');
+        switchTab('admin');
+      } else {
+        document.getElementById('driverAuthLock').classList.add('hidden');
+        document.getElementById('driverContent').classList.remove('hidden');
+        switchTab('driver');
+      }
+
+      applyFilters();
+      renderUsersList();
+    }
+
+    function updateUIByPermissions() {
+      const analyticsTab = document.querySelector('.perm-analytics');
+      if(analyticsTab) {
+        if(canUser('analytics')) analyticsTab.classList.remove('hidden');
+        else analyticsTab.classList.add('hidden');
+      }
+
+      const pricesTab = document.querySelector('.perm-prices');
+      if(pricesTab) {
+        if(canUser('prices')) pricesTab.classList.remove('hidden');
+        else pricesTab.classList.add('hidden');
+      }
+
+      const addPriceBtn = document.getElementById('addPriceBtn');
+      if(addPriceBtn) {
+        if(canUser('prices')) addPriceBtn.classList.remove('hidden');
+        else addPriceBtn.classList.add('hidden');
+      }
+
+      const usersCard = document.querySelector('.perm-users');
+      if(usersCard) {
+        if(canUser('users')) usersCard.classList.remove('hidden');
+        else usersCard.classList.add('hidden');
+      }
+
+      const exportBtns = document.getElementById('exportActionBtns');
+      if(exportBtns) {
+        if(canUser('print')) exportBtns.classList.remove('hidden');
+        else exportBtns.classList.add('hidden');
+      }
+    }
+
+    function checkSavedSession() {
+      const savedUser = localStorage.getItem('hamaksha_user');
+      if(savedUser) {
+        try {
+          const user = JSON.parse(savedUser);
+          loginSuccess(user);
+        } catch(e) {}
+      }
+    }
+
+    function changeTheme(primary, secondary, bg, isDark = false) {
+      document.documentElement.style.setProperty('--primary-color', primary);
+      document.getElementById('mainHeader').style.backgroundColor = primary;
+      document.getElementById('mainHeader').style.borderColor = secondary;
+      document.body.className = isDark ? "bg-zinc-900 text-white min-h-screen" : "bg-amber-50/40 min-h-screen text-gray-800";
+    }
+
+    // --- 💳 حساب طريقة الدفع والعمولة والتوتال (إنستا باي = 0 افتراضياً) ---
+    function calculateTotalBill(isManualFee = false) {
+      const orderPrice = Number(document.getElementById('orderPrice').value) || 0;
+      const deliveryPrice = Number(document.getElementById('deliveryPrice').value) || 0;
+      const method = document.getElementById('paymentMethod').value;
+      const feeInput = document.getElementById('paymentFee');
+
+      let fee = 0;
+      if (!isManualFee) {
+        if (method === 'vodafone') {
+          fee = Math.ceil(orderPrice / 1000) * 10;
+        } else if (method === 'instapay') {
+          fee = 0; // إلغاء نسبة الانستا باي أوتوماتيكياً
+        } else {
+          fee = 0;
+        }
+        feeInput.value = fee;
+      } else {
+        fee = Number(feeInput.value) || 0;
+      }
+
+      const grandTotal = orderPrice + deliveryPrice + fee;
+      document.getElementById('displayGrandTotal').innerText = grandTotal.toLocaleString('ar-EG') + ' ج.م';
+      return grandTotal;
+    }
+
+    // --- 🤖 التوزيع الذكي للمندوب ---
+    function autoAssignSmartDriver() {
+      const activeDriverCounts = {};
+      Object.keys(allUsersCache).forEach(id => {
+        const u = allUsersCache[id];
+        if(u.role === 'driver') activeDriverCounts[u.username] = 0;
+      });
+
+      Object.keys(allOrdersCache).forEach(key => {
+        const o = allOrdersCache[key];
+        if(o.driver && o.driver !== 'غير محدد' && o.status !== 'تم التسليم بنجاح ✅') {
+          if(activeDriverCounts[o.driver] !== undefined) activeDriverCounts[o.driver]++;
+        }
+      });
+
+      let minCount = Infinity;
+      let selectedDriver = 'غير محدد';
+
+      Object.keys(activeDriverCounts).forEach(d => {
+        if(activeDriverCounts[d] < minCount) {
+          minCount = activeDriverCounts[d];
+          selectedDriver = d;
+        }
+      });
+
+      if(selectedDriver !== 'غير محدد') {
+        document.getElementById('driverSelect').value = selectedDriver;
+        alert(`🤖 اقتراح النظام: تم تحديد المندوب (${selectedDriver}) لأنه الأقل تحميلاً بالطلبات الحالية (${minCount} طلبات نشطة).`);
+      } else {
+        alert('لا يوجد مناديب متاحين حالياً في النظام.');
+      }
+    }
+
+    // --- 👥 إدارة المستخدمين والمناديب ---
+    function addUser() {
+      if(!canUser('users')) return alert('عذراً، إضافة المستخدمين تتطلب صلاحية إدارة المستخدمين');
+      const username = document.getElementById('newUserName').value.trim();
+      const pass = document.getElementById('newUserPass').value.trim();
+      const role = document.getElementById('newUserRole').value;
+
+      if (!username || !pass) return alert('يرجى ملء جميع البيانات');
+
+      db.ref('users').push({ 
+        username, pass, role,
+        perms: { edit: false, delete: false, print: false, analytics: false, prices: false, users: false }
+      }).then(() => {
+        document.getElementById('newUserName').value = '';
+        document.getElementById('newUserPass').value = '';
+        alert('تمت إضافة المستخدم بنجاح ✅');
+      });
+    }
+
+    function openEditUserModal(id) {
+      if(!canUser('users')) return alert('عذراً، تعديل الحسابات يتطلب صلاحية إدارة المستخدمين');
+      const u = allUsersCache[id];
+      if(!u) return;
+      document.getElementById('editUserId').value = id;
+      document.getElementById('editUserName').value = u.username || '';
+      document.getElementById('editUserPass').value = u.pass || '';
+      document.getElementById('editUserModal').classList.remove('hidden');
+    }
+
+    function closeEditUserModal() {
+      document.getElementById('editUserModal').classList.add('hidden');
+    }
+
+    function saveEditUser() {
+      const id = document.getElementById('editUserId').value;
+      const username = document.getElementById('editUserName').value.trim();
+      const pass = document.getElementById('editUserPass').value.trim();
+
+      if(!id || !username || !pass) return alert('يرجى ملء كافة البيانات');
+
+      db.ref('users/' + id).update({ username, pass }).then(() => {
+        alert('تم تعديل بيانات الحساب بنجاح ✅');
+        closeEditUserModal();
+      });
+    }
+
+    function toggleAdminPermission(userKey, permType, isChecked) {
+      db.ref(`users/${userKey}/perms/${permType}`).set(isChecked);
+    }
+
+    function deleteUser(userId) {
+      if(!canUser('users')) return alert('عذراً، حذف الحسابات تتطلب صلاحية إدارة المستخدمين');
+      if(confirm('هل تريد حذف هذا المستخدم بالفعل؟')) {
+        db.ref('users/' + userId).remove();
+      }
+    }
+
+    function renderUsersList() {
+      const dropdowns = document.querySelectorAll('.driver-dropdown');
+      const filterDriverDropdown = document.querySelectorAll('.filter-driver-dropdown');
+      const list = document.getElementById('usersList');
       
-      - name: Run linter
-        run: npm run lint
+      dropdowns.forEach(select => {
+        select.innerHTML = '<option value="غير محدد">حدد المندوب...</option>';
+      });
+      filterDriverDropdown.forEach(f => {
+        f.innerHTML = '<option value="ALL">جميع المناديب</option>';
+      });
       
-      - name: Run tests
-        run: npm test
+      if(!list) return;
+      list.innerHTML = '';
+
+      const userHasUserManagementPerm = canUser('users');
+
+      Object.keys(allUsersCache).forEach(id => {
+        const u = allUsersCache[id];
+        if(u.role === 'driver') {
+          dropdowns.forEach(select => {
+            select.innerHTML += `<option value="${u.username}">${u.username}</option>`;
+          });
+          filterDriverDropdown.forEach(f => {
+            f.innerHTML += `<option value="${u.username}">${u.username}</option>`;
+          });
+        }
+
+        const perms = u.perms || {};
+        const isAsma = u.username === 'asma';
+
+        list.innerHTML += `
+          <div class="bg-white p-3 rounded-xl border text-xs shadow-sm space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5 overflow-hidden">
+                <span class="font-bold text-gray-800 truncate">${u.username}</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded-full ${isAsma ? 'bg-amber-400 text-black font-bold' : (u.role === 'admin' ? 'bg-red-100 text-red-700 font-bold' : 'bg-amber-100 text-amber-800 font-bold')}">
+                  ${isAsma ? 'المالك الرئيسي' : (u.role === 'admin' ? 'أدمن فرعي' : 'مندوب')}
+                </span>
+              </div>
+
+              ${!isAsma && userHasUserManagementPerm ? `
+                <div class="flex items-center gap-1 shrink-0">
+                  <button onclick="openEditUserModal('${id}')" class="bg-blue-50 text-blue-700 hover:bg-blue-100 px-2 py-1 rounded-lg font-bold text-[10px] border border-blue-200">✏️ تعديل</button>
+                  <button onclick="deleteUser('${id}')" class="bg-red-50 text-red-700 hover:bg-red-100 px-2 py-1 rounded-lg font-bold text-[10px] border border-red-200">🗑️ حذف</button>
+                </div>
+              ` : ''}
+            </div>
+
+            ${u.role === 'admin' && !isAsma && isSuperUser() ? `
+              <div class="bg-amber-50 p-2.5 rounded-lg border border-amber-200 text-[10px] space-y-1.5 mt-2">
+                <p class="font-bold text-amber-900 border-b border-amber-200 pb-1">⚙️ التحكم في صلاحيات الأدمن الفرعي (خاص بـ asma):</p>
+                <div class="grid grid-cols-2 gap-1.5 font-semibold">
+                  <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="checkbox" ${perms.edit ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'edit', this.checked)"> تعديل الطلبات ✏️
+                  </label>
+
+                  <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="checkbox" ${perms.delete ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'delete', this.checked)"> حذف الطلبات 🗑️
+                  </label>
+
+                  <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="checkbox" ${perms.print ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'print', this.checked)"> طباعة وتصدير 🖨️
+                  </label>
+
+                  <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="checkbox" ${perms.analytics ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'analytics', this.checked)"> التقارير والداشبورد 📊
+                  </label>
+
+                  <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="checkbox" ${perms.prices ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'prices', this.checked)"> تعديل الأسعار 🏷️
+                  </label>
+
+                  <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="checkbox" ${perms.users ? 'checked' : ''} onchange="toggleAdminPermission('${id}', 'users', this.checked)"> إدارة المستخدمين 👥
+                  </label>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      });
+    }
+
+    db.ref('users').on('value', (snap) => {
+      allUsersCache = snap.val() || {};
+      renderUsersList();
+      checkSavedSession();
+    });
+
+    // --- إدارة الطلبات ---
+    document.getElementById('orderForm').addEventListener('submit', (e) => {
+      e.preventDefault();
       
-      - name: Security audit
-        run: npm audit
+      const customId = document.getElementById('custOrderId').value.trim();
+      const orderId = customId ? customId : ('HAMKASHA-' + Math.floor(10000 + Math.random() * 90000));
       
-      - name: Performance check
-        run: npm run lighthouse
+      const name = document.getElementById('custName').value;
+      const phone = document.getElementById('custPhone').value;
+      const address = document.getElementById('custAddress').value;
+      const orderPrice = Number(document.getElementById('orderPrice').value) || 0;
+      const deliveryPrice = Number(document.getElementById('deliveryPrice').value) || 0;
+      const paymentMethod = document.getElementById('paymentMethod').value;
+      const paymentFee = Number(document.getElementById('paymentFee').value) || 0;
+      const totalCash = orderPrice + deliveryPrice + paymentFee;
 
-  deploy:
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
+      const driver = document.getElementById('driverSelect').value;
+      const now = new Date();
+
+      db.ref('orders/' + orderId).set({
+        orderId: orderId,
+        customerName: name,
+        phone: phone,
+        address: address,
+        orderPrice: orderPrice,
+        deliveryPrice: deliveryPrice,
+        paymentMethod: paymentMethod,
+        paymentFee: paymentFee,
+        totalCash: totalCash,
+        driver: driver,
+        status: 'جاري تحضير اللحوم 🥩',
+        rating: null,
+        comment: null,
+        isPublished: false,
+        date: now.toISOString().split('T')[0],
+        time: now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
+        lat: null, lng: null,
+        custLat: null, custLng: null
+      }).then(() => {
+        const baseUrl = window.location.href.split('?')[0];
+        const trackUrl = `${baseUrl}?tab=track&id=${orderId}`;
+        document.getElementById('trackingLink').value = trackUrl;
+        document.getElementById('waBtn').href = `https://wa.me/${phone}?text=${encodeURIComponent('أهلاً بك 🥩\nطلبك لدى جزارة حمكشة رقم: #' + orderId + '\nالإجمالي المطلوب شامل العمولة والتوصيل: ' + totalCash + ' ج.م\nرابط التتبع الحي للمندوب والطلب:\n' + trackUrl)}`;
+        document.getElementById('result').classList.remove('hidden');
+        document.getElementById('custOrderId').value = '';
+        document.getElementById('custName').value = '';
+        document.getElementById('custPhone').value = '';
+        document.getElementById('custAddress').value = '';
+        document.getElementById('orderPrice').value = '';
+        document.getElementById('paymentFee').value = '0';
+        document.getElementById('displayGrandTotal').innerText = '0 ج.م';
+      });
+    });
+
+    function updateOrderStatus(orderKey, newStatus) {
+      db.ref('orders/' + orderKey).update({ status: newStatus });
+    }
+
+    db.ref('orders').on('value', (snapshot) => {
+      allOrdersCache = snapshot.val() || {};
+      applyFilters();
+      if(!document.getElementById('sec-analytics').classList.contains('hidden')) {
+        renderAnalytics();
+        renderCommentsList();
+      }
+      renderPublicComments();
+    });
+
+    function getPaymentText(method) {
+      if(method === 'vodafone') return '📱 فودافون كاش';
+      if(method === 'instapay') return '⚡ إنستا باي';
+      return '💵 كاش مع المندوب';
+    }
+
+    function applyFilters() {
+      const search = document.getElementById('searchFilter').value.toLowerCase();
+      const driver = document.getElementById('driverFilter') ? document.getElementById('driverFilter').value : 'ALL';
+      const status = document.getElementById('statusFilter').value;
+      const date = document.getElementById('dateFilter').value;
+      const tbody = document.getElementById('ordersTableBody');
+      tbody.innerHTML = '';
+
+      filteredOrdersList = [];
+      let count = 0;
+
+      Object.keys(allOrdersCache).forEach(key => {
+        const item = allOrdersCache[key];
+        const displayId = item.orderId || key;
+        const displayName = item.customerName || item.name || 'غير محدد';
+        const displayPhone = item.phone || '';
+        const displayDriver = item.driver || 'غير محدد';
+        const totalCash = item.totalCash || ((item.orderPrice || 0) + (item.deliveryPrice || 0) + (item.paymentFee || 0));
+
+        const matchSearch = !search || displayName.toLowerCase().includes(search) || displayId.toLowerCase().includes(search);
+        const matchDriver = driver === 'ALL' || displayDriver === driver;
+        const matchStatus = status === 'ALL' || item.status === status;
+        const matchDate = !date || item.date === date;
+
+        if (matchSearch && matchDriver && matchStatus && matchDate) {
+          count++;
+          filteredOrdersList.push({ key, ...item, displayId, displayName, displayPhone, displayDriver, totalCash });
+
+          const canEdit = canUser('edit');
+          const canDelete = canUser('delete');
+
+          const tr = document.createElement('tr');
+          tr.className = "hover:bg-gray-50 border-b";
+          tr.innerHTML = `
+            <td class="p-2.5">
+              <div class="font-bold font-mono text-red-600">#${displayId}</div>
+              <div class="text-[10px] text-gray-400">
+                <span class="formatted-date">${formatDateDMY(item.date)}</span> ${item.time || ''}
+              </div>
+            </td>
+            <td class="p-2.5">
+              <div class="font-bold">${displayName}</div>
+              <div class="text-[10px] text-gray-500 font-mono" dir="ltr">${displayPhone}</div>
+            </td>
+            <td class="p-2.5">
+              <div class="font-semibold text-gray-800">${displayDriver}</div>
+              <div class="text-[10px] text-blue-800 font-bold">${getPaymentText(item.paymentMethod)}</div>
+            </td>
+            <td class="p-2.5">
+              <div class="font-bold font-mono text-emerald-700">${totalCash} ج.م</div>
+              ${item.paymentFee ? `<div class="text-[9px] text-gray-500">(عمولة: ${item.paymentFee}ج)</div>` : ''}
+            </td>
+            <td class="p-2.5">
+              <select onchange="updateOrderStatus('${key}', this.value)" class="border p-1 rounded text-[11px] font-bold bg-amber-50 no-print">
+                <option value="جاري تحضير اللحوم 🥩" ${item.status === 'جاري تحضير اللحوم 🥩' ? 'selected' : ''}>جاري التحضير 🥩</option>
+                <option value="خرج للتوصيل 🛵" ${item.status === 'خرج للتوصيل 🛵' ? 'selected' : ''}>خرج للتوصيل 🛵</option>
+                <option value="تم التسليم بنجاح ✅" ${item.status === 'تم التسليم بنجاح ✅' ? 'selected' : ''}>تم التسليم ✅</option>
+              </select>
+              <span class="hidden print:inline font-bold">${item.status}</span>
+            </td>
+            <td class="p-2.5 text-center flex items-center justify-center gap-1 no-print">
+              <button onclick="shareWhatsApp('${key}')" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-2 py-1 rounded text-[10px] font-bold shadow-sm flex items-center gap-0.5">💬 واتساب</button>
+              ${canEdit ? `<button onclick="openEditModal('${key}')" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-2 py-1 rounded text-[10px] font-bold shadow-sm">تعديل ✏️</button>` : ''}
+              ${canDelete ? `<button onclick="deleteOrder('${key}')" class="bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded text-[10px] font-bold shadow-sm">حذف 🗑️</button>` : ''}
+            </td>
+          `;
+          tbody.appendChild(tr);
+        }
+      });
+      document.getElementById('ordersCount').innerText = `${count} طلبات`;
+    }
+
+    // --- 📊 تحليل وتقييم أداء المناديب ---
+    function setAnalyticsPeriod(period) {
+      currentAnalyticsPeriod = period;
+      ['daily', 'weekly', 'monthly'].forEach(p => {
+        const btn = document.getElementById(`time-${p}`);
+        if(p === period) btn.className = "px-3 py-1.5 rounded-lg bg-red-600 text-white transition-all";
+        else btn.className = "px-3 py-1.5 rounded-lg text-gray-600 transition-all";
+      });
+      renderAnalytics();
+    }
+
+    function renderAnalytics() {
+      if(!canUser('analytics')) return;
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+
+      const driversStats = {};
+      Object.keys(allUsersCache).forEach(id => {
+        const u = allUsersCache[id];
+        if(u.role === 'driver') {
+          driversStats[u.username] = { total: 0, delivered: 0, liveTracked: 0, totalCash: 0, ratings: [] };
+        }
+      });
+
+      let periodTotalOrders = 0;
+      let periodDelivered = 0;
+      let periodLiveTracked = 0;
+      let periodTotalCash = 0;
+      let periodRatings = [];
+
+      Object.keys(allOrdersCache).forEach(key => {
+        const item = allOrdersCache[key];
+        if(!item.date) return;
+
+        const orderDate = new Date(item.date);
+        let inPeriod = false;
+
+        if(currentAnalyticsPeriod === 'daily') inPeriod = (item.date === todayStr);
+        else if(currentAnalyticsPeriod === 'weekly') {
+          const diffDays = Math.floor((now - orderDate) / (1000 * 60 * 60 * 24));
+          inPeriod = (diffDays <= 7);
+        } else if(currentAnalyticsPeriod === 'monthly') {
+          inPeriod = (orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear());
+        }
+
+        if(inPeriod && item.driver && item.driver !== 'غير محدد') {
+          if(!driversStats[item.driver]) {
+            driversStats[item.driver] = { total: 0, delivered: 0, liveTracked: 0, totalCash: 0, ratings: [] };
+          }
+
+          periodTotalOrders++;
+          driversStats[item.driver].total++;
+
+          if(item.status === 'تم التسليم بنجاح ✅') {
+            periodDelivered++;
+            driversStats[item.driver].delivered++;
+            
+            const cash = item.totalCash || ((item.orderPrice || 0) + (item.deliveryPrice || 0) + (item.paymentFee || 0));
+            periodTotalCash += cash;
+            driversStats[item.driver].totalCash += cash;
+          }
+
+          if(item.lat && item.lng) {
+            periodLiveTracked++;
+            driversStats[item.driver].liveTracked++;
+          }
+
+          if(item.rating) {
+            periodRatings.push(item.rating);
+            driversStats[item.driver].ratings.push(item.rating);
+          }
+        }
+      });
+
+      const avgPeriodRating = periodRatings.length ? (periodRatings.reduce((a,b)=>a+b,0) / periodRatings.length).toFixed(1) : '0';
+
+      document.getElementById('statTotalOrders').innerText = periodTotalOrders;
+      document.getElementById('statTotalCash').innerText = periodTotalCash.toLocaleString('ar-EG') + ' ج.م';
+      document.getElementById('statAvgRating').innerText = `${avgPeriodRating} / 5 ⭐`;
+      document.getElementById('statLiveTrackRate').innerText = periodDelivered ? Math.round((periodLiveTracked / periodDelivered) * 100) + '%' : '0%';
+
+      const analyticsBody = document.getElementById('driverAnalyticsBody');
+      analyticsBody.innerHTML = '';
+
+      const driversList = Object.keys(driversStats);
+      if(driversList.length === 0) {
+        analyticsBody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-400">لا يوجد مناديب مسجلين في النظام.</td></tr>`;
+        return;
+      }
+
+      driversList.forEach(driverName => {
+        const st = driversStats[driverName];
+        const completionPct = st.total ? Math.round((st.delivered / st.total) * 100) : 0;
+        const driverAvgRating = st.ratings.length ? (st.ratings.reduce((a,b)=>a+b,0) / st.ratings.length).toFixed(1) : 'بدون تقييم';
+        
+        const totalScore = Math.round((completionPct * 0.7) + ((st.delivered ? (st.liveTracked/st.delivered) : 0) * 30));
+
+        let badgeColor = "bg-gray-100 text-gray-700";
+        let ratingLabel = "لم يحدد";
+
+        if(st.total > 0) {
+          if(totalScore >= 85) { badgeColor = "bg-emerald-100 text-emerald-800"; ratingLabel = "ممتاز 🌟"; }
+          else if(totalScore >= 70) { badgeColor = "bg-blue-100 text-blue-800"; ratingLabel = "جيد جداً 👍"; }
+          else if(totalScore >= 50) { badgeColor = "bg-amber-100 text-amber-800"; ratingLabel = "متوسط ⚠️"; }
+          else { badgeColor = "bg-red-100 text-red-800"; ratingLabel = "ضعيف ❌"; }
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-gray-50 border-b";
+        tr.innerHTML = `
+          <td class="p-3 font-bold text-gray-800">${driverName}</td>
+          <td class="p-3 font-mono font-bold">${st.total}</td>
+          <td class="p-3 font-mono text-emerald-600 font-bold">${st.delivered}</td>
+          <td class="p-3 font-mono text-emerald-700 font-bold bg-emerald-50">${st.totalCash.toLocaleString('ar-EG')} ج.م</td>
+          <td class="p-3 font-bold text-amber-700">${driverAvgRating} ⭐</td>
+          <td class="p-3">
+            <div class="flex items-center gap-2">
+              <div class="w-16 bg-gray-200 rounded-full h-2 overflow-hidden">
+                <div class="bg-red-600 h-2 rounded-full" style="width: ${completionPct}%"></div>
+              </div>
+              <span class="font-mono font-bold text-xs">${completionPct}%</span>
+            </div>
+          </td>
+          <td class="p-3 text-center">
+            <span class="px-3 py-1 rounded-full text-xs font-bold ${badgeColor}">${ratingLabel} (${totalScore}%)</span>
+          </td>
+        `;
+        analyticsBody.appendChild(tr);
+      });
+    }
+
+    // --- 💬 عرض وفلترة تعليقات وتقييمات العملاء المخصصة للإدارة + النشر والحذف ---
+    function renderCommentsList() {
+      if(!canUser('analytics')) return;
+      const filterDriver = document.getElementById('commentDriverFilter') ? document.getElementById('commentDriverFilter').value : 'ALL';
+      const filterRating = document.getElementById('commentRatingFilter') ? document.getElementById('commentRatingFilter').value : 'ALL';
+      const filterDate = document.getElementById('commentDateFilter') ? document.getElementById('commentDateFilter').value : '';
+
+      const container = document.getElementById('commentsContainer');
+      container.innerHTML = '';
+
+      let count = 0;
+
+      Object.keys(allOrdersCache).forEach(key => {
+        const item = allOrdersCache[key];
+        
+        if(item.rating || item.comment) {
+          const driver = item.driver || 'غير محدد';
+          const rating = String(item.rating || '0');
+          const date = item.date || '';
+
+          const matchDriver = filterDriver === 'ALL' || driver === filterDriver;
+          const matchRating = filterRating === 'ALL' || rating === filterRating;
+          const matchDate = !filterDate || date === filterDate;
+
+          if(matchDriver && matchRating && matchDate) {
+            count++;
+            
+            let starsStr = '';
+            const rNum = Number(item.rating) || 0;
+            for(let i=0; i<rNum; i++) starsStr += '⭐';
+
+            const isPublished = !!item.isPublished;
+
+            container.innerHTML += `
+              <div class="bg-white p-3.5 rounded-xl border border-amber-200 shadow-sm space-y-2 text-xs">
+                <div class="flex justify-between items-center border-b pb-1.5">
+                  <div class="font-bold text-gray-800">
+                    <span>العميل: ${item.customerName || item.name || 'عميل حمكشة'}</span>
+                    <span class="text-[10px] font-mono text-gray-400 mr-2">#${item.orderId || key}</span>
+                  </div>
+                  <span class="formatted-date font-mono text-[10px] text-gray-500">${formatDateDMY(item.date)}</span>
+                </div>
+
+                <div class="flex justify-between items-center bg-amber-50 p-2 rounded-lg">
+                  <div>
+                    <span class="text-gray-600">المندوب:</span>
+                    <b class="text-red-700 mr-1">${driver}</b>
+                  </div>
+                  <div class="text-amber-600 font-bold">${starsStr || 'بدون تقييم'} (${item.rating || 0}/5)</div>
+                </div>
+
+                <div class="text-gray-700 pt-1">
+                  <span class="font-bold text-gray-900 block mb-0.5">💬 التعليق والرأي:</span>
+                  <p class="bg-gray-50 p-2 rounded-lg border text-gray-800">${item.comment || 'لم يقم العميل بكتابة تعليق نصي.'}</p>
+                </div>
+
+                <div class="flex justify-between items-center pt-2 border-t">
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded ${isPublished ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'}">
+                    ${isPublished ? '🌐 منشور للعموم' : '🔒 خاص بالإدارة فقط'}
+                  </span>
+                  
+                  <div class="flex items-center gap-1.5">
+                    <button onclick="togglePublishComment('${key}', ${!isPublished})" class="${isPublished ? 'bg-amber-100 text-amber-800 hover:bg-amber-200' : 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'} px-2.5 py-1 rounded text-[10px] font-bold">
+                      ${isPublished ? 'إلغاء النشر 🙈' : 'نشر للجميع 👁️'}
+                    </button>
+                    <button onclick="deleteComment('${key}')" class="bg-red-100 text-red-700 hover:bg-red-200 px-2.5 py-1 rounded text-[10px] font-bold">
+                      حذف 🗑️
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `;
+          }
+        }
+      });
+
+      if(count === 0) {
+        container.innerHTML = `<p class="text-xs text-gray-400 p-4 text-center col-span-2">لا توجد تعليقات أو تقييمات مطابقة للفلتر المحدد.</p>`;
+      }
+    }
+
+    function togglePublishComment(orderKey, publishState) {
+      if(!canUser('analytics')) return;
+      db.ref(`orders/${orderKey}/isPublished`).set(publishState).then(() => {
+        alert(publishState ? 'تم نشر التعليق بنجاح للعموم في صفحة التتبع ✅' : 'تم إلغاء النشر وأصبح التعليق خاصاً بالإدارة فقط 🔒');
+      });
+    }
+
+    function deleteComment(orderKey) {
+      if(!canUser('analytics')) return;
+      if(confirm('هل تريد حذف هذا التعليق والتقييم نهائياً؟')) {
+        db.ref(`orders/${orderKey}`).update({ rating: null, comment: null, isPublished: false }).then(() => {
+          alert('تم حذف التعليق والتقييم بنجاح 🗑️');
+        });
+      }
+    }
+
+    // --- 💬 عرض التعليقات العامة المنشورة في صفحة تتبع العميل ---
+    function renderPublicComments() {
+      const container = document.getElementById('publicCommentsContainer');
+      if(!container) return;
+
+      container.innerHTML = '';
+      let count = 0;
+
+      Object.keys(allOrdersCache).forEach(key => {
+        const item = allOrdersCache[key];
+        if(item.isPublished && (item.comment || item.rating)) {
+          count++;
+          let starsStr = '';
+          const rNum = Number(item.rating) || 0;
+          for(let i=0; i<rNum; i++) starsStr += '⭐';
+
+          container.innerHTML += `
+            <div class="bg-amber-50/50 p-3 rounded-xl border border-amber-200 space-y-1 text-xs">
+              <div class="flex justify-between items-center text-gray-700">
+                <span class="font-bold text-red-800">${item.customerName || 'عميل حمكشة'}</span>
+                <span class="text-amber-600 font-bold text-[11px]">${starsStr}</span>
+              </div>
+              ${item.comment ? `<p class="text-gray-800 bg-white p-2 rounded-lg border border-amber-100">${item.comment}</p>` : ''}
+            </div>
+          `;
+        }
+      });
+
+      if(count === 0) {
+        container.innerHTML = `<p class="text-[11px] text-gray-400 text-center">لا توجد آراء منشورة حالياً.</p>`;
+      }
+    }
+
+    // --- 🏷️ قسم أسعار اللحوم وإدارتها المباشرة ---
+    let pricesCache = {};
+
+    function renderPrices() {
+      if(!canUser('prices')) return;
+      db.ref('prices').on('value', (snap) => {
+        pricesCache = snap.val() || {};
+        const container = document.getElementById('priceListContainer');
+        container.innerHTML = '';
+
+        const defaultPrices = [
+          { name: 'لحم کندوز ممتاز', price: 470, unit: 'كيلو' },
+          { name: 'لحم ضاني (فخده/كتف)', price: 460, unit: 'كيلو' },
+          { name: 'كفتة حاتي جاهزة', price: 380, unit: 'كيلو' },
+          { name: 'مفروم أحمر ممتاز', price: 460, unit: 'كيلو' },
+          { name: 'كبده عجالي مشكلة', price: 460, unit: 'كيلو' },
+          { name: 'سجق بلدي حمكشة', price: 380, unit: 'كيلو' }
+        ];
+
+        if (Object.keys(pricesCache).length === 0) {
+          defaultPrices.forEach(dp => {
+            db.ref('prices').push(dp);
+          });
+          return;
+        }
+
+        const canEditPrices = canUser('prices');
+
+        Object.keys(pricesCache).forEach(k => {
+          const item = pricesCache[k];
+          container.innerHTML += `
+            <div class="bg-amber-50/60 p-4 rounded-2xl border border-amber-200 flex flex-col justify-between shadow-sm space-y-3">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="font-bold text-sm text-gray-800">${item.name}</h4>
+                  <p class="text-xs text-gray-500 font-semibold">لكل ${item.unit || 'كيلو'}</p>
+                </div>
+                <div class="text-left">
+                  <span class="text-lg font-black text-red-700 font-mono">${item.price}</span>
+                  <span class="text-xs font-bold text-red-900">ج.م</span>
+                </div>
+              </div>
+
+              ${canEditPrices ? `
+                <div class="flex items-center gap-1.5 pt-2 border-t border-amber-200/60 justify-end">
+                  <button onclick="openEditPriceModal('${k}')" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-sm">✏️ تعديل السعر</button>
+                  <button onclick="deletePriceItem('${k}')" class="bg-red-100 hover:bg-red-200 text-red-700 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-sm">🗑️ حذف</button>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        });
+      });
+    }
+
+    function openAddPriceModal() {
+      if(!canUser('prices')) return alert('عذراً، ليس لديك صلاحية تعديل أو إضافة أسعار.');
+      document.getElementById('priceKey').value = '';
+      document.getElementById('priceModalTitle').innerText = '➕ إضافة صنف لحوم جديد';
+      document.getElementById('priceName').value = '';
+      document.getElementById('priceValue').value = '';
+      document.getElementById('priceUnit').value = 'كيلو';
+      document.getElementById('editPriceModal').classList.remove('hidden');
+    }
+
+    function openEditPriceModal(key) {
+      if(!canUser('prices')) return alert('عذراً، ليس لديك صلاحية التعديل.');
+      const p = pricesCache[key];
+      if(!p) return;
+      document.getElementById('priceKey').value = key;
+      document.getElementById('priceModalTitle').innerText = '✏️ تعديل سعر المنتج';
+      document.getElementById('priceName').value = p.name || '';
+      document.getElementById('priceValue').value = p.price || 0;
+      document.getElementById('priceUnit').value = p.unit || 'كيلو';
+      document.getElementById('editPriceModal').classList.remove('hidden');
+    }
+
+    function closeEditPriceModal() {
+      document.getElementById('editPriceModal').classList.add('hidden');
+    }
+
+    function savePriceItem() {
+      if(!canUser('prices')) return;
+      const key = document.getElementById('priceKey').value;
+      const name = document.getElementById('priceName').value.trim();
+      const price = Number(document.getElementById('priceValue').value) || 0;
+      const unit = document.getElementById('priceUnit').value.trim() || 'كيلو';
+
+      if(!name || !price) return alert('يرجى كتابة اسم المنتج والسعر بشكل صحيح');
+
+      if(key) {
+        db.ref('prices/' + key).update({ name, price, unit }).then(() => {
+          alert('تم تحديث سعر المنتج بنجاح ✅');
+          closeEditPriceModal();
+        });
+      } else {
+        db.ref('prices').push({ name, price, unit }).then(() => {
+          alert('تمت إضافة المنتج الجديد للقائمة بنجاح ✅');
+          closeEditPriceModal();
+        });
+      }
+    }
+
+    function deletePriceItem(key) {
+      if(!canUser('prices')) return;
+      if(confirm('هل تريد حذف هذا المنتج من قائمة الأسعار؟')) {
+        db.ref('prices/' + key).remove();
+      }
+    }
+
+    // --- 📍 تتبع العميل ومشاركة موقعه الحي مع المندوب ---
+    function searchCustomerOrder() {
+      let id = document.getElementById('custSearchOrderId').value.trim();
+      if(!id) return alert('يرجى إدخال رقم الطلب');
+
+      let matchedKey = id;
+      Object.keys(allOrdersCache).forEach(k => {
+        if (allOrdersCache[k].orderId === id || k === id || (allOrdersCache[k].orderId && allOrdersCache[k].orderId.includes(id))) {
+          matchedKey = k;
+        }
+      });
+
+      currentTrackOrderId = matchedKey;
+
+      db.ref('orders/' + matchedKey).on('value', (snap) => {
+        const data = snap.val();
+        if(data) {
+          document.getElementById('dispOrderId').innerText = '#' + (data.orderId || matchedKey);
+          document.getElementById('cDriver').innerText = data.driver || 'جاري التحديد...';
+          document.getElementById('cDate').innerText = formatDateDMY(data.date) + ' ' + (data.time || '');
+          document.getElementById('badgeStatus').innerText = data.status || 'جاري المتابعة';
+
+          // عرض زر الخريطة لموقع المندوب
+          if(data.lat && data.lng) {
+            document.getElementById('mapTextInfo').innerHTML = `
+              <div class="space-y-2">
+                <p class="font-bold text-emerald-600">🛵 المندوب في الطريق إليك الآن!</p>
+                <a href="https://www.google.com/maps?q=${data.lat},${data.lng}" target="_blank" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow transition-all">
+                  📍 فتح موقع المندوب الحي على Google Maps
+                </a>
+              </div>
+            `;
+          } else {
+            document.getElementById('mapTextInfo').innerHTML = `⏳ الطلب قيد التحضير أو المندوب لم يقم بتفعيل اللوكيشن الحي بعد.`;
+          }
+
+          // ⚠️ يظهر صندوق التقييم فقط عند حالة "تم التسليم بنجاح ✅"
+          if(data.status === 'تم التسليم بنجاح ✅') {
+            document.getElementById('ratingBox').classList.remove('hidden');
+            if(data.rating) {
+              selectedStarsCount = data.rating;
+              document.getElementById('ratingSubmittedMsg').innerText = `تم تسجيل تقييمك بـ (${data.rating} ⭐) بنجاح! شكراً لك.`;
+              document.getElementById('ratingSubmittedMsg').classList.remove('hidden');
+            }
+            if(data.comment) {
+              document.getElementById('custCommentText').value = data.comment;
+            }
+          } else {
+            document.getElementById('ratingBox').classList.add('hidden');
+          }
+        } else {
+          alert('لم يتم العثور على طلب بهذا الرقم!');
+        }
+      });
+    }
+
+    function toggleCustomerLocationShare() {
+      if(!currentTrackOrderId) return alert('أدخل رقم الطلب وقم بالبحث أولاً لربط موقعك بطلبك!');
       
-      - name: Deploy to Firebase
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
-          channelId: live
-          projectId: hamkasha-tracking
-```
+      if (navigator.geolocation) {
+        if(custWatchId) {
+          navigator.geolocation.clearWatch(custWatchId);
+          custWatchId = null;
+          document.getElementById('custShareLocBtn').innerText = "📍 مشاركة موقعي الحالي (GPS) مع المندوب";
+          document.getElementById('custLocStatus').classList.add('hidden');
+          return;
+        }
 
----
+        custWatchId = navigator.geolocation.watchPosition((pos) => {
+          db.ref('orders/' + currentTrackOrderId).update({
+            custLat: pos.coords.latitude,
+            custLng: pos.coords.longitude
+          });
+          document.getElementById('custShareLocBtn').innerText = "🔄 يتم تحديث مشاركة موقعك حياً...";
+          document.getElementById('custLocStatus').classList.remove('hidden');
+        }, (err) => {
+          alert('تعذر الوصول إلى موقعك الجغرافي (GPS)');
+        }, { enableHighAccuracy: true });
+      } else {
+        alert('متصفحك لا يدعم تحديد الموقع الجغرافي');
+      }
+    }
 
-## 📞 Support & Questions
+    function setStarRating(stars) {
+      selectedStarsCount = stars;
+      alert(`تم اختيار ${stars} نجوم ⭐. اضغط زر (إرسال التقييم والتعليق) لحفظ التقييم.`);
+    }
 
-When pushing to GitHub:
+    function submitFullFeedback() {
+      if(!currentTrackOrderId) return alert('يرجى تحديد رقم الطلب أولاً!');
+      if(selectedStarsCount === 0) return alert('يرجى اختيار عدد النجوم للتقييم أولاً!');
 
-1. **For questions about the code**: Create an issue with label `question`
-2. **For bug reports**: Create an issue with label `bug`
-3. **For feature requests**: Create an issue with label `enhancement`
-4. **For security concerns**: Email directly (do NOT create public issue)
+      const commentText = document.getElementById('custCommentText').value.trim();
 
----
+      db.ref('orders/' + currentTrackOrderId).update({
+        rating: selectedStarsCount,
+        comment: commentText
+      }).then(() => {
+        document.getElementById('ratingSubmittedMsg').innerText = `شكراً لك! تم تسجيل تقييمك بـ (${selectedStarsCount} ⭐) والملاحظات بنجاح ✅`;
+        document.getElementById('ratingSubmittedMsg').classList.remove('hidden');
+      });
+    }
 
-## ✅ Final Deployment Checklist
+    // --- الطباعة والتصدير ---
+    function printReport() { 
+      if(!canUser('print')) return alert('عذراً، ليس لديك صلاحية الطباعة.');
+      exportToPDF(); 
+    }
 
-Before merging to main:
+    function exportToExcel() {
+      if(!canUser('print')) return alert('عذراً، ليس لديك صلاحية تصدير البيانات.');
+      if (filteredOrdersList.length === 0) return alert('لا توجد بيانات مطابقة للتصدير!');
 
-```
-Production Readiness
-  ☐ All tests passing
-  ☐ Code reviewed by 2+ team members
-  ☐ Security audit completed
-  ☐ Performance benchmarks acceptable
-  ☐ Browser compatibility verified
-  ☐ Mobile responsiveness confirmed
-  ☐ Documentation updated
-  ☐ Changelog updated
-  ☐ Version number bumped
-  ☐ Rollback plan documented
+      let csvContent = "\uFEFFرقم الطلب,تاريخ الطلب,وقت الطلب,اسم العميل,رقم الهاتف,المندوب,طريقة الدفع,العمولة,الإجمالي النهائي,حالة الطلب,العنوان والطلبات\n";
 
-Post-Deployment
-  ☐ Monitoring active
-  ☐ Error logs checked
-  ☐ User feedback collected
-  ☐ Performance metrics reviewed
-  ☐ Security logs reviewed
-```
+      filteredOrdersList.forEach(item => {
+        const row = [
+          `"${item.displayId}"`,
+          `"${formatDateDMY(item.date)}"`,
+          `"${item.time || ''}"`,
+          `"${item.displayName.replace(/"/g, '""')}"`,
+          `"${item.displayPhone}"`,
+          `"${item.displayDriver}"`,
+          `"${getPaymentText(item.paymentMethod)}"`,
+          `"${item.paymentFee || 0}"`,
+          `"${item.totalCash || 0}"`,
+          `"${item.status || ''}"`,
+          `"${(item.address || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`
+        ];
+        csvContent += row.join(",") + "\n";
+      });
 
----
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `تقرير_طلبات_وحسابات_حمكشة_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
 
-**Status**: Ready for Production  
-**Version**: 2.0.0  
-**Maintained By**: Adel (Technical Lead)
+    function exportToPDF() {
+      if(!canUser('print')) return alert('عذراً، ليس لديك صلاحية التصدير والطباعة.');
+      if (filteredOrdersList.length === 0) return alert('لا توجد بيانات مطابقة للتصدير!');
+
+      const printWindow = window.open('', '_blank');
+      let tableRows = '';
+
+      filteredOrdersList.forEach(item => {
+        tableRows += `
+          <tr>
+            <td style="font-weight:bold; color:#800020; font-family: monospace;">#${item.displayId}</td>
+            <td><span style="direction:ltr; display:inline-block;">${formatDateDMY(item.date)}</span><br><small style="color:#666">${item.time || ''}</small></td>
+            <td><b>${item.displayName}</b></td>
+            <td dir="ltr" style="text-align:right;">${item.displayPhone}</td>
+            <td>${item.displayDriver}<br><small style="color:#1e3a8a; font-weight:bold;">${getPaymentText(item.paymentMethod)}</small></td>
+            <td style="font-weight:bold; color:#047857;">${item.totalCash || 0} ج.م ${item.paymentFee ? `<br><small style="color:#666">(عمولة: ${item.paymentFee}ج)</small>` : ''}</td>
+            <td><span style="background:#fee2e2; color:#800020; padding:2px 6px; border-radius:4px; font-weight:bold; border:1px solid #fca5a5;">${item.status}</span></td>
+            <td style="font-size:11px;">${item.address || '-'}</td>
+          </tr>
+        `;
+      });
+
+      const selectedDriver = document.getElementById('driverFilter') ? document.getElementById('driverFilter').value : 'ALL';
+      const driverInfo = selectedDriver !== 'ALL' ? `المندوب: ${selectedDriver}` : 'جميع المناديب';
+
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html lang="ar" dir="rtl">
+        <head>
+          <meta charset="UTF-8">
+          <title>تقرير طلبات وجزارة حمكشة 🥩</title>
+          <style>
+            body { font-family: 'Cairo', sans-serif; padding: 20px; direction: rtl; text-align: right; background: #fff; color: #111; position: relative; }
+            .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 380px; height: 380px; opacity: 0.05; pointer-events: none; z-index: 0; }
+            .content-wrapper { position: relative; z-index: 1; }
+            .header-container { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px double #800020; padding-bottom: 12px; margin-bottom: 15px; }
+            .logo-section { display: flex; align-items: center; gap: 15px; }
+            .logo-circle { width: 85px; height: 85px; background: radial-gradient(circle, #a00028 0%, #600018 100%); border: 3px solid #d4af37; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; }
+            .logo-title-top { font-size: 13px; font-weight: bold; line-height: 1; }
+            .logo-title-main { font-size: 18px; font-weight: 900; color: #fff; line-height: 1.1; }
+            .logo-since { font-size: 8px; background: #d4af37; color: #500010; padding: 1px 6px; border-radius: 10px; font-weight: bold; margin-top: 2px; }
+            .brand-name { font-size: 26px; font-weight: 900; color: #800020; margin: 0; }
+            .brand-sub { font-size: 12px; color: #d4af37; font-weight: bold; background: #800020; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-top: 4px; }
+            .store-info { text-align: left; font-size: 11px; color: #222; font-weight: 600; line-height: 1.6; background: #fafafa; padding: 8px 12px; border-radius: 8px; border: 1px solid #eee; }
+            .summary-bar { display: flex; justify-content: space-between; background: #fffbeb; border: 1px solid #fef3c7; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; font-size: 12px; font-weight: bold; color: #92400e; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+            th { background-color: #800020; color: white; border: 1px solid #600018; padding: 8px; font-weight: bold; }
+            td { border: 1px solid #e5e7eb; padding: 8px; text-align: right; }
+            tr:nth-child(even) { background-color: #fcfcfc; }
+            .footer-note { margin-top: 25px; text-align: center; font-size: 10px; color: #777; border-top: 1px dashed #ccc; padding-top: 8px; }
+            @media print { @page { size: A4 landscape; margin: 8mm; } }
+          </style>
+        </head>
+        <body>
+          <svg class="watermark" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="45" fill="#800020" stroke="#d4af37" stroke-width="3" />
+            <text x="50" y="40" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="bold">جزارة</text>
+            <text x="50" y="58" font-size="16" fill="#ffffff" text-anchor="middle" font-weight="900">حمكشة</text>
+            <text x="50" y="72" font-size="6" fill="#d4af37" text-anchor="middle" font-weight="bold">SINCE 1960</text>
+          </svg>
+
+          <div class="content-wrapper">
+            <div class="header-container">
+              <div class="logo-section">
+                <div class="logo-circle">
+                  <span class="logo-title-top">جزارة</span>
+                  <span class="logo-title-main">حمكشة</span>
+                  <span class="logo-since">SINCE 1960</span>
+                </div>
+                <div>
+                  <h1 class="brand-name">جزارة حمكشة</h1>
+                  <span class="brand-sub">جودة مضمونة منذ ١٩٦٠ 🥩</span>
+                </div>
+              </div>
+              <div class="store-info">
+                <div>📍 <b>العنوان:</b> الزقازيق، حي تاني، معهد فني تجاري</div>
+                <div>📞 <b>تواصل:</b> 0552317739 | 0552321231 | 0552314867</div>
+                <div>💬 <b>واتساب:</b> 01273091807</div>
+                <div>📅 <b>التاريخ:</b> <span style="direction:ltr; display:inline-block;">${formatDateDMY(new Date().toISOString().split('T')[0])}</span></div>
+              </div>
+            </div>
+
+            <div class="summary-bar">
+              <span>📋 <b>نوع التقرير:</b> تقرير الطلبات والتحصيل المالي</span>
+              <span>👤 <b>الفئة:</b> ${driverInfo}</span>
+              <span>🔢 <b>إجمالي الطلبات:</b> ${filteredOrdersList.length} طلبات</span>
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>رقم الطلب</th>
+                  <th>التاريخ والوقت</th>
+                  <th>اسم العميل</th>
+                  <th>رقم الهاتف</th>
+                  <th>المندوب والدفع</th>
+                  <th>التحصيل والعمولة</th>
+                  <th>حالة الطلب</th>
+                  <th>العنوان التفصيلي والطلبات</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tableRows}
+              </tbody>
+            </table>
+
+            <div class="footer-note">تم استخراج هذا التقرير آلياً من نظام إدارة جزارة حمكشة - الزقازيق 🥩</div>
+          </div>
+
+          <script>
+            window.onload = function() { window.print(); }
+          <\/script>
+        </body>
+        </html>
+      `;
+
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+    }
+
+    function shareWhatsApp(key) {
+      const item = allOrdersCache[key];
+      if (!item) return;
+
+      const displayId = item.orderId || key;
+      const phone = item.phone || '';
+      const totalCash = item.totalCash || ((item.orderPrice || 0) + (item.deliveryPrice || 0) + (item.paymentFee || 0));
+      const baseUrl = window.location.href.split('?')[0];
+      const trackUrl = `${baseUrl}?tab=track&id=${displayId}`;
+
+      const text = `أهلاً بك 🥩
+طلبك لدى جزارة حمكشة رقم: #${displayId}
+طريقة الدفع: ${getPaymentText(item.paymentMethod)}
+المبلغ المطلوب تحصيله (شامل العمولة والتوصيل): ${totalCash} ج.م
+يمكنك تتبع حالة طلبك ومكان المندوب وتقييم الخدمة مباشرة عبر الرابط التالي:
+${trackUrl}`;
+
+      const waUrl = phone 
+        ? `https://wa.me/${phone}?text=${encodeURIComponent(text)}`
+        : `https://wa.me/?text=${encodeURIComponent(text)}`;
+
+      window.open(waUrl, '_blank');
+    }
+
+    function openEditModal(key) {
+      if(!canUser('edit')) return alert('عذراً، ليس لديك صلاحية التعديل.');
+      const order = allOrdersCache[key];
+      if(!order) return;
+
+      document.getElementById('editKey').value = key;
+      document.getElementById('editModalOrderId').innerText = `#${order.orderId || key}`;
+      document.getElementById('editCustName').value = order.customerName || order.name || '';
+      document.getElementById('editCustPhone').value = order.phone || '';
+      document.getElementById('editCustAddress').value = order.address || '';
+      document.getElementById('editOrderPrice').value = order.orderPrice || 0;
+      document.getElementById('editDeliveryPrice').value = order.deliveryPrice || 20;
+      document.getElementById('editDriverSelect').value = order.driver || 'غير محدد';
+
+      document.getElementById('editOrderModal').classList.remove('hidden');
+    }
+
+    function closeEditModal() {
+      document.getElementById('editOrderModal').classList.add('hidden');
+    }
+
+    function saveEditOrder() {
+      if(!canUser('edit')) return alert('عذراً، ليس لديك صلاحية حفظ التعديلات.');
+      const key = document.getElementById('editKey').value;
+      if(!key) return;
+
+      const name = document.getElementById('editCustName').value.trim();
+      const phone = document.getElementById('editCustPhone').value.trim();
+      const address = document.getElementById('editCustAddress').value.trim();
+      const orderPrice = Number(document.getElementById('editOrderPrice').value) || 0;
+      const deliveryPrice = Number(document.getElementById('editDeliveryPrice').value) || 0;
+      const driver = document.getElementById('editDriverSelect').value;
+
+      const existingOrder = allOrdersCache[key] || {};
+      const paymentFee = existingOrder.paymentFee || 0;
+
+      db.ref('orders/' + key).update({
+        customerName: name,
+        phone: phone,
+        address: address,
+        orderPrice: orderPrice,
+        deliveryPrice: deliveryPrice,
+        totalCash: orderPrice + deliveryPrice + paymentFee,
+        driver: driver
+      }).then(() => {
+        alert('تم حفظ البيانات والتعديلات بنجاح ✅');
+        closeEditModal();
+      });
+    }
+
+    function deleteOrder(id) {
+      if(!canUser('delete')) return alert('عذراً، ليس لديك صلاحية الحذف.');
+      if(confirm(`هل تريد حذف هذا الطلب بشكل نهائي؟`)) db.ref('orders/' + id).remove();
+    }
+
+    function fetchDriverOrder() {
+      const id = document.getElementById('orderId').value.trim();
+      if(!id) return alert('يرجى كتابة رقم الطلب');
+      
+      db.ref('orders/' + id).on('value', (snap) => {
+        const data = snap.val();
+        if(data) {
+          document.getElementById('dCustName').innerText = data.customerName || data.name || '--';
+          document.getElementById('dCustAddress').innerText = data.address || '--';
+          document.getElementById('dPayMethod').innerText = getPaymentText(data.paymentMethod);
+          document.getElementById('dTotalCash').innerText = (data.totalCash || ((data.orderPrice || 0) + (data.deliveryPrice || 0) + (data.paymentFee || 0))) + ' ج.م';
+          document.getElementById('dStatus').innerText = data.status || '--';
+          document.getElementById('driverStatusSelect').value = data.status || 'جاري تحضير اللحوم 🥩';
+          document.getElementById('driverOrderCard').classList.remove('hidden');
+        } else {
+          alert('عذراً، هذا الطلب غير موجود!');
+          document.getElementById('driverOrderCard').classList.add('hidden');
+        }
+      });
+    }
+
+    function driverChangeStatus(newStatus) {
+      const id = document.getElementById('orderId').value.trim();
+      if(!id) return;
+      db.ref('orders/' + id).update({ status: newStatus }).then(() => {
+        document.getElementById('driverStatus').innerText = "✅ تم تحديث حالة الطلب إلى: " + newStatus;
+      });
+    }
+
+    let watchId = null;
+    function startDelivery() {
+      const id = document.getElementById('orderId').value.trim();
+      if(!id) return alert('أدخل رقم الطلب أولاً');
+      if (navigator.geolocation) {
+        if(watchId) {
+          navigator.geolocation.clearWatch(watchId);
+          watchId = null;
+          document.getElementById('driverStatus').innerText = "🛑 تم إيقاف بث الموقع الحي.";
+          document.getElementById('startBtn').innerText = "📍 بدء بث اللوكيشن الحي Live (اختياري)";
+          document.getElementById('stopBtn').classList.add('hidden');
+          return;
+        }
+
+        watchId = navigator.geolocation.watchPosition((pos) => {
+          db.ref('orders/' + id).update({
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude
+          });
+          document.getElementById('driverStatus').innerText = "📍 يتم الآن بث موقعك الحي بنجاح...";
+          document.getElementById('startBtn').innerText = "🔄 جاري بث اللوكيشن حياً...";
+          document.getElementById('stopBtn').classList.remove('hidden');
+        }, (err) => {
+          alert('تعذر الوصول إلى نظام تحديد المواقع (GPS)');
+        }, { enableHighAccuracy: true });
+      } else {
+        alert('المتصفح لا يدعم تحديد الموقع الجغرافي');
+      }
+    }
+
+    function stopDelivery() {
+      if(watchId) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+      }
+      document.getElementById('driverStatus').innerText = "🛑 تم إيقاف بث الموقع الحي.";
+      document.getElementById('startBtn').innerText = "📍 بدء بث اللوكيشن الحي Live (اختياري)";
+      document.getElementById('stopBtn').classList.add('hidden');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tab = urlParams.get('tab');
+      const orderId = urlParams.get('id');
+
+      if(tab === 'track') {
+        const mainHeader = document.getElementById('mainHeader');
+        if(mainHeader) mainHeader.style.display = 'none';
+
+        const userBadgeBar = document.getElementById('userBadgeBar');
+        if(userBadgeBar) userBadgeBar.style.display = 'none';
+
+        switchTab('track');
+
+        if(orderId) {
+          document.getElementById('custSearchOrderId').value = orderId;
+          searchCustomerOrder();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
