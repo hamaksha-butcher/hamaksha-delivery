@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام جزارة حمكشة - إدارة كاملة وتقييم وحسابات 🥩</title>
+  <title>نظام جزارة حمكشة - إدارة الطلبات والتقييم والتعليقات 🥩</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -249,7 +249,7 @@
       </div>
     </section>
 
-    <!-- 📊 2️⃣ داشبورد التقييم والتحصيل المالي -->
+    <!-- 📊 2️⃣ داشبورد التقييم والتحصيل المالي والتعليقات (خاص بالإدارة فقط) -->
     <section id="sec-analytics" class="hidden space-y-6">
       <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 space-y-6">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b pb-4">
@@ -301,6 +301,47 @@
             </tbody>
           </table>
         </div>
+
+        <!-- 💬 قسم سجل تقييمات وتعليقات العملاء للإدارة فقط مع الفلترة -->
+        <div class="pt-6 border-t space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+              <h3 class="font-bold text-sm text-gray-800">💬 سجل آرائك وتعليقات العملاء حول المناديب (الإدارة فقط)</h3>
+              <p class="text-[11px] text-gray-500">متابعة كافة الملاحظات المكتوبة من العملاء وفلترتها حسب المندوب أو التقييم أو التاريخ</p>
+            </div>
+          </div>
+
+          <!-- أدوات فلترة التعليقات -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-amber-50/70 p-3 rounded-xl border border-amber-200">
+            <div>
+              <label class="block text-[10px] font-bold text-amber-900 mb-1">فلترة بالمندوب:</label>
+              <select id="commentDriverFilter" onchange="renderCommentsList()" class="w-full border p-2 rounded-lg text-xs bg-white filter-driver-dropdown">
+                <option value="ALL">جميع المناديب</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-amber-900 mb-1">فلترة بالتقييم (النجوم):</label>
+              <select id="commentRatingFilter" onchange="renderCommentsList()" class="w-full border p-2 rounded-lg text-xs bg-white">
+                <option value="ALL">كل التقييمات ⭐</option>
+                <option value="5">5 نجوم ⭐⭐⭐⭐⭐</option>
+                <option value="4">4 نجوم ⭐⭐⭐⭐</option>
+                <option value="3">3 نجوم ⭐⭐⭐</option>
+                <option value="2">نجمتان ⭐⭐</option>
+                <option value="1">نجمة واحدة ⭐</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-amber-900 mb-1">فلترة بالتاريخ:</label>
+              <input type="date" id="commentDateFilter" onchange="renderCommentsList()" class="w-full border p-2 rounded-lg text-xs bg-white">
+            </div>
+          </div>
+
+          <!-- قائمة الكروت والملاحظات -->
+          <div id="commentsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
+            <p class="text-xs text-gray-400 p-4 text-center col-span-2">جاري تحميل التعليقات...</p>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -374,12 +415,12 @@
       </div>
     </section>
 
-    <!-- 5️⃣ تتبع العميل -->
+    <!-- 5️⃣ تتبع العميل والموقع والتقييم المباشر -->
     <section id="sec-track" class="hidden space-y-6 max-w-xl mx-auto">
       <div class="bg-white rounded-2xl shadow-lg p-5 border space-y-3">
         <label class="block text-xs font-bold text-gray-800">📌 أدخل رقم الطلب لتتبع حالة التوصيل:</label>
         <div class="flex gap-2">
-          <input type="text" id="custSearchOrderId" placeholder="أدخل رقم الطلب (مثال: HAMKASHA-12345)" class="w-full border p-2.5 rounded-xl text-xs font-mono font-bold text-center bg-gray-50">
+          <input type="text" id="custSearchOrderId" placeholder="أدخل رقم الطلب (مثال: 410 أو HAMKASHA-12345)" class="w-full border p-2.5 rounded-xl text-xs font-mono font-bold text-center bg-gray-50">
           <button onclick="searchCustomerOrder()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 rounded-xl text-xs whitespace-nowrap shadow">تتبع 🔍</button>
         </div>
       </div>
@@ -398,20 +439,42 @@
           <p class="flex justify-between"><span>تاريخ الطلب:</span> <b id="cDate" class="font-mono text-gray-600">-</b></p>
         </div>
 
-        <div id="map" class="bg-gray-100 border-2 border-dashed rounded-xl p-6 text-center text-xs text-gray-500">
-          أدخل رقم الطلب الخاص بك لمتابعة مسار المندوب.
+        <!-- 🗺️ خيارات المندوب والعميل الخريطة -->
+        <div id="map" class="bg-gray-50 border border-amber-200 rounded-xl p-4 text-center text-xs text-gray-600 space-y-3">
+          <p id="mapTextInfo">أدخل رقم الطلب الخاص بك لمتابعة مسار المندوب.</p>
+
+          <!-- زر مشاركة موقع العميل مع المندوب -->
+          <div class="border-t pt-3 space-y-2">
+            <button id="custShareLocBtn" onclick="toggleCustomerLocationShare()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow flex justify-center items-center gap-1.5">
+              📍 مشاركة موقعي الحالي (GPS) مع المندوب
+            </button>
+            <p id="custLocStatus" class="text-[11px] font-bold text-emerald-700 hidden">✅ تم إرسال موقعك للمندوب بنجاح!</p>
+          </div>
         </div>
 
-        <div id="ratingBox" class="hidden bg-amber-50 border border-amber-200 p-4 rounded-xl text-center space-y-2">
-          <h4 class="font-bold text-xs text-amber-900">⭐ شاركنا تقييمك لخدمة التوصيل والجزارة:</h4>
+        <!-- ⭐ قسم تقييم الخدمة والتعليقات (يظهر فقط عند حالة "تم التسليم بنجاح ✅") -->
+        <div id="ratingBox" class="hidden bg-amber-50 border border-amber-200 p-4 rounded-xl text-center space-y-3">
+          <h4 class="font-bold text-xs text-amber-900">⭐ تقييم خدمة التوصيل والمندوب:</h4>
+          <p class="text-[10px] text-gray-500 font-semibold">اختر عدد النجوم لتقييم تجربة التوصيل والمندوب</p>
+          
           <div class="flex justify-center gap-2 text-2xl" id="starContainer">
-            <button onclick="setStarRating(1)" class="hover:scale-125 transition-transform">⭐</button>
-            <button onclick="setStarRating(2)" class="hover:scale-125 transition-transform">⭐</button>
-            <button onclick="setStarRating(3)" class="hover:scale-125 transition-transform">⭐</button>
-            <button onclick="setStarRating(4)" class="hover:scale-125 transition-transform">⭐</button>
-            <button onclick="setStarRating(5)" class="hover:scale-125 transition-transform">⭐</button>
+            <button onclick="setStarRating(1)" class="star-btn hover:scale-125 transition-transform" title="1 نجمة">⭐</button>
+            <button onclick="setStarRating(2)" class="star-btn hover:scale-125 transition-transform" title="2 نجمة">⭐</button>
+            <button onclick="setStarRating(3)" class="star-btn hover:scale-125 transition-transform" title="3 نجوم">⭐</button>
+            <button onclick="setStarRating(4)" class="star-btn hover:scale-125 transition-transform" title="4 نجوم">⭐</button>
+            <button onclick="setStarRating(5)" class="star-btn hover:scale-125 transition-transform" title="5 نجوم">⭐</button>
           </div>
-          <p id="ratingSubmittedMsg" class="text-xs text-emerald-700 font-bold hidden">شكراً لتقييمك! تم تسجيل التقييم بنجاح ✅</p>
+
+          <div>
+            <label class="block text-right text-[11px] font-bold text-gray-700 mb-1">اكتب تعليقك أو رأيك في المندوب والخدمة (للإدارة فقط):</label>
+            <textarea id="custCommentText" rows="2" placeholder="اكتب ملاحظاتك هنا..." class="w-full border p-2 rounded-xl text-xs bg-white"></textarea>
+          </div>
+
+          <button onclick="submitFullFeedback()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-xs shadow">
+            إرسال التقييم والتعليق 🚀
+          </button>
+
+          <p id="ratingSubmittedMsg" class="text-xs text-emerald-700 font-bold hidden">شكراً لك! تم تسجيل تقييمك بنجاح ✅</p>
         </div>
       </div>
     </section>
@@ -551,6 +614,8 @@
     let filteredOrdersList = [];
     let currentAnalyticsPeriod = 'daily';
     let currentTrackOrderId = null;
+    let custWatchId = null;
+    let selectedStarsCount = 0;
 
     // إنشاء الحساب الرئيسي asma أوتوماتيكياً بصلاحيات كاملة مطلقة
     db.ref('users').once('value').then((snapshot) => {
@@ -613,7 +678,10 @@
       const activeTabBtn = document.getElementById(`tab-${tabName}`);
       if(activeTabBtn) activeTabBtn.classList.add('active');
 
-      if(tabName === 'analytics') renderAnalytics();
+      if(tabName === 'analytics') {
+        renderAnalytics();
+        renderCommentsList();
+      }
       if(tabName === 'prices') renderPrices();
     }
 
@@ -850,13 +918,15 @@
 
     function renderUsersList() {
       const dropdowns = document.querySelectorAll('.driver-dropdown');
-      const filterDriverDropdown = document.querySelector('.filter-driver-dropdown');
+      const filterDriverDropdown = document.querySelectorAll('.filter-driver-dropdown');
       const list = document.getElementById('usersList');
       
       dropdowns.forEach(select => {
         select.innerHTML = '<option value="غير محدد">حدد المندوب...</option>';
       });
-      if(filterDriverDropdown) filterDriverDropdown.innerHTML = '<option value="ALL">جميع المناديب</option>';
+      filterDriverDropdown.forEach(f => {
+        f.innerHTML = '<option value="ALL">جميع المناديب</option>';
+      });
       
       if(!list) return;
       list.innerHTML = '';
@@ -869,7 +939,9 @@
           dropdowns.forEach(select => {
             select.innerHTML += `<option value="${u.username}">${u.username}</option>`;
           });
-          if(filterDriverDropdown) filterDriverDropdown.innerHTML += `<option value="${u.username}">${u.username}</option>`;
+          filterDriverDropdown.forEach(f => {
+            f.innerHTML += `<option value="${u.username}">${u.username}</option>`;
+          });
         }
 
         const perms = u.perms || {};
@@ -966,9 +1038,11 @@
         driver: driver,
         status: 'جاري تحضير اللحوم 🥩',
         rating: null,
+        comment: null,
         date: now.toISOString().split('T')[0],
         time: now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
-        lat: null, lng: null
+        lat: null, lng: null,
+        custLat: null, custLng: null
       }).then(() => {
         const baseUrl = window.location.href.split('?')[0];
         const trackUrl = `${baseUrl}?tab=track&id=${orderId}`;
@@ -992,7 +1066,10 @@
     db.ref('orders').on('value', (snapshot) => {
       allOrdersCache = snapshot.val() || {};
       applyFilters();
-      if(!document.getElementById('sec-analytics').classList.contains('hidden')) renderAnalytics();
+      if(!document.getElementById('sec-analytics').classList.contains('hidden')) {
+        renderAnalytics();
+        renderCommentsList();
+      }
     });
 
     function getPaymentText(method) {
@@ -1202,6 +1279,71 @@
       });
     }
 
+    // --- 💬 عرض وفلترة تعليقات وتقييمات العملاء المخصصة للإدارة ---
+    function renderCommentsList() {
+      if(!canUser('analytics')) return;
+      const filterDriver = document.getElementById('commentDriverFilter') ? document.getElementById('commentDriverFilter').value : 'ALL';
+      const filterRating = document.getElementById('commentRatingFilter') ? document.getElementById('commentRatingFilter').value : 'ALL';
+      const filterDate = document.getElementById('commentDateFilter') ? document.getElementById('commentDateFilter').value : '';
+
+      const container = document.getElementById('commentsContainer');
+      container.innerHTML = '';
+
+      let count = 0;
+
+      Object.keys(allOrdersCache).forEach(key => {
+        const item = allOrdersCache[key];
+        
+        // التحقق من وجود تقييم أو تعليق
+        if(item.rating || item.comment) {
+          const driver = item.driver || 'غير محدد';
+          const rating = String(item.rating || '0');
+          const date = item.date || '';
+
+          const matchDriver = filterDriver === 'ALL' || driver === filterDriver;
+          const matchRating = filterRating === 'ALL' || rating === filterRating;
+          const matchDate = !filterDate || date === filterDate;
+
+          if(matchDriver && matchRating && matchDate) {
+            count++;
+            
+            let starsStr = '';
+            const rNum = Number(item.rating) || 0;
+            for(let i=0; i<rNum; i++) starsStr += '⭐';
+
+            container.innerHTML += `
+              <div class="bg-white p-3.5 rounded-xl border border-amber-200 shadow-sm space-y-2 text-xs">
+                <div class="flex justify-between items-center border-b pb-1.5">
+                  <div class="font-bold text-gray-800">
+                    <span>العميل: ${item.customerName || item.name || 'عميل حمكشة'}</span>
+                    <span class="text-[10px] font-mono text-gray-400 mr-2">#${item.orderId || key}</span>
+                  </div>
+                  <span class="font-mono text-[10px] text-gray-500">${item.date || ''}</span>
+                </div>
+
+                <div class="flex justify-between items-center bg-amber-50 p-2 rounded-lg">
+                  <div>
+                    <span class="text-gray-600">المندوب:</span>
+                    <b class="text-red-700 mr-1">${driver}</b>
+                  </div>
+                  <div class="text-amber-600 font-bold">${starsStr || 'بدون تقييم'} (${item.rating || 0}/5)</div>
+                </div>
+
+                <div class="text-gray-700 pt-1">
+                  <span class="font-bold text-gray-900 block mb-0.5">💬 التعليق والرأي:</span>
+                  <p class="bg-gray-50 p-2 rounded-lg border text-gray-800">${item.comment || 'لم يقم العميل بكتابة تعليق نصي.'}</p>
+                </div>
+              </div>
+            `;
+          }
+        }
+      });
+
+      if(count === 0) {
+        container.innerHTML = `<p class="text-xs text-gray-400 p-4 text-center col-span-2">لا توجد تعليقات أو تقييمات مطابقة للفلتر المحدد.</p>`;
+      }
+    }
+
     // --- 🏷️ قسم أسعار اللحوم وإدارتها المباشرة ---
     let pricesCache = {};
 
@@ -1213,7 +1355,7 @@
         container.innerHTML = '';
 
         const defaultPrices = [
-          { name: 'لحم كندوز ممتاز', price: 470, unit: 'كيلو' },
+          { name: 'لحم کندوز ممتاز', price: 470, unit: 'كيلو' },
           { name: 'لحم ضاني (فخده/كتف)', price: 460, unit: 'كيلو' },
           { name: 'كفتة حاتي جاهزة', price: 380, unit: 'كيلو' },
           { name: 'مفروم أحمر ممتاز', price: 460, unit: 'كيلو' },
@@ -1312,40 +1454,55 @@
       }
     }
 
-    // --- تتبع العميل والتقييم ---
+    // --- 📍 تتبع العميل ومشاركة موقعه الحي مع المندوب ---
     function searchCustomerOrder() {
-      const id = document.getElementById('custSearchOrderId').value.trim();
+      let id = document.getElementById('custSearchOrderId').value.trim();
       if(!id) return alert('يرجى إدخال رقم الطلب');
 
-      currentTrackOrderId = id;
+      let matchedKey = id;
+      Object.keys(allOrdersCache).forEach(k => {
+        if (allOrdersCache[k].orderId === id || k === id || (allOrdersCache[k].orderId && allOrdersCache[k].orderId.includes(id))) {
+          matchedKey = k;
+        }
+      });
 
-      db.ref('orders/' + id).on('value', (snap) => {
+      currentTrackOrderId = matchedKey;
+
+      db.ref('orders/' + matchedKey).on('value', (snap) => {
         const data = snap.val();
         if(data) {
-          document.getElementById('dispOrderId').innerText = '#' + (data.orderId || id);
+          document.getElementById('dispOrderId').innerText = '#' + (data.orderId || matchedKey);
           document.getElementById('cDriver').innerText = data.driver || 'جاري التحديد...';
           document.getElementById('cDate').innerText = (data.date || '') + ' ' + (data.time || '');
           document.getElementById('badgeStatus').innerText = data.status || 'جاري المتابعة';
 
-          if(data.status === 'تم التسليم بنجاح ✅') {
-            document.getElementById('ratingBox').classList.remove('hidden');
-            if(data.rating) {
-              document.getElementById('ratingSubmittedMsg').innerText = `تم تسجيل تقييمك بـ (${data.rating} ⭐) بنجاح!`;
-              document.getElementById('ratingSubmittedMsg').classList.remove('hidden');
-            }
-          }
-
+          // عرض زر الخريطة لموقع المندوب
           if(data.lat && data.lng) {
-            document.getElementById('map').innerHTML = `
+            document.getElementById('mapTextInfo').innerHTML = `
               <div class="space-y-2">
                 <p class="font-bold text-emerald-600">🛵 المندوب في الطريق إليك الآن!</p>
-                <a href="https://www.google.com/maps?q=${data.lat},${data.lng}" target="_blank" class="inline-block bg-red-600 text-white font-bold px-4 py-2 rounded-xl text-xs shadow">
+                <a href="https://www.google.com/maps?q=${data.lat},${data.lng}" target="_blank" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow transition-all">
                   📍 فتح موقع المندوب الحي على Google Maps
                 </a>
               </div>
             `;
           } else {
-            document.getElementById('map').innerHTML = `⏳ الطلب قيد التحضير في الجزارة أو المندوب لم يقم بتفعيل اللوكيشن الحي بعد.`;
+            document.getElementById('mapTextInfo').innerHTML = `⏳ الطلب قيد التحضير أو المندوب لم يقم بتفعيل اللوكيشن الحي بعد.`;
+          }
+
+          // ⚠️ يظهر صندوق التقييم فقط عند حالة "تم التسليم بنجاح ✅"
+          if(data.status === 'تم التسليم بنجاح ✅') {
+            document.getElementById('ratingBox').classList.remove('hidden');
+            if(data.rating) {
+              selectedStarsCount = data.rating;
+              document.getElementById('ratingSubmittedMsg').innerText = `تم تسجيل تقييمك بـ (${data.rating} ⭐) بنجاح! شكراً لك.`;
+              document.getElementById('ratingSubmittedMsg').classList.remove('hidden');
+            }
+            if(data.comment) {
+              document.getElementById('custCommentText').value = data.comment;
+            }
+          } else {
+            document.getElementById('ratingBox').classList.add('hidden');
           }
         } else {
           alert('لم يتم العثور على طلب بهذا الرقم!');
@@ -1353,10 +1510,49 @@
       });
     }
 
+    function toggleCustomerLocationShare() {
+      if(!currentTrackOrderId) return alert('أدخل رقم الطلب وقم بالبحث أولاً لربط موقعك بطلبك!');
+      
+      if (navigator.geolocation) {
+        if(custWatchId) {
+          navigator.geolocation.clearWatch(custWatchId);
+          custWatchId = null;
+          document.getElementById('custShareLocBtn').innerText = "📍 مشاركة موقعي الحالي (GPS) مع المندوب";
+          document.getElementById('custLocStatus').classList.add('hidden');
+          return;
+        }
+
+        custWatchId = navigator.geolocation.watchPosition((pos) => {
+          db.ref('orders/' + currentTrackOrderId).update({
+            custLat: pos.coords.latitude,
+            custLng: pos.coords.longitude
+          });
+          document.getElementById('custShareLocBtn').innerText = "🔄 يتم تحديث مشاركة موقعك حياً...";
+          document.getElementById('custLocStatus').classList.remove('hidden');
+        }, (err) => {
+          alert('تعذر الوصول إلى موقعك الجغرافي (GPS)');
+        }, { enableHighAccuracy: true });
+      } else {
+        alert('متصفحك لا يدعم تحديد الموقع الجغرافي');
+      }
+    }
+
     function setStarRating(stars) {
-      if(!currentTrackOrderId) return;
-      db.ref('orders/' + currentTrackOrderId).update({ rating: stars }).then(() => {
-        document.getElementById('ratingSubmittedMsg').innerText = `شكراً لك! تم تسجيل تقييمك بـ (${stars} ⭐) بنجاح ✅`;
+      selectedStarsCount = stars;
+      alert(`تم اختيار ${stars} نجوم ⭐. اضغط زر (إرسال التقييم والتعليق) لحفظ التقييم.`);
+    }
+
+    function submitFullFeedback() {
+      if(!currentTrackOrderId) return alert('يرجى تحديد رقم الطلب أولاً!');
+      if(selectedStarsCount === 0) return alert('يرجى اختيار عدد النجوم للتقييم أولاً!');
+
+      const commentText = document.getElementById('custCommentText').value.trim();
+
+      db.ref('orders/' + currentTrackOrderId).update({
+        rating: selectedStarsCount,
+        comment: commentText
+      }).then(() => {
+        document.getElementById('ratingSubmittedMsg').innerText = `شكراً لك! تم تسجيل تقييمك بـ (${selectedStarsCount} ⭐) الملاحظات بنجاح ✅`;
         document.getElementById('ratingSubmittedMsg').classList.remove('hidden');
       });
     }
