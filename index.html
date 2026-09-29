@@ -150,9 +150,10 @@
               <h3 class="font-black text-sm text-gray-800">🗺️ خريطة المناديب والطلبات Live</h3>
               <p class="text-[10px] text-gray-400">تظهر مواقع المناديب والعملاء المسجلة حالياً من نظام التتبع</p>
             </div>
-            <div class="flex gap-2 text-[10px] font-bold">
+            <div class="flex flex-wrap gap-2 text-[10px] font-bold">
               <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-lg">🔵 مندوب</span>
               <span class="bg-red-100 text-red-800 px-2 py-1 rounded-lg">🔴 عميل</span>
+              <span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded-lg">📏 المسافة</span>
               <button onclick="refreshDashboardMap()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-lg">🔄 تحديث</button>
             </div>
           </div>
@@ -726,6 +727,8 @@
     let selectedStarsCount = 0;
     let dashboardMap = null;
     let dashboardMapMarkers = [];
+    let dashboardMapRoutes = [];
+    let dashboardMapOrderPairs = {};
 
     // --- 📅 دالة تنسيق التاريخ ليكون دائماً يوم / شهر / سنة (DD/MM/YYYY) ---
     function formatDateDMY(dateStr) {
@@ -1418,6 +1421,11 @@
         try { dashboardMap.removeLayer(marker); } catch(e) {}
       });
       dashboardMapMarkers = [];
+      dashboardMapRoutes.forEach(route => {
+        try { dashboardMap.removeLayer(route); } catch(e) {}
+      });
+      dashboardMapRoutes = [];
+      dashboardMapOrderPairs = {};
     }
 
     function createMapIcon(emoji, className) {
@@ -1428,6 +1436,34 @@
         iconAnchor: [18,18],
         popupAnchor: [0,-18]
       });
+    }
+
+    function getDistanceKm(lat1, lng1, lat2, lng2) {
+      const R = 6371;
+      const toRad = value => value * Math.PI / 180;
+      const dLat = toRad(lat2 - lat1);
+      const dLng = toRad(lng2 - lng1);
+      const a = Math.sin(dLat / 2) ** 2 +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function formatDistance(km) {
+      if(!Number.isFinite(km)) return 'غير متاح';
+      if(km < 1) return `${Math.round(km * 1000)} متر`;
+      return `${km.toFixed(1)} كم`;
+    }
+
+    function focusMapOrder(orderKey) {
+      const pair = dashboardMapOrderPairs[orderKey];
+      if(!dashboardMap || !pair) return;
+      const points = [];
+      if(pair.driver) points.push(pair.driver);
+      if(pair.customer) points.push(pair.customer);
+      if(points.length) {
+        dashboardMap.fitBounds(L.latLngBounds(points), { padding: [70,70], maxZoom: 16 });
+      }
+      if(pair.driverMarker) pair.driverMarker.openPopup();
     }
 
     function refreshDashboardMap() {
@@ -1441,39 +1477,85 @@
 
       clearDashboardMapMarkers();
       const points = [];
-      const todayStr = new Date().toISOString().split('T')[0];
+      let driverCount = 0;
+      let customerCount = 0;
+      let routeCount = 0;
+      const activeStatuses = ['جاري تحضير اللحوم 🥩', 'خرج للتوصيل 🛵'];
 
       Object.keys(allOrdersCache || {}).forEach(key => {
         const o = allOrdersCache[key] || {};
+        if(o.status === 'تم التسليم بنجاح ✅') return;
+
         const lat = Number(o.lat);
         const lng = Number(o.lng);
         const custLat = Number(o.custLat);
         const custLng = Number(o.custLng);
+        const hasDriver = Number.isFinite(lat) && Number.isFinite(lng) && lat !== 0 && lng !== 0;
+        const hasCustomer = Number.isFinite(custLat) && Number.isFinite(custLng) && custLat !== 0 && custLng !== 0;
+        if(!hasDriver && !hasCustomer) return;
 
-        if(Number.isFinite(lat) && Number.isFinite(lng) && lat !== 0 && lng !== 0) {
-          const driverName = o.driver || 'غير محدد';
+        const orderId = o.orderId || key;
+        const driverName = o.driver || 'غير محدد';
+        const distanceKm = hasDriver && hasCustomer ? getDistanceKm(lat, lng, custLat, custLng) : null;
+        const distanceText = formatDistance(distanceKm);
+        const statusText = o.status || 'غير محدد';
+
+        dashboardMapOrderPairs[key] = { driver: hasDriver ? [lat,lng] : null, customer: hasCustomer ? [custLat,custLng] : null };
+
+        if(hasDriver) {
           const driverMarker = L.marker([lat, lng], { icon: createMapIcon('🛵', 'driver-map-icon') })
             .addTo(map)
             .bindPopup(`
-              <div dir="rtl" style="min-width:190px;font-family:Cairo,sans-serif">\n                <div style="font-weight:800;color:#1d4ed8">🛵 المندوب: ${driverName}</div>\n                <div style="font-size:12px;margin-top:5px">📦 الطلب: #${o.orderId || key}</div>\n                <div style="font-size:12px">👤 العميل: ${o.customerName || '---'}</div>\n                <div style="font-size:12px">📌 الحالة: ${o.status || '---'}</div>\n                <div style="font-size:11px;color:#666;margin-top:4px">${o.date === todayStr ? 'طلب اليوم' : 'طلب سابق'}</div>\n              </div>`);
+              <div dir="rtl" style="min-width:220px;font-family:Cairo,sans-serif">
+                <div style="font-weight:900;color:#1d4ed8;font-size:14px">🛵 ${driverName}</div>
+                <div style="font-size:12px;margin-top:5px">📦 الطلب: <b>#${orderId}</b></div>
+                <div style="font-size:12px">👤 العميل: ${o.customerName || '---'}</div>
+                <div style="font-size:12px">📌 الحالة: ${statusText}</div>
+                <div style="font-size:12px;color:#047857;font-weight:800;margin-top:5px">📏 المسافة للعميل: ${distanceText}</div>
+                <div style="font-size:11px;color:#666;margin-top:4px">آخر موقع مسجل: ${o.locationUpdatedAt ? new Date(o.locationUpdatedAt).toLocaleTimeString('ar-EG') : 'غير مسجل'}</div>
+                ${hasCustomer ? `<button onclick="focusMapOrder('${key}')" style="margin-top:8px;width:100%;background:#b91c1c;color:#fff;border:0;border-radius:8px;padding:7px;font-weight:800;cursor:pointer">🎯 إظهار مسار الطلب</button>` : ''}
+              </div>`);
           dashboardMapMarkers.push(driverMarker);
+          dashboardMapOrderPairs[key].driverMarker = driverMarker;
           points.push([lat,lng]);
+          driverCount++;
         }
 
-        if(Number.isFinite(custLat) && Number.isFinite(custLng) && custLat !== 0 && custLng !== 0) {
+        if(hasCustomer) {
           const customerMarker = L.marker([custLat, custLng], { icon: createMapIcon('📍', 'customer-map-icon') })
             .addTo(map)
             .bindPopup(`
-              <div dir="rtl" style="min-width:180px;font-family:Cairo,sans-serif">\n                <div style="font-weight:800;color:#b91c1c">📍 موقع العميل</div>\n                <div style="font-size:12px;margin-top:5px">📦 الطلب: #${o.orderId || key}</div>\n                <div style="font-size:12px">👤 ${o.customerName || '---'}</div>\n                <div style="font-size:12px">🏠 ${o.address || 'العنوان غير مسجل'}</div>\n              </div>`);
+              <div dir="rtl" style="min-width:210px;font-family:Cairo,sans-serif">
+                <div style="font-weight:900;color:#b91c1c;font-size:14px">📍 موقع العميل</div>
+                <div style="font-size:12px;margin-top:5px">📦 الطلب: <b>#${orderId}</b></div>
+                <div style="font-size:12px">👤 ${o.customerName || '---'}</div>
+                <div style="font-size:12px">🏠 ${o.address || 'العنوان غير مسجل'}</div>
+                <div style="font-size:12px;color:#047857;font-weight:800;margin-top:5px">📏 المسافة للمندوب: ${distanceText}</div>
+                ${hasDriver ? `<button onclick="focusMapOrder('${key}')" style="margin-top:8px;width:100%;background:#1d4ed8;color:#fff;border:0;border-radius:8px;padding:7px;font-weight:800;cursor:pointer">🎯 إظهار المندوب والمسار</button>` : ''}
+              </div>`);
           dashboardMapMarkers.push(customerMarker);
+          dashboardMapOrderPairs[key].customerMarker = customerMarker;
           points.push([custLat,custLng]);
+          customerCount++;
+        }
+
+        if(hasDriver && hasCustomer) {
+          const route = L.polyline([[lat,lng], [custLat,custLng]], {
+            color: '#b91c1c',
+            weight: 4,
+            opacity: 0.75,
+            dashArray: '8, 8'
+          }).addTo(map);
+          route.bindTooltip(`📏 ${distanceText} — الطلب #${orderId}`, { sticky: true, direction: 'center' });
+          dashboardMapRoutes.push(route);
+          routeCount++;
         }
       });
 
       const status = document.getElementById('dashboardMapStatus');
       if(points.length === 0) {
         map.setView([30.0444, 31.2357], 11);
-        if(status) status.innerText = 'لا توجد مواقع GPS مسجلة حالياً. عندما يبدأ المندوب بث الموقع ستظهر العلامة هنا تلقائياً.';
+        if(status) status.innerText = 'لا توجد مواقع GPS لطلبات نشطة حالياً. عند بدء المندوب بث الموقع ستتحدث الخريطة تلقائياً.';
         return;
       }
 
@@ -1481,8 +1563,7 @@
       if(points.length === 1) map.setView(points[0], 15);
       else map.fitBounds(bounds, { padding: [30,30], maxZoom: 15 });
 
-      const driverCount = points.length;
-      if(status) status.innerText = `تم عرض ${driverCount} موقعاً على الخريطة — التحديث تلقائي مع بيانات Firebase.`;
+      if(status) status.innerText = `🟢 ${driverCount} مندوب | 🔴 ${customerCount} عميل | 📏 ${routeCount} مسار — الخريطة تتحدث تلقائياً مع Firebase.`;
       setTimeout(() => map.invalidateSize(), 200);
     }
 
@@ -1928,7 +2009,8 @@
         custWatchId = navigator.geolocation.watchPosition((pos) => {
           db.ref('orders/' + currentTrackOrderId).update({
             custLat: pos.coords.latitude,
-            custLng: pos.coords.longitude
+            custLng: pos.coords.longitude,
+            customerLocationUpdatedAt: Date.now()
           });
           document.getElementById('custShareLocBtn').innerText = "🔄 يتم تحديث مشاركة موقعك حياً...";
           document.getElementById('custLocStatus').classList.remove('hidden');
@@ -2244,7 +2326,8 @@ ${trackUrl}`;
         watchId = navigator.geolocation.watchPosition((pos) => {
           db.ref('orders/' + id).update({
             lat: pos.coords.latitude,
-            lng: pos.coords.longitude
+            lng: pos.coords.longitude,
+            locationUpdatedAt: Date.now()
           });
           document.getElementById('driverStatus').innerText = "📍 يتم الآن بث موقعك الحي بنجاح...";
           document.getElementById('startBtn').innerText = "🔄 جاري بث اللوكيشن حياً...";
