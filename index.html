@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نموذج تسجيل الدخول</title>
+  <title>تسجيل الدخول</title>
   <style>
-    /* تنسيق الخفية وترتيب الصفحة في المنتصف */
+    /* جعل الصفحة في منتصف الشاشة وبخلفية رمادية خفيفة */
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f7f6;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: #f4f5f7;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -16,107 +16,119 @@
       margin: 0;
     }
 
-    /* مربع تسجيل الدخول الرئيسي */
-    .login-container {
+    /* كارت تسجيل الدخول الأبيض */
+    .login-card {
       background-color: #ffffff;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      width: 300px;
+      padding: 35px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      width: 320px;
+      box-sizing: border-box;
     }
 
-    /* عنوان النموذج */
-    .login-container h2 {
+    /* عنوان الكارت */
+    .login-title {
       text-align: center;
-      margin-bottom: 20px;
-      color: #333;
+      font-size: 22px;
+      font-weight: bold;
+      color: #222222;
+      margin-top: 0;
+      margin-bottom: 25px;
     }
 
-    /* تنسيق خانات الكتابة (البريد والكلمة السرية) */
+    /* تنسيق الخانات والأسماء فوقها */
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 18px;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 5px;
-      color: #666;
+      font-size: 13px;
+      color: #777777;
+      margin-bottom: 6px;
     }
 
     .form-group input {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      padding: 10px 12px;
+      border: 1px solid #dcdfe6;
+      border-radius: 6px;
       box-sizing: border-box;
+      font-size: 14px;
+      outline: none;
     }
 
-    /* صف مربع "تذكرني" وزر "تسجيل الدخول" بجانب بعضهما */
-    .login-options {
+    .form-group input:focus {
+      border-color: #007bff;
+    }
+
+    /* الصف السفلي: زر تسجيل الدخول ومربع تذكرني بجانبه */
+    .login-actions {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-top: 15px;
+      margin-top: 22px;
     }
 
-    /* تنسيق checkbox والمحاذاة مع النص */
+    /* زر تسجيل الدخول الأزرق */
+    .btn-submit {
+      background-color: #007bff;
+      color: #ffffff;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-submit:hover {
+      background-color: #0056b3;
+    }
+
+    /* مربع تذكرني والنص بجانبه */
     .remember-me {
       display: flex;
       align-items: center;
       gap: 6px;
       cursor: pointer;
       font-size: 14px;
-      color: #333;
+      color: #444444;
     }
 
     .remember-me input[type="checkbox"] {
       width: 16px;
       height: 16px;
       cursor: pointer;
-    }
-
-    /* تنسيق زر تسجيل الدخول */
-    .btn-login {
-      padding: 9px 18px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .btn-login:hover {
-      background-color: #0056b3;
+      margin: 0;
     }
   </style>
 </head>
 <body>
 
-  <div class="login-container">
-    <h2>تسجيل الدخول</h2>
-    
+  <div class="login-card">
+    <h2 class="login-title">تسجيل الدخول</h2>
+
     <form action="#" method="POST">
-      <!-- خانة البريد الإلكتروني -->
+      <!-- حقل البريد الإلكتروني (تم استبدال type="email" بـ type="text" حتى لا يظهر التنبيه) -->
       <div class="form-group">
-        <label for="email">البريد الإلكتروني</label>
-        <input type="email" id="email" name="email" required placeholder="أدخل بريدك الإلكتروني">
+        <label for="username">البريد الإلكتروني</label>
+        <input type="text" id="username" name="username">
       </div>
 
-      <!-- خانة كلمة المرور -->
+      <!-- حقل كلمة المرور -->
       <div class="form-group">
         <label for="password">كلمة المرور</label>
-        <input type="password" id="password" name="password" required placeholder="أدخل كلمة المرور">
+        <input type="password" id="password" name="password">
       </div>
 
-      <!-- الجزء الخاص بمربع "تذكرني" والزر بجانبه -->
-      <div class="login-options">
+      <!-- الجزء السفلي: زر "تسجيل الدخول" ومربع "تذكرني" بجانبه -->
+      <div class="login-actions">
+        <button type="submit" class="btn-submit">تسجيل الدخول</button>
+
         <label class="remember-me">
           <input type="checkbox" name="remember" id="remember">
           <span>تذكرني</span>
         </label>
-
-        <button type="submit" class="btn-login">دخول</button>
       </div>
     </form>
   </div>
