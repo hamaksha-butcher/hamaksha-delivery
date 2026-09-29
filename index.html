@@ -23,18 +23,22 @@
       direction: ltr !important;
       display: inline-block;
     }
-    /* تصميم النجوم الباهتة والمتفاعلة */
-    .star-item {
-      opacity: 0.3;
+    
+    /* 🌟 تنسيقات النجوم الشفافة/الباهتة مع التفاعل */
+    .star-btn {
+      opacity: 0.25;
       filter: grayscale(100%);
       transition: all 0.2s ease-in-out;
       cursor: pointer;
+      user-select: none;
     }
-    .star-item.active, .star-item.hovered {
+    .star-btn.active,
+    .star-btn.hovered {
       opacity: 1 !important;
-      filter: grayscale(0%) !important;
+      filter: grayscale(0%) drop-shadow(0 0 6px rgba(245, 158, 11, 0.6)) !important;
       transform: scale(1.2);
     }
+
     @media print {
       header, #userBadgeBar, .no-print, #adminAuthLock, .theme-selector, #orderForm, #usersList, form, button, select, input {
         display: none !important;
@@ -473,31 +477,31 @@
           </div>
         </div>
 
-        <!-- ⭐ قسم تقييم الخدمة والتعليقات المطور (نجوم باهتة حتى التحديد مع زر إرسال صريح) -->
-        <div id="ratingBox" class="hidden bg-amber-50 border border-amber-200 p-4 rounded-2xl text-center space-y-3 shadow-sm">
+        <!-- ⭐ قسم تقييم الخدمة والتعليقات (تعديل النجوم والزر) -->
+        <div id="ratingBox" class="hidden bg-amber-50 border border-amber-200 p-4 rounded-xl text-center space-y-3">
           <h4 class="font-bold text-xs text-amber-900">⭐ تقييم خدمة التوصيل والمندوب:</h4>
-          <p class="text-[11px] text-gray-500 font-semibold">حدد عدد النجوم المعتمدة أولاً ثم انقر على زر "إرسال التقييم":</p>
+          <p class="text-[10px] text-gray-500 font-semibold">اضغط على النجوم لاختيار التقييم المناسب:</p>
           
-          <div class="flex justify-center gap-2 text-3xl py-1 select-none" id="starContainer">
-            <span onclick="selectRatingStars(1)" onmouseover="hoverRatingStars(1)" onmouseout="resetRatingHover()" data-star="1" class="star-item" title="1 نجمة">⭐</span>
-            <span onclick="selectRatingStars(2)" onmouseover="hoverRatingStars(2)" onmouseout="resetRatingHover()" data-star="2" class="star-item" title="2 نجمة">⭐</span>
-            <span onclick="selectRatingStars(3)" onmouseover="hoverRatingStars(3)" onmouseout="resetRatingHover()" data-star="3" class="star-item" title="3 نجوم">⭐</span>
-            <span onclick="selectRatingStars(4)" onmouseover="hoverRatingStars(4)" onmouseout="resetRatingHover()" data-star="4" class="star-item" title="4 نجوم">⭐</span>
-            <span onclick="selectRatingStars(5)" onmouseover="hoverRatingStars(5)" onmouseout="resetRatingHover()" data-star="5" class="star-item" title="5 نجوم">⭐</span>
+          <!-- النجوم بتأثير الشفافية والحركة -->
+          <div class="flex justify-center gap-2 text-3xl py-1" id="starContainer" onmouseleave="resetHoverStars()">
+            <button type="button" onclick="setStarRating(1)" onmouseenter="hoverStarRating(1)" class="star-btn" data-star="1" title="1 نجمة">⭐</button>
+            <button type="button" onclick="setStarRating(2)" onmouseenter="hoverStarRating(2)" class="star-btn" data-star="2" title="2 نجمة">⭐</button>
+            <button type="button" onclick="setStarRating(3)" onmouseenter="hoverStarRating(3)" class="star-btn" data-star="3" title="3 نجوم">⭐</button>
+            <button type="button" onclick="setStarRating(4)" onmouseenter="hoverStarRating(4)" class="star-btn" data-star="4" title="4 نجوم">⭐</button>
+            <button type="button" onclick="setStarRating(5)" onmouseenter="hoverStarRating(5)" class="star-btn" data-star="5" title="5 نجوم">⭐</button>
           </div>
-
-          <p id="selectedRatingText" class="text-[11px] font-bold text-amber-800 h-4">لم يتم تحديد النجوم بعد</p>
 
           <div>
             <label class="block text-right text-[11px] font-bold text-gray-700 mb-1">اكتب تعليقك أو رأيك في المندوب والخدمة (اختياري):</label>
             <textarea id="custCommentText" rows="2" placeholder="اكتب ملاحظاتك هنا..." class="w-full border p-2 rounded-xl text-xs bg-white"></textarea>
           </div>
 
-          <button onclick="submitFullFeedback()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all">
-            🚀 إرسال التقييم والتعليق
+          <!-- زر إرسال التقييم بعد التحديد -->
+          <button id="sendRatingBtn" onclick="submitFullFeedback()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition-all flex justify-center items-center gap-1">
+            🚀 إرسال التقييم الآن
           </button>
 
-          <p id="ratingSubmittedMsg" class="text-xs text-emerald-700 font-bold hidden">شكراً لك! تم تسجيل تقييمك بنجاح ✅</p>
+          <p id="ratingSubmittedMsg" class="text-xs text-emerald-700 font-bold hidden bg-emerald-50 p-2 rounded-lg border border-emerald-200">شكراً لك! تم تسجيل تقييمك بنجاح ✅</p>
         </div>
 
         <!-- 💬 آراء وتعليقات العملاء المنشورة العامة -->
@@ -1614,9 +1618,11 @@
           if(data.status === 'تم التسليم بنجاح ✅') {
             document.getElementById('ratingBox').classList.remove('hidden');
             if(data.rating) {
-              selectRatingStars(data.rating);
+              setStarRating(data.rating, false);
               document.getElementById('ratingSubmittedMsg').innerText = `تم تسجيل تقييمك بـ (${data.rating} ⭐) بنجاح! شكراً لك.`;
               document.getElementById('ratingSubmittedMsg').classList.remove('hidden');
+            } else {
+              resetStarDisplay();
             }
             if(data.comment) {
               document.getElementById('custCommentText').value = data.comment;
@@ -1657,50 +1663,66 @@
       }
     }
 
-    // --- ⭐ دالة التفاعل والتحكم بنجوم التقييم الباهتة والمتشبعة ---
-    function hoverRatingStars(count) {
-      const stars = document.querySelectorAll('#starContainer .star-item');
-      stars.forEach((star, idx) => {
-        if (idx < count) {
-          star.classList.add('hovered');
+    // --- ⭐ دوال التفاعل المحدثة مع النجوم (تحديد، تمرير، وإرسال) ---
+    function setStarRating(stars, isInteractive = true) {
+      selectedStarsCount = stars;
+      const starBtns = document.querySelectorAll('#starContainer .star-btn');
+      starBtns.forEach((btn, index) => {
+        if (index < stars) {
+          btn.classList.add('active');
         } else {
-          star.classList.remove('hovered');
+          btn.classList.remove('active');
         }
       });
     }
 
-    function resetRatingHover() {
-      const stars = document.querySelectorAll('#starContainer .star-item');
-      stars.forEach(star => star.classList.remove('hovered'));
-    }
-
-    function selectRatingStars(starsCount) {
-      selectedStarsCount = starsCount;
-      const stars = document.querySelectorAll('#starContainer .star-item');
-      stars.forEach((star, idx) => {
-        if (idx < starsCount) {
-          star.classList.add('active');
+    function hoverStarRating(stars) {
+      const starBtns = document.querySelectorAll('#starContainer .star-btn');
+      starBtns.forEach((btn, index) => {
+        if (index < stars) {
+          btn.classList.add('hovered');
         } else {
-          star.classList.remove('active');
+          btn.classList.remove('hovered');
         }
       });
+    }
 
-      const ratingTexts = ["", "سيء جداً 😞", "مقبول 😐", "جيد 👍", "ممتاز جداً 😄", "ممتاز فوق العادة 🌟"];
-      document.getElementById('selectedRatingText').innerText = `التقييم المحدد: ${starsCount} من 5 نجوم (${ratingTexts[starsCount]})`;
+    function resetHoverStars() {
+      const starBtns = document.querySelectorAll('#starContainer .star-btn');
+      starBtns.forEach((btn) => btn.classList.remove('hovered'));
+    }
+
+    function resetStarDisplay() {
+      selectedStarsCount = 0;
+      const starBtns = document.querySelectorAll('#starContainer .star-btn');
+      starBtns.forEach((btn) => {
+        btn.classList.remove('active');
+        btn.classList.remove('hovered');
+      });
     }
 
     function submitFullFeedback() {
       if(!currentTrackOrderId) return alert('يرجى تحديد رقم الطلب أولاً!');
-      if(selectedStarsCount === 0) return alert('يرجى تحديد عدد النجوم بالضغط عليها أولاً قبل الإرسال!');
+      if(selectedStarsCount === 0) return alert('يرجى اختيار عدد النجوم لتقييم الخدمة أولاً قبل الإرسال!');
 
       const commentText = document.getElementById('custCommentText').value.trim();
+      const sendBtn = document.getElementById('sendRatingBtn');
+
+      sendBtn.disabled = true;
+      sendBtn.innerText = 'جاري إرسال التقييم... ⏳';
 
       db.ref('orders/' + currentTrackOrderId).update({
         rating: selectedStarsCount,
         comment: commentText
       }).then(() => {
+        sendBtn.disabled = false;
+        sendBtn.innerText = '🚀 إرسال التقييم الآن';
         document.getElementById('ratingSubmittedMsg').innerText = `شكراً لك! تم تسجيل تقييمك بـ (${selectedStarsCount} ⭐) والملاحظات بنجاح ✅`;
         document.getElementById('ratingSubmittedMsg').classList.remove('hidden');
+      }).catch((err) => {
+        sendBtn.disabled = false;
+        sendBtn.innerText = '🚀 إرسال التقييم الآن';
+        alert('حدث خطأ أثناء إرسال التقييم، يرجى المحاولة مرة أخرى');
       });
     }
 
@@ -2008,7 +2030,7 @@ ${trackUrl}`;
       }
       document.getElementById('driverStatus').innerText = "🛑 تم إيقاف بث الموقع الحي.";
       document.getElementById('startBtn').innerText = "📍 بدء بث اللوكيشن الحي Live (اختياري)";
-      document.getElementById('stopBtn').classList.remove('hidden');
+      document.getElementById('stopBtn').classList.add('hidden');
     }
 
     window.addEventListener('DOMContentLoaded', () => {
