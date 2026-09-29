@@ -24,7 +24,39 @@
       direction: ltr !important;
       display: inline-block;
     }
-    .star-btn:disabled { pointer-events: none; }
+    /* ⭐ نجوم تقييم تفاعلية: فارغة/شفافة افتراضياً، وتمتلئ عند المرور أو الاختيار */
+    .star-btn {
+      appearance: none;
+      -webkit-appearance: none;
+      border: 0;
+      background: transparent;
+      padding: 0.1rem;
+      line-height: 1;
+      font-size: 2rem;
+      color: #cbd5e1;
+      cursor: pointer;
+      transition: transform 0.15s ease, color 0.15s ease, opacity 0.15s ease, filter 0.15s ease;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.08);
+    }
+    .star-btn:hover, .star-btn:focus-visible {
+      color: #f59e0b;
+      transform: scale(1.18);
+      outline: none;
+      filter: drop-shadow(0 2px 3px rgba(245,158,11,0.25));
+    }
+    .star-btn.selected {
+      color: #f59e0b;
+      transform: scale(1.1);
+    }
+    .star-btn.preview {
+      color: #fbbf24;
+      transform: scale(1.14);
+    }
+    .star-btn:disabled {
+      pointer-events: none;
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
     /* Leaflet fallback: keep the map/tile layers positioned correctly even if CDN CSS is delayed. */
     #dashboardMap { min-height: 420px; position: relative; }
     #dashboardMap .leaflet-container, #dashboardMap.leaflet-container { height: 100%; width: 100%; }
@@ -559,12 +591,12 @@
             💡 يمكنك تقييم المندوب وكتابة تعليقك بعد تحول حالة الطلب إلى <b>تم التسليم بنجاح ✅</b>.
           </p>
 
-          <div class="flex justify-center gap-2 text-2xl" id="starContainer">
-            <button type="button" onclick="setStarRating(1)" class="star-btn opacity-50 cursor-not-allowed transition-transform" title="1 نجمة" disabled>⭐</button>
-            <button type="button" onclick="setStarRating(2)" class="star-btn opacity-50 cursor-not-allowed transition-transform" title="2 نجمة" disabled>⭐</button>
-            <button type="button" onclick="setStarRating(3)" class="star-btn opacity-50 cursor-not-allowed transition-transform" title="3 نجوم" disabled>⭐</button>
-            <button type="button" onclick="setStarRating(4)" class="star-btn opacity-50 cursor-not-allowed transition-transform" title="4 نجوم" disabled>⭐</button>
-            <button type="button" onclick="setStarRating(5)" class="star-btn opacity-50 cursor-not-allowed transition-transform" title="5 نجوم" disabled>⭐</button>
+          <div class="flex justify-center gap-2" id="starContainer" aria-label="اختيار تقييم من 1 إلى 5 نجوم">
+            <button type="button" onclick="setStarRating(1)" onmouseenter="previewStarRating(1)" onmouseleave="restoreStarRating()" onfocus="previewStarRating(1)" onblur="restoreStarRating()" class="star-btn" title="1 نجمة" aria-label="تقييم نجمة واحدة" disabled>☆</button>
+            <button type="button" onclick="setStarRating(2)" onmouseenter="previewStarRating(2)" onmouseleave="restoreStarRating()" onfocus="previewStarRating(2)" onblur="restoreStarRating()" class="star-btn" title="2 نجمتان" aria-label="تقييم نجمتين" disabled>☆</button>
+            <button type="button" onclick="setStarRating(3)" onmouseenter="previewStarRating(3)" onmouseleave="restoreStarRating()" onfocus="previewStarRating(3)" onblur="restoreStarRating()" class="star-btn" title="3 نجوم" aria-label="تقييم ثلاث نجوم" disabled>☆</button>
+            <button type="button" onclick="setStarRating(4)" onmouseenter="previewStarRating(4)" onmouseleave="restoreStarRating()" onfocus="previewStarRating(4)" onblur="restoreStarRating()" class="star-btn" title="4 نجوم" aria-label="تقييم أربع نجوم" disabled>☆</button>
+            <button type="button" onclick="setStarRating(5)" onmouseenter="previewStarRating(5)" onmouseleave="restoreStarRating()" onfocus="previewStarRating(5)" onblur="restoreStarRating()" class="star-btn" title="5 نجوم" aria-label="تقييم خمس نجوم" disabled>☆</button>
           </div>
 
           <div>
@@ -2000,7 +2032,7 @@
             starButtons.forEach(btn => {
               btn.disabled = false;
               btn.classList.remove('opacity-50', 'cursor-not-allowed');
-              btn.classList.add('hover:scale-125', 'cursor-pointer');
+              btn.classList.add('cursor-pointer');
             });
 
             if(data.rating) {
@@ -2064,13 +2096,34 @@
     function highlightStarRating(stars) {
       document.querySelectorAll('#starContainer .star-btn').forEach((btn, index) => {
         const starNumber = index + 1;
-        btn.classList.remove('scale-125', 'opacity-50', 'text-amber-500');
-        if(starNumber <= stars) {
-          btn.classList.add('scale-125', 'text-amber-500');
-        } else if(!btn.disabled) {
-          btn.classList.add('opacity-70');
+        const isActive = starNumber <= Number(stars || 0);
+        btn.classList.remove('selected', 'preview', 'scale-125', 'opacity-50', 'text-amber-500');
+        if(isActive) {
+          btn.textContent = '★';
+          btn.classList.add('selected');
+        } else {
+          btn.textContent = '☆';
         }
       });
+    }
+
+    function previewStarRating(stars) {
+      if(currentTrackOrderStatus !== 'تم التسليم بنجاح ✅') return;
+      document.querySelectorAll('#starContainer .star-btn').forEach((btn, index) => {
+        const starNumber = index + 1;
+        btn.classList.remove('selected', 'preview');
+        if(starNumber <= Number(stars)) {
+          btn.textContent = '★';
+          btn.classList.add('preview');
+        } else {
+          btn.textContent = '☆';
+        }
+      });
+    }
+
+    function restoreStarRating() {
+      if(currentTrackOrderStatus !== 'تم التسليم بنجاح ✅') return;
+      highlightStarRating(selectedStarsCount);
     }
 
     function setStarRating(stars) {
