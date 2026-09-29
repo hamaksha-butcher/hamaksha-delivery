@@ -135,7 +135,7 @@
                   </div>
                 </div>
 
-                <!-- 💳 قسم طرق الدفع والنسبة -->
+                <!-- 💳 قسم طرق الدفع والنسبة المفتوحة -->
                 <div class="bg-blue-50/60 p-2.5 rounded-xl border border-blue-200 space-y-2">
                   <div class="grid grid-cols-2 gap-2">
                     <div>
@@ -143,7 +143,7 @@
                       <select id="paymentMethod" onchange="calculateTotalBill()" class="w-full border p-1.5 rounded-lg text-xs font-bold bg-white">
                         <option value="cash">💵 كاش مع المندوب</option>
                         <option value="vodafone">📱 فودافون كاش (10ج/1000)</option>
-                        <option value="instapay">⚡ إنستا باي (1ج/1000)</option>
+                        <option value="instapay">⚡ إنستا باي (بدون رسوم إضافية)</option>
                       </select>
                     </div>
                     <div>
@@ -304,13 +304,13 @@
       </div>
     </section>
 
-    <!-- 🏷️ 3️⃣ قسم لوحة أسعار اللحوم الحية -->
+    <!-- 🏷️ 3️⃣ قسم لوحة أسعار اللحوم وإدارتها المباشرة -->
     <section id="sec-prices" class="hidden space-y-6">
       <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 space-y-4">
         <div class="flex justify-between items-center border-b pb-3">
           <div>
             <h2 class="text-lg font-black text-red-700">🏷️ قائمة أسعار اللحوم الحية (جزارة حمكشة)</h2>
-            <p class="text-xs text-gray-500 font-semibold">تحديث اليومية وتعديل الأسعار المباشرة</p>
+            <p class="text-xs text-gray-500 font-semibold">تحديث اليومية وإضافة أو تعديل الأسعار المباشرة في أي وقت</p>
           </div>
           <button id="addPriceBtn" onclick="openAddPriceModal()" class="hidden bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-2 rounded-xl shadow">
             + إضافة صنف جديد
@@ -435,6 +435,30 @@
         <input type="password" id="editUserPass" class="w-full border p-2.5 rounded-xl text-xs">
       </div>
       <button onclick="saveEditUser()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">حفظ التغييرات 💾</button>
+    </div>
+  </div>
+
+  <!-- نافذة تعديل أو إضافة منتج -->
+  <div id="editPriceModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 text-right shadow-2xl border">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-sm text-gray-800" id="priceModalTitle">🏷️ تعديل سعر المنتج</h3>
+        <button onclick="closeEditPriceModal()" class="text-gray-400 hover:text-gray-600 font-bold">✕</button>
+      </div>
+      <input type="hidden" id="priceKey">
+      <div>
+        <label class="block text-[11px] font-bold text-gray-700 mb-1">اسم المنتج</label>
+        <input type="text" id="priceName" class="w-full border p-2.5 rounded-xl text-xs">
+      </div>
+      <div>
+        <label class="block text-[11px] font-bold text-gray-700 mb-1">السعر (ج.م)</label>
+        <input type="number" id="priceValue" class="w-full border p-2.5 rounded-xl text-xs font-mono font-bold">
+      </div>
+      <div>
+        <label class="block text-[11px] font-bold text-gray-700 mb-1">الوحدة</label>
+        <input type="text" id="priceUnit" value="كيلو" class="w-full border p-2.5 rounded-xl text-xs">
+      </div>
+      <button onclick="savePriceItem()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">حفظ الصنف 💾</button>
     </div>
   </div>
 
@@ -708,7 +732,7 @@
       document.body.className = isDark ? "bg-zinc-900 text-white min-h-screen" : "bg-amber-50/40 min-h-screen text-gray-800";
     }
 
-    // --- 💳 حساب طريقة الدفع والعمولة والتوتال ---
+    // --- 💳 حساب طريقة الدفع والعمولة والتوتال (إنستا باي = 0 افتراضياً) ---
     function calculateTotalBill(isManualFee = false) {
       const orderPrice = Number(document.getElementById('orderPrice').value) || 0;
       const deliveryPrice = Number(document.getElementById('deliveryPrice').value) || 0;
@@ -720,7 +744,7 @@
         if (method === 'vodafone') {
           fee = Math.ceil(orderPrice / 1000) * 10;
         } else if (method === 'instapay') {
-          fee = Math.ceil(orderPrice / 1000) * 1;
+          fee = 0; // إلغاء نسبة الانستا باي أوتوماتيكياً
         } else {
           fee = 0;
         }
@@ -767,7 +791,7 @@
       }
     }
 
-    // --- 👥 إدارة المستخدمين والمناديب وتعديل وحذف الحسابات ---
+    // --- 👥 إدارة المستخدمين والمناديب ---
     function addUser() {
       if(!canUser('users')) return alert('عذراً، إضافة المستخدمين تتطلب صلاحية إدارة المستخدمين');
       const username = document.getElementById('newUserName').value.trim();
@@ -1178,11 +1202,13 @@
       });
     }
 
-    // --- 🏷️ قسم أسعار اللحوم ---
+    // --- 🏷️ قسم أسعار اللحوم وإدارتها المباشرة ---
+    let pricesCache = {};
+
     function renderPrices() {
       if(!canUser('prices')) return;
       db.ref('prices').on('value', (snap) => {
-        const data = snap.val() || {};
+        pricesCache = snap.val() || {};
         const container = document.getElementById('priceListContainer');
         container.innerHTML = '';
 
@@ -1195,20 +1221,36 @@
           { name: 'سجق بلدي حمكشة', price: 380, unit: 'كيلو' }
         ];
 
-        const listToRender = Object.keys(data).length ? data : defaultPrices;
+        if (Object.keys(pricesCache).length === 0) {
+          defaultPrices.forEach(dp => {
+            db.ref('prices').push(dp);
+          });
+          return;
+        }
 
-        Object.keys(listToRender).forEach(k => {
-          const item = listToRender[k];
+        const canEditPrices = canUser('prices');
+
+        Object.keys(pricesCache).forEach(k => {
+          const item = pricesCache[k];
           container.innerHTML += `
-            <div class="bg-amber-50/60 p-4 rounded-2xl border border-amber-200 flex items-center justify-between shadow-sm">
-              <div>
-                <h4 class="font-bold text-sm text-gray-800">${item.name}</h4>
-                <p class="text-xs text-gray-500 font-semibold">لكل ${item.unit || 'كيلو'}</p>
+            <div class="bg-amber-50/60 p-4 rounded-2xl border border-amber-200 flex flex-col justify-between shadow-sm space-y-3">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="font-bold text-sm text-gray-800">${item.name}</h4>
+                  <p class="text-xs text-gray-500 font-semibold">لكل ${item.unit || 'كيلو'}</p>
+                </div>
+                <div class="text-left">
+                  <span class="text-lg font-black text-red-700 font-mono">${item.price}</span>
+                  <span class="text-xs font-bold text-red-900">ج.م</span>
+                </div>
               </div>
-              <div class="text-left">
-                <span class="text-lg font-black text-red-700 font-mono">${item.price}</span>
-                <span class="text-xs font-bold text-red-900">ج.م</span>
-              </div>
+
+              ${canEditPrices ? `
+                <div class="flex items-center gap-1.5 pt-2 border-t border-amber-200/60 justify-end">
+                  <button onclick="openEditPriceModal('${k}')" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-sm">✏️ تعديل السعر</button>
+                  <button onclick="deletePriceItem('${k}')" class="bg-red-100 hover:bg-red-200 text-red-700 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-sm">🗑️ حذف</button>
+                </div>
+              ` : ''}
             </div>
           `;
         });
@@ -1217,10 +1259,56 @@
 
     function openAddPriceModal() {
       if(!canUser('prices')) return alert('عذراً، ليس لديك صلاحية تعديل أو إضافة أسعار.');
-      const name = prompt('أدخل اسم الصنف الجديد:');
-      const price = prompt('أدخل السعر (ج.م):');
-      if(name && price) {
-        db.ref('prices').push({ name, price: Number(price), unit: 'كيلو' });
+      document.getElementById('priceKey').value = '';
+      document.getElementById('priceModalTitle').innerText = '➕ إضافة صنف لحوم جديد';
+      document.getElementById('priceName').value = '';
+      document.getElementById('priceValue').value = '';
+      document.getElementById('priceUnit').value = 'كيلو';
+      document.getElementById('editPriceModal').classList.remove('hidden');
+    }
+
+    function openEditPriceModal(key) {
+      if(!canUser('prices')) return alert('عذراً، ليس لديك صلاحية التعديل.');
+      const p = pricesCache[key];
+      if(!p) return;
+      document.getElementById('priceKey').value = key;
+      document.getElementById('priceModalTitle').innerText = '✏️ تعديل سعر المنتج';
+      document.getElementById('priceName').value = p.name || '';
+      document.getElementById('priceValue').value = p.price || 0;
+      document.getElementById('priceUnit').value = p.unit || 'كيلو';
+      document.getElementById('editPriceModal').classList.remove('hidden');
+    }
+
+    function closeEditPriceModal() {
+      document.getElementById('editPriceModal').classList.add('hidden');
+    }
+
+    function savePriceItem() {
+      if(!canUser('prices')) return;
+      const key = document.getElementById('priceKey').value;
+      const name = document.getElementById('priceName').value.trim();
+      const price = Number(document.getElementById('priceValue').value) || 0;
+      const unit = document.getElementById('priceUnit').value.trim() || 'كيلو';
+
+      if(!name || !price) return alert('يرجى كتابة اسم المنتج والسعر بشكل صحيح');
+
+      if(key) {
+        db.ref('prices/' + key).update({ name, price, unit }).then(() => {
+          alert('تم تحديث سعر المنتج بنجاح ✅');
+          closeEditPriceModal();
+        });
+      } else {
+        db.ref('prices').push({ name, price, unit }).then(() => {
+          alert('تمت إضافة المنتج الجديد للقائمة بنجاح ✅');
+          closeEditPriceModal();
+        });
+      }
+    }
+
+    function deletePriceItem(key) {
+      if(!canUser('prices')) return;
+      if(confirm('هل تريد حذف هذا المنتج من قائمة الأسعار؟')) {
+        db.ref('prices/' + key).remove();
       }
     }
 
