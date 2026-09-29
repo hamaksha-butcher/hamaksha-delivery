@@ -84,6 +84,10 @@
     body.customer-public-mode main > section:not(#sec-track) {
       display: none !important;
     }
+    body.customer-public-mode .staff-only-track,
+    body.customer-public-mode #customerOrdersResults {
+      display: none !important;
+    }
 
     body.driver-private-mode main > section:not(#sec-driver) {
       display: none !important;
@@ -600,22 +604,28 @@
       </div>
     </section>
 
-    <!-- 5️⃣ واجهة العميل العامة: التحقق بالاسم/الهاتف + طلباته فقط + التتبع والتقييم -->
+    <!-- 5️⃣ صفحة تتبع العميل: الرابط يفتح طلباً واحداً فقط + التقييم والتعليقات العامة -->
     <section id="sec-track" class="hidden space-y-6 max-w-xl mx-auto">
-      <div class="bg-white rounded-2xl shadow-lg p-5 border space-y-4">
+      <div id="customerLinkGate" class="bg-white rounded-2xl shadow-lg p-6 border border-red-100 text-center space-y-3">
+        <div class="text-4xl">🥩</div>
+        <h2 class="text-lg font-black text-red-700">تتبع طلبك - جزارة حمكشة</h2>
+        <p id="customerLinkStatus" class="text-xs text-gray-500 font-semibold">جارٍ التحقق من رابط الطلب...</p>
+      </div>
+
+      <div class="staff-only-track bg-white rounded-2xl shadow-lg p-5 border space-y-4">
         <div class="text-center">
           <div class="text-3xl">🥩</div>
-          <h2 class="text-base font-black text-red-700 mt-1">تتبع طلبك - جزارة حمكشة</h2>
-          <p class="text-[10px] text-gray-500 font-semibold mt-1">اكتب اسمك أو رقم هاتفك لعرض الطلبات الخاصة بك فقط.</p>
+          <h2 class="text-base font-black text-red-700 mt-1">تتبع طلب العميل (للاختبار/الإدارة)</h2>
+          <p class="text-[10px] text-gray-500 font-semibold mt-1">ابحث باسم العميل أو رقم الهاتف داخل وضع الموظفين فقط.</p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <div><label class="block text-[10px] font-bold text-gray-700 mb-1">اسم العميل</label><input type="text" id="custIdentityName" placeholder="مثال: أحمد محمد" class="w-full border p-2.5 rounded-xl text-xs text-center bg-gray-50"></div>
           <div><label class="block text-[10px] font-bold text-gray-700 mb-1">رقم الهاتف</label><input type="text" id="custIdentityPhone" placeholder="مثال: 01273091807" dir="ltr" class="w-full border p-2.5 rounded-xl text-xs text-center bg-gray-50"></div>
         </div>
         <p id="customerIdentityStatus" class="text-[10px] font-bold text-center text-gray-400"></p>
-        <button onclick="searchCustomerOrder()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs whitespace-nowrap shadow">عرض طلباتي 🔍</button>
+        <button onclick="searchCustomerOrder()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs whitespace-nowrap shadow">عرض الطلبات 🔍</button>
       </div>
-      <div id="customerOrdersResults" class="space-y-3"><div class="bg-white rounded-2xl shadow-lg p-5 border text-center text-xs text-gray-400">أدخل اسمك أو رقم هاتفك ثم اضغط «عرض طلباتي».</div></div>
+      <div id="customerOrdersResults" class="staff-only-track space-y-3"><div class="bg-white rounded-2xl shadow-lg p-5 border text-center text-xs text-gray-400">استخدم البحث من وضع الموظفين فقط.</div></div>
 
       <div id="trackResultCard" class="hidden bg-white rounded-2xl shadow-xl p-6 border space-y-4">
         <div class="flex justify-between items-center border-b pb-2"><div><h2 class="text-base font-black text-red-700">تتبع الطلب 🥩</h2><p id="dispOrderId" class="text-xs font-mono text-gray-400">#---</p></div><span id="badgeStatus" class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">جاري المتابعة</span></div>
@@ -801,6 +811,7 @@
     let filteredOrdersList = [];
     let currentAnalyticsPeriod = 'daily';
     let currentTrackOrderId = null;
+    let currentCustomerTrackToken = '';
     let currentRequestedOrderId = new URLSearchParams(window.location.search).get('id') || '';
     let currentTrackOrderStatus = null;
     let currentCustomerVerified = false;
@@ -993,7 +1004,7 @@
       if(APP_MODE!=='staff' || !currentUser || currentUser.role!=='admin' || !canManageCustomers()) return;
       try { customersRef?.off(); } catch(e){}
       customersRef=db.ref('customers');
-      customersRef.on('value',snap=>{ customersCache=snap.val()||{}; renderCustomersList(); });
+      customersRef.on('value',snap=>{ const remote=snap.val()||{}; let local={}; try{local=JSON.parse(localStorage.getItem('hamaksha_local_customers')||'{}');}catch(e){} customersCache={...local,...remote}; renderCustomersList(); });
     }
 
     function startAdminOrdersListener() {
@@ -1015,10 +1026,19 @@
       driverOrdersRef.on('value',snap=>{ driverOrdersCache=snap.val()||{}; renderDriverOrdersList(); if(currentDriverOrderKey && driverOrdersCache[currentDriverOrderKey]) populateDriverOrderCard(currentDriverOrderKey,driverOrdersCache[currentDriverOrderKey]); });
     }
 
-    function startPublicCommentsListener() {
-      if(publicCommentsRef) { try { publicCommentsRef.off(); } catch(e){} }
-      publicCommentsRef=db.ref('orders').orderByChild('isPublished').equalTo(true);
-      publicCommentsRef.on('value',snap=>{ publicCommentsCache=snap.val()||{}; renderPublicComments(); });
+    function startPublicCommentsListener(){
+      if(publicCommentsRef){try{publicCommentsRef.off();}catch(e){}}
+      if(APP_MODE==='customer'){
+        publicCommentsRef=db.ref('publicComments');
+        publicCommentsRef.on('value',snap=>{publicCommentsCache=snap.val()||{};renderPublicComments();});
+      }else{
+        publicCommentsRef=db.ref('orders').orderByChild('isPublished').equalTo(true);
+        publicCommentsRef.on('value',snap=>{
+          publicCommentsCache=snap.val()||{};
+          Object.keys(publicCommentsCache).forEach(key=>{const o=publicCommentsCache[key]||{};db.ref('publicComments/'+key).set({customerName:o.customerName||o.name||'عميل حمكشة',rating:Number(o.rating||0),comment:o.comment||'',isPublished:true,publishedAt:Date.now(),driver:o.driver||'غير محدد'}).catch(()=>{});});
+          renderPublicComments();
+        });
+      }
     }
 
     function startStaffDataListeners() { if(APP_MODE==='staff') ensureSuperUserExists(); }
@@ -1168,14 +1188,23 @@
       });
     }
 
+    function createTrackingToken(){try{if(window.crypto?.randomUUID)return window.crypto.randomUUID().replace(/-/g,'');}catch(e){}return 'trk_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2);}
+    async function ensureTrackingToken(orderKey){const item=allOrdersCache[orderKey]||{};if(item.trackingToken)return item.trackingToken;const token=createTrackingToken();await db.ref('orders/'+orderKey).update({trackingToken:token});if(allOrdersCache[orderKey])allOrdersCache[orderKey].trackingToken=token;return token;}
+
     // --- 👥 قاعدة بيانات العملاء + إدارة الطلبات ---
     function findCustomerByPhone(phone) { const n=normalizePhone(phone); if(!n)return null; for(const key of Object.keys(customersCache||{})){ const c=customersCache[key]||{}; if(c.phoneNormalized===n||normalizePhone(c.phone)===n)return {key,...c}; } return null; }
     function upsertCustomerRecord(name,phone,address,preferredKey=null,incrementOrderCount=false){
       if(!canManageCustomers()) return Promise.resolve(preferredKey||null);
-      const cleanName=String(name||'').trim(),cleanPhone=String(phone||'').trim(),cleanAddress=String(address||'').trim(); const pn=normalizePhone(cleanPhone),nn=normalizeName(cleanName); if(!cleanName&&!cleanPhone)return Promise.resolve(null);
-      let key=preferredKey; if(!key&&pn){const match=findCustomerByPhone(pn); if(match)key=match.key;}
-      if(!key){const ref=db.ref('customers').push(); key=ref.key; return ref.set({name:cleanName,phone:cleanPhone,address:cleanAddress,phoneNormalized:pn,nameNormalized:nn,createdAt:Date.now(),updatedAt:Date.now(),orderCount:incrementOrderCount?1:0}).then(()=>key);}
-      const existing=customersCache[key]||{}; return db.ref('customers/'+key).update({name:cleanName,phone:cleanPhone,address:cleanAddress,phoneNormalized:pn,nameNormalized:nn,updatedAt:Date.now(),createdAt:existing.createdAt||Date.now(),orderCount:Number(existing.orderCount||0)+(incrementOrderCount?1:0)}).then(()=>key);
+      const cleanName=String(name||'').trim(),cleanPhone=String(phone||'').trim(),cleanAddress=String(address||'').trim();
+      const pn=normalizePhone(cleanPhone),nn=normalizeName(cleanName);
+      if(!cleanName&&!cleanPhone)return Promise.resolve(null);
+      let key=preferredKey;
+      if(!key&&pn){const match=findCustomerByPhone(pn);if(match)key=match.key;}
+      if(!key&&pn)key='phone_'+pn;
+      if(!key){const ref=db.ref('customers').push();key=ref.key;}
+      const existing=customersCache[key]||{};
+      const payload={name:cleanName,phone:cleanPhone,address:cleanAddress,phoneNormalized:pn,nameNormalized:nn,updatedAt:Date.now(),createdAt:existing.createdAt||Date.now(),orderCount:Number(existing.orderCount||0)+(incrementOrderCount?1:0)};
+      return db.ref('customers/'+key).set(payload).then(()=>key);
     }
     function smartLookupCustomer(phone){ if(APP_MODE!=='staff'||!canManageCustomers())return; const status=document.getElementById('customerLookupStatus'); const c=findCustomerByPhone(phone); if(c){document.getElementById('selectedCustomerKey').value=c.key;document.getElementById('custName').value=c.name||'';document.getElementById('custAddress').value=c.address||'';status.innerText='✅ تم العثور على العميل وربط بياناته تلقائياً';status.className='text-[10px] font-bold text-emerald-700';} else {document.getElementById('selectedCustomerKey').value=''; if(String(phone||'').trim()){status.innerText='عميل جديد — سيتم حفظه عند تسجيل الطلب';status.className='text-[10px] font-bold text-blue-700';} else status.innerText='';}}
     function clearSelectedCustomer(){document.getElementById('selectedCustomerKey').value='';document.getElementById('customerLookupStatus').innerText='وضع عميل جديد';document.getElementById('customerLookupStatus').className='text-[10px] font-bold text-gray-500';}
@@ -1186,7 +1215,33 @@
     function renderCustomersList(){const container=document.getElementById('customersList');if(!container||!canManageCustomers())return;const raw=document.getElementById('customerDatabaseSearch')?.value||'',q=normalizeName(raw),qp=normalizePhone(raw);const items=Object.keys(customersCache||{}).map(key=>({key,...customersCache[key]})).filter(c=>!q&&!qp||(q&&normalizeName(c.name).includes(q))||(qp&&normalizePhone(c.phone).includes(qp))).sort((a,b)=>Number(b.updatedAt||0)-Number(a.updatedAt||0));container.innerHTML=items.length?items.map(c=>`<div class="bg-gray-50 border rounded-xl p-3 text-xs space-y-2"><div class="flex justify-between gap-2"><b>${escapeHtml(c.name||'بدون اسم')}</b><span dir="ltr" class="font-mono text-[10px] text-gray-500">${escapeHtml(c.phone||'-')}</span></div><p class="text-[10px] text-gray-500">${escapeHtml(c.address||'بدون عنوان')}</p><div class="flex gap-1.5 justify-end"><button type="button" onclick="useCustomerForNewOrder('${c.key}')" class="bg-blue-100 text-blue-800 px-2 py-1 rounded-lg text-[10px] font-bold">استخدام في الطلب</button><button type="button" onclick="editManagedCustomer('${c.key}')" class="bg-amber-100 text-amber-800 px-2 py-1 rounded-lg text-[10px] font-bold">تعديل</button>${isSuperUser()?`<button type="button" onclick="deleteManagedCustomer('${c.key}')" class="bg-red-100 text-red-700 px-2 py-1 rounded-lg text-[10px] font-bold">حذف</button>`:''}</div></div>`).join(''):'<p class="text-xs text-gray-400 text-center p-4">لا توجد عملاء محفوظون حتى الآن.</p>'; }
     function resetCustomerManagementForm(){['managedCustomerKey','managedCustomerName','managedCustomerPhone','managedCustomerAddress'].forEach(id=>document.getElementById(id).value='');document.getElementById('managedCustomerName')?.focus();}
     function editManagedCustomer(key){if(!canManageCustomers())return;const c=customersCache[key];if(!c)return;document.getElementById('managedCustomerKey').value=key;document.getElementById('managedCustomerName').value=c.name||'';document.getElementById('managedCustomerPhone').value=c.phone||'';document.getElementById('managedCustomerAddress').value=c.address||'';}
-    function saveManagedCustomer(){if(!canManageCustomers())return alert('لا تملك صلاحية إدارة قاعدة العملاء.');const key=document.getElementById('managedCustomerKey').value||null,name=document.getElementById('managedCustomerName').value.trim(),phone=document.getElementById('managedCustomerPhone').value.trim(),address=document.getElementById('managedCustomerAddress').value.trim();if(!name||!phone)return alert('اكتب اسم العميل ورقم الهاتف.');upsertCustomerRecord(name,phone,address,key,false).then(()=>{alert('تم حفظ بيانات العميل بنجاح ✅');resetCustomerManagementForm();}).catch(err=>{console.error(err);alert('تعذر حفظ العميل حالياً.');});}
+    async function saveManagedCustomer(){
+      if(!canManageCustomers())return alert('لا تملك صلاحية إدارة قاعدة العملاء.');
+      const key=document.getElementById('managedCustomerKey').value||null;
+      const name=document.getElementById('managedCustomerName').value.trim();
+      const phone=document.getElementById('managedCustomerPhone').value.trim();
+      const address=document.getElementById('managedCustomerAddress').value.trim();
+      if(!name||!phone)return alert('اكتب اسم العميل ورقم الهاتف.');
+      try{
+        await upsertCustomerRecord(name,phone,address,key,false);
+        alert('تم حفظ بيانات العميل في قاعدة البيانات بنجاح ✅');
+        resetCustomerManagementForm();
+      }catch(err){
+        console.error('Customer save error:',err);
+        try{
+          const local=JSON.parse(localStorage.getItem('hamaksha_local_customers')||'{}');
+          const localKey=key||('local_'+(normalizePhone(phone)||Date.now()));
+          local[localKey]={name,phone,address,phoneNormalized:normalizePhone(phone),nameNormalized:normalizeName(name),createdAt:local[localKey]?.createdAt||Date.now(),updatedAt:Date.now()};
+          localStorage.setItem('hamaksha_local_customers',JSON.stringify(local));
+          customersCache={...(customersCache||{}),...local};
+          renderCustomersList();
+          resetCustomerManagementForm();
+          alert('تعذر الحفظ في Firebase حالياً، فتم حفظ العميل محلياً على هذا الجهاز. للسجل المشترك بين الأجهزة راجع Firebase Rules لمسار customers. ⚠️');
+        }catch(localErr){
+          alert('تعذر حفظ العميل حالياً. تحقق من اتصال Firebase وقواعد الكتابة لمسار customers.');
+        }
+      }
+    }
     function useCustomerForNewOrder(key){selectCustomerFromRecord(key);document.getElementById('custName')?.scrollIntoView({behavior:'smooth',block:'center'});}
     function deleteManagedCustomer(key){if(!isSuperUser())return alert('حذف العملاء متاح للمستخدم الرئيسي asma فقط.');const c=customersCache[key];if(c&&confirm(`هل تريد حذف العميل ${c.name||''} من قاعدة العملاء؟ لن يتم حذف الطلبات القديمة.`))db.ref('customers/'+key).remove();}
 
@@ -1196,10 +1251,11 @@
       const customId=document.getElementById('custOrderId').value.trim(),orderId=customId||('HAMKASHA-'+Math.floor(10000+Math.random()*90000));
       const name=document.getElementById('custName').value.trim(),phone=document.getElementById('custPhone').value.trim(),address=document.getElementById('custAddress').value.trim();
       const orderPrice=Number(document.getElementById('orderPrice').value)||0,deliveryPrice=Number(document.getElementById('deliveryPrice').value)||0,paymentMethod=document.getElementById('paymentMethod').value,paymentFee=Number(document.getElementById('paymentFee').value)||0,totalCash=orderPrice+deliveryPrice+paymentFee,driver=document.getElementById('driverSelect').value,now=new Date();
-      const selectedKey=document.getElementById('selectedCustomerKey').value||null; let customerId=selectedKey; try{customerId=await upsertCustomerRecord(name,phone,address,selectedKey,true);}catch(err){console.error(err);}
-      db.ref('orders/'+orderId).set({orderId,customerName:name,phone,address,orderPrice,deliveryPrice,paymentMethod,paymentFee,totalCash,driver,status:'جاري تحضير اللحوم 🥩',rating:null,comment:null,isPublished:false,date:now.toISOString().split('T')[0],time:now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),lat:null,lng:null,custLat:null,custLng:null,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name),createdBy:currentUser.username,createdAt:Date.now()}).then(()=>{
-        const baseUrl=window.location.href.split('?')[0],trackUrl=`${baseUrl}?id=${encodeURIComponent(orderId)}`;
-        document.getElementById('trackingLink').value=trackUrl; document.getElementById('waBtn').href=`https://wa.me/${phone}?text=${encodeURIComponent('أهلاً بك 🥩\nطلبك لدى جزارة حمكشة رقم: #'+orderId+'\nالإجمالي المطلوب شامل العمولة والتوصيل: '+totalCash+' ج.م\nللتتبع: اكتب اسمك أو رقم هاتفك في رابط المتابعة\n'+trackUrl)}`;
+      const selectedKey=document.getElementById('selectedCustomerKey').value||null; let customerId=selectedKey; try{customerId=await upsertCustomerRecord(name,phone,address,selectedKey,true);}catch(err){console.error('Customer auto-save error:',err);}
+      const trackingToken=createTrackingToken();
+      db.ref('orders/'+orderId).set({orderId,customerName:name,phone,address,orderPrice,deliveryPrice,paymentMethod,paymentFee,totalCash,driver,status:'جاري تحضير اللحوم 🥩',rating:null,comment:null,isPublished:false,date:now.toISOString().split('T')[0],time:now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),lat:null,lng:null,custLat:null,custLng:null,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name),createdBy:currentUser.username,createdAt:Date.now(),trackingToken}).then(()=>{
+        const baseUrl=window.location.href.split('?')[0],trackUrl=`${baseUrl}?tab=track&id=${encodeURIComponent(orderId)}&token=${encodeURIComponent(trackingToken)}`;
+        document.getElementById('trackingLink').value=trackUrl; document.getElementById('waBtn').href=`https://wa.me/${phone}?text=${encodeURIComponent('أهلاً بك 🥩\nطلبك لدى جزارة حمكشة رقم: #'+orderId+'\nالإجمالي المطلوب شامل العمولة والتوصيل: '+totalCash+' ج.م\nرابط متابعة طلبك فقط لمتابعة الحالة وموقع المندوب والتقييم والتعليق:\n'+trackUrl)}`;
         document.getElementById('result').classList.remove('hidden'); ['custOrderId','custName','custPhone','custAddress','selectedCustomerKey','orderPrice'].forEach(id=>document.getElementById(id).value=''); document.getElementById('paymentFee').value='0';document.getElementById('displayGrandTotal').innerText='0 ج.م';document.getElementById('customerLookupStatus').innerText=''; alert('تم تسجيل الطلب وربطه بقاعدة بيانات العميل ✅');
       }).catch(err=>{console.error(err);alert('تعذر تسجيل الطلب حالياً.');});
     });
@@ -1773,19 +1829,19 @@
       }
     }
 
-    function togglePublishComment(orderKey, publishState) {
-      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!canUser('analytics')) return;
-      db.ref(`orders/${orderKey}/isPublished`).set(publishState).then(() => {
-        alert(publishState ? 'تم نشر التعليق بنجاح للعموم في صفحة التتبع ✅' : 'تم إلغاء النشر وأصبح التعليق خاصاً بالإدارة فقط 🔒');
-      });
+    function togglePublishComment(orderKey,publishState){
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!canUser('analytics'))return;
+      const order=allOrdersCache[orderKey]||{};
+      const ops=[db.ref(`orders/${orderKey}/isPublished`).set(publishState)];
+      if(publishState)ops.push(db.ref('publicComments/'+orderKey).set({customerName:order.customerName||order.name||'عميل حمكشة',rating:Number(order.rating||0),comment:order.comment||'',isPublished:true,publishedAt:Date.now(),driver:order.driver||'غير محدد'}));
+      else ops.push(db.ref('publicComments/'+orderKey).remove());
+      Promise.all(ops).then(()=>alert(publishState?'تم نشر التعليق بنجاح للعموم في صفحة التتبع ✅':'تم إلغاء النشر وأصبح التعليق خاصاً بالإدارة فقط 🔒')).catch(err=>{console.error(err);alert('تعذر تحديث حالة النشر حالياً.');});
     }
 
-    function deleteComment(orderKey) {
-      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!canUser('analytics')) return;
-      if(confirm('هل تريد حذف هذا التعليق والتقييم نهائياً؟')) {
-        db.ref(`orders/${orderKey}`).update({ rating: null, comment: null, isPublished: false }).then(() => {
-          alert('تم حذف التعليق والتقييم بنجاح 🗑️');
-        });
+    function deleteComment(orderKey){
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!canUser('analytics'))return;
+      if(confirm('هل تريد حذف هذا التعليق والتقييم نهائياً؟')){
+        Promise.all([db.ref(`orders/${orderKey}`).update({rating:null,comment:null,isPublished:false}),db.ref('publicComments/'+orderKey).remove()]).then(()=>alert('تم حذف التعليق والتقييم بنجاح 🗑️')).catch(err=>{console.error(err);alert('تعذر حذف التعليق حالياً.');});
       }
     }
 
@@ -1910,10 +1966,10 @@
     function updateCustomerIdentityHint(){const el=document.getElementById('customerIdentityStatus');if(!el)return;el.innerText=currentRequestedOrderId?`🔐 لإظهار الطلب #${currentRequestedOrderId} اكتب اسم العميل أو رقم الهاتف أولاً.`:'';el.className='text-[10px] font-bold text-center text-blue-700';}
     async function queryCustomerOrdersByIdentity(name,phone){const nn=normalizeName(name),pn=normalizePhone(phone);if(!nn&&!pn)throw new Error('IDENTITY_REQUIRED');const raw={};const merge=data=>Object.keys(data||{}).forEach(k=>raw[k]=data[k]);if(pn){merge((await db.ref('orders').orderByChild('phoneNormalized').equalTo(pn).once('value')).val()||{});merge((await db.ref('orders').orderByChild('phone').equalTo(phone).once('value')).val()||{});}if(nn){merge((await db.ref('orders').orderByChild('customerNameNormalized').equalTo(nn).once('value')).val()||{});merge((await db.ref('orders').orderByChild('customerName').equalTo(name).once('value')).val()||{});}const result={};Object.keys(raw).forEach(k=>{const o=raw[k]||{};if((!pn||normalizePhone(o.phone||'')===pn)&&(!nn||normalizeName(o.customerName||o.name||'')===nn))result[k]=o;});return result;}
     function renderCustomerOrderResults(results){const container=document.getElementById('customerOrdersResults');if(!container)return;const keys=Object.keys(results||{}).sort((a,b)=>(`${results[b]?.date||''} ${results[b]?.time||''}`).localeCompare(`${results[a]?.date||''} ${results[a]?.time||''}`));if(!keys.length){container.innerHTML='<div class="bg-white rounded-2xl shadow-lg p-5 border text-center text-xs text-red-600 font-bold">لم نجد طلبات مطابقة للبيانات المدخلة.</div>';return;}container.innerHTML=keys.map(key=>{const o=results[key]||{},amount=Number(o.totalCash||((o.orderPrice||0)+(o.deliveryPrice||0)+(o.paymentFee||0)));return`<div class="bg-white rounded-2xl shadow-lg p-4 border border-amber-100 space-y-2"><div class="flex justify-between items-center gap-2"><b class="font-mono text-red-700">#${escapeHtml(o.orderId||key)}</b><span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full text-[10px] font-bold">${escapeHtml(o.status||'')}</span></div><div class="grid grid-cols-2 gap-2 text-[10px] bg-gray-50 rounded-xl p-2 border"><span>📅 ${escapeHtml(formatDateDMY(o.date||'-'))}</span><span>💰 ${amount.toLocaleString('ar-EG')} ج.م</span><span>🛵 ${escapeHtml(o.driver||'غير محدد')}</span><span>📍 ${o.lat&&o.lng?'الموقع متاح':'لا يوجد GPS'}</span></div><button type="button" onclick="openCustomerOrder('${key}')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-xl text-xs shadow">فتح وتتبع الطلب 📍</button></div>`;}).join('');}
-    async function searchCustomerOrder(){const name=document.getElementById('custIdentityName')?.value.trim()||'',phone=document.getElementById('custIdentityPhone')?.value.trim()||'',status=document.getElementById('customerIdentityStatus');if(!name&&!phone){status.innerText='⚠️ اكتب اسم العميل أو رقم الهاتف على الأقل.';return;}status.innerText='🔎 جارٍ البحث...';status.className='text-[10px] font-bold text-center text-blue-700';try{const results=await queryCustomerOrdersByIdentity(name,phone);currentCustomerSearchResults=results;currentCustomerVerified=Object.keys(results).length>0;renderCustomerOrderResults(results);status.innerText=currentCustomerVerified?`✅ تم التحقق — وجدنا ${Object.keys(results).length} طلب/طلبات.`:'❌ لا توجد طلبات مطابقة.';status.className=`text-[10px] font-bold text-center ${currentCustomerVerified?'text-emerald-700':'text-red-600'}`;if(currentRequestedOrderId&&results[currentRequestedOrderId])openCustomerOrder(currentRequestedOrderId);else if(Object.keys(results).length===1)openCustomerOrder(Object.keys(results)[0]);else document.getElementById('trackResultCard').classList.add('hidden');}catch(err){console.error(err);status.innerText='تعذر تنفيذ البحث حالياً.';}}
-    function openCustomerOrder(orderKey){if(!currentCustomerVerified||!currentCustomerSearchResults[orderKey])return alert('لا يمكن فتح هذا الطلب قبل التحقق من اسم العميل أو رقم الهاتف.');currentTrackOrderId=orderKey;if(customerOrderRef)try{customerOrderRef.off();}catch(e){}customerOrderRef=db.ref('orders/'+orderKey);customerOrderRef.on('value',snap=>{const data=snap.val();if(data)applyCustomerTrackData(data,orderKey);});}
+    async function searchCustomerOrder(){if(APP_MODE!=='staff')return alert('صفحة العميل لا تسمح بالبحث. استخدم رابط الطلب المرسل لك عبر WhatsApp فقط.');const name=document.getElementById('custIdentityName')?.value.trim()||'',phone=document.getElementById('custIdentityPhone')?.value.trim()||'',status=document.getElementById('customerIdentityStatus');if(!name&&!phone){status.innerText='⚠️ اكتب اسم العميل أو رقم الهاتف على الأقل.';return;}status.innerText='🔎 جارٍ البحث...';status.className='text-[10px] font-bold text-center text-blue-700';try{const results=await queryCustomerOrdersByIdentity(name,phone);currentCustomerSearchResults=results;currentCustomerVerified=Object.keys(results).length>0;renderCustomerOrderResults(results);status.innerText=currentCustomerVerified?`✅ تم التحقق — وجدنا ${Object.keys(results).length} طلب/طلبات.`:'❌ لا توجد طلبات مطابقة.';status.className=`text-[10px] font-bold text-center ${currentCustomerVerified?'text-emerald-700':'text-red-600'}`;if(currentRequestedOrderId&&results[currentRequestedOrderId])openCustomerOrder(currentRequestedOrderId);else if(Object.keys(results).length===1)openCustomerOrder(Object.keys(results)[0]);else document.getElementById('trackResultCard').classList.add('hidden');}catch(err){console.error(err);status.innerText='تعذر تنفيذ البحث حالياً.';}}
+    function openCustomerOrder(orderKey){if(APP_MODE!=='staff')return alert('استخدم رابط الطلب الخاص بك عبر WhatsApp.');if(!currentCustomerVerified||!currentCustomerSearchResults[orderKey])return alert('لا يمكن فتح هذا الطلب قبل التحقق من اسم العميل أو رقم الهاتف.');currentTrackOrderId=orderKey;if(customerOrderRef)try{customerOrderRef.off();}catch(e){}customerOrderRef=db.ref('orders/'+orderKey);customerOrderRef.on('value',snap=>{const data=snap.val();if(data)applyCustomerTrackData(data,orderKey);});}
     function applyCustomerTrackData(data,orderKey){document.getElementById('trackResultCard').classList.remove('hidden');document.getElementById('dispOrderId').innerText='#'+(data.orderId||orderKey);document.getElementById('cDriver').innerText=data.driver||'جاري التحديد...';document.getElementById('cDate').innerText=formatDateDMY(data.date)+' '+(data.time||'');document.getElementById('badgeStatus').innerText=data.status||'جاري المتابعة';document.getElementById('mapTextInfo').innerHTML=data.lat&&data.lng?`<div class="space-y-2"><p class="font-bold text-emerald-600">🛵 المندوب في الطريق إليك الآن!</p><a href="https://www.google.com/maps?q=${encodeURIComponent(data.lat+','+data.lng)}" target="_blank" rel="noopener" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow">📍 فتح موقع المندوب الحي على Google Maps</a></div>`:'⏳ الطلب قيد التحضير أو المندوب لم يقم بتفعيل اللوكيشن الحي بعد.';currentTrackOrderStatus=data.status||'';const delivered=currentTrackOrderStatus==='تم التسليم بنجاح ✅',locked=document.getElementById('feedbackLockedMsg'),badge=document.getElementById('feedbackAvailabilityBadge'),submit=document.getElementById('submitFeedbackBtn'),comment=document.getElementById('custCommentText'),stars=document.querySelectorAll('#starContainer .star-btn');if(delivered){locked.classList.add('hidden');badge.innerText='✅ التقييم متاح الآن';badge.className='text-[10px] font-bold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700';submit.disabled=false;comment.disabled=false;stars.forEach(b=>b.disabled=false);selectedStarsCount=Number(data.rating||0);highlightStarRating(selectedStarsCount);comment.value=data.comment||'';const msg=document.getElementById('ratingSubmittedMsg');if(data.rating){msg.innerText=`✅ تم تسجيل تقييمك بـ (${data.rating} ⭐).`;msg.classList.remove('hidden');}else msg.classList.add('hidden');}else{locked.classList.remove('hidden');badge.innerText='🔒 متاح بعد التسليم';badge.className='text-[10px] font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-600';submit.disabled=true;comment.disabled=true;stars.forEach(b=>b.disabled=true);selectedStarsCount=0;highlightStarRating(0);comment.value='';document.getElementById('ratingSubmittedMsg').classList.add('hidden');}}
-    function toggleCustomerLocationShare(){if(!currentTrackOrderId||!currentCustomerVerified||!currentCustomerSearchResults[currentTrackOrderId])return alert('اختر طلبك أولاً من قائمة طلباتك.');if(!navigator.geolocation)return alert('متصفحك لا يدعم تحديد الموقع الجغرافي');if(custWatchId){navigator.geolocation.clearWatch(custWatchId);custWatchId=null;document.getElementById('custShareLocBtn').innerText='📍 مشاركة موقعي الحالي (GPS) مع المندوب';document.getElementById('custLocStatus').classList.add('hidden');return;}custWatchId=navigator.geolocation.watchPosition(pos=>{db.ref('orders/'+currentTrackOrderId).update({custLat:pos.coords.latitude,custLng:pos.coords.longitude,customerLocationUpdatedAt:Date.now()});document.getElementById('custShareLocBtn').innerText='🔄 يتم تحديث مشاركة موقعك حياً...';document.getElementById('custLocStatus').classList.remove('hidden');},()=>alert('تعذر الوصول إلى موقعك الجغرافي (GPS)'),{enableHighAccuracy:true});}
+    function toggleCustomerLocationShare(){if(!currentTrackOrderId)return alert('رابط الطلب غير محمّل بعد.');if(!navigator.geolocation)return alert('متصفحك لا يدعم تحديد الموقع الجغرافي');if(custWatchId){navigator.geolocation.clearWatch(custWatchId);custWatchId=null;document.getElementById('custShareLocBtn').innerText='📍 مشاركة موقعي الحالي (GPS) مع المندوب';document.getElementById('custLocStatus').classList.add('hidden');return;}custWatchId=navigator.geolocation.watchPosition(pos=>{db.ref('orders/'+currentTrackOrderId).update({custLat:pos.coords.latitude,custLng:pos.coords.longitude,customerLocationUpdatedAt:Date.now()});document.getElementById('custShareLocBtn').innerText='🔄 يتم تحديث مشاركة موقعك حياً...';document.getElementById('custLocStatus').classList.remove('hidden');},()=>alert('تعذر الوصول إلى موقعك الجغرافي (GPS)'),{enableHighAccuracy:true});}
 
     function highlightStarRating(stars) {
       document.querySelectorAll('#starContainer .star-btn').forEach((btn, index) => {
@@ -2136,28 +2192,14 @@
       printWindow.document.close();
     }
 
-    function shareWhatsApp(key) {
-      const item = allOrdersCache[key];
-      if (!item) return;
-
-      const displayId = item.orderId || key;
-      const phone = item.phone || '';
-      const totalCash = item.totalCash || ((item.orderPrice || 0) + (item.deliveryPrice || 0) + (item.paymentFee || 0));
-      const baseUrl = window.location.href.split('?')[0];
-      const trackUrl = `${baseUrl}?tab=track&id=${displayId}`;
-
-      const text = `أهلاً بك 🥩
-طلبك لدى جزارة حمكشة رقم: #${displayId}
-طريقة الدفع: ${getPaymentText(item.paymentMethod)}
-المبلغ المطلوب تحصيله (شامل العمولة والتوصيل): ${totalCash} ج.م
-يمكنك تتبع حالة طلبك ومكان المندوب وتقييم الخدمة مباشرة عبر الرابط التالي:
-${trackUrl}`;
-
-      const waUrl = phone 
-        ? `https://wa.me/${phone}?text=${encodeURIComponent(text)}`
-        : `https://wa.me/?text=${encodeURIComponent(text)}`;
-
-      window.open(waUrl, '_blank');
+    async function shareWhatsApp(key){
+      const item=allOrdersCache[key];if(!item)return;
+      const displayId=item.orderId||key,phone=item.phone||'',totalCash=item.totalCash||((item.orderPrice||0)+(item.deliveryPrice||0)+(item.paymentFee||0));
+      let trackingToken='';try{trackingToken=await ensureTrackingToken(key);}catch(e){console.error(e);return alert('تعذر تجهيز رابط التتبع الآمن حالياً.');}
+      const baseUrl=window.location.href.split('?')[0],trackUrl=`${baseUrl}?tab=track&id=${encodeURIComponent(displayId)}&token=${encodeURIComponent(trackingToken)}`;
+      const text=`أهلاً بك 🥩\nطلبك لدى جزارة حمكشة رقم: #${displayId}\nطريقة الدفع: ${getPaymentText(item.paymentMethod)}\nالمبلغ المطلوب تحصيله (شامل العمولة والتوصيل): ${totalCash} ج.م\nرابط متابعة طلبك فقط لمتابعة الحالة وموقع المندوب والتقييم والتعليق:\n${trackUrl}`;
+      const waUrl=phone?`https://wa.me/${phone}?text=${encodeURIComponent(text)}`:`https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(waUrl,'_blank');
     }
 
     function openEditModal(key) {
@@ -2204,10 +2246,36 @@ ${trackUrl}`;
     function startDelivery(){if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='driver')return;const key=currentDriverOrderKey||getDriverOrderKeyFromInput(document.getElementById('orderId').value.trim());if(!key||!driverOrdersCache[key])return alert('اختر طلباً من طلباتك أولاً.');if(!navigator.geolocation)return alert('المتصفح لا يدعم تحديد الموقع الجغرافي');if(watchId){navigator.geolocation.clearWatch(watchId);watchId=null;document.getElementById('driverStatus').innerText='🛑 تم إيقاف بث الموقع الحي.';document.getElementById('startBtn').innerText='📍 بدء بث اللوكيشن الحي Live (اختياري)';document.getElementById('stopBtn').classList.add('hidden');return;}watchId=navigator.geolocation.watchPosition(pos=>{db.ref('orders/'+key).update({lat:pos.coords.latitude,lng:pos.coords.longitude,locationUpdatedAt:Date.now()});document.getElementById('driverStatus').innerText='📍 يتم الآن بث موقعك الحي بنجاح...';document.getElementById('startBtn').innerText='🔄 جاري بث اللوكيشن حياً...';document.getElementById('stopBtn').classList.remove('hidden');},()=>alert('تعذر الوصول إلى نظام تحديد المواقع (GPS)'),{enableHighAccuracy:true});}
     function stopDelivery(){if(watchId){navigator.geolocation.clearWatch(watchId);watchId=null;}document.getElementById('driverStatus').innerText='🛑 تم إيقاف بث الموقع الحي.';document.getElementById('startBtn').innerText='📍 بدء بث اللوكيشن الحي Live (اختياري)';document.getElementById('stopBtn').classList.add('hidden');}
 
+    async function loadCustomerOrderFromSecureLink(){
+      const params=new URLSearchParams(window.location.search),orderId=params.get('id')||'',token=params.get('token')||'';
+      const statusEl=document.getElementById('customerLinkStatus'),resultCard=document.getElementById('trackResultCard');
+      if(!orderId||!token){if(statusEl)statusEl.innerHTML='❌ هذا ليس رابط تتبع صالحاً. استخدم رابط المتابعة المرسل لك عبر WhatsApp.';resultCard?.classList.add('hidden');return;}
+      if(statusEl)statusEl.innerText='🔐 جارٍ التحقق من رابط طلبك...';
+      try{
+        const snap=await db.ref('orders/'+orderId).once('value'),data=snap.val();
+        if(!data||String(data.trackingToken||'')!==String(token)){if(statusEl)statusEl.innerHTML='❌ رابط التتبع غير صالح أو غير مرتبط بهذا الطلب. اطلب رابطاً جديداً من الجزارة.';resultCard?.classList.add('hidden');return;}
+        currentCustomerTrackToken=token;currentTrackOrderId=orderId;
+        if(customerOrderRef)try{customerOrderRef.off();}catch(e){}
+        customerOrderRef=db.ref('orders/'+orderId);
+        customerOrderRef.on('value',snap2=>{const fresh=snap2.val();if(fresh&&String(fresh.trackingToken||'')===String(token)){if(statusEl)statusEl.innerHTML='✅ تم فتح طلبك بنجاح — هذه الصفحة خاصة بهذا الطلب فقط.';applyCustomerTrackData(fresh,orderId);}else{if(statusEl)statusEl.innerHTML='❌ تعذر التحقق من رابط الطلب.';resultCard?.classList.add('hidden');}});
+      }catch(err){console.error(err);if(statusEl)statusEl.innerText='تعذر تحميل الطلب حالياً. حاول مرة أخرى.';resultCard?.classList.add('hidden');}
+    }
+
     // --- 👤 أوضاع التطبيق ---
-    function applyCustomerPublicMode(){document.body.classList.remove('driver-private-mode');document.body.classList.add('customer-public-mode');document.getElementById('mainHeader')?.style.setProperty('display','none','important');document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');document.getElementById('authModal')?.classList.add('hidden');switchTab('track');updateCustomerIdentityHint();['custIdentityName','custIdentityPhone'].forEach(id=>document.getElementById(id)?.addEventListener('keydown',e=>{if(e.key==='Enter')searchCustomerOrder();}));}
-    function applyDriverPrivateMode(){document.body.classList.remove('customer-public-mode');document.body.classList.add('driver-private-mode');document.getElementById('mainHeader')?.style.setProperty('display','none','important');document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');switchTab('driver');}
+    function applyCustomerPublicMode(){
+      document.body.classList.remove('driver-private-mode');document.body.classList.add('customer-public-mode');
+      document.getElementById('mainHeader')?.style.setProperty('display','none','important');
+      document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');
+      document.getElementById('authModal')?.classList.add('hidden');
+      document.getElementById('trackResultCard')?.classList.add('hidden');
+      switchTab('track');loadCustomerOrderFromSecureLink();
+    }
+    function applyDriverPrivateMode(){
+      document.body.classList.remove('customer-public-mode');document.body.classList.add('driver-private-mode');
+      document.getElementById('mainHeader')?.style.setProperty('display','none','important');
+      document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');switchTab('driver');
+    }
     window.addEventListener('DOMContentLoaded',()=>{startPublicCommentsListener();loadRememberedLogin();if(APP_MODE!=='staff')applyCustomerPublicMode();else{document.body.classList.remove('customer-public-mode');startStaffDataListeners();updateUIByPermissions();checkSavedSession();if(!currentUser)switchTab('admin');}});
-  </script>
+</script>
 </body>
 </html>
