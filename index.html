@@ -439,6 +439,18 @@
       .panel-link, .panel-count { align-self:flex-start; }
     }
 
+
+    /* 🛵 Driver workspace — modern dashboard layer */
+    .driver-hero { background: linear-gradient(135deg, var(--primary-color, #7f1d1d), #171717); color:#fff; }
+    .driver-stat { border:1px solid rgba(148,163,184,.18); background:var(--card-bg, #fff); box-shadow:0 14px 34px rgba(15,23,42,.07); }
+    .driver-stat .stat-value { font-variant-numeric:tabular-nums; }
+    .driver-order-card { border:1px solid var(--border-color, #e5e7eb); background:var(--card-bg, #fff); transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+    .driver-order-card:hover { transform:translateY(-1px); box-shadow:0 12px 30px rgba(15,23,42,.08); border-color:var(--primary-color, #dc2626); }
+    .driver-order-card.is-selected { border-color:var(--primary-color, #dc2626); box-shadow:0 0 0 3px color-mix(in srgb, var(--primary-color, #dc2626) 12%, transparent); }
+    .driver-status-dot { width:.55rem; height:.55rem; border-radius:999px; display:inline-block; flex:none; }
+    .driver-empty { border:1px dashed var(--border-color, #d1d5db); }
+    .driver-search { background:color-mix(in srgb, var(--card-bg, #fff) 92%, var(--primary-color, #7f1d1d) 8%); }
+
   </style>
 </head>
 <body id="appBody" class="bg-amber-50/40 min-h-screen text-gray-800">
@@ -1019,54 +1031,81 @@
     </section>
 
     <!-- 4️⃣ واجهة المندوب -->
-    <section id="sec-driver" class="hidden space-y-6">
-      <div id="driverAuthLock" class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md mx-auto space-y-4 border">
-        <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-3xl">🛵</div>
-        <h3 class="text-xl font-bold">واجهة المندوب</h3>
-        <p class="text-xs text-gray-500">قم بتسجيل الدخول بحساب المندوب الخاص بك لبدء العمل على طلباتك.</p>
-        <button onclick="toggleAuthModal()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-xl shadow text-sm">تسجيل الدخول كمندوب 🔑</button>
+    <section id="sec-driver" class="hidden space-y-5">
+      <div id="driverAuthLock" class="bg-white rounded-3xl shadow-xl p-8 text-center max-w-md mx-auto space-y-4 border border-amber-100">
+        <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center mx-auto text-3xl shadow-sm">🛵</div>
+        <h3 class="text-xl font-black text-gray-900">واجهة المندوب</h3>
+        <p class="text-xs leading-6 text-gray-500">قم بتسجيل الدخول بحساب المندوب الخاص بك لعرض طلباتك اليومية وإدارة حالة التوصيل والتحصيل.</p>
+        <button onclick="toggleAuthModal()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-2xl shadow-lg text-sm transition-all">تسجيل الدخول كمندوب 🔑</button>
       </div>
 
-      <div id="driverContent" class="hidden max-w-xl mx-auto space-y-4 bg-white p-6 rounded-2xl shadow-xl border text-center">
-        <div class="flex items-center justify-between gap-2 border-b pb-3"><div class="text-right"><h2 class="text-lg font-bold">إدارة حالة الطلب والتحصيل المالي 🛵</h2><p class="text-[10px] text-gray-400">تظهر لك الطلبات المسندة إليك فقط</p></div><button onclick="handleAuthBtnClick()" class="text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-lg font-bold">خروج</button></div>
-        <div id="driverOrdersList" class="space-y-2 text-right"></div>
-        <div class="space-y-2">
-          <label class="block text-right text-xs font-bold text-gray-700">رقم الطلب:</label>
-          <div class="flex gap-2">
-            <input type="text" id="orderId" placeholder="أدخل رقم الطلب (مثال: HAMKASHA-12345)" class="w-full border p-2.5 rounded-xl text-center font-mono font-bold text-xs bg-gray-50">
-            <button onclick="fetchDriverOrder()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 rounded-xl text-xs whitespace-nowrap">بحث 🔍</button>
+      <div id="driverContent" class="hidden space-y-5">
+        <div class="driver-hero rounded-3xl p-5 sm:p-6 shadow-xl overflow-hidden relative">
+          <div class="absolute -left-8 -top-10 w-32 h-32 rounded-full bg-white/10 blur-2xl"></div>
+          <div class="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2 text-[11px] font-bold text-white/70 mb-2"><span class="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>المندوب متصل بالنظام</div>
+              <h2 class="text-2xl font-black">أهلاً بيك في ورديتك 👋</h2>
+              <p class="text-xs text-white/75 mt-1">تابع طلباتك، حدّث الحالة، وشارك موقعك للعميل عند بدء التوصيل.</p>
+            </div>
+            <button onclick="handleAuthBtnClick()" class="shrink-0 bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all">خروج ↪</button>
           </div>
         </div>
 
-        <div id="driverOrderCard" class="hidden bg-gray-50 p-4 rounded-xl border text-right space-y-3 text-xs">
-          <p><b>العميل:</b> <span id="dCustName">--</span></p>
-          <p><b>العنوان والطلبات:</b> <span id="dCustAddress">--</span></p>
-          <p><b>طريقة الدفع:</b> <span id="dPayMethod" class="font-bold text-blue-800">--</span></p>
-          <div class="bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl font-bold text-emerald-900 flex justify-between">
-            <span>المبلغ المطلوب تحصيله شامل العمولة:</span>
-            <span id="dTotalCash" class="font-mono text-sm">0 ج.م</span>
-          </div>
-          <p><b>الحالة الحالية:</b> <span id="dStatus" class="font-bold text-red-600">--</span></p>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="driver-stat rounded-2xl p-4"><div class="text-[10px] text-gray-500 font-bold">طلبات اليوم</div><div id="driverTodayCount" class="stat-value text-2xl font-black text-gray-900 mt-1">0</div><div class="text-[10px] text-gray-400 mt-1">من الطلبات المسندة</div></div>
+          <div class="driver-stat rounded-2xl p-4"><div class="text-[10px] text-gray-500 font-bold">قيد التوصيل</div><div id="driverActiveCount" class="stat-value text-2xl font-black text-blue-700 mt-1">0</div><div class="text-[10px] text-gray-400 mt-1">تحتاج متابعة الآن</div></div>
+          <div class="driver-stat rounded-2xl p-4"><div class="text-[10px] text-gray-500 font-bold">تم التسليم</div><div id="driverDeliveredCount" class="stat-value text-2xl font-black text-emerald-700 mt-1">0</div><div class="text-[10px] text-gray-400 mt-1">طلبات مكتملة</div></div>
+          <div class="driver-stat rounded-2xl p-4"><div class="text-[10px] text-gray-500 font-bold">تحصيل كاش</div><div id="driverCashTotal" class="stat-value text-xl font-black text-amber-700 mt-1">0 ج.م</div><div class="text-[10px] text-gray-400 mt-1">من الطلبات المسلّمة اليوم</div></div>
+        </div>
 
-          <div class="bg-white p-3 rounded-xl border space-y-1.5">
-            <label class="block font-bold text-gray-800">تغيير حالة الطلب يدوياً:</label>
-            <select id="driverStatusSelect" onchange="driverChangeStatus(this.value)" class="w-full border p-2 rounded-xl text-xs font-bold bg-amber-50">
-              <option value="جاري تحضير اللحوم 🥩">جاري تحضير اللحوم 🥩</option>
-              <option value="خرج للتوصيل 🛵">خرج للتوصيل 🛵</option>
-              <option value="تم التسليم بنجاح ✅">تم التسليم بنجاح ✅</option>
-            </select>
+        <div class="grid grid-cols-1 lg:grid-cols-[1.05fr_.95fr] gap-5">
+          <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-5 space-y-4">
+            <div class="flex items-center justify-between gap-3 border-b pb-3">
+              <div><h3 class="text-sm font-black text-gray-900">📦 طلباتي الحالية</h3><p class="text-[10px] text-gray-400 mt-1">اضغط على أي طلب لفتحه وتحديث حالته</p></div>
+              <span id="driverOrdersBadge" class="bg-amber-100 text-amber-800 rounded-full px-2.5 py-1 text-[10px] font-black">0 طلب</span>
+            </div>
+            <div id="driverOrdersList" class="space-y-2.5 text-right max-h-[520px] overflow-y-auto pr-1"></div>
           </div>
-          
-          <div class="pt-2 border-t space-y-2">
-            <button id="startBtn" onclick="startDelivery()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow flex justify-center items-center gap-1">
-              📍 بدء/إيقاف بث اللوكيشن الحي Live (اختياري)
-            </button>
-            <button id="stopBtn" onclick="stopDelivery()" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2.5 rounded-xl text-xs hidden shadow">
-              🛑 إيقاف مشاركة اللوكيشن فقط
-            </button>
+
+          <div class="space-y-5">
+            <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-5 space-y-4">
+              <div><h3 class="text-sm font-black text-gray-900">🔎 فتح طلب برقم الطلب</h3><p class="text-[10px] text-gray-400 mt-1">اكتب الرقم أو جزءًا منه للعثور على الطلب بسرعة.</p></div>
+              <div class="flex gap-2">
+                <input type="text" id="orderId" placeholder="HAMKASHA-12345" class="driver-search w-full border p-3 rounded-2xl text-center font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-red-200">
+                <button onclick="fetchDriverOrder()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 rounded-2xl text-xs whitespace-nowrap shadow transition-all">بحث 🔍</button>
+              </div>
+            </div>
+
+            <div id="driverOrderCard" class="hidden bg-white rounded-3xl shadow-xl border border-gray-100 p-5 text-right space-y-4">
+              <div class="flex items-start justify-between gap-3 border-b pb-3">
+                <div><div class="text-[10px] font-bold text-gray-400">الطلب المحدد</div><div id="dCustName" class="text-base font-black text-gray-900 mt-1">--</div></div>
+                <span id="dStatus" class="inline-flex items-center gap-1 bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full text-[10px] font-black">--</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="bg-gray-50 rounded-2xl p-3 border"><div class="text-[10px] text-gray-400 font-bold">📍 العنوان والطلبات</div><div id="dCustAddress" class="text-xs font-bold text-gray-800 mt-1 leading-6">--</div></div>
+                <div class="bg-gray-50 rounded-2xl p-3 border"><div class="text-[10px] text-gray-400 font-bold">💳 طريقة الدفع</div><div id="dPayMethod" class="text-xs font-black text-blue-800 mt-1">--</div></div>
+              </div>
+              <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl font-bold text-emerald-900 flex items-center justify-between gap-3"><span class="text-[10px]">المبلغ المطلوب تحصيله</span><span id="dTotalCash" class="font-mono text-lg">0 ج.م</span></div>
+
+              <div class="bg-gray-50 p-4 rounded-2xl border space-y-2">
+                <label class="block font-bold text-gray-800 text-xs">تحديث حالة الطلب:</label>
+                <select id="driverStatusSelect" onchange="driverChangeStatus(this.value)" class="w-full border p-3 rounded-xl text-xs font-black bg-white">
+                  <option value="جاري تحضير اللحوم 🥩">جاري تحضير اللحوم 🥩</option>
+                  <option value="خرج للتوصيل 🛵">خرج للتوصيل 🛵</option>
+                  <option value="تم التسليم بنجاح ✅">تم التسليم بنجاح ✅</option>
+                </select>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                <button id="startBtn" onclick="startDelivery()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl text-xs shadow transition-all flex justify-center items-center gap-1">📍 بدء بث اللوكيشن</button>
+                <button id="stopBtn" onclick="stopDelivery()" class="bg-gray-700 hover:bg-gray-800 text-white font-bold py-3 rounded-2xl text-xs hidden shadow transition-all">🛑 إيقاف اللوكيشن</button>
+              </div>
+            </div>
+
+            <div id="driverStatus" class="bg-gray-50 rounded-2xl border border-gray-100 p-3 text-xs text-gray-600 font-bold text-center"></div>
           </div>
         </div>
-        <div id="driverStatus" class="text-xs text-gray-500 font-semibold"></div>
       </div>
     </section>
 
@@ -2793,7 +2832,46 @@
       if(confirm(`هل تريد حذف هذا الطلب بشكل نهائي؟`)) db.ref('orders/' + id).remove();
     }
 
-    function renderDriverOrdersList(){const c=document.getElementById('driverOrdersList');if(!c||!currentUser||currentUser.role!=='driver')return;const keys=Object.keys(driverOrdersCache||{}).sort((a,b)=>(`${driverOrdersCache[b]?.date||''} ${driverOrdersCache[b]?.time||''}`).localeCompare(`${driverOrdersCache[a]?.date||''} ${driverOrdersCache[a]?.time||''}`));c.innerHTML=keys.length?keys.map(k=>{const o=driverOrdersCache[k]||{};return`<button type="button" onclick="fetchDriverOrder('${k}')" class="w-full text-right bg-gray-50 hover:bg-amber-50 border rounded-xl p-3"><div class="flex justify-between"><b class="font-mono text-red-700">#${escapeHtml(o.orderId||k)}</b><span class="text-[10px] font-bold">${escapeHtml(o.status||'')}</span></div><div class="text-[10px] text-gray-600">👤 ${escapeHtml(o.customerName||'---')} • 💰 ${Number(o.totalCash||0).toLocaleString('ar-EG')} ج.م</div></button>`;}).join(''):'<p class="text-[10px] text-gray-400 text-center p-3">لا توجد طلبات مسندة إليك حالياً.</p>'; }
+    function renderDriverOrdersList(){
+      const c=document.getElementById('driverOrdersList');
+      if(!c||!currentUser||currentUser.role!=='driver')return;
+      const all=driverOrdersCache||{};
+      const keys=Object.keys(all).sort((a,b)=>(`${all[b]?.date||''} ${all[b]?.time||''}`).localeCompare(`${all[a]?.date||''} ${all[a]?.time||''}`));
+      const today=new Date().toISOString().split('T')[0];
+      let todayCount=0,activeCount=0,deliveredCount=0,cashTotal=0;
+      keys.forEach(k=>{const o=all[k]||{};if(o.date===today)todayCount++;if(o.status==='خرج للتوصيل 🛵')activeCount++;if(o.date===today&&o.status==='تم التسليم بنجاح ✅'){deliveredCount++;if(o.paymentMethod==='cash')cashTotal+=Number(o.totalCash||0);}});
+      const set=(id,val)=>{const el=document.getElementById(id);if(el)el.innerText=val;};
+      set('driverTodayCount',todayCount.toLocaleString('ar-EG'));
+      set('driverActiveCount',activeCount.toLocaleString('ar-EG'));
+      set('driverDeliveredCount',deliveredCount.toLocaleString('ar-EG'));
+      set('driverCashTotal',cashTotal.toLocaleString('ar-EG')+' ج.م');
+      set('driverOrdersBadge',`${keys.length.toLocaleString('ar-EG')} ${keys.length===1?'طلب':'طلبات'}`);
+      if(!keys.length){c.innerHTML='<div class="driver-empty rounded-2xl p-6 text-center text-xs text-gray-400">📭 لا توجد طلبات مسندة إليك حالياً.</div>';return;}
+      const statusMeta=status=>{
+        if(status==='تم التسليم بنجاح ✅')return {dot:'bg-emerald-500',pill:'bg-emerald-100 text-emerald-800',label:'تم التسليم'};
+        if(status==='خرج للتوصيل 🛵')return {dot:'bg-blue-500',pill:'bg-blue-100 text-blue-800',label:'خرج للتوصيل'};
+        return {dot:'bg-amber-500',pill:'bg-amber-100 text-amber-800',label:'قيد التحضير'};
+      };
+      c.innerHTML=keys.map(k=>{
+        const o=all[k]||{},m=statusMeta(o.status||'');
+        const selected=currentDriverOrderKey===k?' is-selected':'';
+        const amount=Number(o.totalCash||0).toLocaleString('ar-EG');
+        return `<button type="button" onclick="fetchDriverOrder('${k}')" class="driver-order-card${selected} w-full text-right rounded-2xl p-3.5 block">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 min-w-0"><span class="driver-status-dot ${m.dot}"></span><b class="font-mono text-red-700 text-xs truncate">#${escapeHtml(o.orderId||k)}</b></div>
+            <span class="shrink-0 ${m.pill} px-2 py-1 rounded-full text-[10px] font-black">${m.label}</span>
+          </div>
+          <div class="mt-2 grid grid-cols-2 gap-2 text-[10px] text-gray-600">
+            <span class="truncate">👤 ${escapeHtml(o.customerName||'عميل')}</span>
+            <span class="text-left font-black text-gray-800">💰 ${amount} ج.م</span>
+          </div>
+          <div class="mt-2 flex items-center justify-between text-[10px] text-gray-400">
+            <span>📅 ${escapeHtml(formatDateDMY(o.date||'-'))} · ${escapeHtml(o.time||'--')}</span>
+            <span class="font-bold text-gray-500">فتح الطلب ←</span>
+          </div>
+        </button>`;
+      }).join('');
+    }
     function getDriverOrderKeyFromInput(id){const typed=String(id||'').trim();if(!typed)return null;if(driverOrdersCache[typed])return typed;return Object.keys(driverOrdersCache).find(k=>driverOrdersCache[k]?.orderId===typed)||(Object.keys(driverOrdersCache).find(k=>String(driverOrdersCache[k]?.orderId||'').includes(typed))||null);}
     function populateDriverOrderCard(key,data){currentDriverOrderKey=key;document.getElementById('orderId').value=data.orderId||key;document.getElementById('dCustName').innerText=data.customerName||data.name||'--';document.getElementById('dCustAddress').innerText=data.address||'--';document.getElementById('dPayMethod').innerText=getPaymentText(data.paymentMethod);document.getElementById('dTotalCash').innerText=(data.totalCash||((data.orderPrice||0)+(data.deliveryPrice||0)+(data.paymentFee||0)))+' ج.م';document.getElementById('dStatus').innerText=data.status||'--';document.getElementById('driverStatusSelect').value=data.status||'جاري تحضير اللحوم 🥩';document.getElementById('driverOrderCard').classList.remove('hidden');}
     function fetchDriverOrder(keyOverride=null){if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='driver')return;const key=getDriverOrderKeyFromInput(keyOverride||document.getElementById('orderId').value.trim());if(!key)return alert('عذراً، هذا الطلب غير مسند إليك أو غير موجود ضمن طلباتك.');populateDriverOrderCard(key,driverOrdersCache[key]);}
