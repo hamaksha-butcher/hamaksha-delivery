@@ -786,18 +786,10 @@
   <!-- Firebase JavaScript SDK v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
   <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyB41X0gOP3nMIBrqC3dyDFujODSB_mFSnE",
-      authDomain: "hamaksha-tracking.firebaseapp.com",
-      databaseURL: "https://hamaksha-tracking-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "hamaksha-tracking",
-      storageBucket: "hamaksha-tracking.firebasestorage.app",
-      messagingSenderId: "548305127714",
-      appId: "1:548305127714:web:b565ed22a72ad793703d7b",
-      measurementId: "G-WFREE1HXJN"
+      databaseURL: "https://hamaksha-tracking-default-rtdb.europe-west1.firebasedatabase.app"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -807,70 +799,6 @@
     }
 
     const db = firebase.database();
-
-    // 🔐 المرحلة 1A: تجهيز Firebase Authentication تدريجياً بدون كسر نظام الدخول الحالي.
-    const AUTH_DOMAIN_SUFFIX = '@hamaksha-auth.local';
-
-    // 🔗 ربط أسماء المستخدمين القديمة بحسابات Firebase Authentication الحقيقية.
-    // حساب Asma تم إنشاؤه في Firebase Authentication.
-    const AUTH_EMAILS = {
-      asma: 'asmaibrahim2001@gmail.com'
-    };
-
-    let firebaseAuth = null;
-    let authReady = false;
-    try { firebaseAuth = firebase.auth(); authReady = true; } catch(e) { console.warn('Firebase Auth غير متاح حالياً:', e); }
-
-    function authEmailForUsername(username){
-      const clean=String(username||'').trim().toLowerCase();
-
-      // إذا كان للمستخدم حساب Firebase حقيقي مسجل في AUTH_EMAILS نستخدمه.
-      if (AUTH_EMAILS[clean]) return AUTH_EMAILS[clean];
-
-      // باقي الحسابات تستمر بالطريقة الانتقالية الحالية بدون التأثير على النظام.
-      return clean ? clean.replace(/[^a-z0-9._-]/g,'_')+AUTH_DOMAIN_SUFFIX : '';
-    }
-    function getSecondaryAuthApp(){
-      const name='hamakshaAuthProvisioner';
-      let app=firebase.apps.find(a=>a.name===name);
-      if(!app) app=firebase.initializeApp(firebaseConfig,name);
-      return app.auth();
-    }
-    async function ensureFirebaseAuthAccount(userRecord){
-      if(!authReady||!userRecord?.username||!userRecord?.pass)return null;
-      const email=userRecord.authEmail||authEmailForUsername(userRecord.username);
-      const secondary=getSecondaryAuthApp();
-      try{
-        const cred=await secondary.createUserWithEmailAndPassword(email,String(userRecord.pass));
-        await secondary.signOut();
-        if(userRecord.key) await db.ref('users/'+userRecord.key).update({authUid:cred.user.uid,authEmail:email,authMigratedAt:Date.now()});
-        return cred.user.uid;
-      }catch(err){
-        if(err?.code==='auth/email-already-in-use'){
-          const cred=await secondary.signInWithEmailAndPassword(email,String(userRecord.pass));
-          await secondary.signOut();
-          if(userRecord.key) await db.ref('users/'+userRecord.key).update({authUid:cred.user.uid,authEmail:email,authMigratedAt:Date.now()});
-          return cred.user.uid;
-        }
-        throw err;
-      }
-    }
-    async function signInEmployeeWithFirebaseAuth(userRecord){
-      if(!authReady) throw new Error('AUTH_NOT_READY');
-      const email=userRecord.authEmail||authEmailForUsername(userRecord.username);
-      try{
-        const cred=await firebaseAuth.signInWithEmailAndPassword(email,String(userRecord.pass));
-        if(userRecord.key&&!userRecord.authUid) await db.ref('users/'+userRecord.key).update({authUid:cred.user.uid,authEmail:email,authMigratedAt:Date.now()});
-        return cred.user;
-      }catch(err){
-        await ensureFirebaseAuthAccount(userRecord);
-        return firebaseAuth.signInWithEmailAndPassword(email,String(userRecord.pass));
-      }
-    }
-    function attachAuthStateToCurrentUser(){
-      if(!authReady)return;
-      firebaseAuth.onAuthStateChanged(authUser=>{ if(authUser&&currentUser) currentUser.authUid=authUser.uid; });
-    }
 
     const APP_MODE = new URLSearchParams(window.location.search).get('mode') === 'staff' ? 'staff' : 'customer';
     let allOrdersCache = {};
@@ -1032,66 +960,20 @@
       }
     }
 
-    async function performLogin() {
+    function performLogin() {
       if(APP_MODE !== 'staff') return;
-      const username = document.getElementById('loginUser')?.value.trim();
-      const pass = document.getElementById('loginPass')?.value.trim();
+      const username = document.getElementById('loginUser').value.trim();
+      const pass = document.getElementById('loginPass').value.trim();
       if(!username || !pass) return alert('يرجى كتابة اسم المستخدم وكلمة المرور');
-
-      const remember = document.getElementById('rememberMe')?.checked;
-      if(remember) localStorage.setItem('hamaksha_remembered_login', JSON.stringify({username, pass}));
-      else localStorage.removeItem('hamaksha_remembered_login');
-
-      try {
-        // الحسابات المرتبطة فعلياً بـ Firebase Authentication تدخل مباشرةً،
-        // ثم نقرأ بيانات الصلاحيات من Realtime Database بعد نجاح المصادقة.
-        const loginValue = String(username).trim().toLowerCase();
-         const mappedEmail = loginValue.includes('@') ? loginValue : AUTH_EMAILS[loginValue];
-        if(mappedEmail && authReady) {
-          const cred = await firebaseAuth.signInWithEmailAndPassword(mappedEmail, pass);
-          const snap = await db.ref('users').orderByChild('authUid').equalTo(cred.user.uid).once('value');
-          const data = snap.val() || {};
-          let found = null;
-          Object.keys(data).some(id => { found = {...data[id], key:id}; return true; });
-
-          // توافق مع الحساب القديم إذا كان authUid لم يُحفظ بعد.
-          if(!found) {
-            const byEmail = await db.ref('users').orderByChild('authEmail').equalTo(mappedEmail).once('value');
-            const emailData = byEmail.val() || {};
-            Object.keys(emailData).some(id => { found = {...emailData[id], key:id}; return true; });
-          }
-
-          if(!found) {
-            await firebaseAuth.signOut();
-            return alert('تمت المصادقة مع Firebase، لكن حساب المستخدم غير موجود في قاعدة النظام.');
-          }
-          if(found.key && (!found.authUid || !found.authEmail)) {
-            await db.ref('users/'+found.key).update({authUid:cred.user.uid,authEmail:mappedEmail,authMigratedAt:Date.now()});
-          }
-          loginSuccess(found);
-          return;
-        }
-
-        // مسار التوافق للحسابات القديمة التي لم تُرحّل إلى Firebase Authentication بعد.
-        const snap = await db.ref('users').orderByChild('username').equalTo(username).once('value');
+      db.ref('users').orderByChild('username').equalTo(username).once('value').then(snap => {
         const data = snap.val() || {};
         let found = null;
-        Object.keys(data).forEach(id => {
-          if(String(data[id]?.pass) === String(pass)) found = {...data[id], key:id};
-        });
+        Object.keys(data).forEach(id => { if(String(data[id]?.pass) === String(pass)) found = {...data[id], key:id}; });
         if(!found) return alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
+        const remember = document.getElementById('rememberMe')?.checked;
+        if(remember) localStorage.setItem('hamaksha_remembered_login', JSON.stringify({username, pass})); else localStorage.removeItem('hamaksha_remembered_login');
         loginSuccess(found);
-      } catch(err) {
-        console.error('Login failed:', err);
-        const code = err?.code || '';
-        if(code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
-          return alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
-        }
-        if(code === 'auth/too-many-requests') {
-          return alert('تمت محاولات دخول كثيرة. انتظر قليلاً ثم حاول مرة أخرى.');
-        }
-        alert('تعذر تسجيل الدخول حالياً. تأكد من اتصال الإنترنت وإعدادات Firebase.');
-      }
+      }).catch(err => { console.error(err); alert('تعذر الاتصال ببيانات المستخدمين حالياً.'); });
     }
 
     function stopScopedListeners() {
@@ -1238,17 +1120,20 @@
     // --- 👥 إدارة المستخدمين والمناديب ---
     function addUser() {
       if(!canUser('users')) return alert('عذراً، إضافة المستخدمين تتطلب صلاحية إدارة المستخدمين');
-      const username=document.getElementById('newUserName').value.trim();
-      const pass=document.getElementById('newUserPass').value.trim();
-      const role=document.getElementById('newUserRole').value;
-      if(!username||!pass)return alert('يرجى ملء جميع البيانات');
-      const record={username,pass,role,perms:{edit:false,delete:false,print:false,analytics:false,prices:false,users:false,viewAllDrivers:false}};
-      const ref=db.ref('users').push();
-      ref.set(record).then(async()=>{
-        try{await ensureFirebaseAuthAccount({...record,key:ref.key});alert('تمت إضافة المستخدم وتجهيز Firebase Authentication بنجاح ✅');}
-        catch(e){console.error(e);alert('تمت إضافة المستخدم، لكن تعذر تجهيز Firebase Authentication حالياً. سيتم إكماله عند أول تسجيل دخول.');}
-        document.getElementById('newUserName').value='';document.getElementById('newUserPass').value='';
-      }).catch(e=>{console.error(e);alert('تعذر إضافة المستخدم حالياً.');});
+      const username = document.getElementById('newUserName').value.trim();
+      const pass = document.getElementById('newUserPass').value.trim();
+      const role = document.getElementById('newUserRole').value;
+
+      if (!username || !pass) return alert('يرجى ملء جميع البيانات');
+
+      db.ref('users').push({ 
+        username, pass, role,
+        perms: { edit: false, delete: false, print: false, analytics: false, prices: false, users: false, viewAllDrivers: false }
+      }).then(() => {
+        document.getElementById('newUserName').value = '';
+        document.getElementById('newUserPass').value = '';
+        alert('تمت إضافة المستخدم بنجاح ✅');
+      });
     }
 
     function openEditUserModal(id) {
@@ -2390,7 +2275,7 @@
       document.getElementById('mainHeader')?.style.setProperty('display','none','important');
       document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');switchTab('driver');
     }
-    window.addEventListener('DOMContentLoaded',()=>{attachAuthStateToCurrentUser();startPublicCommentsListener();loadRememberedLogin();if(APP_MODE!=='staff')applyCustomerPublicMode();else{document.body.classList.remove('customer-public-mode');startStaffDataListeners();updateUIByPermissions();checkSavedSession();if(!currentUser)switchTab('admin');}});
+    window.addEventListener('DOMContentLoaded',()=>{startPublicCommentsListener();loadRememberedLogin();if(APP_MODE!=='staff')applyCustomerPublicMode();else{document.body.classList.remove('customer-public-mode');startStaffDataListeners();updateUIByPermissions();checkSavedSession();if(!currentUser)switchTab('admin');}});
 </script>
 </body>
 </html>
