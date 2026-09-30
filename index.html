@@ -669,6 +669,11 @@
         <div class="text-[10px] text-white/60 font-bold mb-1">الحساب الحالي</div>
         <div id="sidebarUserBadge" class="text-xs font-black truncate">لم يتم تسجيل الدخول</div>
       </div>
+      <div class="notification-shell desktop-only mb-2">
+        <button type="button" class="notification-bell w-full !justify-start gap-2 px-3" onclick="toggleNotifications(event)" aria-label="الإشعارات">
+          <span class="text-base">🔔</span><span class="text-xs font-black">الإشعارات</span><span id="notificationBadgeDesktop" class="notification-badge">0</span>
+        </button>
+      </div>
       <button id="authBtn" onclick="handleAuthBtnClick(); closeSidebar()" class="w-full bg-amber-400 hover:bg-amber-500 text-red-950 font-black px-3 py-2.5 rounded-xl text-xs shadow transition-all">
         تسجيل الدخول 🔑
       </button>
@@ -685,9 +690,25 @@
         <div id="mobilePageTitle" class="text-[10px] text-amber-200 font-semibold truncate">الطلبات والإدارة</div>
       </div>
     </div>
-    <div id="mobileUserBadge" class="text-[10px] font-bold bg-white/10 px-2 py-1 rounded-lg max-w-[100px] truncate">ضيف</div>
+    <div class="flex items-center gap-1.5">
+      <button type="button" class="mobile-notification-btn" onclick="toggleNotifications(event)" aria-label="الإشعارات">🔔<span id="notificationBadgeMobile" class="notification-badge">0</span></button>
+      <div id="mobileUserBadge" class="text-[10px] font-bold bg-white/10 px-2 py-1 rounded-lg max-w-[100px] truncate">ضيف</div>
+    </div>
   </div>
   <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <!-- 🔔 مركز الإشعارات -->
+  <div id="notificationPanel" class="notification-panel" aria-hidden="true">
+    <div class="notification-head">
+      <div><h3>🔔 الإشعارات</h3><p id="notificationSummary">لا توجد إشعارات جديدة</p></div>
+      <div class="notification-actions">
+        <button type="button" class="notification-mini-btn" onclick="markAllNotificationsRead()">تعليم الكل كمقروء</button>
+        <button type="button" class="notification-mini-btn" onclick="clearNotifications()">مسح</button>
+        <button type="button" class="notification-mini-btn" onclick="closeNotifications()">✕</button>
+      </div>
+    </div>
+    <div id="notificationList" class="notification-list"><div class="notification-empty">📭 لا توجد إشعارات حالياً.</div></div>
+  </div>
 
   <main class="app-main max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
 
@@ -1763,6 +1784,120 @@
     let publicCommentsRef = null;
     let customerOrderRef = null;
     let currentDriverOrderKey = null;
+    let notificationsCache = [];
+    let notificationOrderState = {};
+    let notificationInitialized = false;
+
+    // --- 🔔 مركز الإشعارات ---
+    function notificationStorageKey(){
+      const userKey = currentUser?.username || (APP_MODE === 'staff' ? 'guest' : 'customer');
+      return `hamaksha_notifications_${userKey}`;
+    }
+    function notificationStateKey(){
+      const userKey = currentUser?.username || (APP_MODE === 'staff' ? 'guest' : 'customer');
+      return `hamaksha_notice_state_${userKey}`;
+    }
+    function loadNotificationStore(){
+      if(APP_MODE!=='staff') return;
+      try {
+        notificationsCache = JSON.parse(localStorage.getItem(notificationStorageKey())||'[]');
+        notificationOrderState = JSON.parse(localStorage.getItem(notificationStateKey())||'{}');
+      } catch(e) { notificationsCache=[]; notificationOrderState={}; }
+      renderNotificationCenter();
+    }
+    function saveNotificationStore(){
+      if(APP_MODE!=='staff') return;
+      localStorage.setItem(notificationStorageKey(), JSON.stringify(notificationsCache.slice(0,80)));
+      localStorage.setItem(notificationStateKey(), JSON.stringify(notificationOrderState));
+    }
+    function relativeNoticeTime(ts){
+      const diff=Math.max(0,Date.now()-Number(ts||Date.now()));
+      const min=Math.floor(diff/60000);
+      if(min<1)return 'الآن';
+      if(min<60)return `منذ ${min} د`;
+      const hrs=Math.floor(min/60);
+      if(hrs<24)return `منذ ${hrs} س`;
+      const days=Math.floor(hrs/24);
+      return `منذ ${days} يوم`;
+    }
+    function addNotification(type,title,text,orderKey){
+      const item={id:`${Date.now()}_${Math.random().toString(36).slice(2,8)}`,type,title,text,orderKey:orderKey||'',createdAt:Date.now(),read:false};
+      notificationsCache.unshift(item);
+      notificationsCache=notificationsCache.slice(0,80);
+      saveNotificationStore();
+      renderNotificationCenter();
+    }
+    function notificationMeta(type){
+      if(type==='new') return {dot:'bg-red-500',icon:'🆕'};
+      if(type==='delivery') return {dot:'bg-blue-500',icon:'🛵'};
+      if(type==='delivered') return {dot:'bg-emerald-500',icon:'✅'};
+      return {dot:'bg-amber-500',icon:'🔔'};
+    }
+    function renderNotificationCenter(){
+      const list=document.getElementById('notificationList'), summary=document.getElementById('notificationSummary');
+      if(!list) return;
+      const unread=notificationsCache.filter(n=>!n.read).length;
+      const updateBadge=(id)=>{const el=document.getElementById(id);if(!el)return;el.innerText=unread>99?'99+':String(unread);el.classList.toggle('show',unread>0);};
+      updateBadge('notificationBadgeDesktop'); updateBadge('notificationBadgeMobile');
+      if(summary) summary.innerText=unread?`${unread.toLocaleString('ar-EG')} إشعار غير مقروء`:'كل الإشعارات مقروءة';
+      if(!notificationsCache.length){list.innerHTML='<div class="notification-empty">📭 لا توجد إشعارات حالياً.</div>';return;}
+      list.innerHTML=notificationsCache.slice(0,50).map(n=>{
+        const m=notificationMeta(n.type);
+        return `<div class="notification-item ${n.read?'':'unread'}" onclick="openNotification('${n.id}')">
+          <div class="notification-dot ${m.dot}"></div>
+          <div class="notification-content"><div class="notification-title">${m.icon} ${escapeHtml(n.title)}</div><div class="notification-text">${escapeHtml(n.text)}</div><div class="notification-time">${relativeNoticeTime(n.createdAt)}</div></div>
+        </div>`;
+      }).join('');
+    }
+    function toggleNotifications(event){
+      event?.stopPropagation();
+      const panel=document.getElementById('notificationPanel');
+      if(!panel) return;
+      const next=!panel.classList.contains('open');
+      panel.classList.toggle('open',next); panel.setAttribute('aria-hidden',String(!next));
+      if(next) renderNotificationCenter();
+    }
+    function closeNotifications(){
+      const panel=document.getElementById('notificationPanel');
+      if(panel){panel.classList.remove('open');panel.setAttribute('aria-hidden','true');}
+    }
+    function markAllNotificationsRead(){notificationsCache.forEach(n=>n.read=true);saveNotificationStore();renderNotificationCenter();}
+    function clearNotifications(){notificationsCache=[];saveNotificationStore();renderNotificationCenter();}
+    function openNotification(id){
+      const n=notificationsCache.find(x=>x.id===id); if(!n)return; n.read=true; saveNotificationStore(); renderNotificationCenter(); closeNotifications();
+      if(n.orderKey && APP_MODE==='staff'){
+        if(currentUser?.role==='driver') fetchDriverOrder(n.orderKey);
+        else if(currentUser?.role==='admin'){ switchTab('admin'); setTimeout(()=>{ const search=document.getElementById('searchFilter'); if(search){search.value=n.orderKey; applyFilters(); search.focus();} },120); }
+      }
+    }
+    document.addEventListener('click',(event)=>{
+      const panel=document.getElementById('notificationPanel');
+      if(panel?.classList.contains('open') && !panel.contains(event.target) && !event.target.closest('.notification-bell') && !event.target.closest('.mobile-notification-btn')) closeNotifications();
+    });
+
+    function processOrderNotifications(cache){
+      if(APP_MODE!=='staff'||!currentUser) return;
+      const visible={};
+      Object.keys(cache||{}).forEach(key=>{
+        const o=cache[key]||{};
+        if(currentUser.role==='driver' && String(o.driver||'')!==String(currentUser.username)) return;
+        visible[key]={status:o.status||'',createdAt:Number(o.createdAt||0),driver:String(o.driver||''),customerName:String(o.customerName||o.name||'عميل'),orderId:String(o.orderId||key),totalCash:Number(o.totalCash||0)};
+      });
+      if(!notificationInitialized){
+        notificationOrderState=visible; notificationInitialized=true; saveNotificationStore(); return;
+      }
+      Object.keys(visible).forEach(key=>{
+        const now=visible[key], prev=notificationOrderState[key];
+        if(!prev){
+          addNotification('new','طلب جديد',`تم إنشاء الطلب #${now.orderId} للعميل ${now.customerName} — ${now.totalCash.toLocaleString('ar-EG')} ج.م`,key);
+        }else if(prev.status!==now.status){
+          const delivered=now.status==='تم التسليم بنجاح ✅';
+          const delivery=now.status==='خرج للتوصيل 🛵';
+          addNotification(delivered?'delivered':delivery?'delivery':'status',delivered?'تم تسليم الطلب':delivery?'الطلب خرج للتوصيل':'تغيير حالة الطلب',`#${now.orderId} — ${now.status}`,key);
+        }
+      });
+      notificationOrderState=visible; saveNotificationStore();
+    }
 
     // --- 📅 دالة تنسيق التاريخ ليكون دائماً يوم / شهر / سنة (DD/MM/YYYY) ---
     function formatDateDMY(dateStr) {
@@ -1969,6 +2104,7 @@
       [staffOrdersRef,staffUsersRef,driverOrdersRef,driverDirectoryRef,customersRef].forEach(ref => { try { ref?.off(); } catch(e){} });
       staffOrdersRef=staffUsersRef=driverOrdersRef=driverDirectoryRef=customersRef=null;
       allOrdersCache={}; driverOrdersCache={}; allUsersCache={}; driverDirectoryCache={}; customersCache={};
+      notificationInitialized=false; notificationOrderState={};
     }
 
     function startDriverDirectoryListener() {
@@ -2001,7 +2137,7 @@
       try { staffOrdersRef?.off(); } catch(e){}
       staffOrdersRef = canViewAllDrivers() ? db.ref('orders') : db.ref('orders').orderByChild('createdBy').equalTo(currentUser.username);
       staffOrdersRef.on('value',snap=>{
-        allOrdersCache=snap.val()||{}; applyFilters();
+        allOrdersCache=snap.val()||{}; processOrderNotifications(allOrdersCache); applyFilters();
         if(!document.getElementById('sec-dashboard').classList.contains('hidden')) renderDashboard();
         if(!document.getElementById('sec-analytics').classList.contains('hidden')) { renderAnalytics(); renderCommentsList(); }
         renderDashboardMap();
@@ -2012,7 +2148,7 @@
       if(APP_MODE!=='staff' || !currentUser || currentUser.role!=='driver') return;
       try { driverOrdersRef?.off(); } catch(e){}
       driverOrdersRef=db.ref('orders').orderByChild('driver').equalTo(currentUser.username);
-      driverOrdersRef.on('value',snap=>{ driverOrdersCache=snap.val()||{}; renderDriverOrdersList(); if(currentDriverOrderKey && driverOrdersCache[currentDriverOrderKey]) populateDriverOrderCard(currentDriverOrderKey,driverOrdersCache[currentDriverOrderKey]); });
+      driverOrdersRef.on('value',snap=>{ driverOrdersCache=snap.val()||{}; processOrderNotifications(driverOrdersCache); renderDriverOrdersList(); if(currentDriverOrderKey && driverOrdersCache[currentDriverOrderKey]) populateDriverOrderCard(currentDriverOrderKey,driverOrdersCache[currentDriverOrderKey]); });
     }
 
     function startPublicCommentsListener(){
@@ -2035,6 +2171,7 @@
     function loginSuccess(user) {
       if(APP_MODE!=='staff') return;
       stopScopedListeners(); currentUser=user; localStorage.setItem('hamaksha_user',JSON.stringify(user));
+      loadNotificationStore();
       const roleTitle=isSuperUser()?'المالك الرئيسي (asma)':(user.role==='admin'?'أدمن فرعي':'مندوب توصيل');
       document.getElementById('authBtn').innerText=`${user.username} (خروج)`;
       document.getElementById('activeUserBadge').innerText=`${user.username} (${roleTitle})`;
@@ -3370,7 +3507,26 @@
     /* 🏷️ Modern price catalog */
     .price-chip { user-select: none; cursor: pointer; }
     #sec-prices input, #sec-prices select { transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease; }
-  </style>
+  
+    /* 🔔 مركز الإشعارات — خطوة 16 */
+    .notification-shell{position:relative}
+    .notification-bell{position:relative;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:13px;background:rgba(255,255,255,.10);color:#fff;border:1px solid rgba(255,255,255,.08);cursor:pointer;transition:.18s}
+    .notification-bell:hover{background:rgba(255,255,255,.16);transform:translateY(-1px)}
+    .notification-badge{position:absolute;top:-4px;left:-4px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#ef4444;color:#fff;border:2px solid var(--sidebar-bg,#24100f);font-size:9px;font-weight:900;display:none;align-items:center;justify-content:center;line-height:1}
+    .notification-badge.show{display:flex}
+    .notification-panel{position:fixed;z-index:70;top:18px;right:calc(var(--sidebar-width,270px) + 18px);width:min(390px,calc(100vw - 28px));max-height:min(610px,calc(100vh - 36px));background:var(--surface-color,#fff);color:var(--text-color,#172033);border:1px solid var(--border-color,#e5e7eb);border-radius:22px;box-shadow:0 24px 60px rgba(15,23,42,.22);overflow:hidden;display:none}
+    .notification-panel.open{display:flex;flex-direction:column;animation:noticeIn .18s ease-out}
+    @keyframes noticeIn{from{opacity:0;transform:translateY(-8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+    .notification-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 16px;border-bottom:1px solid var(--border-color,#e5e7eb);background:var(--surface-soft,#f8fafc)}
+    .notification-head h3{margin:0;font-size:13px;font-weight:900}.notification-head p{margin:2px 0 0;font-size:9px;color:var(--muted-color,#64748b)}
+    .notification-actions{display:flex;gap:6px}.notification-mini-btn{border:1px solid var(--border-color,#e5e7eb);background:var(--surface-color,#fff);color:var(--muted-color,#64748b);border-radius:10px;padding:7px 9px;font-size:9px;font-weight:900;cursor:pointer}
+    .notification-list{overflow:auto;padding:8px;display:grid;gap:7px}.notification-item{display:flex;gap:10px;padding:11px;border:1px solid var(--border-color,#e5e7eb);border-radius:15px;background:var(--surface-color,#fff);cursor:pointer;transition:.16s}.notification-item:hover{transform:translateY(-1px)}.notification-item.unread{background:var(--surface-soft,#f8fafc);border-color:var(--primary-color,#7f1d1d)}
+    .notification-dot{width:10px;height:10px;border-radius:999px;margin-top:5px;flex:0 0 auto}.notification-content{min-width:0;flex:1}.notification-title{font-size:10px;font-weight:900;color:var(--text-color,#172033);line-height:1.6}.notification-text{font-size:9px;color:var(--muted-color,#64748b);line-height:1.7;margin-top:2px}.notification-time{font-size:8px;color:var(--muted-color,#94a3b8);margin-top:5px;font-weight:800}.notification-empty{padding:36px 18px;text-align:center;color:var(--muted-color,#64748b);font-size:10px;font-weight:800}
+    .mobile-notification-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:12px;background:rgba(255,255,255,.09);color:#fff;border:1px solid rgba(255,255,255,.08);position:relative;cursor:pointer}
+    @media(max-width:900px){.notification-panel{top:72px;right:14px;width:min(390px,calc(100vw - 28px));max-height:70vh}.notification-shell.desktop-only{display:none!important}}
+    @media(min-width:901px){.mobile-notification-btn{display:none!important}}
+    body.customer-public-mode .notification-shell, body.customer-public-mode .mobile-notification-btn, body.driver-private-mode .notification-shell{display:none!important}
+</style>
         </head>
         <body>
           <svg class="watermark" viewBox="0 0 100 100">
@@ -3561,7 +3717,7 @@
       document.getElementById('mainHeader')?.style.setProperty('display','none','important');
       document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');switchTab('driver');
     }
-    window.addEventListener('DOMContentLoaded',()=>{applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();startPublicCommentsListener();loadRememberedLogin();if(APP_MODE!=='staff')applyCustomerPublicMode();else{document.body.classList.remove('customer-public-mode');startStaffDataListeners();updateUIByPermissions();checkSavedSession();if(!currentUser)switchTab('admin');}});
+    window.addEventListener('DOMContentLoaded',()=>{applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();loadNotificationStore();startPublicCommentsListener();loadRememberedLogin();if(APP_MODE!=='staff')applyCustomerPublicMode();else{document.body.classList.remove('customer-public-mode');startStaffDataListeners();updateUIByPermissions();checkSavedSession();if(!currentUser)switchTab('admin');}});
 </script>
 </body>
 </html>
