@@ -352,6 +352,7 @@
               </div>
               <div class="space-y-2 bg-gray-50 p-2.5 rounded-xl border">
                 <input type="text" id="newUserName" placeholder="اسم المستخدم" class="w-full border p-2 rounded-xl text-xs bg-white">
+                <input type="email" id="newUserEmail" placeholder="البريد الإلكتروني للحساب" class="w-full border p-2 rounded-xl text-xs bg-white text-left" dir="ltr">
                 <input type="password" id="newUserPass" placeholder="كلمة المرور" class="w-full border p-2 rounded-xl text-xs bg-white">
                 <select id="newUserRole" class="w-full border p-2 rounded-xl text-xs bg-white">
                   <option value="admin">مسؤول إدارة (أدمن فرعي)</option>
@@ -855,6 +856,27 @@
         throw err;
       }
     }
+    async function createNewEmployeeAccount({username,email,pass,role}){
+      if(!authReady) throw new Error('AUTH_NOT_READY');
+      const cleanEmail=String(email||'').trim().toLowerCase();
+      const cleanUsername=String(username||'').trim();
+      if(!cleanUsername||!cleanEmail||!pass) throw new Error('AUTH_FIELDS_REQUIRED');
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) throw new Error('AUTH_EMAIL_INVALID');
+      const secondary=getSecondaryAuthApp();
+      let authUser=null;
+      try{
+        const cred=await secondary.createUserWithEmailAndPassword(cleanEmail,String(pass));
+        authUser=cred.user;
+      }catch(err){
+        if(err?.code==='auth/email-already-in-use') throw new Error('AUTH_EMAIL_EXISTS');
+        throw err;
+      }finally{
+        try{await secondary.signOut();}catch(e){}
+      }
+      if(!authUser) throw new Error('AUTH_CREATE_FAILED');
+      return {authUid:authUser.uid,authEmail:cleanEmail,username:cleanUsername,role};
+    }
+
     async function signInEmployeeWithFirebaseAuth(userRecord){
       if(!authReady) throw new Error('AUTH_NOT_READY');
       const email=userRecord.authEmail||authEmailForUsername(userRecord.username);
@@ -1251,19 +1273,28 @@
     }
 
     // --- 👥 إدارة المستخدمين والمناديب ---
-    function addUser() {
+    async function addUser() {
       if(!canUser('users')) return alert('عذراً، إضافة المستخدمين تتطلب صلاحية إدارة المستخدمين');
       const username=document.getElementById('newUserName').value.trim();
+      const email=document.getElementById('newUserEmail').value.trim().toLowerCase();
       const pass=document.getElementById('newUserPass').value.trim();
       const role=document.getElementById('newUserRole').value;
-      if(!username||!pass)return alert('يرجى ملء جميع البيانات');
-      const record={username,pass,role,perms:{edit:false,delete:false,print:false,analytics:false,prices:false,users:false,viewAllDrivers:false}};
-      const ref=db.ref('users').push();
-      ref.set(record).then(async()=>{
-        try{await ensureFirebaseAuthAccount({...record,key:ref.key});alert('تمت إضافة المستخدم وتجهيز Firebase Authentication بنجاح ✅');}
-        catch(e){console.error(e);alert('تمت إضافة المستخدم، لكن تعذر تجهيز Firebase Authentication حالياً. سيتم إكماله عند أول تسجيل دخول.');}
-        document.getElementById('newUserName').value='';document.getElementById('newUserPass').value='';
-      }).catch(e=>{console.error(e);alert('تعذر إضافة المستخدم حالياً.');});
+      if(!username||!email||!pass)return alert('يرجى كتابة اسم المستخدم والبريد الإلكتروني وكلمة المرور');
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return alert('يرجى إدخال بريد إلكتروني صحيح.');
+
+      try{
+        const authData=await createNewEmployeeAccount({username,email,pass,role});
+        const record={username,authEmail:authData.authEmail,authUid:authData.authUid,role,perms:{edit:false,delete:false,print:false,analytics:false,prices:false,users:false,viewAllDrivers:false},createdAt:Date.now(),createdBy:currentUser?.username||'asma'};
+        await db.ref('users').push(record);
+        document.getElementById('newUserName').value='';
+        document.getElementById('newUserEmail').value='';
+        document.getElementById('newUserPass').value='';
+        alert('تم إنشاء المستخدم وربطه بـ Firebase Authentication بنجاح ✅');
+      }catch(e){
+        console.error('Add user error:',e);
+        const msg=e?.message==='AUTH_EMAIL_EXISTS'?'هذا البريد الإلكتروني مستخدم بالفعل في Firebase Authentication.':e?.message==='AUTH_EMAIL_INVALID'?'البريد الإلكتروني غير صحيح.':'تعذر إنشاء الحساب حالياً. تأكد من تفعيل Email/Password في Firebase Authentication.';
+        alert(msg);
+      }
     }
 
     function openEditUserModal(id) {
