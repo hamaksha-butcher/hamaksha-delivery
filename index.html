@@ -814,7 +814,7 @@
     // 🔗 ربط أسماء المستخدمين القديمة بحسابات Firebase Authentication الحقيقية.
     // حساب Asma تم إنشاؤه في Firebase Authentication.
     const AUTH_EMAILS = {
-      asma: 'asmaibrahiim2001@gmail.com'
+      asma: 'asmaibrahim2001@gmail.com'
     };
 
     let firebaseAuth = null;
@@ -1045,7 +1045,8 @@
       try {
         // الحسابات المرتبطة فعلياً بـ Firebase Authentication تدخل مباشرةً،
         // ثم نقرأ بيانات الصلاحيات من Realtime Database بعد نجاح المصادقة.
-        const mappedEmail = AUTH_EMAILS[String(username).trim().toLowerCase()];
+        const loginValue = String(username).trim().toLowerCase();
+         const mappedEmail = loginValue.includes('@') ? loginValue : AUTH_EMAILS[loginValue];
         if(mappedEmail && authReady) {
           const cred = await firebaseAuth.signInWithEmailAndPassword(mappedEmail, pass);
           const snap = await db.ref('users').orderByChild('authUid').equalTo(cred.user.uid).once('value');
