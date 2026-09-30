@@ -1,378 +1,781 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جزارة حمكشة - إدارة العملاء والطلبات</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js للرسم البياني -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-</head>
-<body class="bg-gray-100 font-sans p-4">
+<!-- استكمال الكروت المتبقية في لوحة التحكم الرئيسية -->
+              </div>
+              <div class="flex justify-between items-center text-[11px] mt-2 pt-2 border-t text-gray-600">
+                <span>👤 ${escapeHtml(o.customerName || o.name || 'عميل')}</span>
+                <span>🛵 ${escapeHtml(o.driver || 'غير محدد')}</span>
+                <b class="text-emerald-700 font-mono">${(o.totalCash || 0)} ج.م</b>
+              </div>
+            </div>`;
+        });
+      }
+    }
 
-    <div class="max-w-6xl mx-auto space-y-6">
+    // --- 🗺️ رسم خريطة المناديب والطلبات الحية (Live Map) ---
+    function initDashboardMap() {
+      const container = document.getElementById('dashboardMap');
+      if (!container || dashboardMap) return;
 
-        <!-- 📊 1. داشبورد تحليلات العملاء -->
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-            <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-chart-line text-blue-600"></i> داشبورد تحليلات العملاء
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 text-center">
-                    <p class="text-gray-500 text-sm">إجمالي العملاء</p>
-                    <h3 id="statTotalCustomers" class="text-2xl font-bold text-blue-700">0</h3>
-                </div>
-                <div class="bg-green-50 p-4 rounded-xl border border-green-100 text-center">
-                    <p class="text-gray-500 text-sm">عملاء جدد (هذا الشهر)</p>
-                    <h3 id="statNewCustomers" class="text-2xl font-bold text-green-700">0</h3>
-                </div>
-                <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 text-center">
-                    <p class="text-gray-500 text-sm">تحولوا لعملاء دائمين</p>
-                    <h3 id="statConvertedCustomers" class="text-2xl font-bold text-purple-700">0</h3>
-                </div>
-                <div class="bg-amber-50 p-4 rounded-xl border border-amber-100 text-center">
-                    <p class="text-gray-500 text-sm">عملاء VIP</p>
-                    <h3 id="statVipCustomers" class="text-2xl font-bold text-amber-700">0</h3>
-                </div>
-            </div>
-        </div>
+      // افتراض مركز الخريطة (الشرقية / مصر كمثال لجزارة حمكشة)
+      dashboardMap = L.map('dashboardMap').setView([30.5877, 31.5020], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+      }).addTo(dashboardMap);
+    }
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    function refreshDashboardMap() {
+      renderDashboardMap();
+    }
 
-            <!-- 📝 2. نموذج إضافة / تعديل عميل -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 h-fit">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                        <i class="fa-solid fa-user-plus text-blue-600"></i> <span id="formTitle">إضافة عميل جديد</span>
-                    </h2>
-                    <button id="btnCancelEdit" onclick="resetForm()" class="hidden text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-md hover:bg-gray-300">إلغاء التعديل</button>
-                </div>
+    function renderDashboardMap() {
+      if (APP_MODE !== 'staff' || !currentUser || currentUser.role !== 'admin') return;
+      
+      const mapContainer = document.getElementById('dashboardMap');
+      const statusEl = document.getElementById('dashboardMapStatus');
+      if (!mapContainer) return;
 
-                <form id="customerForm" onsubmit="handleCustomerSubmit(event)" class="space-y-3">
-                    <input type="hidden" id="customerId">
-                    <div>
-                        <label class="block text-xs text-gray-500 mb-1">اسم العميل</label>
-                        <input type="text" id="customerName" required placeholder="مثال: أحمد محمود" class="w-full border rounded-xl p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-gray-500 mb-1">رقم الهاتف</label>
-                        <input type="tel" id="customerPhone" required placeholder="010XXXXXXXX" class="w-full border rounded-xl p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-gray-500 mb-1">العنوان / المنطقة</label>
-                        <textarea id="customerAddress" rows="2" required placeholder="مثال: الزقازيق - الشارع التجاري" class="w-full border rounded-xl p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
-                    </div>
-                    <button type="submit" id="btnSubmitCustomer" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl hover:bg-blue-700 transition shadow">
-                        💾 حفظ بيانات العميل
-                    </button>
-                </form>
-            </div>
+      if (!dashboardMap) {
+        initDashboardMap();
+      }
 
-            <!-- 👥 3. قاعدة بيانات العملاء والفلترة -->
-            <div class="md:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-3 mb-4">
-                    <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                        <i class="fa-solid fa-users text-blue-600"></i> قاعدة بيانات العملاء
-                    </h2>
-                    <!-- البحث والفلترة -->
-                    <div class="flex gap-2 w-full md:w-auto">
-                        <input type="text" id="searchInput" oninput="filterCustomers()" placeholder="🔎 بحث بالاسم أو الهاتف..." class="border rounded-xl px-3 py-1.5 text-sm w-full md:w-48 outline-none focus:ring-2 focus:ring-blue-500">
-                        <select id="categoryFilter" onchange="filterCustomers()" class="border rounded-xl px-3 py-1.5 text-sm outline-none bg-gray-50">
-                            <option value="ALL">كل التصنيفات</option>
-                            <option value="جديد">عميل جديد 🆕</option>
-                            <option value="دائم">عميل دائم 🔄</option>
-                            <option value="VIP">VIP ⭐</option>
-                        </select>
-                    </div>
-                </div>
+      // مسح العلامات والمسارات القديمة
+      dashboardMapMarkers.forEach(m => dashboardMap.removeLayer(m));
+      dashboardMapRoutes.forEach(r => dashboardMap.removeLayer(r));
+      dashboardMapMarkers = [];
+      dashboardMapRoutes = [];
 
-                <!-- قائمة العملاء -->
-                <div id="customersList" class="space-y-3 max-h-[500px] overflow-y-auto pr-1">
-                    <!-- سيتم إضافة كروت العملاء هنا تلقائياً -->
-                </div>
-            </div>
+      let pointsCount = 0;
+      const bounds = [];
 
-        </div>
+      Object.keys(allOrdersCache || {}).forEach(key => {
+        const o = allOrdersCache[key];
+        if (!o || o.status === 'تم التسليم بنجاح ✅') return;
 
-    </div>
+        // موقع المندوب
+        if (o.lat && o.lng) {
+          const driverLatLng = [Number(o.lat), Number(o.lng)];
+          bounds.push(driverLatLng);
+          pointsCount++;
 
-    <!-- 🧾 4. نافذة كشف الحساب (Modal) -->
-    <div id="statementModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-xl relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal()" class="absolute top-4 left-4 text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
-            <h3 class="text-lg font-bold text-gray-800 mb-1 flex items-center gap-2">
-                <i class="fa-solid fa-file-invoice-dollar text-green-600"></i> كشف حساب العميل: <span id="modalCustomerName" class="text-blue-600"></span>
-            </h3>
-            <p id="modalCustomerInfo" class="text-xs text-gray-500 mb-4"></p>
+          const driverMarker = L.marker(driverLatLng, {
+            icon: L.divIcon({
+              className: 'custom-div-icon',
+              html: `<div style="background-color:#2563eb;color:white;padding:4px 8px;border-radius:12px;font-size:10px;font-weight:bold;white-space:nowrap;box-shadow:0 2px 5px rgba(0,0,0,0.3)">🛵 ${escapeHtml(o.driver || 'مندوب')}</div>`,
+              iconSize: [80, 25],
+              iconAnchor: [40, 12]
+            })
+          }).addTo(dashboardMap);
 
-            <div class="grid grid-cols-2 gap-3 mb-4 bg-gray-50 p-3 rounded-xl border text-center">
+          driverMarker.bindPopup(`<b>المندوب:</b> ${escapeHtml(o.driver)}<br><b>الطلب:</b> #${o.orderId || key}<br><b>الحالة:</b> ${o.status}`);
+          dashboardMapMarkers.push(driverMarker);
+        }
+
+        // موقع العميل
+        if (o.custLat && o.custLng) {
+          const custLatLng = [Number(o.custLat), Number(o.custLng)];
+          bounds.push(custLatLng);
+          pointsCount++;
+
+          const custMarker = L.marker(custLatLng, {
+            icon: L.divIcon({
+              className: 'custom-div-icon',
+              html: `<div style="background-color:#dc2626;color:white;padding:4px 8px;border-radius:12px;font-size:10px;font-weight:bold;white-space:nowrap;box-shadow:0 2px 5px rgba(0,0,0,0.3)">🔴 ${escapeHtml(o.customerName || 'عميل')}</div>`,
+              iconSize: [80, 25],
+              iconAnchor: [40, 12]
+            })
+          }).addTo(dashboardMap);
+
+          custMarker.bindPopup(`<b>العميل:</b> ${escapeHtml(o.customerName || o.name)}<br><b>الطلب:</b> #${o.orderId || key}<br><b>العنوان:</b> ${escapeHtml(o.address)}`);
+          dashboardMapMarkers.push(custMarker);
+
+          // رسم خط بين المندوب والعميل إذا توفر الموقعان
+          if (o.lat && o.lng) {
+            const line = L.polyline([[o.lat, o.lng], [o.custLat, o.custLng]], {
+              color: '#059669',
+              weight: 3,
+              dashArray: '5, 10'
+            }).addTo(dashboardMap);
+            dashboardMapRoutes.push(line);
+          }
+        }
+      });
+
+      if (bounds.length > 0) {
+        dashboardMap.fitBounds(bounds, { padding: [30, 30] });
+        if (statusEl) statusEl.innerText = `تم تحديث الخريطة: عرض ${pointsCount} موقع حي للطلبات النشطة ✅`;
+      } else {
+        if (statusEl) statusEl.innerText = 'لا توجد إحداثيات موقع حي مسجلة للطلبات النشطة حالياً.';
+      }
+    }
+
+    // --- 📈 داشبورد التقارير والتحصيل المالي والتقييمات ---
+    function setAnalyticsPeriod(period) {
+      currentAnalyticsPeriod = period;
+      ['daily', 'weekly', 'monthly'].forEach(p => {
+        const btn = document.getElementById(`time-${p}`);
+        if (btn) {
+          if (p === period) {
+            btn.className = 'px-3 py-1.5 rounded-lg bg-red-600 text-white transition-all';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg text-gray-600 transition-all';
+          }
+        }
+      });
+      renderAnalytics();
+    }
+
+    function renderAnalytics() {
+      if (APP_MODE !== 'staff' || !currentUser || currentUser.role !== 'admin' || !canUser('analytics')) return;
+
+      const now = new Date();
+      let totalOrders = 0;
+      let totalCash = 0;
+      let totalRatingsSum = 0;
+      let totalRatingsCount = 0;
+      let trackedOrdersCount = 0;
+
+      const driverStats = {};
+
+      Object.values(driverDirectoryCache || {}).forEach(u => {
+        if (u?.username) {
+          driverStats[u.username] = {
+            totalOrders: 0,
+            deliveredOrders: 0,
+            totalCash: 0,
+            ratingSum: 0,
+            ratingCount: 0
+          };
+        }
+      });
+
+      Object.keys(allOrdersCache || {}).forEach(key => {
+        const o = allOrdersCache[key] || {};
+        const orderDate = new Date(o.date || o.createdAt);
+        
+        // تصفية الفترة الزمنية
+        let isInPeriod = false;
+        if (currentAnalyticsPeriod === 'daily') {
+          isInPeriod = o.date === now.toISOString().split('T')[0];
+        } else if (currentAnalyticsPeriod === 'weekly') {
+          const diffDays = (now - orderDate) / (1000 * 60 * 60 * 24);
+          isInPeriod = diffDays <= 7;
+        } else if (currentAnalyticsPeriod === 'monthly') {
+          isInPeriod = orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear();
+        }
+
+        if (!isInPeriod) return;
+
+        totalOrders++;
+        const amount = Number(o.totalCash || ((o.orderPrice || 0) + (o.deliveryPrice || 0) + (o.paymentFee || 0))) || 0;
+
+        if (o.status === 'تم التسليم بنجاح ✅') {
+          totalCash += amount;
+        }
+
+        if (o.rating) {
+          totalRatingsSum += Number(o.rating);
+          totalRatingsCount++;
+        }
+
+        if (o.lat || o.custLat) {
+          trackedOrdersCount++;
+        }
+
+        const driver = o.driver || 'غير محدد';
+        if (driver !== 'غير محدد') {
+          if (!driverStats[driver]) {
+            driverStats[driver] = { totalOrders: 0, deliveredOrders: 0, totalCash: 0, ratingSum: 0, ratingCount: 0 };
+          }
+          driverStats[driver].totalOrders++;
+          if (o.status === 'تم التسليم بنجاح ✅') {
+            driverStats[driver].deliveredOrders++;
+            driverStats[driver].totalCash += amount;
+          }
+          if (o.rating) {
+            driverStats[driver].ratingSum += Number(o.rating);
+            driverStats[driver].ratingCount++;
+          }
+        }
+      });
+
+      // تحديث كروت الإحصائيات العامة
+      document.getElementById('statTotalOrders').innerText = totalOrders;
+      document.getElementById('statTotalCash').innerText = totalCash.toLocaleString('ar-EG') + ' ج.م';
+      document.getElementById('statAvgRating').innerText = totalRatingsCount > 0 ? (totalRatingsSum / totalRatingsCount).toFixed(1) + ' / 5 ⭐' : '0 / 5 ⭐';
+      document.getElementById('statLiveTrackRate').innerText = totalOrders > 0 ? Math.round((trackedOrdersCount / totalOrders) * 100) + '%' : '0%';
+
+      // رسم جدول أداء المناديب
+      const tbody = document.getElementById('driverAnalyticsBody');
+      tbody.innerHTML = '';
+
+      const drivers = Object.keys(driverStats);
+      if (drivers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-gray-400">لا توجد بيانات للمناديب في هذه الفترة.</td></tr>';
+        return;
+      }
+
+      drivers.forEach(name => {
+        const d = driverStats[name];
+        const completionRate = d.totalOrders > 0 ? Math.round((d.deliveredOrders / d.totalOrders) * 100) : 0;
+        const avgRating = d.ratingCount > 0 ? (d.ratingSum / d.ratingCount).toFixed(1) : 'بدون تقييم';
+
+        let performanceBadge = '<span class="bg-gray-100 text-gray-700 px-2 py-1 rounded-lg text-[10px] font-bold">جديد</span>';
+        if (completionRate >= 90 && d.totalOrders >= 3) {
+          performanceBadge = '<span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded-lg text-[10px] font-bold">ممتاز ⭐⭐⭐</span>';
+        } else if (completionRate >= 70) {
+          performanceBadge = '<span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-lg text-[10px] font-bold">جيد جداً 👍</span>';
+        } else if (d.totalOrders > 0) {
+          performanceBadge = '<span class="bg-amber-100 text-amber-800 px-2 py-1 rounded-lg text-[10px] font-bold">قيد المتابعة ⏳</span>';
+        }
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-gray-50 border-b">
+            <td class="p-3 font-bold">${escapeHtml(name)}</td>
+            <td class="p-3 font-mono">${d.totalOrders}</td>
+            <td class="p-3 font-mono text-emerald-700 font-bold">${d.deliveredOrders}</td>
+            <td class="p-3 font-mono font-bold text-purple-900">${d.totalCash.toLocaleString('ar-EG')} ج.م</td>
+            <td class="p-3 font-bold text-amber-600">${avgRating} ${d.ratingCount > 0 ? '⭐' : ''}</td>
+            <td class="p-3 font-mono font-bold">${completionRate}%</td>
+            <td class="p-3 text-center">${performanceBadge}</td>
+          </tr>
+        `;
+      });
+    }
+
+    // --- 💬 إدارة التعليقات والتقييمات للعملاء والإدارة ---
+    function renderCommentsList() {
+      if (APP_MODE !== 'staff' || !currentUser || currentUser.role !== 'admin') return;
+
+      const driverFilter = document.getElementById('commentDriverFilter')?.value || 'ALL';
+      const ratingFilter = document.getElementById('commentRatingFilter')?.value || 'ALL';
+      const dateFilter = document.getElementById('commentDateFilter')?.value || '';
+
+      const container = document.getElementById('commentsContainer');
+      container.innerHTML = '';
+
+      let count = 0;
+
+      Object.keys(allOrdersCache || {}).forEach(key => {
+        const o = allOrdersCache[key] || {};
+        if (!o.comment && !o.rating) return;
+
+        const matchDriver = driverFilter === 'ALL' || o.driver === driverFilter;
+        const matchRating = ratingFilter === 'ALL' || String(o.rating) === String(ratingFilter);
+        const matchDate = !dateFilter || o.date === dateFilter;
+
+        if (matchDriver && matchRating && matchDate) {
+          count++;
+          const stars = '⭐'.repeat(Number(o.rating || 0));
+          const isPub = !!o.isPublished;
+
+          container.innerHTML += `
+            <div class="bg-white p-4 rounded-xl border border-amber-100 shadow-sm space-y-2 text-xs">
+              <div class="flex justify-between items-start border-b pb-2">
                 <div>
-                    <span class="text-xs text-gray-500 block">إجمالي الطلبات</span>
-                    <strong id="modalTotalOrders" class="text-base text-gray-800">0 أوردرات</strong>
+                  <b class="text-gray-800 text-sm">${escapeHtml(o.customerName || o.name || 'عميل')}</b>
+                  <div class="text-[10px] text-gray-400 font-mono">طلب #${o.orderId || key} | المندوب: ${escapeHtml(o.driver || 'غير محدد')}</div>
                 </div>
-                <div>
-                    <span class="text-xs text-gray-500 block">إجمالي المسحوبات</span>
-                    <strong id="modalTotalAmount" class="text-base text-green-600">0 ج.م</strong>
+                <div class="text-amber-500 font-bold">${stars || 'بدون تقييم'}</div>
+              </div>
+              <p class="text-gray-700 bg-amber-50/50 p-2.5 rounded-lg border border-amber-100 font-semibold">${escapeHtml(o.comment || 'لا يوجد تعليق مكتوب.')}</p>
+              <div class="flex items-center justify-between pt-1 text-[10px]">
+                <span class="text-gray-400 formatted-date">${formatDateDMY(o.date)}</span>
+                <div class="flex gap-2">
+                  <button onclick="togglePublishComment('${key}', ${!isPub})" class="${isPub ? 'bg-amber-100 text-amber-800' : 'bg-emerald-600 text-white'} px-2.5 py-1 rounded-lg font-bold">
+                    ${isPub ? 'إلغاء النشر 🔒' : 'موافقة ونشر للعامة 🌐'}
+                  </button>
+                  <button onclick="deleteComment('${key}')" class="bg-red-50 text-red-700 px-2 py-1 rounded-lg font-bold">حذف التعليق 🗑️</button>
                 </div>
+              </div>
             </div>
+          `;
+        }
+      });
 
-            <h4 class="font-bold text-sm text-gray-700 mb-2">سجل الطلبات</h4>
-            <table class="w-full text-xs text-right border-collapse">
-                <thead>
-                    <tr class="bg-gray-100 text-gray-600 border-b">
-                        <th class="p-2">رقم الأوردر</th>
-                        <th class="p-2">التاريخ</th>
-                        <th class="p-2">تفاصيل الطلب</th>
-                        <th class="p-2">المبلغ</th>
-                        <th class="p-2">الحالة</th>
-                    </tr>
-                </thead>
-                <tbody id="modalOrdersTable">
-                    <!-- تفاصيل الأوردرات -->
-                </tbody>
-            </table>
-        </div>
-    </div>
+      if (count === 0) {
+        container.innerHTML = '<p class="text-xs text-gray-400 text-center p-6 col-span-2">لا توجد ملاحظات أو تعليقات تطابق الفلترة الحالية.</p>';
+      }
+    }
 
-    <!-- JavaScript Code -->
-    <script>
-        // ⚙️ إعدادات الفايربيز (Firebase Config)
-        const firebaseConfig = {
-            databaseURL: "https://YOUR_FIREBASE_DATABASE_URL.firebaseio.com" // ضع رابط قاعدة بياناتك هنا
+    function togglePublishComment(orderKey, publishState) {
+      if (!canUser('edit')) return alert('لا تملك صلاحية تعديل حالة النشر.');
+      db.ref(`orders/${orderKey}`).update({ isPublished: publishState }).then(() => {
+        alert(publishState ? 'تم نشر التعليق في صفحة التتبع العامة للعملاء ✅' : 'تم إلغاء نشر التعليق 🔒');
+      });
+    }
+
+    function deleteComment(orderKey) {
+      if (!canUser('delete')) return alert('لا تملك صلاحية حذف التعليقات.');
+      if (confirm('هل تريد حذف هذا التقييم والتعليق بالفعل؟')) {
+        db.ref(`orders/${orderKey}`).update({ rating: null, comment: null, isPublished: false }).then(() => {
+          db.ref(`publicComments/${orderKey}`).remove();
+        });
+      }
+    }
+
+    function renderPublicComments() {
+      const container = document.getElementById('publicCommentsContainer');
+      if (!container) return;
+
+      container.innerHTML = '';
+      const items = Object.values(publicCommentsCache || {}).filter(c => c && c.isPublished);
+
+      if (items.length === 0) {
+        container.innerHTML = '<p class="text-[11px] text-gray-400 text-center p-3">لا توجد آراء منشورة حالياً.</p>';
+        return;
+      }
+
+      items.forEach(c => {
+        const stars = '⭐'.repeat(Number(c.rating || 5));
+        container.innerHTML += `
+          <div class="bg-amber-50/60 p-3 rounded-xl border border-amber-200 space-y-1 text-xs">
+            <div class="flex justify-between items-center">
+              <b class="text-gray-800">${escapeHtml(c.customerName || 'عميل حمكشة')}</b>
+              <span class="text-amber-500 text-[11px]">${stars}</span>
+            </div>
+            <p class="text-gray-600 text-[11px] font-semibold">${escapeHtml(c.comment || 'خدمة ممتازة لحوم حمكشة الطازجة! 🥩')}</p>
+          </div>
+        `;
+      });
+    }
+
+    // --- 🏷️ قسم أسعار اللحوم الحية ---
+    function renderPrices() {
+      const container = document.getElementById('priceListContainer');
+      if (!container) return;
+
+      db.ref('prices').once('value').then(snap => {
+        const prices = snap.val() || {
+          p1: { name: 'لحم بلدي كاندوز طازج', price: 420, unit: 'كيلو' },
+          p2: { name: 'كفتة حاتي بلدي جاهزة', price: 380, unit: 'كيلو' },
+          p3: { name: 'لحم مفروم بلدي مخصوص', price: 390, unit: 'كيلو' },
+          p4: { name: 'سجق شرقي حمكشة البلدي', price: 360, unit: 'كيلو' },
+          p5: { name: 'كبده بلدي طازجة', price: 440, unit: 'كيلو' }
         };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
 
-        let allCustomers = [];
-        let allOrders = [];
+        container.innerHTML = '';
+        Object.keys(prices).forEach(key => {
+          const item = prices[key];
+          container.innerHTML += `
+            <div class="bg-amber-50/50 p-4 rounded-2xl border border-amber-200 text-center space-y-2 relative group hover:shadow-md transition-all">
+              <div class="text-3xl">🥩</div>
+              <h3 class="font-bold text-sm text-gray-800">${escapeHtml(item.name)}</h3>
+              <div class="text-xl font-black text-red-700 font-mono">${item.price} <span class="text-xs font-normal text-gray-600">ج.م / ${escapeHtml(item.unit || 'كيلو')}</span></div>
+              ${canUser('prices') ? `
+                <div class="pt-2 flex justify-center gap-2">
+                  <button onclick="openEditPriceModal('${key}', '${escapeHtml(item.name)}', ${item.price}, '${escapeHtml(item.unit || 'كيلو')}')" class="bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-bold px-3 py-1 rounded-lg">تعديل ✏️</button>
+                  <button onclick="deletePriceItem('${key}')" class="bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold px-2 py-1 rounded-lg">حذف 🗑️</button>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        });
+      });
+    }
 
-        // 🔄 تحميل البيانات فور فتح الصفحة
-        window.onload = function() {
-            listenToCustomers();
-            listenToOrders();
-        };
+    function openAddPriceModal() {
+      if (!canUser('prices')) return alert('لا تملك صلاحية تعديل قائمة الأسعار.');
+      document.getElementById('priceKey').value = '';
+      document.getElementById('priceName').value = '';
+      document.getElementById('priceValue').value = '';
+      document.getElementById('priceUnit').value = 'كيلو';
+      document.getElementById('priceModalTitle').innerText = '🏷️ إضافة صنف جديد';
+      document.getElementById('editPriceModal').classList.remove('hidden');
+    }
 
-        // 1️⃣ الاستماع لتغيرات العملاء في الفايربيز
-        function listenToCustomers() {
-            db.ref('customers').on('value', snapshot => {
-                allCustomers = [];
-                const data = snapshot.val();
-                if (data) {
-                    Object.keys(data).forEach(key => {
-                        allCustomers.push({ id: key, ...data[key] });
-                    });
-                }
-                renderCustomers();
-                updateDashboardStats();
-            });
+    function openEditPriceModal(key, name, price, unit) {
+      if (!canUser('prices')) return alert('لا تملك صلاحية تعديل قائمة الأسعار.');
+      document.getElementById('priceKey').value = key;
+      document.getElementById('priceName').value = name;
+      document.getElementById('priceValue').value = price;
+      document.getElementById('priceUnit').value = unit || 'كيلو';
+      document.getElementById('priceModalTitle').innerText = '🏷️ تعديل سعر المنتج';
+      document.getElementById('editPriceModal').classList.remove('hidden');
+    }
+
+    function closeEditPriceModal() {
+      document.getElementById('editPriceModal').classList.add('hidden');
+    }
+
+    function savePriceItem() {
+      const key = document.getElementById('priceKey').value;
+      const name = document.getElementById('priceName').value.trim();
+      const price = Number(document.getElementById('priceValue').value);
+      const unit = document.getElementById('priceUnit').value.trim();
+
+      if (!name || isNaN(price)) return alert('يرجى كتابة الاسم والسعر بشكل صحيح.');
+
+      const targetRef = key ? db.ref(`prices/${key}`) : db.ref('prices').push();
+      targetRef.set({ name, price, unit }).then(() => {
+        closeEditPriceModal();
+        renderPrices();
+        alert('تم حفظ السعر بنجاح ✅');
+      });
+    }
+
+    function deletePriceItem(key) {
+      if (!canUser('prices')) return alert('لا تملك صلاحية تعديل قائمة الأسعار.');
+      if (confirm('هل تريد حذف هذا الصنف من القائمة؟')) {
+        db.ref(`prices/${key}`).remove().then(() => renderPrices());
+      }
+    }
+
+    // --- 🛵 واجهة وسجل عمل المندوب ---
+    function applyDriverPrivateMode() {
+      document.body.classList.add('driver-private-mode');
+    }
+
+    function renderDriverOrdersList() {
+      const list = document.getElementById('driverOrdersList');
+      if (!list) return;
+
+      list.innerHTML = '';
+      const keys = Object.keys(driverOrdersCache || {});
+
+      if (keys.length === 0) {
+        list.innerHTML = '<p class="text-xs text-gray-400 text-center p-4">لا توجد طلبات جديدة مسندة إليك حالياً.</p>';
+        return;
+      }
+
+      keys.forEach(key => {
+        const o = driverOrdersCache[key];
+        const total = o.totalCash || ((o.orderPrice || 0) + (o.deliveryPrice || 0) + (o.paymentFee || 0));
+        list.innerHTML += `
+          <div onclick="selectDriverOrder('${key}')" class="p-3 bg-amber-50 hover:bg-amber-100 rounded-xl border border-amber-200 cursor-pointer text-xs space-y-1">
+            <div class="flex justify-between items-center font-bold">
+              <span class="text-red-700 font-mono">#${o.orderId || key}</span>
+              <span class="text-emerald-800 font-mono">${total} ج.م</span>
+            </div>
+            <div class="text-gray-700 font-semibold">${escapeHtml(o.customerName || o.name)}</div>
+            <div class="text-[10px] text-gray-500">${escapeHtml(o.address)}</div>
+          </div>
+        `;
+      });
+    }
+
+    function selectDriverOrder(key) {
+      currentDriverOrderKey = key;
+      const order = driverOrdersCache[key] || allOrdersCache[key];
+      if (order) populateDriverOrderCard(key, order);
+    }
+
+    function fetchDriverOrder() {
+      const inputId = document.getElementById('orderId').value.trim();
+      if (!inputId) return alert('أدخل رقم الطلب أولاً.');
+
+      let foundKey = null;
+      Object.keys(driverOrdersCache).forEach(k => {
+        if (k === inputId || driverOrdersCache[k].orderId === inputId) foundKey = k;
+      });
+
+      if (foundKey) {
+        selectDriverOrder(foundKey);
+      } else {
+        alert('لم يتم العثور على الطلب أو أنه غير مسند لحسابك الحالي.');
+      }
+    }
+
+    function populateDriverOrderCard(key, order) {
+      currentDriverOrderKey = key;
+      document.getElementById('dCustName').innerText = order.customerName || order.name || '-';
+      document.getElementById('dCustAddress').innerText = order.address || '-';
+      document.getElementById('dPayMethod').innerText = getPaymentText(order.paymentMethod);
+      document.getElementById('dTotalCash').innerText = (order.totalCash || ((order.orderPrice || 0) + (order.deliveryPrice || 0) + (o.paymentFee || 0))) + ' ج.م';
+      document.getElementById('dStatus').innerText = order.status || '-';
+      document.getElementById('driverStatusSelect').value = order.status || 'جاري تحضير اللحوم 🥩';
+      document.getElementById('driverOrderCard').classList.remove('hidden');
+    }
+
+    function driverChangeStatus(newStatus) {
+      if (!currentDriverOrderKey) return;
+      db.ref(`orders/${currentDriverOrderKey}`).update({ status: newStatus }).then(() => {
+        document.getElementById('dStatus').innerText = newStatus;
+        alert('تم تحديث حالة الطلب بنجاح ✅');
+      });
+    }
+
+    // --- 📍 بث موقع المندوب الحي GPS ---
+    let driverGeoWatchId = null;
+
+    function startDelivery() {
+      if (!navigator.geolocation) return alert('خاصية تحديد الموقع غير مدعومة في هذا المتصفح.');
+      if (!currentDriverOrderKey) return alert('حدد الطلب أولاً لبدء بث الموقع.');
+
+      driverGeoWatchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          db.ref(`orders/${currentDriverOrderKey}`).update({ lat, lng });
+          document.getElementById('driverStatus').innerText = `📍 يتم الآن بث موقعك الحي بنجاح (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+          document.getElementById('startBtn').classList.add('hidden');
+          document.getElementById('stopBtn').classList.remove('hidden');
+        },
+        (err) => {
+          alert('تعذر الوصول إلى GPS. يرجى تفعيل إذن الموقع في الموبايل.');
+        },
+        { enableHighAccuracy: true }
+      );
+    }
+
+    function stopDelivery() {
+      if (driverGeoWatchId) {
+        navigator.geolocation.clearWatch(driverGeoWatchId);
+        driverGeoWatchId = null;
+        document.getElementById('driverStatus').innerText = '🛑 تم إيقاف مشاركة اللوكيشن.';
+        document.getElementById('startBtn').classList.remove('hidden');
+        document.getElementById('stopBtn').classList.add('hidden');
+      }
+    }
+
+    // --- 📍 تتبع العميل والتقييم والتعليقات المباشرة ---
+    function updateCustomerIdentityHint() {
+      const linkStatus = document.getElementById('customerLinkStatus');
+      const requestedId = currentRequestedOrderId;
+
+      if (requestedId) {
+        db.ref(`orders/${requestedId}`).once('value').then(snap => {
+          const o = snap.val();
+          if (o) {
+            currentTrackOrderId = requestedId;
+            linkStatus.innerText = `✅ تم العثور على الطلب رقم #${o.orderId || requestedId}`;
+            renderCustomerTrackDetails(o);
+          } else {
+            linkStatus.innerText = '❌ رابط الطلب غير صحيح أو منتهي.';
+          }
+        });
+      } else {
+        linkStatus.innerText = 'أدخل رقم الهاتف أو اسم العميل لبحث الطلبات.';
+      }
+    }
+
+    function searchCustomerOrder() {
+      const name = document.getElementById('custIdentityName').value.trim();
+      const phone = document.getElementById('custIdentityPhone').value.trim();
+      const statusEl = document.getElementById('customerIdentityStatus');
+
+      if (!name && !phone) return alert('أدخل الاسم أو رقم الهاتف للبحث.');
+
+      db.ref('orders').once('value').then(snap => {
+        const orders = snap.val() || {};
+        const resultsContainer = document.getElementById('customerOrdersResults');
+        resultsContainer.innerHTML = '';
+
+        let foundCount = 0;
+        Object.keys(orders).forEach(key => {
+          const o = orders[key];
+          const matchName = name && (o.customerName || o.name || '').includes(name);
+          const matchPhone = phone && (o.phone || '').includes(phone);
+
+          if (matchName || matchPhone) {
+            foundCount++;
+            resultsContainer.innerHTML += `
+              <div onclick="renderCustomerTrackDetails(allOrdersCache['${key}'] || ${JSON.stringify(o).replace(/"/g, '&quot;')})" class="bg-white p-4 rounded-xl border border-amber-200 shadow-sm cursor-pointer hover:bg-amber-50 space-y-1 text-xs">
+                <div class="flex justify-between font-bold">
+                  <span class="text-red-700">#${o.orderId || key}</span>
+                  <span class="text-amber-800">${o.status}</span>
+                </div>
+                <div><b>العميل:</b> ${escapeHtml(o.customerName || o.name)}</div>
+                <div class="text-[10px] text-gray-500">${formatDateDMY(o.date)}</div>
+              </div>
+            `;
+          }
+        });
+
+        statusEl.innerText = `تم العثور على ${foundCount} طلبات.`;
+      });
+    }
+
+    function renderCustomerTrackDetails(order) {
+      currentTrackOrderId = order.orderId || order.key;
+      currentTrackOrderStatus = order.status;
+
+      document.getElementById('dispOrderId').innerText = `#${order.orderId || order.key}`;
+      document.getElementById('badgeStatus').innerText = order.status || 'قيد التحضير';
+      document.getElementById('cDriver').innerText = order.driver || 'غير محدد';
+      document.getElementById('cDate').innerText = formatDateDMY(order.date);
+
+      document.getElementById('trackResultCard').classList.remove('hidden');
+
+      // تفعيل زر التقييم إذا تم التسليم
+      const isDelivered = order.status === 'تم التسليم بنجاح ✅';
+      const badge = document.getElementById('feedbackAvailabilityBadge');
+      const msg = document.getElementById('feedbackLockedMsg');
+      const submitBtn = document.getElementById('submitFeedbackBtn');
+      const commentInput = document.getElementById('custCommentText');
+
+      document.querySelectorAll('.star-btn').forEach(btn => btn.disabled = !isDelivered);
+      if (commentInput) commentInput.disabled = !isDelivered;
+      if (submitBtn) submitBtn.disabled = !isDelivered;
+
+      if (isDelivered) {
+        if (badge) { badge.innerText = '🔓 متاح التقييم والتعليق الآن'; badge.className = 'text-[10px] font-bold px-2 py-1 rounded-full bg-emerald-100 text-emerald-800'; }
+        if (msg) msg.style.display = 'none';
+      } else {
+        if (badge) { badge.innerText = '🔒 متاح بعد التسليم'; badge.className = 'text-[10px] font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-600'; }
+        if (msg) msg.style.display = 'block';
+      }
+
+      if (order.rating) {
+        setStarRating(order.rating);
+        if (order.comment) document.getElementById('custCommentText').value = order.comment;
+      }
+    }
+
+    // --- ⭐ نجوم التقييم التفاعلية ---
+    function setStarRating(rating) {
+      selectedStarsCount = rating;
+      const btns = document.querySelectorAll('.star-btn');
+      btns.forEach((btn, index) => {
+        if (index < rating) {
+          btn.innerText = '★';
+          btn.classList.add('selected');
+        } else {
+          btn.innerText = '☆';
+          btn.classList.remove('selected');
         }
+      });
+    }
 
-        // 2️⃣ الاستماع للأوردرات للربط التلقائي وتصنيف العملاء
-        function listenToOrders() {
-            db.ref('orders').on('value', snapshot => {
-                allOrders = [];
-                const data = snapshot.val();
-                if (data) {
-                    Object.keys(data).forEach(key => {
-                        allOrders.push({ id: key, ...data[key] });
-                    });
-                }
-                renderCustomers();
-                updateDashboardStats();
-            });
-        }
+    function previewStarRating(rating) {
+      const btns = document.querySelectorAll('.star-btn');
+      btns.forEach((btn, index) => {
+        if (index < rating) btn.classList.add('preview');
+        else btn.classList.remove('preview');
+      });
+    }
 
-        // 📊 حساب تصنيف العميل تلقائياً (جديد / دائم / VIP)
-        function getCustomerCategory(phone) {
-            const customerOrders = allOrders.filter(o => o.customerPhone === phone);
-            const totalSpent = customerOrders.reduce((sum, o) => sum + (Number(o.totalPrice) || 0), 0);
-            
-            if (totalSpent >= 5000 || customerOrders.length >= 10) return { name: 'VIP', badge: 'bg-amber-100 text-amber-800 border-amber-300' };
-            if (customerOrders.length >= 3) return { name: 'دائم', badge: 'bg-purple-100 text-purple-800 border-purple-300' };
-            return { name: 'جديد', badge: 'bg-green-100 text-green-800 border-green-300' };
-        }
+    function restoreStarRating() {
+      document.querySelectorAll('.star-btn').forEach(btn => btn.classList.remove('preview'));
+    }
 
-        // 🖼️ عرض العملاء في الواجهة
-        function renderCustomers() {
-            const container = document.getElementById('customersList');
-            const searchVal = document.getElementById('searchInput').value.trim().toLowerCase();
-            const filterCat = document.getElementById('categoryFilter').value;
+    function submitFullFeedback() {
+      if (!currentTrackOrderId) return;
+      if (selectedStarsCount === 0) return alert('يرجى اختيار عدد النجوم أولاً (من 1 إلى 5).');
 
-            container.innerHTML = '';
+      const comment = document.getElementById('custCommentText').value.trim();
 
-            const filtered = allCustomers.filter(c => {
-                const matchesSearch = c.name.toLowerCase().includes(searchVal) || c.phone.includes(searchVal);
-                const category = getCustomerCategory(c.phone).name;
-                const matchesCategory = (filterCat === 'ALL') || (category === filterCat);
-                return matchesSearch && matchesCategory;
-            });
+      db.ref(`orders/${currentTrackOrderId}`).update({
+        rating: selectedStarsCount,
+        comment: comment || 'لا يوجد تعليق.'
+      }).then(() => {
+        const msg = document.getElementById('ratingSubmittedMsg');
+        msg.innerText = '🎉 تم إرسال تقييمك ورأيك بنجاح! شكراً لتعاملك مع جزارة حمكشة.';
+        msg.classList.remove('hidden');
+      });
+    }
 
-            if (filtered.length === 0) {
-                container.innerHTML = `<p class="text-center text-sm text-gray-400 py-6">لا يوجد عملاء مطابقين للبحث</p>`;
-                return;
-            }
+    function toggleCustomerLocationShare() {
+      if (!navigator.geolocation) return alert('خاصية GPS غير مدمجة في جهازك.');
+      if (!currentTrackOrderId) return;
 
-            filtered.forEach(c => {
-                const cat = getCustomerCategory(c.phone);
-                const card = document.createElement('div');
-                card.className = "p-4 border rounded-xl bg-gray-50 hover:bg-white hover:shadow-sm transition flex flex-col md:flex-row justify-between items-start md:items-center gap-3";
-                
-                card.innerHTML = `
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <h4 class="font-bold text-gray-800 text-base">${c.name}</h4>
-                            <span class="text-[10px] px-2 py-0.5 rounded-full border ${cat.badge}">${cat.name}</span>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1"><i class="fa-solid fa-phone text-gray-400"></i> ${c.phone}</p>
-                        <p class="text-xs text-gray-500"><i class="fa-solid fa-location-dot text-gray-400"></i> ${c.address}</p>
-                    </div>
-                    <div class="flex gap-2 w-full md:w-auto justify-end border-t md:border-t-0 pt-2 md:pt-0">
-                        <button onclick="openStatement('${c.phone}', '${c.name}', '${c.address}')" class="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1.5 rounded-lg hover:bg-emerald-100">
-                            🧾 كشف حساب
-                        </button>
-                        <button onclick="editCustomer('${c.id}', '${c.name}', '${c.phone}', '${c.address}')" class="text-xs bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1.5 rounded-lg hover:bg-amber-100">
-                            تعديل
-                        </button>
-                        <button onclick="deleteCustomer('${c.id}', '${c.name}')" class="text-xs bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-1.5 rounded-lg hover:bg-rose-100">
-                            حذف
-                        </button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const custLat = pos.coords.latitude;
+          const custLng = pos.coords.longitude;
+          db.ref(`orders/${currentTrackOrderId}`).update({ custLat, custLng }).then(() => {
+            document.getElementById('custLocStatus').classList.remove('hidden');
+            alert('تم إرسال موقعك الدقيق للمندوب بنجاح! 📍');
+          });
+        },
+        () => alert('تعذر الوصول لموقعك. تأكد من تفعيل صلاحية GPS للرابط.')
+      );
+    }
 
-        // 💾 إضافة أو تعديل عميل مع التحقق من التكرار
-        function handleCustomerSubmit(e) {
-            e.preventDefault();
-            const id = document.getElementById('customerId').value;
-            const name = document.getElementById('customerName').value.trim();
-            const phone = document.getElementById('customerPhone').value.trim();
-            const address = document.getElementById('customerAddress').value.trim();
+    // --- 🖨️ طباعة وتصدير التقارير ---
+    function printReport() {
+      window.print();
+    }
 
-            // ⚠️ التحقق من تكرار رقم الهاتف عند الإضافة الجديدة
-            if (!id) {
-                const duplicate = allCustomers.find(c => c.phone === phone);
-                if (duplicate) {
-                    alert(`🚨 تحذير: هذا الرقم مسجل بالفعل باسم (${duplicate.name})!`);
-                    return;
-                }
-            }
+    function exportToExcel() {
+      if (!filteredOrdersList || filteredOrdersList.length === 0) return alert('لا توجد بيانات للتصدير.');
+      let csv = 'رقم الطلب,اسم العميل,رقم الهاتف,المندوب,طريقة الدفع,إجمالي المبلغ,الحالة,التاريخ\n';
+      filteredOrdersList.forEach(o => {
+        csv += `"${o.displayId}","${o.displayName}","${o.displayPhone}","${o.displayDriver}","${getPaymentText(o.paymentMethod)}","${o.totalCash}","${o.status}","${o.date}"\n`;
+      });
 
-            const customerData = { name, phone, address, updatedAt: new Date().toISOString() };
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `تقارير_جزارة_حمكشة_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+    }
 
-            if (id) {
-                // تعديل
-                db.ref('customers/' + id).update(customerData).then(() => {
-                    alert('تم تحديث بيانات العميل بنجاح ✅');
-                    resetForm();
-                });
-            } else {
-                // إضافة جديد
-                customerData.createdAt = new Date().toISOString();
-                db.ref('customers').push(customerData).then(() => {
-                    alert('تم حفظ العميل الجديد بنجاح 🎉');
-                    resetForm();
-                });
-            }
-        }
+    function exportToPDF() {
+      alert('💡 للتصدير بصيغة PDF عالية الجودة: اختر "طباعة ورقية" ثم اختر حفظ كـ Save as PDF من خيارات الطباعة.');
+      window.print();
+    }
 
-        // ✏️ تجهيز النموذج للتعديل
-        function editCustomer(id, name, phone, address) {
-            document.getElementById('customerId').value = id;
-            document.getElementById('customerName').value = name;
-            document.getElementById('customerPhone').value = phone;
-            document.getElementById('customerAddress').value = address;
+    function shareWhatsApp(key) {
+      const o = allOrdersCache[key];
+      if (!o) return;
+      const phone = o.phone;
+      const baseUrl = window.location.href.split('?')[0];
+      const trackUrl = `${baseUrl}?tab=track&id=${encodeURIComponent(o.orderId || key)}`;
+      const text = `أهلاً بك 🥩\nتذكير بطلبك لدى جزارة حمكشة رقم: #${o.orderId || key}\nالمبلغ المطلوب: ${(o.totalCash || 0)} ج.م\nرابط متابعة حالة الطلب والتقييم:\n${trackUrl}`;
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank');
+    }
 
-            document.getElementById('formTitle').innerText = 'تعديل بيانات عميل';
-            document.getElementById('btnSubmitCustomer').innerText = '🔄 تحديث البيانات';
-            document.getElementById('btnCancelEdit').classList.remove('hidden');
-        }
+    function openEditModal(key) {
+      const o = allOrdersCache[key];
+      if (!o) return;
+      document.getElementById('editKey').value = key;
+      document.getElementById('editModalOrderId').innerText = `#${o.orderId || key}`;
+      document.getElementById('editCustName').value = o.customerName || o.name || '';
+      document.getElementById('editCustPhone').value = o.phone || '';
+      document.getElementById('editCustAddress').value = o.address || '';
+      document.getElementById('editOrderPrice').value = o.orderPrice || 0;
+      document.getElementById('editDeliveryPrice').value = o.deliveryPrice || 0;
+      document.getElementById('editDriverSelect').value = o.driver || 'غير محدد';
+      document.getElementById('editOrderModal').classList.remove('hidden');
+    }
 
-        // 🗑️ حذف عميل
-        function deleteCustomer(id, name) {
-            if (confirm(`هل أنت متأكد من حذف العميل (${name}) نهائياً؟`)) {
-                db.ref('customers/' + id).remove().then(() => {
-                    alert('تم حذف العميل بنجاح.');
-                });
-            }
-        }
+    function closeEditModal() {
+      document.getElementById('editOrderModal').classList.add('hidden');
+    }
 
-        // 🔄 إعادة ضبط النموذج
-        function resetForm() {
-            document.getElementById('customerForm').reset();
-            document.getElementById('customerId').value = '';
-            document.getElementById('formTitle').innerText = 'إضافة عميل جديد';
-            document.getElementById('btnSubmitCustomer').innerText = '💾 حفظ بيانات العميل';
-            document.getElementById('btnCancelEdit').classList.add('hidden');
-        }
+    function saveEditOrder() {
+      const key = document.getElementById('editKey').value;
+      if (!key) return;
 
-        // 🔍 الفلترة والبحث
-        function filterCustomers() {
-            renderCustomers();
-        }
+      const name = document.getElementById('editCustName').value.trim();
+      const phone = document.getElementById('editCustPhone').value.trim();
+      const address = document.getElementById('editCustAddress').value.trim();
+      const orderPrice = Number(document.getElementById('editOrderPrice').value) || 0;
+      const deliveryPrice = Number(document.getElementById('editDeliveryPrice').value) || 0;
+      const driver = document.getElementById('editDriverSelect').value;
+      const totalCash = orderPrice + deliveryPrice;
 
-        // 🧾 فتح كشف الحساب
-        function openStatement(phone, name, address) {
-            document.getElementById('modalCustomerName').innerText = name;
-            document.getElementById('modalCustomerInfo').innerText = `${phone} - ${address}`;
+      db.ref(`orders/${key}`).update({
+        customerName: name,
+        phone,
+        address,
+        orderPrice,
+        deliveryPrice,
+        totalCash,
+        driver
+      }).then(() => {
+        closeEditModal();
+        alert('تم تعديل الطلب بنجاح ✅');
+      });
+    }
 
-            const orders = allOrders.filter(o => o.customerPhone === phone);
-            const totalSpent = orders.reduce((sum, o) => sum + (Number(o.totalPrice) || 0), 0);
+    function deleteOrder(key) {
+      if (!canUser('delete')) return alert('لا تملك صلاحية حذف الطلبات.');
+      if (confirm('هل تريد حذف هذا الطلب نهائياً من النظام؟')) {
+        db.ref(`orders/${key}`).remove();
+      }
+    }
 
-            document.getElementById('modalTotalOrders').innerText = `${orders.length} أوردرات`;
-            document.getElementById('modalTotalAmount').innerText = `${totalSpent.toLocaleString()} ج.م`;
-
-            const tbody = document.getElementById('modalOrdersTable');
-            tbody.innerHTML = '';
-
-            if (orders.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-400">لا توجد طلبات سابقة لهذا العميل</td></tr>`;
-            } else {
-                orders.forEach(o => {
-                    const tr = document.createElement('tr');
-                    tr.className = "border-b hover:bg-gray-50";
-                    tr.innerHTML = `
-                        <td class="p-2 font-mono">#${o.id.slice(-5)}</td>
-                        <td class="p-2">${o.date || 'غير محدد'}</td>
-                        <td class="p-2">${o.itemsSummary || 'لحوم متنوعة'}</td>
-                        <td class="p-2 font-bold text-green-700">${o.totalPrice || 0} ج.م</td>
-                        <td class="p-2"><span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded">${o.status || 'مكتمل'}</span></td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            }
-
-            document.getElementById('statementModal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('statementModal').classList.add('hidden');
-        }
-
-        // 📈 تحديث إحصائيات الداشبورد
-        function updateDashboardStats() {
-            document.getElementById('statTotalCustomers').innerText = allCustomers.length;
-
-            let news = 0, converted = 0, vips = 0;
-
-            allCustomers.forEach(c => {
-                const cat = getCustomerCategory(c.phone).name;
-                if (cat === 'جديد') news++;
-                if (cat === 'دائم') converted++;
-                if (cat === 'VIP') vips++;
-            });
-
-            document.getElementById('statNewCustomers').innerText = news;
-            document.getElementById('statConvertedCustomers').innerText = converted;
-            document.getElementById('statVipCustomers').innerText = vips;
-        }
-    </script>
+    // --- 🚀 تشغيل النظام المبدئي واستعادة الجلسة ---
+    window.addEventListener('DOMContentLoaded', () => {
+      if (APP_MODE === 'staff') {
+        checkSavedSession();
+      } else {
+        document.body.classList.add('customer-public-mode');
+        switchTab('track');
+      }
+      startPublicCommentsListener();
+    });
+  </script>
 </body>
 </html>
