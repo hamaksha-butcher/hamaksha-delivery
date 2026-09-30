@@ -661,14 +661,15 @@
       </div>
       <input type="hidden" id="editUserId">
       <div>
-        <label class="block text-[11px] font-bold text-gray-700 mb-1">اسم المستخدم</label>
-        <input type="text" id="editUserName" class="w-full border p-2.5 rounded-xl text-xs">
+        <label class="block text-[11px] font-bold text-gray-700 mb-1">اسم المستخدم (ثابت حتى لا تنقطع الطلبات المرتبطة به)</label>
+        <input type="text" id="editUserName" readonly class="w-full border p-2.5 rounded-xl text-xs bg-gray-100">
       </div>
       <div>
-        <label class="block text-[11px] font-bold text-gray-700 mb-1">كلمة المرور الجديدة</label>
-        <input type="password" id="editUserPass" class="w-full border p-2.5 rounded-xl text-xs">
+        <label class="block text-[11px] font-bold text-gray-700 mb-1">البريد الإلكتروني للحساب</label>
+        <input type="email" id="editUserEmail" readonly class="w-full border p-2.5 rounded-xl text-xs bg-gray-100 text-left" dir="ltr">
       </div>
-      <button onclick="saveEditUser()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">حفظ التغييرات 💾</button>
+      <p class="text-[10px] text-gray-500 bg-blue-50 border border-blue-100 rounded-xl p-2.5">🔐 تغيير كلمة المرور يتم من خلال رابط Firebase Authentication بدل تخزين كلمة المرور داخل قاعدة البيانات.</p>
+      <button onclick="saveEditUser()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">إرسال رابط إعادة تعيين كلمة المرور 📩</button>
     </div>
   </div>
 
@@ -760,8 +761,8 @@
         <button onclick="toggleAuthModal()" class="text-gray-400 hover:text-gray-600 font-bold">✕</button>
       </div>
       <div>
-        <label class="block text-[11px] font-bold text-gray-700 mb-1">اسم المستخدم</label>
-        <input type="text" id="loginUser" placeholder="أدخل اسم المستخدم" class="w-full border p-2.5 rounded-xl text-xs">
+        <label class="block text-[11px] font-bold text-gray-700 mb-1">اسم المستخدم أو البريد الإلكتروني</label>
+        <input type="text" id="loginUser" placeholder="اسم المستخدم أو البريد الإلكتروني" class="w-full border p-2.5 rounded-xl text-xs">
       </div>
       <div>
         <label class="block text-[11px] font-bold text-gray-700 mb-1">كلمة المرور</label>
@@ -809,14 +810,10 @@
 
     const db = firebase.database();
 
-    // 🔐 المرحلة 1A: تجهيز Firebase Authentication تدريجياً بدون كسر نظام الدخول الحالي.
+    // 🔐 Firebase Authentication + ملف صلاحيات موثوق keyed by Auth UID.
     const AUTH_DOMAIN_SUFFIX = '@hamaksha-auth.local';
-
-    // 🔗 ربط أسماء المستخدمين القديمة بحسابات Firebase Authentication الحقيقية.
-    // حساب Asma تم إنشاؤه في Firebase Authentication.
-    const AUTH_EMAILS = {
-      asma: 'asmaibrahiim2001@gmail.com'
-    };
+    const ASMA_EMAIL = 'asmaibrahiim2001@gmail.com';
+    const AUTH_EMAILS = { asma: ASMA_EMAIL };
 
     let firebaseAuth = null;
     let authReady = false;
@@ -824,12 +821,23 @@
 
     function authEmailForUsername(username){
       const clean=String(username||'').trim().toLowerCase();
-
-      // إذا كان للمستخدم حساب Firebase حقيقي مسجل في AUTH_EMAILS نستخدمه.
-      if (AUTH_EMAILS[clean]) return AUTH_EMAILS[clean];
-
-      // باقي الحسابات تستمر بالطريقة الانتقالية الحالية بدون التأثير على النظام.
-      return clean ? clean.replace(/[^a-z0-9._-]/g,'_')+AUTH_DOMAIN_SUFFIX : '';
+      return AUTH_EMAILS[clean] || '';
+    }
+    async function syntheticAuthEmailForUsername(username){
+      const clean=String(username||'').trim().toLowerCase();
+      if(!clean) return '';
+      try{
+        const bytes=new TextEncoder().encode(clean);
+        const digest=await crypto.subtle.digest('SHA-256',bytes);
+        const hex=Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,'0')).join('');
+        return `u_${hex}@hamaksha-auth.local`;
+      }catch(e){
+        let h=0; for(let i=0;i<clean.length;i++) h=((h<<5)-h)+clean.charCodeAt(i)|0;
+        return `u_${Math.abs(h)}_${clean.length}@hamaksha-auth.local`;
+      }
+    }
+    function isAsmaAuthUser(authUser=firebaseAuth?.currentUser){
+      return !!(authUser && String(authUser.email||'').toLowerCase()===ASMA_EMAIL);
     }
     function getSecondaryAuthApp(){
       const name='hamakshaAuthProvisioner';
@@ -839,18 +847,16 @@
     }
     async function ensureFirebaseAuthAccount(userRecord){
       if(!authReady||!userRecord?.username||!userRecord?.pass)return null;
-      const email=userRecord.authEmail||authEmailForUsername(userRecord.username);
+      const email=userRecord.authEmail||authEmailForUsername(userRecord.username)||await syntheticAuthEmailForUsername(userRecord.username);
       const secondary=getSecondaryAuthApp();
       try{
         const cred=await secondary.createUserWithEmailAndPassword(email,String(userRecord.pass));
         await secondary.signOut();
-        if(userRecord.key) await db.ref('users/'+userRecord.key).update({authUid:cred.user.uid,authEmail:email,authMigratedAt:Date.now()});
         return cred.user.uid;
       }catch(err){
         if(err?.code==='auth/email-already-in-use'){
           const cred=await secondary.signInWithEmailAndPassword(email,String(userRecord.pass));
           await secondary.signOut();
-          if(userRecord.key) await db.ref('users/'+userRecord.key).update({authUid:cred.user.uid,authEmail:email,authMigratedAt:Date.now()});
           return cred.user.uid;
         }
         throw err;
@@ -877,53 +883,130 @@
       return {authUid:authUser.uid,authEmail:cleanEmail,username:cleanUsername,role};
     }
 
-    async function signInEmployeeWithFirebaseAuth(userRecord){
-      if(!authReady) throw new Error('AUTH_NOT_READY');
-      const email=userRecord.authEmail||authEmailForUsername(userRecord.username);
-      try{
-        const cred=await firebaseAuth.signInWithEmailAndPassword(email,String(userRecord.pass));
-        if(userRecord.key&&!userRecord.authUid) await db.ref('users/'+userRecord.key).update({authUid:cred.user.uid,authEmail:email,authMigratedAt:Date.now()});
-        return cred.user;
-      }catch(err){
-        await ensureFirebaseAuthAccount(userRecord);
-        return firebaseAuth.signInWithEmailAndPassword(email,String(userRecord.pass));
-      }
-    }
-    function attachAuthStateToCurrentUser(){
-      if(!authReady)return;
-      firebaseAuth.onAuthStateChanged(authUser=>{ if(authUser&&currentUser) currentUser.authUid=authUser.uid; });
+    async function getSecureStaffProfile(uid){
+      if(!uid) return null;
+      const snap=await db.ref('staffByUid/'+uid).once('value');
+      const profile=snap.val();
+      return profile ? {...profile,key:uid} : null;
     }
 
-    const APP_MODE = new URLSearchParams(window.location.search).get('mode') === 'staff' ? 'staff' : 'customer';
-    let allOrdersCache = {};
-    let driverOrdersCache = {};
-    let allUsersCache = {};
-    let driverDirectoryCache = {};
-    let customersCache = {};
-    let publicCommentsCache = {};
-    let currentUser = null;
-    let filteredOrdersList = [];
-    let currentAnalyticsPeriod = 'daily';
-    let currentTrackOrderId = null;
-    let currentCustomerTrackToken = '';
-    let currentRequestedOrderId = new URLSearchParams(window.location.search).get('id') || '';
-    let currentTrackOrderStatus = null;
-    let currentCustomerVerified = false;
-    let currentCustomerSearchResults = {};
-    let custWatchId = null;
-    let selectedStarsCount = 0;
-    let dashboardMap = null;
-    let dashboardMapMarkers = [];
-    let dashboardMapRoutes = [];
-    let dashboardMapOrderPairs = {};
-    let staffOrdersRef = null;
-    let staffUsersRef = null;
-    let driverOrdersRef = null;
-    let driverDirectoryRef = null;
-    let customersRef = null;
-    let publicCommentsRef = null;
-    let customerOrderRef = null;
-    let currentDriverOrderKey = null;
+    function defaultPerms(){
+      return {edit:false,delete:false,print:false,analytics:false,prices:false,users:false,viewAllDrivers:false};
+    }
+
+    async function createSecureStaffProfile({authUid,authEmail,username,role,perms,active=true,legacyKey=null,isSuperAdmin=false}){
+      const cleanUsername=String(username||'').trim();
+      const cleanEmail=String(authEmail||'').trim().toLowerCase();
+      if(!authUid||!cleanUsername||!cleanEmail) throw new Error('PROFILE_FIELDS_REQUIRED');
+      const profile={
+        dbKey:authUid,username:cleanUsername,role:role==='admin'?'admin':'driver',active:active!==false,
+        authEmail:cleanEmail,authUid,isSuperAdmin:!!isSuperAdmin,
+        perms:{...defaultPerms(),...(perms||{})},createdAt:Date.now(),...(legacyKey?{legacyKey}:{}),updatedAt:Date.now()
+      };
+      await db.ref(`staffByUid/${authUid}`).set(profile);
+      await db.ref(`loginDirectory/${cleanUsername}`).set({authEmail:cleanEmail,authUid});
+      return {...profile,key:authUid};
+    }
+
+    async function migrateLegacyUsersToSecureProfiles(){
+      if(!isAsmaAuthUser()) return;
+      try{
+        const snap=await db.ref('users').once('value');
+        const users=snap.val()||{}; let migrated=0,failed=0;
+        for(const key of Object.keys(users)){
+          const u=users[key]||{};
+          if(!u.username) continue;
+          let authUid=u.authUid||'';
+          let authEmail=String(u.authEmail||'').trim().toLowerCase();
+          try{
+            if(!authUid){
+              if(!u.pass) { failed++; continue; }
+              authEmail=authEmail||await syntheticAuthEmailForUsername(u.username);
+              authUid=await ensureFirebaseAuthAccount({...u,authEmail});
+            }
+            if(!authUid || !authEmail){ failed++; continue; }
+            const role=u.role==='admin'?'admin':'driver';
+            const profile={dbKey:String(authUid),username:String(u.username),role,active:u.active!==false,authEmail,authUid:String(authUid),isSuperAdmin:u.isSuperAdmin===true||String(u.username).toLowerCase()==='asma',perms:{...defaultPerms(),...(u.perms||{})},createdAt:Number(u.createdAt||Date.now()),legacyKey:key,migratedAt:Date.now(),updatedAt:Date.now()};
+            await db.ref(`staffByUid/${authUid}`).set(profile);
+            await db.ref(`loginDirectory/${u.username}`).set({authEmail,authUid:String(authUid)});
+            // إزالة كلمة المرور القديمة من RTDB بعد نجاح ربط الحساب بـ Firebase Authentication.
+            if(Object.prototype.hasOwnProperty.call(u,'pass')) await db.ref(`users/${key}/pass`).remove();
+            await db.ref(`users/${key}`).update({authUid:String(authUid),authEmail,secureProfileReady:true});
+            migrated++;
+          }catch(e){ failed++; console.warn('User migration failed:',u.username,e); }
+        }
+        console.info(`Secure user migration complete: ${migrated} migrated, ${failed} skipped.`);
+      }catch(e){ console.warn('Legacy user migration skipped:',e); }
+    }
+
+    async function getAuthenticatedStaffProfile(authUser){
+      if(!authUser) return null;
+      let profile=await getSecureStaffProfile(authUser.uid);
+      if(profile) return profile;
+
+      // حسابات المرحلة الانتقالية: نبحث عن السجل القديم المرتبط بنفس Auth UID.
+      try{
+        const snap=await db.ref('users').orderByChild('authUid').equalTo(authUser.uid).once('value');
+        const data=snap.val()||{}; let found=null;
+        Object.keys(data).some(id=>{ if(data[id]){found={...data[id],key:id};return true;} return false; });
+        if(found){
+          return createSecureStaffProfile({
+            authUid:authUser.uid,
+            authEmail:authUser.email||found.authEmail,
+            username:found.username,
+            role:found.role,
+            perms:found.perms,
+            active:found.active!==false,
+            legacyKey:found.key,
+            isSuperAdmin:found.isSuperAdmin===true || String(found.username).toLowerCase()==='asma'
+          });
+        }
+      }catch(e){ console.warn('Legacy profile lookup failed:',e); }
+
+      // Bootstrap خاص بحساب المالك الرئيسي فقط.
+      if(isAsmaAuthUser(authUser)){
+        const snap=await db.ref('users').orderByChild('username').equalTo('asma').once('value');
+        const data=snap.val()||{}; let found=null;
+        Object.keys(data).some(id=>{ if(data[id]){found={...data[id],key:id};return true;} return false; });
+        const perms={edit:true,delete:true,print:true,analytics:true,prices:true,users:true,viewAllDrivers:true};
+        return createSecureStaffProfile({authUid:authUser.uid,authEmail:ASMA_EMAIL,username:'asma',role:'admin',perms,active:true,legacyKey:found?.key||null,isSuperAdmin:true});
+      }
+      return null;
+    }
+
+    function isSuperUser() {
+      const authUser=firebaseAuth?.currentUser;
+      if(currentUser?.isSuperAdmin===true) return true;
+      if(currentUser?.username==='asma' && isAsmaAuthUser(authUser)) return true;
+      return isAsmaAuthUser(authUser);
+    }
+
+    function canUser(action) {
+      if(isSuperUser()) return true;
+      const u=currentUser;
+      if(!u || u.active===false || u.role!=='admin') return false;
+      return !!(u.perms && u.perms[action]);
+    }
+    function canViewAllDrivers() { return isSuperUser() || canUser('viewAllDrivers'); }
+    function canManageCustomers() { return isSuperUser() || canUser('users'); }
+
+    function attachAuthStateToCurrentUser(){
+      if(!authReady)return;
+      firebaseAuth.onAuthStateChanged(async authUser=>{
+        if(!authUser){ return; }
+        if(currentUser){ currentUser.authUid=authUser.uid; return; }
+        if(APP_MODE!=='staff') return;
+        try{
+          const profile=await getAuthenticatedStaffProfile(authUser);
+          if(profile && profile.active!==false){
+            currentUser=profile;
+            localStorage.setItem('hamaksha_user',JSON.stringify(profile));
+            if(isAsmaAuthUser(authUser)) await migrateLegacyUsersToSecureProfiles();
+            loginSuccess(profile);
+          }
+        }catch(e){ console.warn('Auth session profile restore failed:',e); }
+      });
+    }
 
     // --- 📅 دالة تنسيق التاريخ ليكون دائماً يوم / شهر / سنة (DD/MM/YYYY) ---
     function formatDateDMY(dateStr) {
@@ -941,13 +1024,12 @@
       return dateStr;
     }
 
-    // إنشاء الحساب الرئيسي asma فقط في وضع الموظفين.
-    function ensureSuperUserExists() {
-      if(APP_MODE !== 'staff') return;
-      return db.ref('users').orderByChild('username').equalTo('asma').once('value').then((snapshot) => {
-        if(snapshot.exists()) return;
-        return db.ref('users').push({ username:'asma', pass:'asma123', role:'admin', isSuperAdmin:true, perms:{edit:true,delete:true,print:true,analytics:true,prices:true,users:true,viewAllDrivers:true} });
-      });
+    async function ensureSuperUserExists() {
+      if(APP_MODE!=='staff' || !authReady || !isAsmaAuthUser()) return null;
+      const authUser=firebaseAuth.currentUser;
+      let profile=await getSecureStaffProfile(authUser.uid);
+      if(!profile) profile=await getAuthenticatedStaffProfile(authUser);
+      return profile;
     }
 
     function isSuperUser() {
@@ -1042,11 +1124,12 @@
       }
     }
 
-    function handleAuthBtnClick() {
+    async function handleAuthBtnClick() {
       if(currentUser) {
         if(confirm('هل تريد تسجيل الخروج بالفعل؟')) {
+          try{ if(authReady) await firebaseAuth.signOut(); }catch(e){ console.warn(e); }
           localStorage.removeItem('hamaksha_user');
-          currentUser = null;
+          currentUser=null;
           location.reload();
         }
       } else {
@@ -1058,92 +1141,81 @@
       if(APP_MODE !== 'staff') return;
       const loginValue = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPass').value.trim();
-      if(!loginValue || !pass) return alert('يرجى كتابة اسم المستخدم وكلمة المرور');
+      if(!loginValue || !pass) return alert('يرجى كتابة اسم المستخدم أو البريد الإلكتروني وكلمة المرور');
+      if(!authReady) return alert('Firebase Authentication غير جاهز حالياً.');
 
       try {
-        // نبحث أولاً عن سجل النظام باسم المستخدم أو البريد المرتبط بحساب Firebase.
-        let found = null;
-        let snap = await db.ref('users').orderByChild('username').equalTo(loginValue).once('value');
-        let data = snap.val() || {};
-        Object.keys(data).forEach(id => { if(!found) found = {...data[id], key:id}; });
+        let authEmail='';
+        if(loginValue.includes('@')) {
+          authEmail=loginValue.toLowerCase();
+        }else if(AUTH_EMAILS[loginValue.toLowerCase()]){
+          authEmail=AUTH_EMAILS[loginValue.toLowerCase()];
+        }else{
+          const mapSnap=await db.ref('loginDirectory/'+loginValue).once('value');
+          authEmail=mapSnap.val()?.authEmail || '';
+        }
+        if(!authEmail) return alert('لم نجد بريداً مرتبطاً باسم المستخدم. بعد تفعيل الحماية استخدم البريد الإلكتروني للحساب أو اطلب من Asma فتح الحساب من إدارة المستخدمين.');
 
-        if(!found && loginValue.includes('@')) {
-          snap = await db.ref('users').orderByChild('authEmail').equalTo(loginValue.toLowerCase()).once('value');
-          data = snap.val() || {};
-          Object.keys(data).forEach(id => { if(!found) found = {...data[id], key:id}; });
+        const cred=await firebaseAuth.signInWithEmailAndPassword(authEmail,pass);
+        const profile=await getAuthenticatedStaffProfile(cred.user);
+        if(!profile) {
+          await firebaseAuth.signOut();
+          return alert('الحساب تم توثيقه في Firebase لكن ليس له ملف صلاحيات في النظام. اطلب من Asma تفعيله من إدارة المستخدمين.');
+        }
+        if(profile.active===false) {
+          await firebaseAuth.signOut();
+          return alert('هذا الحساب معطل حالياً.');
         }
 
-        // حساب المالك asma يمكن الدخول إليه بالبريد المرتبط به حتى لو كان سجل RTDB يستخدم username=asma.
-        if(!found) {
-          const mappedUsername = Object.keys(AUTH_EMAILS).find(u => AUTH_EMAILS[u].toLowerCase() === loginValue.toLowerCase());
-          if(mappedUsername) {
-            snap = await db.ref('users').orderByChild('username').equalTo(mappedUsername).once('value');
-            data = snap.val() || {};
-            Object.keys(data).forEach(id => { if(!found) found = {...data[id], key:id}; });
-          }
-        }
-
-        if(!found) return alert('اسم المستخدم أو البريد غير مسجل بالنظام.');
-
-        // التحقق من كلمة المرور يتم من Firebase Authentication أولاً.
-        // هذا يسمح لك بتغيير كلمة المرور من Firebase دون أن تتعطل شاشة الدخول القديمة.
-        const authEmail = found.authEmail || authEmailForUsername(found.username);
-        let authUser;
-        try {
-          if(!authReady) throw new Error('AUTH_NOT_READY');
-          const cred = await firebaseAuth.signInWithEmailAndPassword(authEmail, pass);
-          authUser = cred.user;
-        } catch(authErr) {
-          // للحسابات القديمة غير المجهزة بعد: نسمح بالدخول بالبيانات القديمة فقط كمرحلة انتقالية.
-          if(String(found.pass) !== String(pass)) {
-            console.error('Firebase login failed:', authErr);
-            return alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
-          }
-          try {
-            authUser = await ensureFirebaseAuthAccount(found);
-            await firebaseAuth.signInWithEmailAndPassword(authEmail, pass);
-          } catch(provisionErr) {
-            console.error('Firebase account provisioning failed:', provisionErr);
-            return alert('تعذر إكمال تسجيل الدخول عبر Firebase Authentication حالياً.');
-          }
-        }
-
-        // مزامنة كلمة المرور الحالية في سجل النظام حتى لا يحدث تعارض بعد Reset Password.
-        if(found.key && String(found.pass || '') !== String(pass)) {
-          await db.ref('users/' + found.key).update({ pass, authEmail, authUid: authUser?.uid || found.authUid || null, authMigratedAt: Date.now() });
-          found.pass = pass;
-          found.authEmail = authEmail;
-          if(authUser?.uid) found.authUid = authUser.uid;
-        } else if(found.key && authUser?.uid && !found.authUid) {
-          await db.ref('users/' + found.key).update({ authUid: authUser.uid, authEmail, authMigratedAt: Date.now() });
-          found.authUid = authUser.uid;
-          found.authEmail = authEmail;
-        }
-
-        const remember = document.getElementById('rememberMe')?.checked;
-        if(remember) localStorage.setItem('hamaksha_remembered_login', JSON.stringify({username:loginValue, pass}));
+        const remember=document.getElementById('rememberMe')?.checked;
+        if(remember) localStorage.setItem('hamaksha_remembered_login',JSON.stringify({username:loginValue,pass,authEmail}));
         else localStorage.removeItem('hamaksha_remembered_login');
 
-        loginSuccess(found);
+        localStorage.setItem('hamaksha_user',JSON.stringify(profile));
+        currentUser=profile;
+        if(isAsmaAuthUser(cred.user)) await migrateLegacyUsersToSecureProfiles();
+        loginSuccess(profile);
       } catch(err) {
-        console.error(err);
-        alert('تعذر إكمال تسجيل الدخول حالياً.');
+        console.error('Firebase login failed:',err);
+        if(err?.code==='auth/user-not-found' || err?.code==='auth/wrong-password' || err?.code==='auth/invalid-credential') return alert('البريد/اسم المستخدم أو كلمة المرور غير صحيحة.');
+        if(err?.code==='auth/too-many-requests') return alert('تمت محاولات دخول كثيرة. انتظر قليلاً ثم حاول مرة أخرى.');
+        alert('تعذر إكمال تسجيل الدخول عبر Firebase Authentication حالياً.');
+      }
+    }
+
+    async function checkSavedSession() {
+      if(APP_MODE!=='staff' || !authReady) return;
+      try {
+        const saved=JSON.parse(localStorage.getItem('hamaksha_remembered_login')||'null');
+        if(!saved?.pass) return;
+        const email=String(saved.authEmail||saved.username||'').includes('@') ? String(saved.authEmail||saved.username).toLowerCase() : (AUTH_EMAILS[String(saved.username||'').toLowerCase()]||'');
+        if(!email) return;
+        const cred=await firebaseAuth.signInWithEmailAndPassword(email,String(saved.pass));
+        const profile=await getAuthenticatedStaffProfile(cred.user);
+        if(!profile || profile.active===false) { await firebaseAuth.signOut(); return; }
+        currentUser=profile;
+        localStorage.setItem('hamaksha_user',JSON.stringify(profile));
+        if(isAsmaAuthUser(cred.user)) await migrateLegacyUsersToSecureProfiles();
+        loginSuccess(profile);
+      } catch(e) {
+        console.warn('Saved session restore failed:',e);
+        localStorage.removeItem('hamaksha_user');
       }
     }
 
     function stopScopedListeners() {
-      [staffOrdersRef,staffUsersRef,driverOrdersRef,driverDirectoryRef,customersRef].forEach(ref => { try { ref?.off(); } catch(e){} });
-      staffOrdersRef=staffUsersRef=driverOrdersRef=driverDirectoryRef=customersRef=null;
-      allOrdersCache={}; driverOrdersCache={}; allUsersCache={}; driverDirectoryCache={}; customersCache={};
+      [staffOrdersRef,staffUsersRef,driverOrdersRef,driverDirectoryRef,customersRef,publicFeedbackRef,publicLocationsRef,customerFeedbackRef].forEach(ref => { try { ref?.off(); } catch(e){} });
+      staffOrdersRef=staffUsersRef=driverOrdersRef=driverDirectoryRef=customersRef=publicFeedbackRef=publicLocationsRef=customerFeedbackRef=null;
+      allOrdersCache={}; driverOrdersCache={}; allUsersCache={}; driverDirectoryCache={}; customersCache={}; publicFeedbackCache={}; publicLocationsCache={}; feedbackByOrder={}; customerLocationByOrder={}; currentCustomerFeedback=null;
     }
 
     function startDriverDirectoryListener() {
-      if(APP_MODE !== 'staff') return;
+      if(APP_MODE !== 'staff' || !currentUser || currentUser.role!=='admin') return;
       try { driverDirectoryRef?.off(); } catch(e){}
-      driverDirectoryRef=db.ref('users').orderByChild('role').equalTo('driver');
+      driverDirectoryRef=db.ref('staffByUid').orderByChild('role').equalTo('driver');
       driverDirectoryRef.on('value',snap=>{
         driverDirectoryCache={}; const data=snap.val()||{};
-        Object.keys(data).forEach(id=>{ if(data[id]?.username) driverDirectoryCache[id]={username:data[id].username,role:'driver'}; });
+        Object.keys(data).forEach(id=>{ if(data[id]?.username && data[id]?.active!==false) driverDirectoryCache[id]={username:data[id].username,role:'driver',authUid:id}; });
         renderUsersList();
       });
     }
@@ -1151,7 +1223,7 @@
     function startUserManagementListener() {
       if(APP_MODE!=='staff' || !currentUser || currentUser.role!=='admin' || !canUser('users')) return;
       try { staffUsersRef?.off(); } catch(e){}
-      staffUsersRef=db.ref('users');
+      staffUsersRef=db.ref('staffByUid');
       staffUsersRef.on('value',snap=>{ allUsersCache=snap.val()||{}; renderUsersList(); });
     }
 
@@ -1167,10 +1239,11 @@
       try { staffOrdersRef?.off(); } catch(e){}
       staffOrdersRef = canViewAllDrivers() ? db.ref('orders') : db.ref('orders').orderByChild('createdBy').equalTo(currentUser.username);
       staffOrdersRef.on('value',snap=>{
-        allOrdersCache=snap.val()||{}; applyFilters();
+        allOrdersCache=snap.val()||{}; mergeSecureAuxIntoOrders(); applyFilters();
         if(!document.getElementById('sec-dashboard').classList.contains('hidden')) renderDashboard();
         if(!document.getElementById('sec-analytics').classList.contains('hidden')) { renderAnalytics(); renderCommentsList(); }
         renderDashboardMap();
+        if(currentTrackOrderId && currentCustomerSearchResults[currentTrackOrderId]) applyCustomerTrackData(allOrdersCache[currentTrackOrderId]||currentCustomerSearchResults[currentTrackOrderId],currentTrackOrderId);
       });
     }
 
@@ -1183,17 +1256,49 @@
 
     function startPublicCommentsListener(){
       if(publicCommentsRef){try{publicCommentsRef.off();}catch(e){}}
-      if(APP_MODE==='customer'){
-        publicCommentsRef=db.ref('publicComments');
-        publicCommentsRef.on('value',snap=>{publicCommentsCache=snap.val()||{};renderPublicComments();});
-      }else{
-        publicCommentsRef=db.ref('orders').orderByChild('isPublished').equalTo(true);
-        publicCommentsRef.on('value',snap=>{
-          publicCommentsCache=snap.val()||{};
-          Object.keys(publicCommentsCache).forEach(key=>{const o=publicCommentsCache[key]||{};db.ref('publicComments/'+key).set({customerName:o.customerName||o.name||'عميل حمكشة',rating:Number(o.rating||0),comment:o.comment||'',isPublished:true,publishedAt:Date.now(),driver:o.driver||'غير محدد'}).catch(()=>{});});
-          renderPublicComments();
+      publicCommentsRef=db.ref('publicComments');
+      publicCommentsRef.on('value',snap=>{publicCommentsCache=snap.val()||{};renderPublicComments();});
+    }
+
+    function rebuildSecureAuxIndexes(){
+      customerLocationByOrder={};
+      feedbackByOrder={};
+      Object.keys(publicLocationsCache||{}).forEach(orderId=>{
+        const entries=publicLocationsCache[orderId]||{};
+        let latest=null;
+        Object.keys(entries).forEach(token=>{
+          const item=entries[token]||{};
+          if(!latest || Number(item.updatedAt||0)>Number(latest.updatedAt||0)) latest=item;
         });
-      }
+        if(latest) customerLocationByOrder[orderId]=latest;
+      });
+      Object.keys(publicFeedbackCache||{}).forEach(orderId=>{
+        const entries=publicFeedbackCache[orderId]||{};
+        let latest=null;
+        Object.keys(entries).forEach(token=>{
+          const item=entries[token]||{};
+          if(!latest || Number(item.submittedAt||0)>Number(latest.submittedAt||0)) latest=item;
+        });
+        if(latest) feedbackByOrder[orderId]=latest;
+      });
+    }
+    function mergeSecureAuxIntoOrders(){
+      rebuildSecureAuxIndexes();
+      Object.keys(allOrdersCache||{}).forEach(key=>{
+        const fb=feedbackByOrder[key];
+        const loc=customerLocationByOrder[key];
+        if(fb){ allOrdersCache[key]={...allOrdersCache[key],rating:Number(fb.rating||0),comment:fb.comment||'',feedbackSubmittedAt:fb.submittedAt||null}; }
+        if(loc){ allOrdersCache[key]={...allOrdersCache[key],custLat:loc.lat,custLng:loc.lng,customerLocationUpdatedAt:loc.updatedAt||null}; }
+      });
+    }
+    function startSecureAuxListeners(){
+      if(APP_MODE!=='staff' || !currentUser || currentUser.role!=='admin') return;
+      try{ publicFeedbackRef?.off(); }catch(e){}
+      try{ publicLocationsRef?.off(); }catch(e){}
+      publicFeedbackRef=db.ref('publicFeedback');
+      publicLocationsRef=db.ref('publicCustomerLocations');
+      publicFeedbackRef.on('value',snap=>{publicFeedbackCache=snap.val()||{};mergeSecureAuxIntoOrders();if(!document.getElementById('sec-analytics')?.classList.contains('hidden')){renderAnalytics();renderCommentsList();}renderDashboardMap();});
+      publicLocationsRef.on('value',snap=>{publicLocationsCache=snap.val()||{};mergeSecureAuxIntoOrders();renderDashboardMap();});
     }
 
     function startStaffDataListeners() { if(APP_MODE==='staff') ensureSuperUserExists(); }
@@ -1205,8 +1310,8 @@
       document.getElementById('authBtn').innerText=`${user.username} (خروج)`;
       document.getElementById('activeUserBadge').innerText=`${user.username} (${roleTitle})`;
       document.body.classList.remove('customer-public-mode'); document.body.classList.toggle('driver-private-mode',user.role==='driver');
-      document.getElementById('authModal').classList.add('hidden'); updateUIByPermissions(); startDriverDirectoryListener();
-      if(user.role==='admin') { document.getElementById('adminAuthLock').classList.add('hidden'); document.getElementById('adminContent').classList.remove('hidden'); startAdminOrdersListener(); startUserManagementListener(); startCustomerDataListener(); switchTab('admin'); }
+      document.getElementById('authModal').classList.add('hidden'); updateUIByPermissions();
+      if(user.role==='admin') { document.getElementById('adminAuthLock').classList.add('hidden'); document.getElementById('adminContent').classList.remove('hidden'); startDriverDirectoryListener(); startAdminOrdersListener(); startUserManagementListener(); startCustomerDataListener(); startSecureAuxListeners(); switchTab('admin'); }
       else { document.getElementById('driverAuthLock').classList.add('hidden'); document.getElementById('driverContent').classList.remove('hidden'); applyDriverPrivateMode(); startDriverOrdersListener(); }
       applyFilters(); renderUsersList();
     }
@@ -1220,12 +1325,6 @@
       document.querySelector('.perm-customers')?.classList.toggle('hidden',!canManageCustomers());
       document.getElementById('exportActionBtns')?.classList.toggle('hidden',!canUser('print'));
       const note=document.getElementById('dashboardScopeNote'); if(note) note.classList.toggle('hidden',canViewAllDrivers());
-    }
-
-    function checkSavedSession() {
-      if(APP_MODE!=='staff') return;
-      const saved=localStorage.getItem('hamaksha_user'); if(!saved) return;
-      try { const data=JSON.parse(saved); if(!data?.username) return; db.ref('users').orderByChild('username').equalTo(data.username).once('value').then(snap=>{ const users=snap.val()||{}; let found=null; Object.keys(users).forEach(id=>found={...users[id],key:id}); if(found) loginSuccess(found); else localStorage.removeItem('hamaksha_user'); }); } catch(e) { localStorage.removeItem('hamaksha_user'); }
     }
 
     function changeTheme(primary, secondary, bg, isDark = false) {
@@ -1280,16 +1379,21 @@
       const pass=document.getElementById('newUserPass').value.trim();
       const role=document.getElementById('newUserRole').value;
       if(!username||!email||!pass)return alert('يرجى كتابة اسم المستخدم والبريد الإلكتروني وكلمة المرور');
+      if(!/^[^.#$/\[\]]{2,40}$/.test(username)) return alert('اسم المستخدم يجب أن يكون من 2 إلى 40 حرفاً وألا يحتوي على . # $ / [ ]');
+      if(role==='admin' && !isSuperUser()) return alert('إنشاء أدمن فرعي متاح للمالك الرئيسي Asma فقط. يمكنك إنشاء مندوب.');
       if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return alert('يرجى إدخال بريد إلكتروني صحيح.');
 
       try{
+        const usernameSnap=await db.ref('loginDirectory/'+username).once('value');
+        if(usernameSnap.exists()) return alert('اسم المستخدم مستخدم بالفعل.');
         const authData=await createNewEmployeeAccount({username,email,pass,role});
-        const record={username,authEmail:authData.authEmail,authUid:authData.authUid,role,perms:{edit:false,delete:false,print:false,analytics:false,prices:false,users:false,viewAllDrivers:false},createdAt:Date.now(),createdBy:currentUser?.username||'asma'};
-        await db.ref('users').push(record);
+        const profile={dbKey:authData.authUid,username,authEmail:authData.authEmail,authUid:authData.authUid,role,active:true,isSuperAdmin:false,perms:defaultPerms(),createdAt:Date.now(),createdBy:currentUser?.username||'asma',updatedAt:Date.now()};
+        await db.ref(`staffByUid/${authData.authUid}`).set(profile);
+        await db.ref(`loginDirectory/${username}`).set({authEmail:authData.authEmail,authUid:authData.authUid});
         document.getElementById('newUserName').value='';
         document.getElementById('newUserEmail').value='';
         document.getElementById('newUserPass').value='';
-        alert('تم إنشاء المستخدم وربطه بـ Firebase Authentication بنجاح ✅');
+        alert('تم إنشاء المستخدم وربطه بـ Firebase Authentication والصلاحيات بشكل آمن ✅');
       }catch(e){
         console.error('Add user error:',e);
         const msg=e?.message==='AUTH_EMAIL_EXISTS'?'هذا البريد الإلكتروني مستخدم بالفعل في Firebase Authentication.':e?.message==='AUTH_EMAIL_INVALID'?'البريد الإلكتروني غير صحيح.':'تعذر إنشاء الحساب حالياً. تأكد من تفعيل Email/Password في Firebase Authentication.';
@@ -1300,40 +1404,49 @@
     function openEditUserModal(id) {
       if(!canUser('users')) return alert('عذراً، تعديل الحسابات يتطلب صلاحية إدارة المستخدمين');
       const u = allUsersCache[id];
-      if(!u) return;
+      if(!u || u.username==='asma' || u.isSuperAdmin===true) return;
       document.getElementById('editUserId').value = id;
       document.getElementById('editUserName').value = u.username || '';
-      document.getElementById('editUserPass').value = u.pass || '';
+      document.getElementById('editUserName').readOnly = true;
+      document.getElementById('editUserPass').value = '';
+      const emailEl=document.getElementById('editUserEmail'); if(emailEl) emailEl.value=u.authEmail||'';
       document.getElementById('editUserModal').classList.remove('hidden');
     }
-
-    function closeEditUserModal() {
-      document.getElementById('editUserModal').classList.add('hidden');
+    function closeEditUserModal(){ document.getElementById('editUserModal').classList.add('hidden'); }
+    async function saveEditUser() {
+      if(!canUser('users')) return alert('لا تملك صلاحية إدارة المستخدمين.');
+      const id=document.getElementById('editUserId').value;
+      const u=allUsersCache[id];
+      if(!id||!u||u.isSuperAdmin===true)return alert('لا يمكن تعديل الحساب الرئيسي.');
+      closeEditUserModal();
+      await sendPasswordResetForUser(id);
     }
-
-    function saveEditUser() {
-      const id = document.getElementById('editUserId').value;
-      const username = document.getElementById('editUserName').value.trim();
-      const pass = document.getElementById('editUserPass').value.trim();
-
-      if(!id || !username || !pass) return alert('يرجى ملء كافة البيانات');
-
-      db.ref('users/' + id).update({ username, pass }).then(() => {
-        alert('تم تعديل بيانات الحساب بنجاح ✅');
-        closeEditUserModal();
-      });
+    async function sendPasswordResetForUser(userId){
+      if(!canUser('users')) return alert('لا تملك صلاحية إدارة المستخدمين.');
+      const u=allUsersCache[userId];
+      if(!u?.authEmail) return alert('لا يوجد بريد إلكتروني مرتبط بهذا الحساب.');
+      if(!authReady) return alert('Firebase Authentication غير جاهز حالياً.');
+      try{ await firebaseAuth.sendPasswordResetEmail(u.authEmail); alert(`تم إرسال رابط إعادة تعيين كلمة المرور إلى ${u.authEmail} ✅`); }
+      catch(e){ console.error(e); alert('تعذر إرسال رابط إعادة تعيين كلمة المرور حالياً.'); }
     }
-
     function toggleAdminPermission(userKey, permType, isChecked) {
       if(!isSuperUser()) return alert('هذه الصلاحية متاحة للمستخدم الرئيسي asma فقط.');
-      db.ref(`users/${userKey}/perms/${permType}`).set(!!isChecked);
+      const u=allUsersCache[userKey];
+      if(!u || u.isSuperAdmin===true || u.role!=='admin') return;
+      db.ref(`staffByUid/${userKey}/perms/${permType}`).set(!!isChecked);
     }
-
-    function deleteUser(userId) {
+    async function deleteUser(userId) {
       if(!canUser('users')) return alert('عذراً، حذف الحسابات تتطلب صلاحية إدارة المستخدمين');
-      if(confirm('هل تريد حذف هذا المستخدم بالفعل؟')) {
-        db.ref('users/' + userId).remove();
-      }
+      const u=allUsersCache[userId];
+      if(!u || u.isSuperAdmin===true || u.username==='asma') return alert('لا يمكن حذف الحساب الرئيسي.');
+      if(!confirm(`سيتم تعطيل الحساب داخل النظام وإزالة صلاحياته. حساب Firebase Authentication نفسه لن يتم حذفه من المتصفح.\n\nهل تريد المتابعة؟`)) return;
+      try{
+        const updates={};
+        updates[`staffByUid/${userId}`]=null;
+        updates[`loginDirectory/${u.username}`]=null;
+        await db.ref().update(updates);
+        alert('تم تعطيل الحساب وإزالة وصوله إلى قاعدة البيانات ✅');
+      }catch(e){ console.error(e); alert('تعذر تعطيل الحساب حالياً.'); }
     }
 
     function renderUsersList() {
@@ -1344,8 +1457,8 @@
       filterDriverDropdown.forEach(f=>f.innerHTML='<option value="ALL">جميع المناديب</option>');
       Object.values(driverDirectoryCache||{}).forEach(u=>{ if(!u?.username)return; dropdowns.forEach(select=>select.innerHTML+=`<option value="${escapeHtml(u.username)}">${escapeHtml(u.username)}</option>`); filterDriverDropdown.forEach(f=>f.innerHTML+=`<option value="${escapeHtml(u.username)}">${escapeHtml(u.username)}</option>`); });
       if(!list) return; list.innerHTML=''; if(!canUser('users')) return;
-      Object.keys(allUsersCache||{}).forEach(id=>{ const u=allUsersCache[id]||{},perms=u.perms||{},isAsma=u.username==='asma';
-        list.innerHTML += `<div class="bg-white p-3 rounded-xl border text-xs shadow-sm space-y-2"><div class="flex items-center justify-between gap-2"><div class="flex items-center gap-1.5 overflow-hidden"><span class="font-bold text-gray-800 truncate">${escapeHtml(u.username||'')}</span><span class="text-[9px] px-1.5 py-0.5 rounded-full ${isAsma?'bg-amber-400 text-black font-bold':(u.role==='admin'?'bg-red-100 text-red-700 font-bold':'bg-amber-100 text-amber-800 font-bold')}">${isAsma?'المالك الرئيسي':(u.role==='admin'?'أدمن فرعي':'مندوب')}</span></div>${!isAsma?`<div class="flex items-center gap-1 shrink-0"><button onclick="openEditUserModal('${id}')" class="bg-blue-50 text-blue-700 px-2 py-1 rounded-lg font-bold text-[10px]">✏️ تعديل</button><button onclick="deleteUser('${id}')" class="bg-red-50 text-red-700 px-2 py-1 rounded-lg font-bold text-[10px]">🗑️ حذف</button></div>`:''}</div>${u.role==='admin'&&!isAsma&&isSuperUser()?`<div class="bg-amber-50 p-2.5 rounded-lg border border-amber-200 text-[10px] space-y-1.5 mt-2"><p class="font-bold text-amber-900 border-b border-amber-200 pb-1">⚙️ صلاحيات الأدمن الفرعي (خاص بـ asma):</p><div class="grid grid-cols-2 gap-1.5 font-semibold"><label><input type="checkbox" ${perms.edit?'checked':''} onchange="toggleAdminPermission('${id}','edit',this.checked)"> تعديل الطلبات ✏️</label><label><input type="checkbox" ${perms.delete?'checked':''} onchange="toggleAdminPermission('${id}','delete',this.checked)"> حذف الطلبات 🗑️</label><label><input type="checkbox" ${perms.print?'checked':''} onchange="toggleAdminPermission('${id}','print',this.checked)"> طباعة وتصدير 🖨️</label><label><input type="checkbox" ${perms.analytics?'checked':''} onchange="toggleAdminPermission('${id}','analytics',this.checked)"> التقارير والداشبورد 📊</label><label><input type="checkbox" ${perms.prices?'checked':''} onchange="toggleAdminPermission('${id}','prices',this.checked)"> تعديل الأسعار 🏷️</label><label><input type="checkbox" ${perms.users?'checked':''} onchange="toggleAdminPermission('${id}','users',this.checked)"> إدارة المستخدمين 👥</label><label class="col-span-2"><input type="checkbox" ${perms.viewAllDrivers?'checked':''} onchange="toggleAdminPermission('${id}','viewAllDrivers',this.checked)"> عرض جميع المناديب وأوردراتهم 🧭</label></div></div>`:''}</div>`;
+      Object.keys(allUsersCache||{}).forEach(id=>{ const u=allUsersCache[id]||{},perms=u.perms||{},isAsma=u.isSuperAdmin===true||u.username==='asma';
+        list.innerHTML += `<div class="bg-white p-3 rounded-xl border text-xs shadow-sm space-y-2"><div class="flex items-center justify-between gap-2"><div class="flex items-center gap-1.5 overflow-hidden"><span class="font-bold text-gray-800 truncate">${escapeHtml(u.username||'')}</span><span class="text-[9px] px-1.5 py-0.5 rounded-full ${isAsma?'bg-amber-400 text-black font-bold':(u.role==='admin'?'bg-red-100 text-red-700 font-bold':'bg-amber-100 text-amber-800 font-bold')}">${isAsma?'المالك الرئيسي':(u.role==='admin'?'أدمن فرعي':'مندوب')}</span></div>${!isAsma?`<div class="flex items-center gap-1 shrink-0"><button onclick="openEditUserModal('${id}')" class="bg-blue-50 text-blue-700 px-2 py-1 rounded-lg font-bold text-[10px]">🔑 كلمة المرور</button><button onclick="deleteUser('${id}')" class="bg-red-50 text-red-700 px-2 py-1 rounded-lg font-bold text-[10px]">🗑️ تعطيل</button></div>`:''}</div><div class="text-[10px] text-gray-500 font-mono break-all">${escapeHtml(u.authEmail||'')}</div>${u.role==='admin'&&!isAsma&&isSuperUser()?`<div class="bg-amber-50 p-2.5 rounded-lg border border-amber-200 text-[10px] space-y-1.5 mt-2"><p class="font-bold text-amber-900 border-b border-amber-200 pb-1">⚙️ صلاحيات الأدمن الفرعي (خاص بـ asma):</p><div class="grid grid-cols-2 gap-1.5 font-semibold"><label><input type="checkbox" ${perms.edit?'checked':''} onchange="toggleAdminPermission('${id}','edit',this.checked)"> تعديل الطلبات ✏️</label><label><input type="checkbox" ${perms.delete?'checked':''} onchange="toggleAdminPermission('${id}','delete',this.checked)"> حذف الطلبات 🗑️</label><label><input type="checkbox" ${perms.print?'checked':''} onchange="toggleAdminPermission('${id}','print',this.checked)"> طباعة وتصدير 🖨️</label><label><input type="checkbox" ${perms.analytics?'checked':''} onchange="toggleAdminPermission('${id}','analytics',this.checked)"> التقارير والداشبورد 📊</label><label><input type="checkbox" ${perms.prices?'checked':''} onchange="toggleAdminPermission('${id}','prices',this.checked)"> تعديل الأسعار 🏷️</label><label><input type="checkbox" ${perms.users?'checked':''} onchange="toggleAdminPermission('${id}','users',this.checked)"> إدارة المستخدمين 👥</label><label class="col-span-2"><input type="checkbox" ${perms.viewAllDrivers?'checked':''} onchange="toggleAdminPermission('${id}','viewAllDrivers',this.checked)"> عرض جميع المناديب وأوردراتهم 🧭</label></div></div>`:''}</div>`;
       });
     }
 
@@ -1699,8 +1812,9 @@
 
         const lat = Number(o.lat);
         const lng = Number(o.lng);
-        const custLat = Number(o.custLat);
-        const custLng = Number(o.custLng);
+        const sharedLoc = customerLocationByOrder?.[key] || null;
+        const custLat = Number(sharedLoc?.lat ?? o.custLat);
+        const custLng = Number(sharedLoc?.lng ?? o.custLng);
         const hasDriver = Number.isFinite(lat) && Number.isFinite(lng) && lat !== 0 && lng !== 0;
         const hasCustomer = Number.isFinite(custLat) && Number.isFinite(custLng) && custLat !== 0 && custLng !== 0;
         if(!hasDriver && !hasCustomer) return;
@@ -1990,20 +2104,25 @@
       }
     }
 
+    function getEffectiveFeedback(orderKey){
+      const order=allOrdersCache[orderKey]||{};const fb=feedbackByOrder?.[orderKey];
+      return {rating:Number(fb?.rating||order.rating||0),comment:fb?.comment||order.comment||'',submittedAt:fb?.submittedAt||order.feedbackSubmittedAt||null};
+    }
     function togglePublishComment(orderKey,publishState){
       if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!canUser('analytics'))return;
-      const order=allOrdersCache[orderKey]||{};
-      const ops=[db.ref(`orders/${orderKey}/isPublished`).set(publishState)];
-      if(publishState)ops.push(db.ref('publicComments/'+orderKey).set({customerName:order.customerName||order.name||'عميل حمكشة',rating:Number(order.rating||0),comment:order.comment||'',isPublished:true,publishedAt:Date.now(),driver:order.driver||'غير محدد'}));
+      const order=allOrdersCache[orderKey]||{};const fb=getEffectiveFeedback(orderKey);const ops=[db.ref(`orders/${orderKey}/isPublished`).set(publishState)];
+      if(publishState)ops.push(db.ref('publicComments/'+orderKey).set({customerName:order.customerName||order.name||'عميل حمكشة',rating:Number(fb.rating||0),comment:fb.comment||'',isPublished:true,publishedAt:Date.now(),driver:order.driver||'غير محدد'}));
       else ops.push(db.ref('publicComments/'+orderKey).remove());
       Promise.all(ops).then(()=>alert(publishState?'تم نشر التعليق بنجاح للعموم في صفحة التتبع ✅':'تم إلغاء النشر وأصبح التعليق خاصاً بالإدارة فقط 🔒')).catch(err=>{console.error(err);alert('تعذر تحديث حالة النشر حالياً.');});
     }
 
-    function deleteComment(orderKey){
+    async function deleteComment(orderKey){
       if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!canUser('analytics'))return;
-      if(confirm('هل تريد حذف هذا التعليق والتقييم نهائياً؟')){
-        Promise.all([db.ref(`orders/${orderKey}`).update({rating:null,comment:null,isPublished:false}),db.ref('publicComments/'+orderKey).remove()]).then(()=>alert('تم حذف التعليق والتقييم بنجاح 🗑️')).catch(err=>{console.error(err);alert('تعذر حذف التعليق حالياً.');});
-      }
+      if(!confirm('هل تريد حذف هذا التعليق والتقييم نهائياً؟')) return;
+      try{
+        await Promise.all([db.ref(`orders/${orderKey}/rating`).set(null),db.ref(`orders/${orderKey}/comment`).set(null),db.ref(`orders/${orderKey}/isPublished`).set(false),db.ref('publicComments/'+orderKey).remove(),db.ref('publicFeedback/'+orderKey).remove()]);
+        alert('تم حذف التعليق والتقييم بنجاح 🗑️');
+      }catch(err){console.error(err);alert('تعذر حذف التعليق حالياً.');}
     }
 
     // --- 💬 عرض التعليقات العامة المنشورة في صفحة تتبع العميل ---
@@ -2123,14 +2242,28 @@
       }
     }
 
-    // --- 📍 تتبع العميل: بحث مقيد بالاسم/الهاتف ثم فتح الطلب المطابق فقط ---
+    // --- 📍 تتبع العميل: البحث الداخلي يعتمد فقط على الطلبات المسموح بها في allOrdersCache ---
     function updateCustomerIdentityHint(){const el=document.getElementById('customerIdentityStatus');if(!el)return;el.innerText=currentRequestedOrderId?`🔐 لإظهار الطلب #${currentRequestedOrderId} اكتب اسم العميل أو رقم الهاتف أولاً.`:'';el.className='text-[10px] font-bold text-center text-blue-700';}
-    async function queryCustomerOrdersByIdentity(name,phone){const nn=normalizeName(name),pn=normalizePhone(phone);if(!nn&&!pn)throw new Error('IDENTITY_REQUIRED');const raw={};const merge=data=>Object.keys(data||{}).forEach(k=>raw[k]=data[k]);if(pn){merge((await db.ref('orders').orderByChild('phoneNormalized').equalTo(pn).once('value')).val()||{});merge((await db.ref('orders').orderByChild('phone').equalTo(phone).once('value')).val()||{});}if(nn){merge((await db.ref('orders').orderByChild('customerNameNormalized').equalTo(nn).once('value')).val()||{});merge((await db.ref('orders').orderByChild('customerName').equalTo(name).once('value')).val()||{});}const result={};Object.keys(raw).forEach(k=>{const o=raw[k]||{};if((!pn||normalizePhone(o.phone||'')===pn)&&(!nn||normalizeName(o.customerName||o.name||'')===nn))result[k]=o;});return result;}
+    async function queryCustomerOrdersByIdentity(name,phone){
+      const nn=normalizeName(name),pn=normalizePhone(phone);if(!nn&&!pn)throw new Error('IDENTITY_REQUIRED');
+      const source=allOrdersCache||{};const result={};
+      Object.keys(source).forEach(k=>{const o=source[k]||{};if((!pn||normalizePhone(o.phone||'')===pn)&&(!nn||normalizeName(o.customerName||o.name||'')===nn))result[k]=o;});
+      return result;
+    }
     function renderCustomerOrderResults(results){const container=document.getElementById('customerOrdersResults');if(!container)return;const keys=Object.keys(results||{}).sort((a,b)=>(`${results[b]?.date||''} ${results[b]?.time||''}`).localeCompare(`${results[a]?.date||''} ${results[a]?.time||''}`));if(!keys.length){container.innerHTML='<div class="bg-white rounded-2xl shadow-lg p-5 border text-center text-xs text-red-600 font-bold">لم نجد طلبات مطابقة للبيانات المدخلة.</div>';return;}container.innerHTML=keys.map(key=>{const o=results[key]||{},amount=Number(o.totalCash||((o.orderPrice||0)+(o.deliveryPrice||0)+(o.paymentFee||0)));return`<div class="bg-white rounded-2xl shadow-lg p-4 border border-amber-100 space-y-2"><div class="flex justify-between items-center gap-2"><b class="font-mono text-red-700">#${escapeHtml(o.orderId||key)}</b><span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full text-[10px] font-bold">${escapeHtml(o.status||'')}</span></div><div class="grid grid-cols-2 gap-2 text-[10px] bg-gray-50 rounded-xl p-2 border"><span>📅 ${escapeHtml(formatDateDMY(o.date||'-'))}</span><span>💰 ${amount.toLocaleString('ar-EG')} ج.م</span><span>🛵 ${escapeHtml(o.driver||'غير محدد')}</span><span>📍 ${o.lat&&o.lng?'الموقع متاح':'لا يوجد GPS'}</span></div><button type="button" onclick="openCustomerOrder('${key}')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-xl text-xs shadow">فتح وتتبع الطلب 📍</button></div>`;}).join('');}
-    async function searchCustomerOrder(){if(APP_MODE!=='staff')return alert('صفحة العميل لا تسمح بالبحث. استخدم رابط الطلب المرسل لك عبر WhatsApp فقط.');const name=document.getElementById('custIdentityName')?.value.trim()||'',phone=document.getElementById('custIdentityPhone')?.value.trim()||'',status=document.getElementById('customerIdentityStatus');if(!name&&!phone){status.innerText='⚠️ اكتب اسم العميل أو رقم الهاتف على الأقل.';return;}status.innerText='🔎 جارٍ البحث...';status.className='text-[10px] font-bold text-center text-blue-700';try{const results=await queryCustomerOrdersByIdentity(name,phone);currentCustomerSearchResults=results;currentCustomerVerified=Object.keys(results).length>0;renderCustomerOrderResults(results);status.innerText=currentCustomerVerified?`✅ تم التحقق — وجدنا ${Object.keys(results).length} طلب/طلبات.`:'❌ لا توجد طلبات مطابقة.';status.className=`text-[10px] font-bold text-center ${currentCustomerVerified?'text-emerald-700':'text-red-600'}`;if(currentRequestedOrderId&&results[currentRequestedOrderId])openCustomerOrder(currentRequestedOrderId);else if(Object.keys(results).length===1)openCustomerOrder(Object.keys(results)[0]);else document.getElementById('trackResultCard').classList.add('hidden');}catch(err){console.error(err);status.innerText='تعذر تنفيذ البحث حالياً.';}}
-    function openCustomerOrder(orderKey){if(APP_MODE!=='staff')return alert('استخدم رابط الطلب الخاص بك عبر WhatsApp.');if(!currentCustomerVerified||!currentCustomerSearchResults[orderKey])return alert('لا يمكن فتح هذا الطلب قبل التحقق من اسم العميل أو رقم الهاتف.');currentTrackOrderId=orderKey;if(customerOrderRef)try{customerOrderRef.off();}catch(e){}customerOrderRef=db.ref('orders/'+orderKey);customerOrderRef.on('value',snap=>{const data=snap.val();if(data)applyCustomerTrackData(data,orderKey);});}
-    function applyCustomerTrackData(data,orderKey){document.getElementById('trackResultCard').classList.remove('hidden');document.getElementById('dispOrderId').innerText='#'+(data.orderId||orderKey);document.getElementById('cDriver').innerText=data.driver||'جاري التحديد...';document.getElementById('cDate').innerText=formatDateDMY(data.date)+' '+(data.time||'');document.getElementById('badgeStatus').innerText=data.status||'جاري المتابعة';document.getElementById('mapTextInfo').innerHTML=data.lat&&data.lng?`<div class="space-y-2"><p class="font-bold text-emerald-600">🛵 المندوب في الطريق إليك الآن!</p><a href="https://www.google.com/maps?q=${encodeURIComponent(data.lat+','+data.lng)}" target="_blank" rel="noopener" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow">📍 فتح موقع المندوب الحي على Google Maps</a></div>`:'⏳ الطلب قيد التحضير أو المندوب لم يقم بتفعيل اللوكيشن الحي بعد.';currentTrackOrderStatus=data.status||'';const delivered=currentTrackOrderStatus==='تم التسليم بنجاح ✅',locked=document.getElementById('feedbackLockedMsg'),badge=document.getElementById('feedbackAvailabilityBadge'),submit=document.getElementById('submitFeedbackBtn'),comment=document.getElementById('custCommentText'),stars=document.querySelectorAll('#starContainer .star-btn');if(delivered){locked.classList.add('hidden');badge.innerText='✅ التقييم متاح الآن';badge.className='text-[10px] font-bold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700';submit.disabled=false;comment.disabled=false;stars.forEach(b=>b.disabled=false);selectedStarsCount=Number(data.rating||0);highlightStarRating(selectedStarsCount);comment.value=data.comment||'';const msg=document.getElementById('ratingSubmittedMsg');if(data.rating){msg.innerText=`✅ تم تسجيل تقييمك بـ (${data.rating} ⭐).`;msg.classList.remove('hidden');}else msg.classList.add('hidden');}else{locked.classList.remove('hidden');badge.innerText='🔒 متاح بعد التسليم';badge.className='text-[10px] font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-600';submit.disabled=true;comment.disabled=true;stars.forEach(b=>b.disabled=true);selectedStarsCount=0;highlightStarRating(0);comment.value='';document.getElementById('ratingSubmittedMsg').classList.add('hidden');}}
-    function toggleCustomerLocationShare(){if(!currentTrackOrderId)return alert('رابط الطلب غير محمّل بعد.');if(!navigator.geolocation)return alert('متصفحك لا يدعم تحديد الموقع الجغرافي');if(custWatchId){navigator.geolocation.clearWatch(custWatchId);custWatchId=null;document.getElementById('custShareLocBtn').innerText='📍 مشاركة موقعي الحالي (GPS) مع المندوب';document.getElementById('custLocStatus').classList.add('hidden');return;}custWatchId=navigator.geolocation.watchPosition(pos=>{db.ref('orders/'+currentTrackOrderId).update({custLat:pos.coords.latitude,custLng:pos.coords.longitude,customerLocationUpdatedAt:Date.now()});document.getElementById('custShareLocBtn').innerText='🔄 يتم تحديث مشاركة موقعك حياً...';document.getElementById('custLocStatus').classList.remove('hidden');},()=>alert('تعذر الوصول إلى موقعك الجغرافي (GPS)'),{enableHighAccuracy:true});}
+    async function searchCustomerOrder(){if(APP_MODE!=='staff')return alert('صفحة العميل لا تسمح بالبحث. استخدم رابط الطلب المرسل لك عبر WhatsApp فقط.');const name=document.getElementById('custIdentityName')?.value.trim()||'',phone=document.getElementById('custIdentityPhone')?.value.trim()||'',status=document.getElementById('customerIdentityStatus');if(!name&&!phone){status.innerText='⚠️ اكتب اسم العميل أو رقم الهاتف على الأقل.';return;}status.innerText='🔎 جارٍ البحث...';status.className='text-[10px] font-bold text-center text-blue-700';try{const results=await queryCustomerOrdersByIdentity(name,phone);currentCustomerSearchResults=results;currentCustomerVerified=Object.keys(results).length>0;renderCustomerOrderResults(results);status.innerText=currentCustomerVerified?`✅ تم التحقق — وجدنا ${Object.keys(results).length} طلب/طلبات ضمن نطاق وصولك.`:'❌ لا توجد طلبات مطابقة.';status.className=`text-[10px] font-bold text-center ${currentCustomerVerified?'text-emerald-700':'text-red-600'}`;if(currentRequestedOrderId&&results[currentRequestedOrderId])openCustomerOrder(currentRequestedOrderId);else if(Object.keys(results).length===1)openCustomerOrder(Object.keys(results)[0]);else document.getElementById('trackResultCard').classList.add('hidden');}catch(err){console.error(err);status.innerText='تعذر تنفيذ البحث حالياً.';}}
+    function openCustomerOrder(orderKey){if(APP_MODE!=='staff')return alert('استخدم رابط الطلب الخاص بك عبر WhatsApp.');if(!currentCustomerVerified||!currentCustomerSearchResults[orderKey])return alert('لا يمكن فتح هذا الطلب قبل التحقق من اسم العميل أو رقم الهاتف.');currentTrackOrderId=orderKey;currentCustomerTrackToken=currentCustomerSearchResults[orderKey]?.trackingToken||'';if(customerOrderRef)try{customerOrderRef.off();}catch(e){}customerOrderRef=null;applyCustomerTrackData(allOrdersCache[orderKey]||currentCustomerSearchResults[orderKey],orderKey);}
+    function getEffectiveFeedbackForOrder(orderKey,data){
+      const fb=feedbackByOrder?.[orderKey];
+      if(fb) return {rating:Number(fb.rating||0),comment:fb.comment||'',submittedAt:fb.submittedAt||null};
+      if(currentCustomerFeedback && String(orderKey)===String(currentTrackOrderId)) return currentCustomerFeedback;
+      return {rating:Number(data?.rating||0),comment:data?.comment||'',submittedAt:data?.feedbackSubmittedAt||null};
+    }
+    function applyCustomerTrackData(data,orderKey){
+      const feedback=getEffectiveFeedbackForOrder(orderKey,data);
+      const displayData={...data,...(feedback.rating?{rating:feedback.rating}:{},feedback.comment?{comment:feedback.comment}:{} )};
+      document.getElementById('trackResultCard').classList.remove('hidden');document.getElementById('dispOrderId').innerText='#'+(displayData.orderId||orderKey);document.getElementById('cDriver').innerText=displayData.driver||'جاري التحديد...';document.getElementById('cDate').innerText=formatDateDMY(displayData.date)+' '+(displayData.time||'');document.getElementById('badgeStatus').innerText=displayData.status||'جاري المتابعة';document.getElementById('mapTextInfo').innerHTML=displayData.lat&&displayData.lng?`<div class="space-y-2"><p class="font-bold text-emerald-600">🛵 المندوب في الطريق إليك الآن!</p><a href="https://www.google.com/maps?q=${encodeURIComponent(displayData.lat+','+displayData.lng)}" target="_blank" rel="noopener" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow">📍 فتح موقع المندوب الحي على Google Maps</a></div>`:'⏳ الطلب قيد التحضير أو المندوب لم يقم بتفعيل اللوكيشن الحي بعد.';currentTrackOrderStatus=displayData.status||'';const delivered=currentTrackOrderStatus==='تم التسليم بنجاح ✅',locked=document.getElementById('feedbackLockedMsg'),badge=document.getElementById('feedbackAvailabilityBadge'),submit=document.getElementById('submitFeedbackBtn'),comment=document.getElementById('custCommentText'),stars=document.querySelectorAll('#starContainer .star-btn');if(delivered){locked.classList.add('hidden');badge.innerText='✅ التقييم متاح الآن';badge.className='text-[10px] font-bold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700';submit.disabled=false;comment.disabled=false;stars.forEach(b=>b.disabled=false);selectedStarsCount=Number(displayData.rating||0);highlightStarRating(selectedStarsCount);comment.value=displayData.comment||'';const msg=document.getElementById('ratingSubmittedMsg');if(displayData.rating){msg.innerText=`✅ تم تسجيل تقييمك بـ (${displayData.rating} ⭐).`;msg.classList.remove('hidden');}else msg.classList.add('hidden');}else{locked.classList.remove('hidden');badge.innerText='🔒 متاح بعد التسليم';badge.className='text-[10px] font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-600';submit.disabled=true;comment.disabled=true;stars.forEach(b=>b.disabled=true);selectedStarsCount=0;highlightStarRating(0);comment.value='';document.getElementById('ratingSubmittedMsg').classList.add('hidden');}}
+    function toggleCustomerLocationShare(){if(APP_MODE!=='customer')return alert('مشاركة موقع العميل متاحة من رابط التتبع الخاص فقط.');if(!currentTrackOrderId||!currentCustomerTrackToken)return alert('رابط الطلب غير محمّل بعد.');if(!navigator.geolocation)return alert('متصفحك لا يدعم تحديد الموقع الجغرافي');if(custWatchId){navigator.geolocation.clearWatch(custWatchId);custWatchId=null;document.getElementById('custShareLocBtn').innerText='📍 مشاركة موقعي الحالي (GPS) مع المندوب';document.getElementById('custLocStatus').classList.add('hidden');return;}custWatchId=navigator.geolocation.watchPosition(pos=>{db.ref(`publicCustomerLocations/${currentTrackOrderId}/${currentCustomerTrackToken}`).set({lat:Number(pos.coords.latitude),lng:Number(pos.coords.longitude),updatedAt:Date.now()}).catch(()=>{});document.getElementById('custShareLocBtn').innerText='🔄 يتم تحديث مشاركة موقعك حياً...';document.getElementById('custLocStatus').classList.remove('hidden');},()=>alert('تعذر الوصول إلى موقعك الجغرافي (GPS)'),{enableHighAccuracy:true});}
 
     function highlightStarRating(stars) {
       document.querySelectorAll('#starContainer .star-btn').forEach((btn, index) => {
@@ -2173,25 +2306,19 @@
       highlightStarRating(selectedStarsCount);
     }
 
-    function submitFullFeedback() {
-      if(!currentTrackOrderId) return alert('يرجى تحديد رقم الطلب أولاً!');
+    async function submitFullFeedback() {
+      if(APP_MODE!=='customer') return alert('التقييم متاح من رابط العميل فقط.');
+      if(!currentTrackOrderId||!currentCustomerTrackToken) return alert('يرجى تحديد طلب صالح أولاً!');
       if(currentTrackOrderStatus !== 'تم التسليم بنجاح ✅') return alert('التقييم والتعليق متاحان بعد تسليم الطلب بنجاح ✅');
       if(selectedStarsCount === 0) return alert('يرجى اختيار عدد النجوم للتقييم أولاً!');
-
       const commentText = document.getElementById('custCommentText').value.trim();
-
-      db.ref('orders/' + currentTrackOrderId).update({
-        rating: selectedStarsCount,
-        comment: commentText,
-        feedbackSubmittedAt: Date.now()
-      }).then(() => {
+      try{
+        await db.ref(`publicFeedback/${currentTrackOrderId}/${currentCustomerTrackToken}`).set({orderId:currentTrackOrderId,rating:selectedStarsCount,comment:commentText,submittedAt:Date.now()});
+        currentCustomerFeedback={rating:selectedStarsCount,comment:commentText,submittedAt:Date.now()};
         document.getElementById('ratingSubmittedMsg').innerText = `شكراً لك! تم تسجيل تقييمك بـ (${selectedStarsCount} ⭐) والملاحظات بنجاح ✅`;
         document.getElementById('ratingSubmittedMsg').classList.remove('hidden');
         highlightStarRating(selectedStarsCount);
-      }).catch((error) => {
-        console.error(error);
-        alert('تعذر حفظ التقييم حالياً، حاول مرة أخرى.');
-      });
+      }catch(error){ console.error(error); alert('تعذر حفظ التقييم حالياً، حاول مرة أخرى.'); }
     }
 
     // --- الطباعة والتصدير ---
@@ -2412,13 +2539,19 @@
       const statusEl=document.getElementById('customerLinkStatus'),resultCard=document.getElementById('trackResultCard');
       if(!orderId||!token){if(statusEl)statusEl.innerHTML='❌ هذا ليس رابط تتبع صالحاً. استخدم رابط المتابعة المرسل لك عبر WhatsApp.';resultCard?.classList.add('hidden');return;}
       if(statusEl)statusEl.innerText='🔐 جارٍ التحقق من رابط طلبك...';
+      if(token.length<32){if(statusEl)statusEl.innerHTML='❌ رابط التتبع غير صالح.';resultCard?.classList.add('hidden');return;}
       try{
-        const snap=await db.ref('orders/'+orderId).once('value'),data=snap.val();
-        if(!data||String(data.trackingToken||'')!==String(token)){if(statusEl)statusEl.innerHTML='❌ رابط التتبع غير صالح أو غير مرتبط بهذا الطلب. اطلب رابطاً جديداً من الجزارة.';resultCard?.classList.add('hidden');return;}
-        currentCustomerTrackToken=token;currentTrackOrderId=orderId;
+        const trackingQuery=db.ref('orders').orderByChild('trackingToken').equalTo(token).limitToFirst(1);
+        const snap=await trackingQuery.once('value'),dataSet=snap.val()||{};const found=dataSet[orderId];
+        if(!found){if(statusEl)statusEl.innerHTML='❌ رابط التتبع غير صالح أو غير مرتبط بهذا الطلب. اطلب رابطاً جديداً من الجزارة.';resultCard?.classList.add('hidden');return;}
+        currentCustomerTrackToken=token;currentTrackOrderId=orderId;currentCustomerFeedback=null;
         if(customerOrderRef)try{customerOrderRef.off();}catch(e){}
-        customerOrderRef=db.ref('orders/'+orderId);
-        customerOrderRef.on('value',snap2=>{const fresh=snap2.val();if(fresh&&String(fresh.trackingToken||'')===String(token)){if(statusEl)statusEl.innerHTML='✅ تم فتح طلبك بنجاح — هذه الصفحة خاصة بهذا الطلب فقط.';applyCustomerTrackData(fresh,orderId);}else{if(statusEl)statusEl.innerHTML='❌ تعذر التحقق من رابط الطلب.';resultCard?.classList.add('hidden');}});
+        if(customerFeedbackRef)try{customerFeedbackRef.off();}catch(e){}
+        customerOrderRef=trackingQuery;
+        customerOrderRef.on('value',snap2=>{const freshSet=snap2.val()||{},fresh=freshSet[orderId];if(fresh){if(statusEl)statusEl.innerHTML='✅ تم فتح طلبك بنجاح — هذه الصفحة خاصة بهذا الطلب فقط.';applyCustomerTrackData(fresh,orderId);}else{if(statusEl)statusEl.innerHTML='❌ تعذر التحقق من رابط الطلب.';resultCard?.classList.add('hidden');}});
+        customerFeedbackRef=db.ref(`publicFeedback/${orderId}/${token}`);
+        customerFeedbackRef.on('value',fbSnap=>{currentCustomerFeedback=fbSnap.val()||null;const latest=snap.val()?.[orderId]||found;applyCustomerTrackData(latest,orderId);});
+        applyCustomerTrackData(found,orderId);
       }catch(err){console.error(err);if(statusEl)statusEl.innerText='تعذر تحميل الطلب حالياً. حاول مرة أخرى.';resultCard?.classList.add('hidden');}
     }
 
@@ -2436,7 +2569,7 @@
       document.getElementById('mainHeader')?.style.setProperty('display','none','important');
       document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');switchTab('driver');
     }
-    window.addEventListener('DOMContentLoaded',()=>{attachAuthStateToCurrentUser();startPublicCommentsListener();loadRememberedLogin();if(APP_MODE!=='staff')applyCustomerPublicMode();else{document.body.classList.remove('customer-public-mode');startStaffDataListeners();updateUIByPermissions();checkSavedSession();if(!currentUser)switchTab('admin');}});
+    window.addEventListener('DOMContentLoaded',async()=>{attachAuthStateToCurrentUser();startPublicCommentsListener();loadRememberedLogin();if(APP_MODE!=='staff')applyCustomerPublicMode();else{document.body.classList.remove('customer-public-mode');updateUIByPermissions();await checkSavedSession();if(!currentUser){await ensureSuperUserExists();switchTab('admin');}}});
 </script>
 </body>
 </html>
