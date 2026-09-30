@@ -255,6 +255,53 @@
     @media(max-width:900px){.users-page-hero{align-items:flex-start;flex-direction:column}.users-owner-badge{max-width:100%}}
     @media(max-width:620px){.users-permissions-grid{grid-template-columns:1fr}.users-name{max-width:130px}}
 
+
+    /* ===== تسجيل الدخول الحديث ===== */
+    .login-modal-backdrop{
+      background:rgba(15,23,42,.68);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+    }
+    .login-panel{
+      width:100%; max-width:430px; overflow:hidden;
+      border:1px solid var(--border-color,#e5e7eb);
+      border-radius:28px; background:var(--surface-color,#fff);
+      color:var(--text-color,#172033);
+      box-shadow:0 30px 80px rgba(15,23,42,.28);
+      animation:loginPanelIn .22s ease-out;
+    }
+    @keyframes loginPanelIn{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+    .login-hero{
+      position:relative; padding:26px 24px 22px; color:#fff; overflow:hidden;
+      background:linear-gradient(135deg,var(--sidebar-color,#111827),var(--primary-color,#7f1d1d) 62%,var(--accent-color,#b45309));
+    }
+    .login-hero:after{content:'';position:absolute;left:-50px;bottom:-70px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.08)}
+    .login-brand-row{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .login-brand-mark{width:52px;height:52px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:27px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.16);box-shadow:0 10px 24px rgba(0,0,0,.12)}
+    .login-status-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.14);font-size:9px;font-weight:900}
+    .login-status-dot{width:7px;height:7px;border-radius:999px;background:#34d399;box-shadow:0 0 0 4px rgba(52,211,153,.12)}
+    .login-kicker{margin-top:18px;font-size:9px;font-weight:900;letter-spacing:.14em;color:rgba(255,255,255,.62)}
+    #loginModalTitle{margin-top:5px;font-size:21px;line-height:1.35;font-weight:1000}
+    #loginModalSubtitle{margin-top:6px;font-size:10px;line-height:1.7;font-weight:700;color:rgba(255,255,255,.72)}
+    .login-body{padding:22px 24px 24px}
+    .login-field{position:relative;margin-top:7px}
+    .login-input{width:100%;height:48px;border:1px solid var(--border-color,#e5e7eb);border-radius:14px;background:var(--surface-soft,#f8fafc);color:var(--text-color,#172033);padding:0 44px 0 12px;font-size:11px;font-weight:700;outline:none;transition:border-color .18s,box-shadow .18s,background .18s}
+    .login-input::placeholder{color:var(--muted-color,#64748b);opacity:.72}
+    .login-input:focus{background:var(--surface-color,#fff);border-color:var(--primary-color,#7f1d1d);box-shadow:0 0 0 4px var(--ring-color,rgba(127,29,29,.12))}
+    .login-input-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:15px;opacity:.62;pointer-events:none}
+    .login-label{display:block;font-size:9px;font-weight:900;color:var(--text-color,#172033)}
+    .login-remember{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px;padding:11px 12px;border:1px solid var(--border-color,#e5e7eb);border-radius:14px;background:var(--surface-soft,#f8fafc);cursor:pointer;user-select:none}
+    .login-remember-main{display:flex;align-items:center;gap:8px;font-size:9px;font-weight:900;color:var(--text-color,#172033)}
+    .login-remember-main span:first-child{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:9px;background:var(--surface-color,#fff);border:1px solid var(--border-color,#e5e7eb);font-size:13px}
+    .login-check{width:17px;height:17px;accent-color:var(--primary-color,#7f1d1d);cursor:pointer}
+    .login-submit{width:100%;height:50px;margin-top:14px;border:0;border-radius:15px;display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,var(--primary-color,#7f1d1d),var(--sidebar-color,#111827));color:#fff;font-size:11px;font-weight:1000;box-shadow:0 14px 28px rgba(15,23,42,.15);transition:transform .18s,box-shadow .18s,opacity .18s}
+    .login-submit:hover{transform:translateY(-1px);box-shadow:0 18px 34px rgba(15,23,42,.19)}
+    .login-submit:disabled{opacity:.68;cursor:wait;transform:none}
+    .login-security-note{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;font-size:8px;font-weight:800;color:var(--muted-color,#64748b);text-align:center}
+    .login-close-btn{position:absolute;left:14px;top:14px;z-index:2;width:32px;height:32px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);color:#fff;font-weight:900;cursor:pointer;transition:background .18s}
+    .login-close-btn:hover{background:rgba(255,255,255,.16)}
+    @media(max-width:520px){.login-panel{max-width:100%;border-radius:24px}.login-hero{padding:23px 20px 20px}.login-body{padding:20px}.login-brand-mark{width:48px;height:48px;font-size:24px}}
+
     /* ضبط اتجاه حقول التاريخ لمنع انعكاس الصيغة */
     input[type="date"] {
       direction: ltr !important;
@@ -1613,31 +1660,46 @@
     </div>
   </div>
 
-  <div id="authModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
-    <div class="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 text-right shadow-2xl">
-      <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-bold text-sm">تسجيل الدخول الآمن للنظام</h3>
-        <button onclick="toggleAuthModal()" class="text-gray-400 hover:text-gray-600 font-bold">✕</button>
-      </div>
-      <div>
-        <label class="block text-[11px] font-bold text-gray-700 mb-1">اسم المستخدم</label>
-        <input type="text" id="loginUser" placeholder="أدخل اسم المستخدم" class="w-full border p-2.5 rounded-xl text-xs">
-      </div>
-      <div>
-        <label class="block text-[11px] font-bold text-gray-700 mb-1">كلمة المرور</label>
-        <input type="password" id="loginPass" placeholder="أدخل كلمة المرور" class="w-full border p-2.5 rounded-xl text-xs">
+  <div id="authModal" class="fixed inset-0 login-modal-backdrop z-50 flex items-center justify-center p-4 hidden no-print" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
+    <div class="login-panel text-right">
+      <div class="login-hero">
+        <button type="button" onclick="toggleAuthModal()" class="login-close-btn" aria-label="إغلاق نافذة تسجيل الدخول">✕</button>
+        <div class="login-brand-row">
+          <div class="login-brand-mark">🥩</div>
+          <span class="login-status-pill"><span class="login-status-dot"></span> النظام مؤمّن</span>
+        </div>
+        <div class="login-kicker">HAMKASHA • SECURE ACCESS</div>
+        <h3 id="loginModalTitle">تسجيل الدخول للنظام</h3>
+        <p id="loginModalSubtitle">أدخل بيانات حسابك للوصول إلى الأدوات المسموح لك باستخدامها.</p>
       </div>
 
-      <!-- تذكر بيانات الدخول على هذا الجهاز -->
-      <label class="flex items-center justify-between gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5 cursor-pointer select-none">
-        <span class="flex items-center gap-2 text-[11px] font-bold text-amber-900">
-          <span class="text-base">🧠</span>
-          <span>تذكرني وحفظ بيانات الدخول</span>
-        </span>
-        <input type="checkbox" id="rememberMe" class="w-4 h-4 accent-red-600 cursor-pointer">
-      </label>
+      <div class="login-body">
+        <div>
+          <label class="login-label" for="loginUser">اسم المستخدم</label>
+          <div class="login-field">
+            <span class="login-input-icon">👤</span>
+            <input type="text" id="loginUser" autocomplete="username" placeholder="مثال: asma" class="login-input">
+          </div>
+        </div>
 
-      <button onclick="performLogin()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">دخول 🔓</button>
+        <div style="margin-top:14px;">
+          <label class="login-label" for="loginPass">كلمة المرور</label>
+          <div class="login-field">
+            <span class="login-input-icon">🔒</span>
+            <input type="password" id="loginPass" autocomplete="current-password" placeholder="أدخل كلمة المرور" class="login-input">
+          </div>
+        </div>
+
+        <label class="login-remember" for="rememberMe">
+          <span class="login-remember-main"><span>🧠</span><span>تذكر بيانات الدخول على هذا الجهاز</span></span>
+          <input type="checkbox" id="rememberMe" class="login-check">
+        </label>
+
+        <button id="loginSubmitBtn" type="button" onclick="performLogin()" class="login-submit">
+          <span>دخول آمن</span><span>🔓</span>
+        </button>
+        <div class="login-security-note">🛡️ يتم التحقق من الحساب قبل فتح صفحات النظام</div>
+      </div>
     </div>
   </div>
 
@@ -1669,6 +1731,16 @@
     let customersCache = {};
     let publicCommentsCache = {};
     let currentUser = null;
+
+    document.addEventListener('keydown', (event) => {
+      if(event.key === 'Enter' && !document.getElementById('authModal')?.classList.contains('hidden')) {
+        event.preventDefault();
+        performLogin();
+      }
+      if(event.key === 'Escape' && !document.getElementById('authModal')?.classList.contains('hidden')) {
+        toggleAuthModal();
+      }
+    });
     let filteredOrdersList = [];
     let currentAnalyticsPeriod = 'daily';
     let currentTrackOrderId = null;
@@ -1835,9 +1907,26 @@
       }
     }
 
+    function updateLoginContext() {
+      const title = document.getElementById('loginModalTitle');
+      const subtitle = document.getElementById('loginModalSubtitle');
+      if(!title || !subtitle) return;
+      const driverMode = APP_MODE === 'staff' && document.getElementById('tab-driver')?.classList.contains('active');
+      if(driverMode) {
+        title.innerText = 'دخول المندوب';
+        subtitle.innerText = 'سجّل الدخول لعرض طلباتك وتحديث الحالات وتشغيل اللوكيشن الحي.';
+      } else {
+        title.innerText = 'دخول الإدارة';
+        subtitle.innerText = 'سجّل الدخول للوصول إلى الطلبات والتقارير والعملاء وباقي أدوات النظام.';
+      }
+    }
+
     function toggleAuthModal() {
-      document.getElementById('authModal').classList.toggle('hidden');
-      if(!document.getElementById('authModal').classList.contains('hidden')) {
+      const modal = document.getElementById('authModal');
+      if(!modal) return;
+      modal.classList.toggle('hidden');
+      if(!modal.classList.contains('hidden')) {
+        updateLoginContext();
         loadRememberedLogin();
         setTimeout(() => document.getElementById('loginUser')?.focus(), 50);
       }
@@ -1859,16 +1948,21 @@
       if(APP_MODE !== 'staff') return;
       const username = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPass').value.trim();
+      const submitBtn = document.getElementById('loginSubmitBtn');
       if(!username || !pass) return alert('يرجى كتابة اسم المستخدم وكلمة المرور');
+      if(submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<span>جارٍ التحقق...</span><span>⏳</span>'; }
       db.ref('users').orderByChild('username').equalTo(username).once('value').then(snap => {
         const data = snap.val() || {};
         let found = null;
         Object.keys(data).forEach(id => { if(String(data[id]?.pass) === String(pass)) found = {...data[id], key:id}; });
-        if(!found) return alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
+        if(!found) {
+          if(submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<span>دخول آمن</span><span>🔓</span>'; }
+          return alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
+        }
         const remember = document.getElementById('rememberMe')?.checked;
         if(remember) localStorage.setItem('hamaksha_remembered_login', JSON.stringify({username, pass})); else localStorage.removeItem('hamaksha_remembered_login');
         loginSuccess(found);
-      }).catch(err => { console.error(err); alert('تعذر الاتصال ببيانات المستخدمين حالياً.'); });
+      }).catch(err => { console.error(err); if(submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<span>دخول آمن</span><span>🔓</span>'; } alert('تعذر الاتصال ببيانات المستخدمين حالياً.'); });
     }
 
     function stopScopedListeners() {
