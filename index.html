@@ -1157,21 +1157,51 @@
       </div>
     </section>
 
-    <!-- 🏷️ 3️⃣ قسم لوحة أسعار اللحوم وإدارتها المباشرة -->
-    <section id="sec-prices" class="hidden space-y-6">
-      <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 space-y-4">
-        <div class="flex justify-between items-center border-b pb-3">
-          <div>
-            <h2 class="text-lg font-black text-red-700">🏷️ قائمة أسعار اللحوم الحية (جزارة حمكشة)</h2>
-            <p class="text-xs text-gray-500 font-semibold">تحديث اليومية وإضافة أو تعديل الأسعار المباشرة في أي وقت</p>
+    <!-- 🏷️ 3️⃣ قسم أسعار اللحوم - كتالوج حديث -->
+    <section id="sec-prices" class="hidden space-y-5">
+      <div class="rounded-[28px] overflow-hidden border border-[var(--border-color,#e5e7eb)] shadow-xl bg-[var(--card-color,#fff)]">
+        <div class="px-5 sm:px-7 py-6 bg-gradient-to-l from-[var(--primary-color,#7f1d1d)] via-[var(--primary-color,#991b1b)] to-[var(--accent-color,#b45309)] text-white">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2 text-[11px] font-bold opacity-80"><span>🥩</span><span>حمكشة • قائمة الأسعار</span></div>
+              <h2 class="text-2xl sm:text-3xl font-black tracking-tight mt-1">كتالوج أسعار اللحوم</h2>
+              <p class="text-xs sm:text-sm text-white/80 mt-2 font-semibold">أسعار واضحة وسريعة التحديث، مناسبة للاستخدام اليومي.</p>
+            </div>
+            <button id="addPriceBtn" onclick="openAddPriceModal()" class="hidden self-start lg:self-auto bg-white text-[var(--primary-color,#7f1d1d)] hover:bg-white/90 font-black text-xs px-4 py-3 rounded-2xl shadow-lg transition-all">
+              ＋ إضافة صنف جديد
+            </button>
           </div>
-          <button id="addPriceBtn" onclick="openAddPriceModal()" class="hidden bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-2 rounded-xl shadow">
-            + إضافة صنف جديد
-          </button>
         </div>
 
-        <div id="priceListContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <!-- كروت الأسعار -->
+        <div class="p-5 sm:p-7 space-y-5">
+          <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 items-center">
+            <div class="relative">
+              <span class="absolute inset-y-0 right-3 flex items-center text-gray-400">🔎</span>
+              <input id="priceSearchInput" oninput="renderPriceCatalog()" type="text" placeholder="ابحث عن صنف... مثل كفتة أو مفروم" class="w-full border border-gray-200 bg-gray-50 rounded-2xl pr-10 pl-4 py-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-amber-300">
+            </div>
+            <div class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2.5">
+              <span class="text-[11px] font-bold text-gray-500">ترتيب:</span>
+              <select id="priceSortSelect" onchange="renderPriceCatalog()" class="bg-transparent border-0 outline-none text-xs font-black text-gray-700">
+                <option value="name">الاسم</option>
+                <option value="priceAsc">السعر: الأقل أولاً</option>
+                <option value="priceDesc">السعر: الأعلى أولاً</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex flex-wrap gap-2" id="priceCategoryChips">
+              <button type="button" onclick="setPriceCategory('all')" data-price-cat="all" class="price-chip px-3 py-1.5 rounded-full text-[10px] font-black bg-gray-900 text-white">الكل</button>
+              <button type="button" onclick="setPriceCategory('meat')" data-price-cat="meat" class="price-chip px-3 py-1.5 rounded-full text-[10px] font-black bg-gray-100 text-gray-600 hover:bg-gray-200">لحوم</button>
+              <button type="button" onclick="setPriceCategory('ready')" data-price-cat="ready" class="price-chip px-3 py-1.5 rounded-full text-[10px] font-black bg-gray-100 text-gray-600 hover:bg-gray-200">جاهزات</button>
+              <button type="button" onclick="setPriceCategory('offal')" data-price-cat="offal" class="price-chip px-3 py-1.5 rounded-full text-[10px] font-black bg-gray-100 text-gray-600 hover:bg-gray-200">أحشاء</button>
+            </div>
+            <span id="priceResultsCount" class="shrink-0 text-[10px] font-black text-gray-400">0 صنف</span>
+          </div>
+
+          <div id="priceListContainer" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div class="col-span-full p-8 text-center text-xs text-gray-400">جاري تحميل الأسعار...</div>
+          </div>
         </div>
       </div>
     </section>
@@ -2716,16 +2746,86 @@
 
     // --- 🏷️ قسم أسعار اللحوم وإدارتها المباشرة ---
     let pricesCache = {};
+    let activePriceCategory = 'all';
+    let pricesListenerAttached = false;
+
+    function getPriceCategory(item){
+      const name = String(item?.name || '').toLowerCase();
+      if(/كفتة|سجق|برجر|جاهز|شيش|حواوشي/.test(name)) return 'ready';
+      if(/كبد|كلاوي|طحال|فشة|قلب|مخ|أحشاء/.test(name)) return 'offal';
+      return 'meat';
+    }
+
+    function setPriceCategory(category){
+      activePriceCategory = category;
+      document.querySelectorAll('.price-chip').forEach(btn => {
+        const active = btn.dataset.priceCat === category;
+        btn.className = `price-chip px-3 py-1.5 rounded-full text-[10px] font-black transition-all ${active ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`;
+      });
+      renderPriceCatalog();
+    }
+
+    function renderPriceCatalog(){
+      const container = document.getElementById('priceListContainer');
+      if(!container) return;
+      const q = String(document.getElementById('priceSearchInput')?.value || '').trim().toLowerCase();
+      const sort = document.getElementById('priceSortSelect')?.value || 'name';
+      const entries = Object.entries(pricesCache || {}).map(([key,item]) => ({key, item:item||{}}));
+      const filtered = entries.filter(({item}) => {
+        const name = String(item.name||'').toLowerCase();
+        const matchesQ = !q || name.includes(q);
+        const matchesCat = activePriceCategory === 'all' || getPriceCategory(item) === activePriceCategory;
+        return matchesQ && matchesCat;
+      }).sort((a,b) => {
+        if(sort === 'priceAsc') return Number(a.item.price||0) - Number(b.item.price||0);
+        if(sort === 'priceDesc') return Number(b.item.price||0) - Number(a.item.price||0);
+        return String(a.item.name||'').localeCompare(String(b.item.name||''), 'ar');
+      });
+
+      const count = document.getElementById('priceResultsCount');
+      if(count) count.innerText = `${filtered.length} صنف`;
+
+      if(!filtered.length){
+        container.innerHTML = '<div class="col-span-full rounded-3xl border border-dashed border-gray-200 bg-gray-50 p-10 text-center"><div class="text-4xl mb-2">🔎</div><p class="text-xs font-bold text-gray-500">لا توجد أصناف مطابقة للبحث أو التصنيف الحالي.</p></div>';
+        return;
+      }
+
+      const canEditPrices = canUser('prices');
+      container.innerHTML = filtered.map(({key,item}) => {
+        const price = Number(item.price||0);
+        const category = getPriceCategory(item);
+        const badge = category === 'ready' ? 'جاهز' : category === 'offal' ? 'أحشاء' : 'لحوم';
+        return `
+          <article class="group relative overflow-hidden rounded-3xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-lg transition-all duration-200">
+            <div class="absolute top-0 right-0 left-0 h-1 bg-gradient-to-l from-[var(--primary-color,#7f1d1d)] to-[var(--accent-color,#b45309)]"></div>
+            <div class="flex items-start justify-between gap-3 pt-1">
+              <div class="min-w-0">
+                <span class="inline-flex px-2 py-1 rounded-full bg-gray-100 text-gray-500 text-[9px] font-black">${badge}</span>
+                <h4 class="font-black text-sm text-gray-900 mt-2 leading-6">${escapeHtml(item.name || 'صنف بدون اسم')}</h4>
+                <p class="text-[10px] text-gray-500 font-semibold mt-1">السعر لكل ${escapeHtml(item.unit || 'كيلو')}</p>
+              </div>
+              <div class="text-left shrink-0">
+                <div class="text-2xl font-black text-[var(--primary-color,#991b1b)] font-mono leading-none">${price.toLocaleString('ar-EG')}</div>
+                <div class="text-[10px] font-black text-gray-400 mt-1">ج.م</div>
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
+              <span class="text-[10px] text-gray-400 font-semibold">محدث ضمن قائمة الأسعار</span>
+              ${canEditPrices ? `<div class="flex gap-1.5"><button onclick="openEditPriceModal('${key}')" class="px-2.5 py-1.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 text-[10px] font-black">✏️ تعديل</button><button onclick="deletePriceItem('${key}')" class="px-2.5 py-1.5 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 text-[10px] font-black">🗑️ حذف</button></div>` : ''}
+            </div>
+          </article>`;
+      }).join('');
+    }
 
     function renderPrices() {
       if(!canUser('prices')) return;
+      if(pricesListenerAttached) { renderPriceCatalog(); return; }
+      pricesListenerAttached = true;
       db.ref('prices').on('value', (snap) => {
         pricesCache = snap.val() || {};
-        const container = document.getElementById('priceListContainer');
-        container.innerHTML = '';
 
         const defaultPrices = [
-          { name: 'لحم کندوز ممتاز', price: 470, unit: 'كيلو' },
+          { name: 'لحم كندوز ممتاز', price: 470, unit: 'كيلو' },
           { name: 'لحم ضاني (فخده/كتف)', price: 460, unit: 'كيلو' },
           { name: 'كفتة حاتي جاهزة', price: 380, unit: 'كيلو' },
           { name: 'مفروم أحمر ممتاز', price: 460, unit: 'كيلو' },
@@ -2734,38 +2834,10 @@
         ];
 
         if (Object.keys(pricesCache).length === 0) {
-          defaultPrices.forEach(dp => {
-            db.ref('prices').push(dp);
-          });
+          defaultPrices.forEach(dp => db.ref('prices').push(dp));
           return;
         }
-
-        const canEditPrices = canUser('prices');
-
-        Object.keys(pricesCache).forEach(k => {
-          const item = pricesCache[k];
-          container.innerHTML += `
-            <div class="bg-amber-50/60 p-4 rounded-2xl border border-amber-200 flex flex-col justify-between shadow-sm space-y-3">
-              <div class="flex items-center justify-between">
-                <div>
-                  <h4 class="font-bold text-sm text-gray-800">${item.name}</h4>
-                  <p class="text-xs text-gray-500 font-semibold">لكل ${item.unit || 'كيلو'}</p>
-                </div>
-                <div class="text-left">
-                  <span class="text-lg font-black text-red-700 font-mono">${item.price}</span>
-                  <span class="text-xs font-bold text-red-900">ج.م</span>
-                </div>
-              </div>
-
-              ${canEditPrices ? `
-                <div class="flex items-center gap-1.5 pt-2 border-t border-amber-200/60 justify-end">
-                  <button onclick="openEditPriceModal('${k}')" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-sm">✏️ تعديل السعر</button>
-                  <button onclick="deletePriceItem('${k}')" class="bg-red-100 hover:bg-red-200 text-red-700 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-sm">🗑️ حذف</button>
-                </div>
-              ` : ''}
-            </div>
-          `;
-        });
+        renderPriceCatalog();
       });
     }
 
@@ -3000,7 +3072,11 @@
             tr:nth-child(even) { background-color: #fcfcfc; }
             .footer-note { margin-top: 25px; text-align: center; font-size: 10px; color: #777; border-top: 1px dashed #ccc; padding-top: 8px; }
             @media print { @page { size: A4 landscape; margin: 8mm; } }
-          </style>
+        
+    /* 🏷️ Modern price catalog */
+    .price-chip { user-select: none; cursor: pointer; }
+    #sec-prices input, #sec-prices select { transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease; }
+  </style>
         </head>
         <body>
           <svg class="watermark" viewBox="0 0 100 100">
