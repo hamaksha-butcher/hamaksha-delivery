@@ -374,7 +374,7 @@
       display: none !important;
     }
 
-    body.driver-private-mode main > section:not(#sec-driver) {
+    body.driver-private-mode main > section:not(#sec-driver):not(#sec-profile) {
       display: none !important;
     }
 
@@ -626,6 +626,52 @@
     @media(max-width:900px){.settings-page-hero{align-items:flex-start;flex-direction:column}.settings-theme-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
     @media(max-width:560px){.settings-theme-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.settings-card{padding:14px}}
 
+
+    /* ===== 👤 مركز الحساب والملف الشخصي ===== */
+    .profile-page-hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:26px;border-radius:30px;color:#fff;background:linear-gradient(135deg,var(--sidebar-color,#111827),var(--primary-color,#7f1d1d) 58%,var(--secondary-color,#f59e0b));box-shadow:0 20px 55px var(--shadow-color,rgba(15,23,42,.12))}
+    .profile-page-hero:after{content:"";position:absolute;inset:auto -8% -55% auto;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.1);filter:blur(2px)}
+    .profile-kicker{font-size:10px;letter-spacing:.16em;font-weight:1000;color:rgba(255,255,255,.7)}
+    .profile-avatar{width:84px;height:84px;border-radius:26px;display:flex;align-items:center;justify-content:center;font-size:37px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
+    .profile-card{background:var(--surface-color,#fff);border:1px solid var(--border-color,#e5e7eb);border-radius:28px;box-shadow:0 16px 44px var(--shadow-color,rgba(15,23,42,.08));overflow:hidden}
+    .profile-card-head{padding:18px 20px;border-bottom:1px solid var(--border-color,#e5e7eb);display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .profile-card-head h3{font-size:13px;font-weight:1000;color:var(--text-color,#172033)}
+    .profile-card-head p{font-size:10px;color:var(--muted-color,#64748b);margin-top:3px}
+    .profile-info-grid{padding:20px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .profile-info{padding:15px;border:1px solid var(--border-color,#e5e7eb);background:var(--soft-color,#f8fafc);border-radius:18px}
+    .profile-info span{display:block;font-size:10px;font-weight:800;color:var(--muted-color,#64748b);margin-bottom:5px}
+    .profile-info b{display:block;font-size:13px;font-weight:1000;color:var(--text-color,#172033);word-break:break-word}
+    .profile-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;font-size:10px;font-weight:1000}
+    .profile-badge.owner{background:#fef3c7;color:#92400e}.profile-badge.admin{background:#ede9fe;color:#5b21b6}.profile-badge.driver{background:#dbeafe;color:#1d4ed8}
+    .profile-perms{padding:20px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .profile-perm{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 13px;border:1px solid var(--border-color,#e5e7eb);border-radius:16px;background:var(--surface-color,#fff)}
+    .profile-perm .label{font-size:10px;font-weight:900;color:var(--text-color,#172033)}
+    .profile-perm .state{font-size:10px;font-weight:1000;padding:5px 8px;border-radius:999px}
+    .profile-perm .state.on{background:#dcfce7;color:#166534}.profile-perm .state.off{background:#f1f5f9;color:#64748b}
+    .profile-action-row{padding:0 20px 20px;display:flex;flex-wrap:wrap;gap:10px}.profile-action-row button{border:0;border-radius:14px;padding:11px 14px;font-size:10px;font-weight:1000;cursor:pointer}
+    .profile-security-note{margin:0 20px 20px;padding:12px 14px;border-radius:16px;background:var(--soft-color,#f8fafc);border:1px solid var(--border-color,#e5e7eb);font-size:10px;font-weight:700;color:var(--muted-color,#64748b);line-height:1.8}
+    @media(max-width:640px){.profile-page-hero{padding:20px}.profile-avatar{width:64px;height:64px;border-radius:20px;font-size:29px}.profile-info-grid,.profile-perms{grid-template-columns:1fr}.profile-page-hero h2{font-size:22px}}
+
+  
+    /* STEP 18 - Modern Order Details */
+    .order-details-modal { font-family: 'Cairo', sans-serif; }
+    .order-details-hero { background: linear-gradient(135deg, var(--primary-color, #8f1239), #111827); }
+    .order-details-stat { background: var(--surface-soft, #f8fafc); border: 1px solid var(--border-color, #e5e7eb); }
+    .order-details-section { background: #fff; border: 1px solid var(--border-color, #e5e7eb); }
+    .order-details-label { color: #64748b; font-size: 10px; font-weight: 800; }
+    .order-details-value { color: #0f172a; font-size: 12px; font-weight: 800; margin-top: 2px; }
+    .order-detail-timeline { position: relative; padding-right: 28px; }
+    .order-detail-timeline::before { content: ''; position:absolute; right:8px; top:12px; bottom:12px; width:2px; background:#e2e8f0; }
+    .order-detail-step { position:relative; padding-bottom:14px; }
+    .order-detail-step:last-child { padding-bottom:0; }
+    .order-detail-dot { position:absolute; right:-28px; top:1px; width:18px; height:18px; border-radius:999px; border:3px solid #fff; box-shadow:0 0 0 1px #cbd5e1; background:#cbd5e1; z-index:1; }
+    .order-detail-step.done .order-detail-dot { background: var(--secondary-color, #d4af37); box-shadow:0 0 0 1px var(--secondary-color, #d4af37); }
+    .order-detail-step.current .order-detail-dot { background: var(--primary-color, #8f1239); box-shadow:0 0 0 1px var(--primary-color, #8f1239); }
+    .order-detail-step .step-title { font-size:11px; font-weight:900; color:#334155; }
+    .order-detail-step .step-meta { font-size:9px; color:#94a3b8; margin-top:2px; }
+    .order-details-actions button { min-height:40px; }
+    body.dark-theme .order-details-section, body.dark-theme .order-details-stat { background:#18181b; border-color:#3f3f46; }
+    body.dark-theme .order-details-value, body.dark-theme .order-detail-step .step-title { color:#f4f4f5; }
+
 </style>
 </head>
 <body id="appBody" class="bg-amber-50/40 min-h-screen text-gray-800">
@@ -652,6 +698,7 @@
         <button onclick="switchTab('customers'); closeSidebar()" id="tab-customers" class="tab-btn perm-customers hidden">👥 <span>العملاء</span></button>
         <button onclick="switchTab('users'); closeSidebar()" id="tab-users" class="tab-btn perm-users hidden">👤 <span>المستخدمون والصلاحيات</span></button>
         <button onclick="switchTab('settings'); closeSidebar()" id="tab-settings" class="tab-btn admin-only-settings hidden">⚙️ <span>الإعدادات</span></button>
+        <button onclick="switchTab('profile'); closeSidebar()" id="tab-profile" class="tab-btn">👤 <span>حسابي</span></button>
         <button onclick="switchTab('driver'); closeSidebar()" id="tab-driver" class="tab-btn">🛵 <span>واجهة المندوب</span></button>
         <button onclick="switchTab('track'); closeSidebar()" id="tab-track" class="tab-btn">📍 <span>تتبع العملاء</span></button>
       </nav>
@@ -1194,6 +1241,52 @@
 
     <!-- 📊 2️⃣ مركز التحصيل والحسابات والتقييم -->
     
+
+    <!-- 👤 مركز الحساب والملف الشخصي -->
+    <section id="sec-profile" class="hidden space-y-6 max-w-7xl mx-auto">
+      <div class="profile-page-hero">
+        <div class="flex items-center gap-4 min-w-0 relative z-10">
+          <div id="profileAvatar" class="profile-avatar">👤</div>
+          <div class="min-w-0">
+            <div class="profile-kicker">MY ACCOUNT</div>
+            <h2 class="text-2xl sm:text-3xl font-black mt-1 truncate" id="profileDisplayName">حسابي</h2>
+            <p class="text-xs text-white/75 mt-2" id="profileRoleLine">لم يتم تسجيل الدخول</p>
+          </div>
+        </div>
+        <span id="profileStatusBadge" class="profile-badge bg-white/15 text-white relative z-10">● حالة الحساب: غير معروف</span>
+      </div>
+
+      <div id="profileGuestCard" class="profile-card hidden">
+        <div class="p-8 text-center">
+          <div class="text-4xl">🔐</div>
+          <h3 class="text-lg font-black mt-3">سجّل الدخول لعرض حسابك</h3>
+          <p class="text-xs text-gray-500 mt-2">بيانات الحساب والصلاحيات تظهر بعد تسجيل الدخول.</p>
+          <button type="button" onclick="toggleAuthModal()" class="mt-4 bg-red-600 hover:bg-red-700 text-white font-black px-5 py-3 rounded-xl text-xs shadow">تسجيل الدخول 🔑</button>
+        </div>
+      </div>
+
+      <div id="profileContent" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div class="profile-card">
+          <div class="profile-card-head"><div><h3>بيانات الحساب</h3><p>معلومات الحساب الحالي داخل النظام.</p></div><span id="profileRoleBadge" class="profile-badge admin">الحساب</span></div>
+          <div class="profile-info-grid">
+            <div class="profile-info"><span>اسم المستخدم</span><b id="profileUsername">—</b></div>
+            <div class="profile-info"><span>نوع الحساب</span><b id="profileRole">—</b></div>
+            <div class="profile-info"><span>الحالة</span><b id="profileAccountState">—</b></div>
+            <div class="profile-info"><span>الوصول الحالي</span><b id="profileAccessScope">—</b></div>
+          </div>
+          <div class="profile-action-row">
+            <button type="button" onclick="handleAuthBtnClick(); closeSidebar()" class="bg-gray-100 hover:bg-gray-200 text-gray-700">تسجيل الخروج ↪</button>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <div class="profile-card-head"><div><h3>صلاحيات الحساب</h3><p>عرض سريع للصلاحيات المرتبطة بالمستخدم الحالي.</p></div><span class="text-[10px] font-black text-slate-400">ACCESS</span></div>
+          <div id="profilePermissions" class="profile-perms"></div>
+          <div id="profileSecurityNote" class="profile-security-note">🔒 الصلاحيات المعروضة للقراءة فقط من هذه الصفحة، ويستمر التحكم بها من مركز المستخدمين والصلاحيات.</div>
+        </div>
+      </div>
+    </section>
+
     <!-- ⚙️ مركز الإعدادات -->
     <section id="sec-settings" class="hidden space-y-6 max-w-6xl mx-auto admin-only-settings">
       <div class="settings-page-hero">
@@ -1681,6 +1774,33 @@
     </div>
   </div>
 
+  <!-- STEP 18: تفاصيل الطلب الواحد -->
+  <div id="orderDetailsModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[70] flex items-center justify-center p-4 hidden no-print order-details-modal">
+    <div class="bg-slate-50 dark:bg-zinc-950 rounded-3xl w-full max-w-3xl max-h-[92vh] overflow-hidden shadow-2xl border border-white/10">
+      <div class="order-details-hero text-white p-5 sm:p-6">
+        <div class="flex items-start justify-between gap-4">
+          <div><div class="text-[10px] uppercase tracking-[0.18em] font-black opacity-70">ORDER DETAILS</div><h2 id="detailsOrderTitle" class="text-2xl sm:text-3xl font-black mt-1">#---</h2><p id="detailsOrderMeta" class="text-[10px] sm:text-xs text-white/70 mt-1">---</p></div>
+          <button onclick="closeOrderDetails()" class="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 text-white font-black">✕</button>
+        </div>
+      </div>
+      <div class="p-4 sm:p-5 overflow-y-auto max-h-[calc(92vh-112px)] space-y-4">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
+          <div class="order-details-stat rounded-2xl p-3"><div class="order-details-label">الحالة</div><div id="detailsStatus" class="order-details-value">---</div></div>
+          <div class="order-details-stat rounded-2xl p-3"><div class="order-details-label">الإجمالي</div><div id="detailsTotal" class="order-details-value text-emerald-700">0 ج.م</div></div>
+          <div class="order-details-stat rounded-2xl p-3"><div class="order-details-label">طريقة الدفع</div><div id="detailsPayment" class="order-details-value">---</div></div>
+          <div class="order-details-stat rounded-2xl p-3"><div class="order-details-label">المندوب</div><div id="detailsDriver" class="order-details-value">---</div></div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="order-details-section rounded-2xl p-4"><div class="flex items-center gap-2 border-b pb-3 mb-3"><span class="text-lg">👤</span><div><h3 class="text-sm font-black text-slate-800">بيانات العميل</h3><p class="text-[9px] text-slate-400">معلومات التواصل والعنوان</p></div></div><div class="grid grid-cols-2 gap-3"><div><div class="order-details-label">الاسم</div><div id="detailsCustomerName" class="order-details-value">---</div></div><div><div class="order-details-label">الهاتف</div><div id="detailsCustomerPhone" class="order-details-value font-mono" dir="ltr">---</div></div></div><div class="mt-3"><div class="order-details-label">العنوان والطلبات</div><div id="detailsAddress" class="order-details-value leading-6">---</div></div></div>
+          <div class="order-details-section rounded-2xl p-4"><div class="flex items-center gap-2 border-b pb-3 mb-3"><span class="text-lg">💰</span><div><h3 class="text-sm font-black text-slate-800">تفاصيل الفاتورة</h3><p class="text-[9px] text-slate-400">تفصيل المبلغ والتحصيل</p></div></div><div class="space-y-2 text-xs"><div class="flex justify-between"><span class="text-slate-500">سعر الطلب</span><b id="detailsOrderPrice">0 ج.م</b></div><div class="flex justify-between"><span class="text-slate-500">التوصيل</span><b id="detailsDeliveryPrice">0 ج.م</b></div><div class="flex justify-between"><span class="text-slate-500">عمولة الدفع</span><b id="detailsPaymentFee">0 ج.م</b></div><div class="border-t pt-2 flex justify-between text-red-700"><span class="font-black">الإجمالي النهائي</span><b id="detailsGrandTotal" class="font-mono text-base">0 ج.م</b></div></div></div>
+        </div>
+        <div class="order-details-section rounded-2xl p-4"><div class="flex items-center justify-between gap-2 border-b pb-3 mb-4"><div class="flex items-center gap-2"><span class="text-lg">🧭</span><div><h3 class="text-sm font-black text-slate-800">رحلة الطلب</h3><p class="text-[9px] text-slate-400">تطور حالة الطلب</p></div></div><span id="detailsTrackingState" class="text-[10px] font-bold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">GPS غير متاح</span></div><div id="detailsTimeline" class="order-detail-timeline"></div></div>
+        <div class="order-details-section rounded-2xl p-4"><div class="flex items-center gap-2 border-b pb-3 mb-3"><span class="text-lg">📍</span><div><h3 class="text-sm font-black text-slate-800">التتبع والموقع</h3><p class="text-[9px] text-slate-400">حالة اللوكيشن الخاصة بالطلب</p></div></div><div id="detailsLocationBox" class="rounded-2xl bg-slate-50 border p-3 text-xs text-slate-500">لا يوجد موقع مسجل لهذا الطلب.</div></div>
+        <div class="order-details-actions grid grid-cols-2 sm:grid-cols-4 gap-2"><button id="detailsWhatsAppBtn" class="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow">💬 واتساب</button><button id="detailsEditBtn" class="rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow">✏️ تعديل</button><button id="detailsDeleteBtn" class="rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow">🗑️ حذف</button><button onclick="closeOrderDetails()" class="rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs">إغلاق</button></div>
+      </div>
+    </div>
+  </div>
+
   <div id="authModal" class="fixed inset-0 login-modal-backdrop z-50 flex items-center justify-center p-4 hidden no-print" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
     <div class="login-panel text-right">
       <div class="login-hero">
@@ -1978,6 +2098,7 @@
       customers: 'العملاء',
       users: 'المستخدمون والصلاحيات',
       settings: 'الإعدادات',
+      profile: 'حسابي',
       driver: 'واجهة المندوب',
       track: 'تتبع العملاء'
     };
@@ -1998,7 +2119,7 @@
 
     function switchTab(tabName) {
       if(APP_MODE !== 'staff') tabName = 'track';
-      if(APP_MODE === 'staff' && currentUser?.role === 'driver') tabName = 'driver';
+      if(APP_MODE === 'staff' && currentUser?.role === 'driver' && tabName !== 'profile') tabName = 'driver';
       if(tabName === 'dashboard' && (!currentUser || currentUser.role !== 'admin')) return alert('لوحة التحكم الرئيسية مخصصة للإدارة فقط.');
       if(tabName === 'analytics' && !canUser('analytics')) return alert('عذراً، لا تملك صلاحية الاطلاع على التقارير والداشبورد.');
       if(tabName === 'prices' && !canUser('prices')) return alert('عذراً، لا تملك صلاحية الاطلاع على قائمة الأسعار.');
@@ -2017,6 +2138,7 @@
       if(tabName === 'customers') { document.getElementById('customerAuthLock')?.classList.toggle('hidden',!!currentUser && currentUser.role==='admin'); document.getElementById('customerPageContent')?.classList.toggle('hidden',!(currentUser && currentUser.role==='admin')); renderCustomersList(); }
       if(tabName === 'users') { document.getElementById('usersPageAuthLock')?.classList.add('hidden'); document.getElementById('usersPageContent')?.classList.remove('hidden'); renderUsersList(); syncNavigationTitle('users'); }
       if(tabName === 'settings') { loadAppSettings(); syncNavigationTitle('settings'); }
+      if(tabName === 'profile') { renderMyProfile(); syncNavigationTitle('profile'); }
       if(tabName === 'admin' && getAppSettings().autoFocusOrder) setTimeout(() => document.getElementById('custName')?.focus(), 120);
       if(tabName === 'track') { renderPublicComments(); updateCustomerIdentityHint(); }
     }
@@ -2168,6 +2290,43 @@
 
     function startStaffDataListeners() { if(APP_MODE==='staff') ensureSuperUserExists(); }
 
+
+    function renderMyProfile(){
+      const guest=document.getElementById('profileGuestCard');
+      const content=document.getElementById('profileContent');
+      if(!currentUser){
+        guest?.classList.remove('hidden'); content?.classList.add('hidden');
+        document.getElementById('profileDisplayName').innerText='حسابي';
+        document.getElementById('profileRoleLine').innerText='لم يتم تسجيل الدخول';
+        return;
+      }
+      guest?.classList.add('hidden'); content?.classList.remove('hidden');
+      const isOwner=isSuperUser();
+      const role=currentUser.role==='driver'?'مندوب توصيل':'أدمن';
+      const roleText=isOwner?'المالك الرئيسي (asma)':role;
+      const avatar=isOwner?'👑':currentUser.role==='driver'?'🛵':'🛡️';
+      const roleClass=isOwner?'owner':currentUser.role==='driver'?'driver':'admin';
+      document.getElementById('profileAvatar').innerText=avatar;
+      document.getElementById('profileDisplayName').innerText=currentUser.username||'المستخدم';
+      document.getElementById('profileRoleLine').innerText=`${roleText} • جلسة نشطة حالياً`;
+      document.getElementById('profileStatusBadge').innerText='● حالة الحساب: نشط';
+      const rb=document.getElementById('profileRoleBadge'); rb.className=`profile-badge ${roleClass}`; rb.innerText=roleText;
+      document.getElementById('profileUsername').innerText=currentUser.username||'—';
+      document.getElementById('profileRole').innerText=roleText;
+      document.getElementById('profileAccountState').innerText='نشط ومتصل';
+      document.getElementById('profileAccessScope').innerText=isOwner?'وصول كامل للنظام':currentUser.role==='driver'?'طلباتك وحالتها والتتبع':'صلاحيات الإدارة الممنوحة لك';
+
+      const permissionDefs=isOwner?[['edit','تعديل الطلبات'],['delete','حذف الطلبات'],['print','التصدير والطباعة'],['analytics','التقارير والتحصيل'],['prices','أسعار اللحوم'],['users','إدارة المستخدمين'],['viewAllDrivers','عرض جميع المناديب والطلبات']]:currentUser.role==='driver'?[]:[['edit','تعديل الطلبات'],['delete','حذف الطلبات'],['print','التصدير والطباعة'],['analytics','التقارير والتحصيل'],['prices','أسعار اللحوم'],['users','إدارة المستخدمين'],['viewAllDrivers','عرض جميع المناديب والطلبات']];
+      const perms=currentUser.perms||{};
+      const pc=document.getElementById('profilePermissions');
+      if(currentUser.role==='driver'){
+        pc.innerHTML=[['driver_orders','طلباتك المسندة','on'],['driver_status','تحديث حالة الطلب','on'],['driver_gps','بث الموقع الحي','on']].map(([k,label,state])=>`<div class="profile-perm"><span class="label">${label}</span><span class="state ${state}">متاح</span></div>`).join('');
+      }else{
+        pc.innerHTML=permissionDefs.map(([key,label])=>{const on=isOwner||!!perms[key];return `<div class="profile-perm"><span class="label">${label}</span><span class="state ${on?'on':'off'}">${on?'ممنوحة':'غير ممنوحة'}</span></div>`;}).join('');
+      }
+      document.getElementById('profileSecurityNote').innerText=isOwner?'👑 أنت المستخدم الرئيسي، وتملك جميع الصلاحيات. إدارة الحسابات والتفويضات متاحة من مركز المستخدمين والصلاحيات.':currentUser.role==='driver'?'🛵 هذه الواجهة مخصصة لأعمال المندوب وطلباتك المسندة إليك.':'🔒 الصلاحيات المعروضة هنا للقراءة فقط، ويمكن تعديلها من مركز المستخدمين والصلاحيات حسب الصلاحية المتاحة.';
+    }
+
     function loginSuccess(user) {
       if(APP_MODE!=='staff') return;
       stopScopedListeners(); currentUser=user; localStorage.setItem('hamaksha_user',JSON.stringify(user));
@@ -2183,7 +2342,7 @@
       document.getElementById('customerPageContent')?.classList.toggle('hidden',!(user.role==='admin' && canManageCustomers()));
       if(user.role==='admin') { document.getElementById('adminAuthLock').classList.add('hidden'); document.getElementById('adminContent').classList.remove('hidden'); startAdminOrdersListener(); startUserManagementListener(); startCustomerDataListener(); switchTab('admin'); }
       else { document.getElementById('driverAuthLock').classList.add('hidden'); document.getElementById('driverContent').classList.remove('hidden'); applyDriverPrivateMode(); startDriverOrdersListener(); }
-      applyFilters(); renderUsersList(); syncNavigationTitle(user.role==='driver' ? 'driver' : 'admin');
+      applyFilters(); renderUsersList(); renderMyProfile(); syncNavigationTitle(user.role==='driver' ? 'driver' : 'admin');
     }
 
     function updateUIByPermissions() {
@@ -2197,7 +2356,7 @@
       document.getElementById('usersPageContent')?.classList.toggle('hidden',!(currentUser && canUser('users')));
       document.querySelectorAll('.perm-customers').forEach(el=>el.classList.toggle('hidden',!canManageCustomers()));
       document.getElementById('exportActionBtns')?.classList.toggle('hidden',!canUser('print'));
-      const note=document.getElementById('dashboardScopeNote'); if(note) note.classList.toggle('hidden',canViewAllDrivers());
+      const note=document.getElementById('dashboardScopeNote'); if(note) note.classList.toggle('hidden',canViewAllDrivers()); renderMyProfile();
     }
 
     function checkSavedSession() {
@@ -2601,6 +2760,7 @@
             </td>
             <td class="p-3 align-top text-center no-print">
               <div class="flex flex-wrap items-center justify-center gap-1">
+                <button onclick="openOrderDetails('${key}')" class="order-action-btn bg-slate-100 hover:bg-slate-200 text-slate-800" title="تفاصيل الطلب">👁️</button>
                 <button onclick="shareWhatsApp('${key}')" class="order-action-btn bg-emerald-100 hover:bg-emerald-200 text-emerald-800">💬</button>
                 ${canEdit ? `<button onclick="openEditModal('${key}')" class="order-action-btn bg-blue-100 hover:bg-blue-200 text-blue-800">✏️</button>` : ''}
                 ${canDelete ? `<button onclick="deleteOrder('${key}')" class="order-action-btn bg-red-100 hover:bg-red-200 text-red-700">🗑️</button>` : ''}
@@ -3604,6 +3764,28 @@
       const waUrl=phone?`https://wa.me/${phone}?text=${encodeURIComponent(text)}`:`https://wa.me/?text=${encodeURIComponent(text)}`;
       window.open(waUrl,'_blank');
     }
+
+    function getOrderDetailsSteps(status) {
+      const steps=[{title:'تم إنشاء الطلب',meta:'استلام بيانات العميل والطلب'},{title:'جاري التحضير',meta:'تجهيز اللحوم والطلب'},{title:'خرج للتوصيل',meta:'الطلب مع المندوب في الطريق'},{title:'تم التسليم',meta:'تم تسليم الطلب للعميل'}];
+      const idx=status==='تم التسليم بنجاح ✅'?3:status==='خرج للتوصيل 🛵'?2:1;
+      return steps.map((step,i)=>({...step,done:i<idx,current:i===idx}));
+    }
+
+    function openOrderDetails(key) {
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!allOrdersCache[key]) return;
+      const order=allOrdersCache[key]||{}; const total=Number(order.totalCash||((order.orderPrice||0)+(order.deliveryPrice||0)+(order.paymentFee||0)))||0; const status=order.status||'جاري تحضير اللحوم 🥩';
+      const set=(id,val)=>{const el=document.getElementById(id);if(el)el.innerText=val;};
+      set('detailsOrderTitle','#'+(order.orderId||key)); set('detailsOrderMeta',`${formatDateDMY(order.date||'-')} · ${order.time||'--'}`); set('detailsStatus',status); set('detailsTotal',total.toLocaleString('ar-EG')+' ج.م'); set('detailsPayment',getPaymentText(order.paymentMethod)); set('detailsDriver',order.driver||'غير محدد'); set('detailsCustomerName',order.customerName||order.name||'غير محدد'); set('detailsCustomerPhone',order.phone||'بدون هاتف'); set('detailsAddress',order.address||'لا يوجد عنوان مسجل'); set('detailsOrderPrice',Number(order.orderPrice||0).toLocaleString('ar-EG')+' ج.م'); set('detailsDeliveryPrice',Number(order.deliveryPrice||0).toLocaleString('ar-EG')+' ج.م'); set('detailsPaymentFee',Number(order.paymentFee||0).toLocaleString('ar-EG')+' ج.م'); set('detailsGrandTotal',total.toLocaleString('ar-EG')+' ج.م');
+      const timeline=document.getElementById('detailsTimeline'); timeline.innerHTML=getOrderDetailsSteps(status).map(step=>`<div class="order-detail-step ${step.done?'done ':''}${step.current?'current':''}"><span class="order-detail-dot"></span><div class="step-title">${step.title}</div><div class="step-meta">${step.meta}</div></div>`).join('');
+      const state=document.getElementById('detailsTrackingState'), box=document.getElementById('detailsLocationBox');
+      if(order.lat&&order.lng){ state.innerText='GPS متاح'; state.className='text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full'; const updated=order.locationUpdatedAt?new Date(order.locationUpdatedAt).toLocaleString('ar-EG'):'غير محدد'; box.innerHTML=`<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><b class="text-emerald-700">📍 الموقع متاح</b><div class="text-[10px] mt-1 text-slate-400">آخر تحديث: ${escapeHtml(updated)}</div></div><a href="https://www.google.com/maps?q=${encodeURIComponent(order.lat+','+order.lng)}" target="_blank" rel="noopener" class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-xl">فتح الموقع في الخريطة ↗</a></div>`; } else { state.innerText='GPS غير متاح'; state.className='text-[10px] font-bold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full'; box.innerHTML='<span>لا يوجد موقع GPS مسجل لهذا الطلب حاليًا.</span>'; }
+      document.getElementById('detailsWhatsAppBtn').onclick=()=>shareWhatsApp(key); document.getElementById('detailsEditBtn').onclick=()=>{closeOrderDetails();openEditModal(key);}; document.getElementById('detailsDeleteBtn').onclick=()=>{closeOrderDetails();deleteOrder(key);};
+      document.getElementById('orderDetailsModal').classList.remove('hidden');
+    }
+
+    function closeOrderDetails(){document.getElementById('orderDetailsModal')?.classList.add('hidden');}
+
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOrderDetails();});
 
     function openEditModal(key) {
       if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!allOrdersCache[key]) return;
