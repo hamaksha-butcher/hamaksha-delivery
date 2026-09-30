@@ -419,6 +419,37 @@
       .order-form-section { padding:11px; }
     }
 
+    /* --- Invoice / Receipt UI --- */
+    .invoice-items-shell{border:1px solid var(--border-color);background:var(--surface-color);border-radius:16px;padding:13px;}
+    .invoice-items-head{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--border-color);padding-bottom:10px;margin-bottom:10px;}
+    .invoice-items-title{display:flex;align-items:center;gap:9px;color:var(--text-color);}
+    .invoice-items-title .icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--surface-soft);font-size:16px;}
+    .invoice-items-title h3{font-size:11px;font-weight:1000;}
+    .invoice-items-title p{font-size:8px;color:var(--muted-color);font-weight:700;margin-top:2px;}
+    .invoice-add-grid{display:grid;grid-template-columns:minmax(0,1.8fr) .7fr .9fr auto;gap:8px;align-items:end;}
+    .invoice-field{width:100%;border:1px solid var(--border-color);border-radius:10px;background:var(--surface-color);color:var(--text-color);padding:8px 9px;font-size:9px;outline:none;}
+    .invoice-field:focus{border-color:var(--primary-color);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary-color) 10%,transparent);}
+    .invoice-custom-name{display:none;margin-top:8px;}
+    .invoice-custom-name.show{display:block;}
+    .invoice-add-btn{height:35px;padding:0 12px;border:0;border-radius:10px;background:var(--primary-color);color:#fff;font-size:9px;font-weight:1000;cursor:pointer;box-shadow:0 8px 16px var(--shadow-color);}
+    .invoice-add-btn:hover{transform:translateY(-1px);}
+    .invoice-items-table-wrap{overflow-x:auto;border:1px solid var(--border-color);border-radius:12px;margin-top:10px;}
+    .invoice-items-table{width:100%;border-collapse:collapse;font-size:9px;min-width:520px;}
+    .invoice-items-table th{background:var(--surface-soft);color:var(--muted-color);font-size:8px;font-weight:900;padding:8px;text-align:right;}
+    .invoice-items-table td{padding:8px;border-top:1px solid var(--border-color);color:var(--text-color);vertical-align:middle;}
+    .invoice-line-input{width:70px;border:1px solid var(--border-color);border-radius:8px;padding:5px 6px;background:var(--surface-color);color:var(--text-color);font-size:9px;text-align:center;}
+    .invoice-line-input:focus{outline:none;border-color:var(--primary-color);}
+    .invoice-remove-btn{width:28px;height:28px;border-radius:8px;border:1px solid #fecaca;background:#fef2f2;color:#b91c1c;font-weight:900;cursor:pointer;}
+    .invoice-items-empty{padding:15px;text-align:center;font-size:9px;color:var(--muted-color);}
+    .invoice-items-total{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:9px;padding:9px 11px;border-radius:12px;background:color-mix(in srgb,var(--primary-color) 6%,var(--surface-color));border:1px solid color-mix(in srgb,var(--primary-color) 13%,var(--border-color));}
+    .invoice-items-total span:first-child{font-size:9px;font-weight:900;color:var(--text-color);}
+    .invoice-items-total span:last-child{font-size:14px;font-weight:1000;color:var(--primary-color);font-family:monospace;}
+    .invoice-details-table{width:100%;border-collapse:collapse;font-size:10px;}
+    .invoice-details-table th{background:var(--surface-soft);color:var(--muted-color);font-size:8px;padding:8px;text-align:right;}
+    .invoice-details-table td{padding:8px;border-top:1px solid var(--border-color);color:var(--text-color);}
+    .receipt-print-btn{background:#111827;color:#fff!important;}
+    @media(max-width:640px){.invoice-add-grid{grid-template-columns:1fr 1fr;}.invoice-add-grid .invoice-product-wrap{grid-column:1/-1}.invoice-add-grid .invoice-add-btn{width:100%;}}
+
     /* --- Modern Orders UI --- */
     .orders-shell { border: 1px solid rgba(148,163,184,.18); }
     .orders-toolbar { background: linear-gradient(135deg, rgba(127,29,29,.96), rgba(88,28,135,.92)); color: #fff; }
@@ -946,9 +977,25 @@
                     </div>
                     <div>
                       <label class="order-label">العنوان والطلبات التفصيلية <span class="required-dot">*</span></label>
-                      <textarea id="custAddress" rows="3" required placeholder="مثال: كيلو كفتة + 1 كيلو لحمة مفرومة — العنوان بالتفصيل" class="order-input resize-none"></textarea>
+                      <textarea id="custAddress" rows="3" required placeholder="مثال: شارع التحرير، أمام مسجد النور، الدور الثاني" class="order-input resize-none"></textarea>
                     </div>
                   </div>
+                </section>
+
+                <section class="invoice-items-shell">
+                  <div class="invoice-items-head">
+                    <div class="invoice-items-title"><span class="icon">🧾</span><div><h3>أصناف الفاتورة</h3><p>أضف كل صنف مع الكمية وسعر الوحدة</p></div></div>
+                    <span class="optional-badge">الإجمالي تلقائي</span>
+                  </div>
+                  <div class="invoice-add-grid">
+                    <div class="invoice-product-wrap"><label class="order-label">اختيار الصنف</label><select id="invoiceItemProduct" class="invoice-field" onchange="handleInvoiceProductChange('new')"><option value="">اختر من قائمة الأسعار...</option><option value="__custom__">✍️ صنف مخصص</option></select></div>
+                    <div><label class="order-label">الكمية</label><input type="number" id="invoiceItemQty" class="invoice-field" min="0.01" step="0.01" value="1" inputmode="decimal"></div>
+                    <div><label class="order-label">سعر الوحدة</label><input type="number" id="invoiceItemUnitPrice" class="invoice-field" min="0" step="0.01" value="0" inputmode="decimal"></div>
+                    <button type="button" class="invoice-add-btn" onclick="addInvoiceItem('new')">＋ إضافة</button>
+                  </div>
+                  <div id="invoiceCustomNameWrap" class="invoice-custom-name"><label class="order-label">اسم الصنف المخصص</label><div class="grid grid-cols-2 gap-2"><input type="text" id="invoiceItemName" class="invoice-field" placeholder="مثال: لحم مفروم"><input type="text" id="invoiceItemUnit" class="invoice-field" value="كيلو" placeholder="الوحدة"></div></div>
+                  <div class="invoice-items-table-wrap"><table class="invoice-items-table"><thead><tr><th>الصنف</th><th>الوحدة</th><th class="text-center">الكمية</th><th class="text-center">سعر الوحدة</th><th class="text-center">الإجمالي</th><th class="text-center">إزالة</th></tr></thead><tbody id="invoiceItemsBodyNew"><tr><td colspan="6" class="invoice-items-empty">لم تتم إضافة أصناف بعد. اختر صنفًا وأضفه للفاتورة.</td></tr></tbody></table></div>
+                  <div class="invoice-items-total"><span>إجمالي الأصناف</span><span id="invoiceItemsTotalNew">0 ج.م</span></div>
                 </section>
 
                 <section class="order-form-section order-billing-section">
@@ -956,7 +1003,7 @@
                   <div class="grid grid-cols-2 gap-2.5">
                     <div>
                       <label class="order-label">سعر الطلب</label>
-                      <div class="relative"><input type="number" id="orderPrice" oninput="calculateTotalBill()" required placeholder="0" class="order-input font-black text-center pr-12" min="0" step="0.01" inputmode="decimal"><span class="order-unit">ج.م</span></div>
+                      <div class="relative"><input type="number" id="orderPrice" oninput="calculateTotalBill()" required readonly placeholder="0" class="order-input font-black text-center pr-12 bg-gray-50" min="0" step="0.01" inputmode="decimal"><span class="order-unit">ج.م</span></div>
                     </div>
                     <div>
                       <label class="order-label">التوصيل</label>
@@ -1002,6 +1049,7 @@
                 <a id="waBtn" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs flex justify-center items-center gap-1.5 shadow-sm">
                   💬 إرسال رابط التتبع عبر WhatsApp
                 </a>
+                <button type="button" id="printCreatedInvoiceBtn" onclick="printLastCreatedInvoice()" class="w-full receipt-print-btn text-white font-bold py-2.5 rounded-xl text-xs flex justify-center items-center gap-1.5 shadow-sm">🧾 طباعة الفاتورة 80mm</button>
               </div>
             </div>
 
@@ -1522,6 +1570,8 @@
               </div>
               <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl font-bold text-emerald-900 flex items-center justify-between gap-3"><span class="text-[10px]">المبلغ المطلوب تحصيله</span><span id="dTotalCash" class="font-mono text-lg">0 ج.م</span></div>
 
+              <div class="bg-white rounded-2xl border p-4"><div class="text-[10px] font-black text-gray-800 mb-2">🧾 أصناف الطلب</div><div id="driverInvoiceItems" class="overflow-x-auto"><div class="text-[10px] text-gray-400 text-center py-2">لا توجد أصناف مفصلة.</div></div></div>
+
               <div class="bg-gray-50 p-4 rounded-2xl border space-y-2">
                 <label class="block font-bold text-gray-800 text-xs">تحديث حالة الطلب:</label>
                 <select id="driverStatusSelect" onchange="driverChangeStatus(this.value)" class="w-full border p-3 rounded-xl text-xs font-black bg-white">
@@ -1613,6 +1663,14 @@
               <p class="text-[9px] text-gray-400 font-bold">إجمالي الفاتورة</p>
               <p id="cTotal" class="text-sm font-black text-red-700 mt-1">-</p>
             </div>
+          </div>
+
+          <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <div><p class="text-xs font-black text-gray-800">🧾 تفاصيل الفاتورة</p><p class="text-[10px] text-gray-400 mt-0.5">الأصناف والكمية وسعر الوحدة</p></div>
+              <span class="text-[10px] font-black bg-gray-50 text-gray-500 px-2 py-1 rounded-full">فاتورة</span>
+            </div>
+            <div id="customerInvoiceItems" class="overflow-x-auto"><div class="text-[10px] text-gray-400 text-center py-2">جاري تحميل تفاصيل الفاتورة...</div></div>
           </div>
 
           <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
@@ -1740,6 +1798,19 @@
           <label class="block font-bold text-gray-700 mb-1">العنوان والطلبات التفصيلية:</label>
           <textarea id="editCustAddress" rows="3" class="w-full border p-2 rounded-xl"></textarea>
         </div>
+        <div class="invoice-items-shell mt-3">
+          <div class="invoice-items-head"><div class="invoice-items-title"><span class="icon">🧾</span><div><h3>أصناف الفاتورة</h3><p>تعديل الأصناف والكمية وسعر الوحدة</p></div></div><span class="optional-badge">للطلبات القديمة اختياري</span></div>
+          <div class="invoice-add-grid">
+            <div class="invoice-product-wrap"><label class="order-label">اختيار الصنف</label><select id="editInvoiceItemProduct" class="invoice-field" onchange="handleInvoiceProductChange('edit')"><option value="">اختر من قائمة الأسعار...</option><option value="__custom__">✍️ صنف مخصص</option></select></div>
+            <div><label class="order-label">الكمية</label><input type="number" id="editInvoiceItemQty" class="invoice-field" min="0.01" step="0.01" value="1"></div>
+            <div><label class="order-label">سعر الوحدة</label><input type="number" id="editInvoiceItemUnitPrice" class="invoice-field" min="0" step="0.01" value="0"></div>
+            <button type="button" class="invoice-add-btn" onclick="addInvoiceItem('edit')">＋ إضافة</button>
+          </div>
+          <div id="editInvoiceCustomNameWrap" class="invoice-custom-name"><label class="order-label">اسم الصنف المخصص</label><div class="grid grid-cols-2 gap-2"><input type="text" id="editInvoiceItemName" class="invoice-field" placeholder="اسم الصنف"><input type="text" id="editInvoiceItemUnit" class="invoice-field" value="كيلو" placeholder="الوحدة"></div></div>
+          <div class="invoice-items-table-wrap"><table class="invoice-items-table"><thead><tr><th>الصنف</th><th>الوحدة</th><th class="text-center">الكمية</th><th class="text-center">سعر الوحدة</th><th class="text-center">الإجمالي</th><th class="text-center">إزالة</th></tr></thead><tbody id="invoiceItemsBodyEdit"><tr><td colspan="6" class="invoice-items-empty">لا توجد أصناف مفصلة لهذا الطلب.</td></tr></tbody></table></div>
+          <div class="invoice-items-total"><span>إجمالي الأصناف</span><span id="invoiceItemsTotalEdit">0 ج.م</span></div>
+        </div>
+
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block font-bold text-gray-700 mb-1">سعر الطلب:</label>
@@ -1790,13 +1861,15 @@
           <div class="order-details-stat rounded-2xl p-3"><div class="order-details-label">طريقة الدفع</div><div id="detailsPayment" class="order-details-value">---</div></div>
           <div class="order-details-stat rounded-2xl p-3"><div class="order-details-label">المندوب</div><div id="detailsDriver" class="order-details-value">---</div></div>
         </div>
+        <div class="order-details-section rounded-2xl p-4"><div class="flex items-center gap-2 border-b pb-3 mb-3"><span class="text-lg">🧾</span><div><h3 class="text-sm font-black text-slate-800">أصناف الفاتورة</h3><p class="text-[9px] text-slate-400">تفاصيل المنتجات والكمية والسعر</p></div></div><div id="detailsInvoiceItems" class="overflow-x-auto"><div class="text-[10px] text-slate-400 text-center py-3">لا توجد أصناف مفصلة لهذا الطلب.</div></div></div>
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div class="order-details-section rounded-2xl p-4"><div class="flex items-center gap-2 border-b pb-3 mb-3"><span class="text-lg">👤</span><div><h3 class="text-sm font-black text-slate-800">بيانات العميل</h3><p class="text-[9px] text-slate-400">معلومات التواصل والعنوان</p></div></div><div class="grid grid-cols-2 gap-3"><div><div class="order-details-label">الاسم</div><div id="detailsCustomerName" class="order-details-value">---</div></div><div><div class="order-details-label">الهاتف</div><div id="detailsCustomerPhone" class="order-details-value font-mono" dir="ltr">---</div></div></div><div class="mt-3"><div class="order-details-label">العنوان والطلبات</div><div id="detailsAddress" class="order-details-value leading-6">---</div></div></div>
           <div class="order-details-section rounded-2xl p-4"><div class="flex items-center gap-2 border-b pb-3 mb-3"><span class="text-lg">💰</span><div><h3 class="text-sm font-black text-slate-800">تفاصيل الفاتورة</h3><p class="text-[9px] text-slate-400">تفصيل المبلغ والتحصيل</p></div></div><div class="space-y-2 text-xs"><div class="flex justify-between"><span class="text-slate-500">سعر الطلب</span><b id="detailsOrderPrice">0 ج.م</b></div><div class="flex justify-between"><span class="text-slate-500">التوصيل</span><b id="detailsDeliveryPrice">0 ج.م</b></div><div class="flex justify-between"><span class="text-slate-500">عمولة الدفع</span><b id="detailsPaymentFee">0 ج.م</b></div><div class="border-t pt-2 flex justify-between text-red-700"><span class="font-black">الإجمالي النهائي</span><b id="detailsGrandTotal" class="font-mono text-base">0 ج.م</b></div></div></div>
         </div>
         <div class="order-details-section rounded-2xl p-4"><div class="flex items-center justify-between gap-2 border-b pb-3 mb-4"><div class="flex items-center gap-2"><span class="text-lg">🧭</span><div><h3 class="text-sm font-black text-slate-800">رحلة الطلب</h3><p class="text-[9px] text-slate-400">تطور حالة الطلب</p></div></div><span id="detailsTrackingState" class="text-[10px] font-bold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">GPS غير متاح</span></div><div id="detailsTimeline" class="order-detail-timeline"></div></div>
         <div class="order-details-section rounded-2xl p-4"><div class="flex items-center gap-2 border-b pb-3 mb-3"><span class="text-lg">📍</span><div><h3 class="text-sm font-black text-slate-800">التتبع والموقع</h3><p class="text-[9px] text-slate-400">حالة اللوكيشن الخاصة بالطلب</p></div></div><div id="detailsLocationBox" class="rounded-2xl bg-slate-50 border p-3 text-xs text-slate-500">لا يوجد موقع مسجل لهذا الطلب.</div></div>
-        <div class="order-details-actions grid grid-cols-2 sm:grid-cols-4 gap-2"><button id="detailsWhatsAppBtn" class="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow">💬 واتساب</button><button id="detailsEditBtn" class="rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow">✏️ تعديل</button><button id="detailsDeleteBtn" class="rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow">🗑️ حذف</button><button onclick="closeOrderDetails()" class="rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs">إغلاق</button></div>
+        <div class="order-details-actions grid grid-cols-2 sm:grid-cols-4 gap-2"><button id="detailsWhatsAppBtn" class="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow">💬 واتساب</button><button id="detailsPrintInvoiceBtn" class="rounded-xl receipt-print-btn font-bold text-xs shadow">🧾 فاتورة 80mm</button><button id="detailsEditBtn" class="rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow">✏️ تعديل</button><button id="detailsDeleteBtn" class="rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow">🗑️ حذف</button><button onclick="closeOrderDetails()" class="rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs">إغلاق</button></div>
       </div>
     </div>
   </div>
@@ -1907,6 +1980,12 @@
     let notificationsCache = [];
     let notificationOrderState = {};
     let notificationInitialized = false;
+    let invoiceItems = [];
+    let editInvoiceItems = [];
+    let editInvoiceItemsTouched = false;
+    let invoicePriceListenerAttached = false;
+    let lastCreatedOrderKey = null;
+    let lastCreatedOrderSnapshot = null;
 
     // --- 🔔 مركز الإشعارات ---
     function notificationStorageKey(){
@@ -2420,6 +2499,25 @@
       changeThemePreset(saved,false);
     }
 
+    // --- 🧾 نظام أصناف الفاتورة ---
+    function getInvoiceItemsState(mode){return mode==='edit'?editInvoiceItems:invoiceItems;}
+    function setInvoiceItemsState(mode,items){if(mode==='edit')editInvoiceItems=items;else invoiceItems=items;}
+    function invoiceItemsTotal(items){return (items||[]).reduce((sum,it)=>sum+(Number(it.total)||((Number(it.qty)||0)*(Number(it.unitPrice)||0))),0);}
+    function normalizeInvoiceItems(raw){
+      if(Array.isArray(raw))return raw.map(it=>({name:String(it?.name||''),qty:Number(it?.qty)||0,unitPrice:Number(it?.unitPrice||it?.price||0),unit:String(it?.unit||'كيلو'),total:Number(it?.total)||((Number(it?.qty)||0)*(Number(it?.unitPrice||it?.price||0))),priceKey:it?.priceKey||null})).filter(it=>it.name&&it.qty>0);
+      if(raw&&typeof raw==='object')return Object.values(raw).map(it=>({name:String(it?.name||''),qty:Number(it?.qty)||0,unitPrice:Number(it?.unitPrice||it?.price||0),unit:String(it?.unit||'كيلو'),total:Number(it?.total)||((Number(it?.qty)||0)*(Number(it?.unitPrice||it?.price||0))),priceKey:it?.priceKey||null})).filter(it=>it.name&&it.qty>0);
+      return [];
+    }
+    function syncOrderPriceFromInvoice(mode){const total=invoiceItemsTotal(getInvoiceItemsState(mode));const target=document.getElementById(mode==='edit'?'editOrderPrice':'orderPrice');if(target&&(mode==='new'||editInvoiceItemsTouched))target.value=total.toFixed(2).replace(/\.00$/,'');const totalEl=document.getElementById(mode==='edit'?'invoiceItemsTotalEdit':'invoiceItemsTotalNew');if(totalEl)totalEl.innerText=total.toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2})+' ج.م';if(mode==='new')calculateTotalBill();}
+    function renderInvoiceProductOptions(){[['invoiceItemProduct','new'],['editInvoiceItemProduct','edit']].forEach(([id])=>{const select=document.getElementById(id);if(!select)return;const current=select.value;const options=['<option value="">اختر من قائمة الأسعار...</option>','<option value="__custom__">✍️ صنف مخصص</option>'];Object.entries(pricesCache||{}).forEach(([key,item])=>{if(!item?.name)return;options.push(`<option value="${escapeHtml(key)}" data-name="${escapeHtml(item.name)}" data-price="${Number(item.price||0)}" data-unit="${escapeHtml(item.unit||'كيلو')}">${escapeHtml(item.name)} — ${Number(item.price||0).toLocaleString('ar-EG')} ج.م/${escapeHtml(item.unit||'كيلو')}</option>`);});select.innerHTML=options.join('');if(current&&Array.from(select.options).some(o=>o.value===current))select.value=current;});}
+    function handleInvoiceProductChange(mode){const isEdit=mode==='edit',select=document.getElementById(isEdit?'editInvoiceItemProduct':'invoiceItemProduct'),qty=document.getElementById(isEdit?'editInvoiceItemQty':'invoiceItemQty'),price=document.getElementById(isEdit?'editInvoiceItemUnitPrice':'invoiceItemUnitPrice'),wrap=document.getElementById(isEdit?'editInvoiceCustomNameWrap':'invoiceCustomNameWrap'),name=document.getElementById(isEdit?'editInvoiceItemName':'invoiceItemName'),unit=document.getElementById(isEdit?'editInvoiceItemUnit':'invoiceItemUnit'),opt=select?.selectedOptions?.[0];if(select?.value==='__custom__'){wrap?.classList.add('show');if(name)name.value='';if(unit)unit.value='كيلو';if(price)price.value='0';}else{wrap?.classList.remove('show');if(opt){if(price)price.value=opt.dataset.price||0;if(unit)unit.value=opt.dataset.unit||'كيلو';if(name)name.value=opt.dataset.name||'';}}if(qty&&!qty.value)qty.value='1';}
+    function addInvoiceItem(mode){const isEdit=mode==='edit',select=document.getElementById(isEdit?'editInvoiceItemProduct':'invoiceItemProduct'),qtyEl=document.getElementById(isEdit?'editInvoiceItemQty':'invoiceItemQty'),priceEl=document.getElementById(isEdit?'editInvoiceItemUnitPrice':'invoiceItemUnitPrice'),nameEl=document.getElementById(isEdit?'editInvoiceItemName':'invoiceItemName'),unitEl=document.getElementById(isEdit?'editInvoiceItemUnit':'invoiceItemUnit'),product=select?.value||'',qty=Number(qtyEl?.value)||0,unitPrice=Number(priceEl?.value)||0,name=(product==='__custom__'?(nameEl?.value||'').trim():(select?.selectedOptions?.[0]?.dataset?.name||nameEl?.value||'').trim()),unit=(unitEl?.value||select?.selectedOptions?.[0]?.dataset?.unit||'كيلو').trim()||'كيلو';if(!name)return alert('اكتب اسم الصنف أو اختر صنفًا من القائمة.');if(qty<=0)return alert('أدخل كمية صحيحة.');if(unitPrice<0)return alert('أدخل سعر وحدة صحيح.');const items=getInvoiceItemsState(mode);items.push({name,qty,unitPrice,unit,total:qty*unitPrice,priceKey:product&&product!=='__custom__'?product:null});setInvoiceItemsState(mode,items);if(isEdit)editInvoiceItemsTouched=true;renderInvoiceItems(mode);syncOrderPriceFromInvoice(mode);if(select)select.value='';if(qtyEl)qtyEl.value='1';if(priceEl)priceEl.value='0';if(nameEl)nameEl.value='';if(unitEl)unitEl.value='كيلو';document.getElementById(isEdit?'editInvoiceCustomNameWrap':'invoiceCustomNameWrap')?.classList.remove('show');}
+    function updateInvoiceItem(mode,index,field,value){const items=getInvoiceItemsState(mode);if(!items[index])return;items[index][field]=(field==='qty'||field==='unitPrice')?Number(value)||0:String(value);items[index].total=(Number(items[index].qty)||0)*(Number(items[index].unitPrice)||0);if(mode==='edit')editInvoiceItemsTouched=true;renderInvoiceItems(mode);syncOrderPriceFromInvoice(mode);}
+    function removeInvoiceItem(mode,index){const items=getInvoiceItemsState(mode);items.splice(index,1);setInvoiceItemsState(mode,items);if(mode==='edit')editInvoiceItemsTouched=true;renderInvoiceItems(mode);syncOrderPriceFromInvoice(mode);}
+    function renderInvoiceItems(mode){const body=document.getElementById(mode==='edit'?'invoiceItemsBodyEdit':'invoiceItemsBodyNew');if(!body)return;const items=getInvoiceItemsState(mode)||[],empty=mode==='edit'?'لا توجد أصناف مفصلة لهذا الطلب.':'لم تتم إضافة أصناف بعد. اختر صنفًا وأضفه للفاتورة.';if(!items.length){body.innerHTML=`<tr><td colspan="6" class="invoice-items-empty">${empty}</td></tr>`;const totalEl=document.getElementById(mode==='edit'?'invoiceItemsTotalEdit':'invoiceItemsTotalNew');if(totalEl)totalEl.innerText='0 ج.م';return;}body.innerHTML=items.map((it,i)=>`<tr><td class="font-bold">${escapeHtml(it.name||'صنف')}</td><td>${escapeHtml(it.unit||'كيلو')}</td><td class="text-center"><input class="invoice-line-input" type="number" min="0.01" step="0.01" value="${Number(it.qty||0)}" onchange="updateInvoiceItem('${mode}',${i},'qty',this.value)"></td><td class="text-center"><input class="invoice-line-input" type="number" min="0" step="0.01" value="${Number(it.unitPrice||0)}" onchange="updateInvoiceItem('${mode}',${i},'unitPrice',this.value)"></td><td class="text-center font-black">${Number(it.total||0).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2})} ج.م</td><td class="text-center"><button type="button" class="invoice-remove-btn" onclick="removeInvoiceItem('${mode}',${i})" title="حذف الصنف">✕</button></td></tr>`).join('');const totalEl=document.getElementById(mode==='edit'?'invoiceItemsTotalEdit':'invoiceItemsTotalNew');if(totalEl)totalEl.innerText=invoiceItemsTotal(items).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2})+' ج.م';}
+    function hydrateInvoiceItems(mode,raw){const items=normalizeInvoiceItems(raw);setInvoiceItemsState(mode,items);if(mode==='edit')editInvoiceItemsTouched=false;renderInvoiceItems(mode);if(items.length)syncOrderPriceFromInvoice(mode);}
+    function attachInvoicePriceListener(){if(invoicePriceListenerAttached)return;invoicePriceListenerAttached=true;db.ref('prices').on('value',snap=>{pricesCache=snap.val()||{};renderInvoiceProductOptions();});}
+
     // --- 💳 حساب طريقة الدفع والعمولة والتوتال (إنستا باي = 0 افتراضياً) ---
     function calculateTotalBill(isManualFee = false) {
       const orderPrice = Number(document.getElementById('orderPrice').value) || 0;
@@ -2661,16 +2759,14 @@
 
     // --- إدارة الطلبات ---
     document.getElementById('orderForm').addEventListener('submit', async (e) => {
-      e.preventDefault(); if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin')return alert('هذه العملية متاحة للإدارة فقط.');
-      const customId=document.getElementById('custOrderId').value.trim(),orderId=customId||('HAMKASHA-'+Math.floor(10000+Math.random()*90000));
-      const name=document.getElementById('custName').value.trim(),phone=document.getElementById('custPhone').value.trim(),address=document.getElementById('custAddress').value.trim();
-      const orderPrice=Number(document.getElementById('orderPrice').value)||0,deliveryPrice=Number(document.getElementById('deliveryPrice').value)||0,paymentMethod=document.getElementById('paymentMethod').value,paymentFee=Number(document.getElementById('paymentFee').value)||0,totalCash=orderPrice+deliveryPrice+paymentFee,driver=document.getElementById('driverSelect').value,now=new Date();
-      const selectedKey=document.getElementById('selectedCustomerKey').value||null; let customerId=selectedKey; try{customerId=await upsertCustomerRecord(name,phone,address,selectedKey,true);}catch(err){console.error('Customer auto-save error:',err);}
-      const trackingToken=createTrackingToken();
-      db.ref('orders/'+orderId).set({orderId,customerName:name,phone,address,orderPrice,deliveryPrice,paymentMethod,paymentFee,totalCash,driver,status:'جاري تحضير اللحوم 🥩',rating:null,comment:null,isPublished:false,date:now.toISOString().split('T')[0],time:now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),lat:null,lng:null,custLat:null,custLng:null,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name),createdBy:currentUser.username,createdAt:Date.now(),trackingToken}).then(()=>{
-        const baseUrl=window.location.href.split('?')[0],trackUrl=`${baseUrl}?tab=track&id=${encodeURIComponent(orderId)}&token=${encodeURIComponent(trackingToken)}`;
-        document.getElementById('trackingLink').value=trackUrl; document.getElementById('waBtn').href=`https://wa.me/${phone}?text=${encodeURIComponent('أهلاً بك 🥩\nطلبك لدى جزارة حمكشة رقم: #'+orderId+'\nالإجمالي المطلوب شامل العمولة والتوصيل: '+totalCash+' ج.م\nرابط متابعة طلبك فقط لمتابعة الحالة وموقع المندوب والتقييم والتعليق:\n'+trackUrl)}`;
-        document.getElementById('result').classList.remove('hidden'); ['custOrderId','custName','custPhone','custAddress','selectedCustomerKey','orderPrice'].forEach(id=>document.getElementById(id).value=''); document.getElementById('paymentFee').value='0';document.getElementById('displayGrandTotal').innerText='0 ج.م';document.getElementById('customerLookupStatus').innerText=''; alert('تم تسجيل الطلب وربطه بقاعدة بيانات العميل ✅');
+      e.preventDefault();if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin')return alert('هذه العملية متاحة للإدارة فقط.');
+      const items=invoiceItems.map(item=>({...item}));if(!items.length)return alert('أضف صنفًا واحدًا على الأقل إلى الفاتورة قبل تسجيل الطلب.');
+      const customId=document.getElementById('custOrderId').value.trim(),orderId=customId||('HAMKASHA-'+Math.floor(10000+Math.random()*90000));const name=document.getElementById('custName').value.trim(),phone=document.getElementById('custPhone').value.trim(),address=document.getElementById('custAddress').value.trim();
+      const orderPrice=invoiceItemsTotal(items),deliveryPrice=Number(document.getElementById('deliveryPrice').value)||0,paymentMethod=document.getElementById('paymentMethod').value,paymentFee=Number(document.getElementById('paymentFee').value)||0,totalCash=orderPrice+deliveryPrice+paymentFee,driver=document.getElementById('driverSelect').value,now=new Date();const selectedKey=document.getElementById('selectedCustomerKey').value||null;let customerId=selectedKey;try{customerId=await upsertCustomerRecord(name,phone,address,selectedKey,true);}catch(err){console.error('Customer auto-save error:',err);}const trackingToken=createTrackingToken();
+      const orderPayload={orderId,customerName:name,phone,address,items,orderPrice,deliveryPrice,paymentMethod,paymentFee,totalCash,driver,status:'جاري تحضير اللحوم 🥩',rating:null,comment:null,isPublished:false,date:now.toISOString().split('T')[0],time:now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),lat:null,lng:null,custLat:null,custLng:null,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name),createdBy:currentUser.username,createdAt:Date.now(),trackingToken};
+      db.ref('orders/'+orderId).set(orderPayload).then(()=>{
+        const baseUrl=window.location.href.split('?')[0],trackUrl=`${baseUrl}?tab=track&id=${encodeURIComponent(orderId)}&token=${encodeURIComponent(trackingToken)}`;lastCreatedOrderKey=orderId;lastCreatedOrderSnapshot=orderPayload;document.getElementById('trackingLink').value=trackUrl;document.getElementById('waBtn').href=`https://wa.me/${phone}?text=${encodeURIComponent('أهلاً بك 🥩\nطلبك لدى جزارة حمكشة رقم: #'+orderId+'\nالإجمالي المطلوب شامل العمولة والتوصيل: '+totalCash+' ج.م\nرابط متابعة طلبك فقط لمتابعة الحالة وموقع المندوب والتقييم والتعليق:\n'+trackUrl)}`;document.getElementById('result').classList.remove('hidden');
+        ['custOrderId','custName','custPhone','custAddress','selectedCustomerKey'].forEach(id=>document.getElementById(id).value='');document.getElementById('paymentFee').value='0';document.getElementById('deliveryPrice').value=getAppSettings().defaultDelivery;invoiceItems=[];renderInvoiceItems('new');syncOrderPriceFromInvoice('new');document.getElementById('customerLookupStatus').innerText='';document.getElementById('invoiceItemProduct').value='';document.getElementById('invoiceItemQty').value='1';document.getElementById('invoiceItemUnitPrice').value='0';document.getElementById('invoiceCustomNameWrap').classList.remove('show');alert('تم تسجيل الطلب كفاتورة وحفظ الأصناف بنجاح ✅');
       }).catch(err=>{console.error(err);alert('تعذر تسجيل الطلب حالياً.');});
     });
 
@@ -2762,6 +2858,7 @@
               <div class="flex flex-wrap items-center justify-center gap-1">
                 <button onclick="openOrderDetails('${key}')" class="order-action-btn bg-slate-100 hover:bg-slate-200 text-slate-800" title="تفاصيل الطلب">👁️</button>
                 <button onclick="shareWhatsApp('${key}')" class="order-action-btn bg-emerald-100 hover:bg-emerald-200 text-emerald-800">💬</button>
+                <button onclick="printThermalInvoice('${key}')" class="order-action-btn bg-slate-200 hover:bg-slate-300 text-slate-800" title="طباعة فاتورة 80mm">🧾</button>
                 ${canEdit ? `<button onclick="openEditModal('${key}')" class="order-action-btn bg-blue-100 hover:bg-blue-200 text-blue-800">✏️</button>` : ''}
                 ${canDelete ? `<button onclick="deleteOrder('${key}')" class="order-action-btn bg-red-100 hover:bg-red-200 text-red-700">🗑️</button>` : ''}
               </div>
@@ -3414,6 +3511,7 @@
       pricesListenerAttached = true;
       db.ref('prices').on('value', (snap) => {
         pricesCache = snap.val() || {};
+        renderInvoiceProductOptions();
 
         const defaultPrices = [
           { name: 'لحم كندوز ممتاز', price: 470, unit: 'كيلو' },
@@ -3508,7 +3606,7 @@
       });
     }
 
-    function applyCustomerTrackData(data,orderKey){document.getElementById('trackResultCard').classList.remove('hidden');document.getElementById('dispOrderId').innerText='#'+(data.orderId||orderKey);document.getElementById('cDriver').innerText=data.driver||'جاري التحديد...';document.getElementById('cDate').innerText=formatDateDMY(data.date)+' '+(data.time||'');const customerTotal=Number(data.totalCash||((data.orderPrice||0)+(data.deliveryPrice||0)+(data.paymentFee||0)));const totalEl=document.getElementById('cTotal');if(totalEl)totalEl.innerText=customerTotal.toLocaleString('ar-EG')+' ج.م';document.getElementById('badgeStatus').innerText=data.status||'جاري المتابعة';updateCustomerTimeline(data.status||'');document.getElementById('mapTextInfo').innerHTML=data.lat&&data.lng?`<div class="space-y-2"><p class="font-bold text-emerald-600">🛵 المندوب في الطريق إليك الآن!</p><a href="https://www.google.com/maps?q=${encodeURIComponent(data.lat+','+data.lng)}" target="_blank" rel="noopener" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow">📍 فتح موقع المندوب الحي على Google Maps</a></div>`:'⏳ الطلب قيد التحضير أو المندوب لم يقم بتفعيل اللوكيشن الحي بعد.';currentTrackOrderStatus=data.status||'';const delivered=currentTrackOrderStatus==='تم التسليم بنجاح ✅',locked=document.getElementById('feedbackLockedMsg'),badge=document.getElementById('feedbackAvailabilityBadge'),submit=document.getElementById('submitFeedbackBtn'),comment=document.getElementById('custCommentText'),stars=document.querySelectorAll('#starContainer .star-btn');if(delivered){locked.classList.add('hidden');badge.innerText='✅ التقييم متاح الآن';badge.className='text-[10px] font-bold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700';submit.disabled=false;comment.disabled=false;stars.forEach(b=>b.disabled=false);selectedStarsCount=Number(data.rating||0);highlightStarRating(selectedStarsCount);comment.value=data.comment||'';const msg=document.getElementById('ratingSubmittedMsg');if(data.rating){msg.innerText=`✅ تم تسجيل تقييمك بـ (${data.rating} ⭐).`;msg.classList.remove('hidden');}else msg.classList.add('hidden');}else{locked.classList.remove('hidden');badge.innerText='🔒 متاح بعد التسليم';badge.className='text-[10px] font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-600';submit.disabled=true;comment.disabled=true;stars.forEach(b=>b.disabled=true);selectedStarsCount=0;highlightStarRating(0);comment.value='';document.getElementById('ratingSubmittedMsg').classList.add('hidden');}}
+    function applyCustomerTrackData(data,orderKey){document.getElementById('trackResultCard').classList.remove('hidden');document.getElementById('dispOrderId').innerText='#'+(data.orderId||orderKey);document.getElementById('cDriver').innerText=data.driver||'جاري التحديد...';document.getElementById('cDate').innerText=formatDateDMY(data.date)+' '+(data.time||'');const customerTotal=Number(data.totalCash||((data.orderPrice||0)+(data.deliveryPrice||0)+(data.paymentFee||0)));const totalEl=document.getElementById('cTotal');if(totalEl)totalEl.innerText=customerTotal.toLocaleString('ar-EG')+' ج.م';const customerItems=normalizeInvoiceItems(data.items||[]),customerItemsEl=document.getElementById('customerInvoiceItems');if(customerItemsEl){customerItemsEl.innerHTML=customerItems.length?`<table class="invoice-details-table"><thead><tr><th>الصنف</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody>${customerItems.map(it=>`<tr><td><b>${escapeHtml(it.name)}</b></td><td>${Number(it.qty).toLocaleString('ar-EG')}</td><td>${Number(it.unitPrice).toLocaleString('ar-EG')} ج.م</td><td><b>${Number(it.total).toLocaleString('ar-EG')} ج.م</b></td></tr>`).join('')}</tbody></table>`:'<div class="text-[10px] text-gray-400 text-center py-2">لا توجد أصناف مفصلة لهذا الطلب.</div>'; }document.getElementById('badgeStatus').innerText=data.status||'جاري المتابعة';updateCustomerTimeline(data.status||'');document.getElementById('mapTextInfo').innerHTML=data.lat&&data.lng?`<div class="space-y-2"><p class="font-bold text-emerald-600">🛵 المندوب في الطريق إليك الآن!</p><a href="https://www.google.com/maps?q=${encodeURIComponent(data.lat+','+data.lng)}" target="_blank" rel="noopener" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow">📍 فتح موقع المندوب الحي على Google Maps</a></div>`:'⏳ الطلب قيد التحضير أو المندوب لم يقم بتفعيل اللوكيشن الحي بعد.';currentTrackOrderStatus=data.status||'';const delivered=currentTrackOrderStatus==='تم التسليم بنجاح ✅',locked=document.getElementById('feedbackLockedMsg'),badge=document.getElementById('feedbackAvailabilityBadge'),submit=document.getElementById('submitFeedbackBtn'),comment=document.getElementById('custCommentText'),stars=document.querySelectorAll('#starContainer .star-btn');if(delivered){locked.classList.add('hidden');badge.innerText='✅ التقييم متاح الآن';badge.className='text-[10px] font-bold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700';submit.disabled=false;comment.disabled=false;stars.forEach(b=>b.disabled=false);selectedStarsCount=Number(data.rating||0);highlightStarRating(selectedStarsCount);comment.value=data.comment||'';const msg=document.getElementById('ratingSubmittedMsg');if(data.rating){msg.innerText=`✅ تم تسجيل تقييمك بـ (${data.rating} ⭐).`;msg.classList.remove('hidden');}else msg.classList.add('hidden');}else{locked.classList.remove('hidden');badge.innerText='🔒 متاح بعد التسليم';badge.className='text-[10px] font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-600';submit.disabled=true;comment.disabled=true;stars.forEach(b=>b.disabled=true);selectedStarsCount=0;highlightStarRating(0);comment.value='';document.getElementById('ratingSubmittedMsg').classList.add('hidden');}}
     function toggleCustomerLocationShare(){if(!currentTrackOrderId)return alert('رابط الطلب غير محمّل بعد.');if(!navigator.geolocation)return alert('متصفحك لا يدعم تحديد الموقع الجغرافي');if(custWatchId){navigator.geolocation.clearWatch(custWatchId);custWatchId=null;document.getElementById('custShareLocBtn').innerText='📍 مشاركة موقعي الحالي (GPS) مع المندوب';document.getElementById('custLocStatus').classList.add('hidden');return;}custWatchId=navigator.geolocation.watchPosition(pos=>{db.ref('orders/'+currentTrackOrderId).update({custLat:pos.coords.latitude,custLng:pos.coords.longitude,customerLocationUpdatedAt:Date.now()});document.getElementById('custShareLocBtn').innerText='🔄 يتم تحديث مشاركة موقعك حياً...';document.getElementById('custLocStatus').classList.remove('hidden');},()=>alert('تعذر الوصول إلى موقعك الجغرافي (GPS)'),{enableHighAccuracy:true});}
 
     function highlightStarRating(stars) {
@@ -3755,6 +3853,10 @@
       printWindow.document.close();
     }
 
+    function buildThermalReceipt(order,key){const settings=getAppSettings(),items=normalizeInvoiceItems(order?.items||[]),orderPrice=Number(order?.orderPrice||invoiceItemsTotal(items)),delivery=Number(order?.deliveryPrice||0),fee=Number(order?.paymentFee||0),total=Number(order?.totalCash||orderPrice+delivery+fee),currency=escapeHtml(settings.currency||'ج.م');const itemRows=items.length?items.map(it=>`<tr><td class="name">${escapeHtml(it.name)}</td><td>${Number(it.qty).toLocaleString('ar-EG')}</td><td>${Number(it.unitPrice).toLocaleString('ar-EG')}</td><td>${Number(it.total).toLocaleString('ar-EG')}</td></tr>`).join(''):`<tr><td colspan="4" class="center muted">الطلب مسجل بالإجمالي فقط</td></tr>`;return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>فاتورة #${escapeHtml(order?.orderId||key)}</title><style>@page{size:80mm auto;margin:0}*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:#111;font-family:Arial,"Tahoma",sans-serif}.receipt{width:72mm;margin:0 auto;padding:4mm 3.5mm;font-size:10px}.center{text-align:center}.brand{font-size:18px;font-weight:900;margin-bottom:2px}.tag{font-size:9px;color:#555}.title{font-size:14px;font-weight:900;margin:8px 0 4px}.meta{font-size:9px;line-height:1.7}.rule{border-top:1px dashed #222;margin:7px 0}.customer{background:#f7f7f7;padding:7px;border-radius:5px;line-height:1.7}.items{width:100%;border-collapse:collapse;margin-top:7px}.items th{font-size:8px;border-bottom:1px solid #111;padding:4px 2px}.items td{padding:5px 2px;border-bottom:1px dotted #bbb;font-size:8.5px;vertical-align:top}.items .name{max-width:30mm;word-break:break-word}.totals{margin-top:7px;border-top:1px solid #111;padding-top:5px}.totals div{display:flex;justify-content:space-between;padding:2px 0}.grand{font-size:13px;font-weight:900;margin-top:4px;border-top:1px dashed #111;padding-top:5px}.footer{margin-top:10px;text-align:center;font-size:8px;color:#555;line-height:1.7}.muted{color:#777}</style></head><body><div class="receipt"><div class="center"><div class="brand">🥩 ${escapeHtml(settings.storeName||'جزارة حمكشة')}</div><div class="tag">${escapeHtml(settings.storeTagline||'نظام إدارة الطلبات والتوصيل')}</div><div class="title">فاتورة بيع</div><div class="meta">رقم الطلب: <b>#${escapeHtml(order?.orderId||key)}</b><br>التاريخ: ${escapeHtml(formatDateDMY(order?.date||''))} ${escapeHtml(order?.time||'')}</div></div><div class="rule"></div><div class="customer"><b>العميل:</b> ${escapeHtml(order?.customerName||order?.name||'غير محدد')}<br><b>الهاتف:</b> ${escapeHtml(order?.phone||'—')}<br><b>العنوان:</b> ${escapeHtml(order?.address||'—')}</div><table class="items"><thead><tr><th>الصنف</th><th>كمية</th><th>سعر</th><th>إجمالي</th></tr></thead><tbody>${itemRows}</tbody></table><div class="totals"><div><span>إجمالي الأصناف</span><b>${orderPrice.toLocaleString('ar-EG')} ${currency}</b></div><div><span>التوصيل</span><b>${delivery.toLocaleString('ar-EG')} ${currency}</b></div><div><span>عمولة الدفع</span><b>${fee.toLocaleString('ar-EG')} ${currency}</b></div><div><span>الدفع</span><b>${escapeHtml(getPaymentText(order?.paymentMethod||'cash').replace(/^[^\p{L}\p{N}]+/u,''))}</b></div><div class="grand"><span>الإجمالي النهائي</span><b>${total.toLocaleString('ar-EG')} ${currency}</b></div></div><div class="rule"></div><div class="footer">${settings.storePhone?`واتساب: ${escapeHtml(settings.storePhone)}<br>`:''}${settings.storeLocation?`الموقع: ${escapeHtml(settings.storeLocation)}<br>`:''}شكرًا لثقتكم في جزارة حمكشة 🥩<br>نتمنى لكم وجبة طيبة</div></div><script>window.onload=function(){setTimeout(function(){window.print()},120)};<\/script></body></html>`;}
+    function printThermalInvoice(key,orderOverride=null){if(APP_MODE!=='staff'&&!orderOverride)return;const order=orderOverride||allOrdersCache[key];if(!order)return alert('تعذر العثور على بيانات الفاتورة.');const win=window.open('','_blank','width=420,height=760');if(!win)return alert('اسمح بفتح النوافذ المنبثقة لطباعة الفاتورة.');win.document.open();win.document.write(buildThermalReceipt(order,key));win.document.close();}
+    function printLastCreatedInvoice(){if(!lastCreatedOrderSnapshot)return alert('لا توجد فاتورة جديدة جاهزة للطباعة.');printThermalInvoice(lastCreatedOrderKey,lastCreatedOrderSnapshot);}
+
     async function shareWhatsApp(key){
       const item=allOrdersCache[key];if(!item)return;
       const displayId=item.orderId||key,phone=item.phone||'',totalCash=item.totalCash||((item.orderPrice||0)+(item.deliveryPrice||0)+(item.paymentFee||0));
@@ -3775,11 +3877,12 @@
       if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!allOrdersCache[key]) return;
       const order=allOrdersCache[key]||{}; const total=Number(order.totalCash||((order.orderPrice||0)+(order.deliveryPrice||0)+(order.paymentFee||0)))||0; const status=order.status||'جاري تحضير اللحوم 🥩';
       const set=(id,val)=>{const el=document.getElementById(id);if(el)el.innerText=val;};
+      const detailItems=normalizeInvoiceItems(order.items||[]);const detailsItemsEl=document.getElementById('detailsInvoiceItems');if(detailsItemsEl){if(detailItems.length){detailsItemsEl.innerHTML=`<table class="invoice-details-table"><thead><tr><th>الصنف</th><th>الوحدة</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody>${detailItems.map(it=>`<tr><td><b>${escapeHtml(it.name)}</b></td><td>${escapeHtml(it.unit)}</td><td>${Number(it.qty).toLocaleString('ar-EG')}</td><td>${Number(it.unitPrice).toLocaleString('ar-EG')} ج.م</td><td><b>${Number(it.total).toLocaleString('ar-EG')} ج.م</b></td></tr>`).join('')}</tbody></table>`;}else detailsItemsEl.innerHTML='<div class="text-[10px] text-slate-400 text-center py-3">لا توجد أصناف مفصلة لهذا الطلب (طلب قديم مسجل بالإجمالي فقط).</div>';}
       set('detailsOrderTitle','#'+(order.orderId||key)); set('detailsOrderMeta',`${formatDateDMY(order.date||'-')} · ${order.time||'--'}`); set('detailsStatus',status); set('detailsTotal',total.toLocaleString('ar-EG')+' ج.م'); set('detailsPayment',getPaymentText(order.paymentMethod)); set('detailsDriver',order.driver||'غير محدد'); set('detailsCustomerName',order.customerName||order.name||'غير محدد'); set('detailsCustomerPhone',order.phone||'بدون هاتف'); set('detailsAddress',order.address||'لا يوجد عنوان مسجل'); set('detailsOrderPrice',Number(order.orderPrice||0).toLocaleString('ar-EG')+' ج.م'); set('detailsDeliveryPrice',Number(order.deliveryPrice||0).toLocaleString('ar-EG')+' ج.م'); set('detailsPaymentFee',Number(order.paymentFee||0).toLocaleString('ar-EG')+' ج.م'); set('detailsGrandTotal',total.toLocaleString('ar-EG')+' ج.م');
       const timeline=document.getElementById('detailsTimeline'); timeline.innerHTML=getOrderDetailsSteps(status).map(step=>`<div class="order-detail-step ${step.done?'done ':''}${step.current?'current':''}"><span class="order-detail-dot"></span><div class="step-title">${step.title}</div><div class="step-meta">${step.meta}</div></div>`).join('');
       const state=document.getElementById('detailsTrackingState'), box=document.getElementById('detailsLocationBox');
       if(order.lat&&order.lng){ state.innerText='GPS متاح'; state.className='text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full'; const updated=order.locationUpdatedAt?new Date(order.locationUpdatedAt).toLocaleString('ar-EG'):'غير محدد'; box.innerHTML=`<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><b class="text-emerald-700">📍 الموقع متاح</b><div class="text-[10px] mt-1 text-slate-400">آخر تحديث: ${escapeHtml(updated)}</div></div><a href="https://www.google.com/maps?q=${encodeURIComponent(order.lat+','+order.lng)}" target="_blank" rel="noopener" class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-xl">فتح الموقع في الخريطة ↗</a></div>`; } else { state.innerText='GPS غير متاح'; state.className='text-[10px] font-bold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full'; box.innerHTML='<span>لا يوجد موقع GPS مسجل لهذا الطلب حاليًا.</span>'; }
-      document.getElementById('detailsWhatsAppBtn').onclick=()=>shareWhatsApp(key); document.getElementById('detailsEditBtn').onclick=()=>{closeOrderDetails();openEditModal(key);}; document.getElementById('detailsDeleteBtn').onclick=()=>{closeOrderDetails();deleteOrder(key);};
+      document.getElementById('detailsWhatsAppBtn').onclick=()=>shareWhatsApp(key); document.getElementById('detailsPrintInvoiceBtn').onclick=()=>printThermalInvoice(key); document.getElementById('detailsEditBtn').onclick=()=>{closeOrderDetails();openEditModal(key);}; document.getElementById('detailsDeleteBtn').onclick=()=>{closeOrderDetails();deleteOrder(key);};
       document.getElementById('orderDetailsModal').classList.remove('hidden');
     }
 
@@ -3787,33 +3890,12 @@
 
     document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOrderDetails();});
 
-    function openEditModal(key) {
-      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!allOrdersCache[key]) return;
-      if(!canUser('edit')) return alert('عذراً، ليس لديك صلاحية التعديل.');
-      const order = allOrdersCache[key];
-      if(!order) return;
-
-      document.getElementById('editKey').value = key;
-      document.getElementById('editModalOrderId').innerText = `#${order.orderId || key}`;
-      document.getElementById('editCustName').value = order.customerName || order.name || '';
-      document.getElementById('editCustPhone').value = order.phone || '';
-      document.getElementById('editCustAddress').value = order.address || '';
-      document.getElementById('editOrderPrice').value = order.orderPrice || 0;
-      document.getElementById('editDeliveryPrice').value = order.deliveryPrice || getAppSettings().defaultDelivery;
-      document.getElementById('editDriverSelect').value = order.driver || 'غير محدد';
-
-      document.getElementById('editOrderModal').classList.remove('hidden');
+    function openEditModal(key){
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!allOrdersCache[key])return;if(!canUser('edit'))return alert('عذراً، ليس لديك صلاحية التعديل.');const order=allOrdersCache[key];document.getElementById('editKey').value=key;document.getElementById('editModalOrderId').innerText=`#${order.orderId||key}`;document.getElementById('editCustName').value=order.customerName||order.name||'';document.getElementById('editCustPhone').value=order.phone||'';document.getElementById('editCustAddress').value=order.address||'';document.getElementById('editOrderPrice').value=order.orderPrice||0;document.getElementById('editDeliveryPrice').value=order.deliveryPrice||getAppSettings().defaultDelivery;document.getElementById('editDriverSelect').value=order.driver||'غير محدد';hydrateInvoiceItems('edit',order.items||[]);document.getElementById('editInvoiceItemProduct').value='';document.getElementById('editInvoiceItemQty').value='1';document.getElementById('editInvoiceItemUnitPrice').value='0';document.getElementById('editInvoiceCustomNameWrap').classList.remove('show');document.getElementById('editOrderModal').classList.remove('hidden');
     }
-
-    function closeEditModal() {
-      document.getElementById('editOrderModal').classList.add('hidden');
-    }
-
+    function closeEditModal(){document.getElementById('editOrderModal').classList.add('hidden');}
     async function saveEditOrder(){
-      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin')return;if(!canUser('edit'))return alert('عذراً، ليس لديك صلاحية حفظ التعديلات.');
-      const key=document.getElementById('editKey').value;if(!key||!allOrdersCache[key])return alert('لا تملك الوصول إلى هذا الطلب.');
-      const name=document.getElementById('editCustName').value.trim(),phone=document.getElementById('editCustPhone').value.trim(),address=document.getElementById('editCustAddress').value.trim();const orderPrice=Number(document.getElementById('editOrderPrice').value)||0,deliveryPrice=Number(document.getElementById('editDeliveryPrice').value)||0,driver=document.getElementById('editDriverSelect').value,paymentFee=Number(allOrdersCache[key]?.paymentFee||0);let customerId=allOrdersCache[key]?.customerId||null;try{customerId=await upsertCustomerRecord(name,phone,address,customerId,false);}catch(e){}
-      db.ref('orders/'+key).update({customerName:name,phone,address,orderPrice,deliveryPrice,totalCash:orderPrice+deliveryPrice+paymentFee,driver,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name)}).then(()=>{alert('تم حفظ البيانات والتعديلات بنجاح ✅');closeEditModal();});
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin')return;if(!canUser('edit'))return alert('عذراً، ليس لديك صلاحية حفظ التعديلات.');const key=document.getElementById('editKey').value;if(!key||!allOrdersCache[key])return alert('لا تملك الوصول إلى هذا الطلب.');const current=allOrdersCache[key]||{};const name=document.getElementById('editCustName').value.trim(),phone=document.getElementById('editCustPhone').value.trim(),address=document.getElementById('editCustAddress').value.trim(),deliveryPrice=Number(document.getElementById('editDeliveryPrice').value)||0,driver=document.getElementById('editDriverSelect').value;let customerId=current.customerId||null;try{customerId=await upsertCustomerRecord(name,phone,address,customerId,false);}catch(e){}const update={customerName:name,phone,address,deliveryPrice,driver,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name)};if(editInvoiceItemsTouched){const items=editInvoiceItems.map(item=>({...item,total:(Number(item.qty)||0)*(Number(item.unitPrice)||0)}));const orderPrice=invoiceItemsTotal(items);update.items=items;update.orderPrice=orderPrice;update.totalCash=orderPrice+deliveryPrice+Number(current.paymentFee||0);}else{const orderPrice=Number(current.orderPrice||0);update.orderPrice=orderPrice;update.totalCash=orderPrice+deliveryPrice+Number(current.paymentFee||0);}db.ref('orders/'+key).update(update).then(()=>{alert('تم حفظ بيانات الطلب والفاتورة بنجاح ✅');closeEditModal();editInvoiceItemsTouched=false;});
     }
 
     function deleteOrder(id) {
@@ -3863,7 +3945,7 @@
       }).join('');
     }
     function getDriverOrderKeyFromInput(id){const typed=String(id||'').trim();if(!typed)return null;if(driverOrdersCache[typed])return typed;return Object.keys(driverOrdersCache).find(k=>driverOrdersCache[k]?.orderId===typed)||(Object.keys(driverOrdersCache).find(k=>String(driverOrdersCache[k]?.orderId||'').includes(typed))||null);}
-    function populateDriverOrderCard(key,data){currentDriverOrderKey=key;document.getElementById('orderId').value=data.orderId||key;document.getElementById('dCustName').innerText=data.customerName||data.name||'--';document.getElementById('dCustAddress').innerText=data.address||'--';document.getElementById('dPayMethod').innerText=getPaymentText(data.paymentMethod);document.getElementById('dTotalCash').innerText=(data.totalCash||((data.orderPrice||0)+(data.deliveryPrice||0)+(data.paymentFee||0)))+' ج.م';document.getElementById('dStatus').innerText=data.status||'--';document.getElementById('driverStatusSelect').value=data.status||'جاري تحضير اللحوم 🥩';document.getElementById('driverOrderCard').classList.remove('hidden');}
+    function populateDriverOrderCard(key,data){currentDriverOrderKey=key;document.getElementById('orderId').value=data.orderId||key;document.getElementById('dCustName').innerText=data.customerName||data.name||'--';document.getElementById('dCustAddress').innerText=data.address||'--';document.getElementById('dPayMethod').innerText=getPaymentText(data.paymentMethod);document.getElementById('dTotalCash').innerText=(data.totalCash||((data.orderPrice||0)+(data.deliveryPrice||0)+(data.paymentFee||0)))+' ج.م';const driverItems=normalizeInvoiceItems(data.items||[]),driverItemsEl=document.getElementById('driverInvoiceItems');if(driverItemsEl)driverItemsEl.innerHTML=driverItems.length?`<table class="invoice-details-table"><thead><tr><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead><tbody>${driverItems.map(it=>`<tr><td><b>${escapeHtml(it.name)}</b></td><td>${Number(it.qty).toLocaleString('ar-EG')}</td><td>${Number(it.unitPrice).toLocaleString('ar-EG')} ج.م</td><td><b>${Number(it.total).toLocaleString('ar-EG')} ج.م</b></td></tr>`).join('')}</tbody></table>`:'<div class="text-[10px] text-gray-400 text-center py-2">لا توجد أصناف مفصلة.</div>';document.getElementById('dStatus').innerText=data.status||'--';document.getElementById('driverStatusSelect').value=data.status||'جاري تحضير اللحوم 🥩';document.getElementById('driverOrderCard').classList.remove('hidden');}
     function fetchDriverOrder(keyOverride=null){if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='driver')return;const key=getDriverOrderKeyFromInput(keyOverride||document.getElementById('orderId').value.trim());if(!key)return alert('عذراً، هذا الطلب غير مسند إليك أو غير موجود ضمن طلباتك.');populateDriverOrderCard(key,driverOrdersCache[key]);}
     function driverChangeStatus(newStatus){if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='driver')return;const key=currentDriverOrderKey||getDriverOrderKeyFromInput(document.getElementById('orderId').value.trim());if(!key||!driverOrdersCache[key])return alert('اختر طلباً من طلباتك أولاً.');db.ref('orders/'+key).update({status:newStatus}).then(()=>document.getElementById('driverStatus').innerText='✅ تم تحديث حالة الطلب إلى: '+newStatus);}
     let watchId=null;
@@ -3899,7 +3981,7 @@
       document.getElementById('mainHeader')?.style.setProperty('display','none','important');
       document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');switchTab('driver');
     }
-    window.addEventListener('DOMContentLoaded',()=>{applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();loadNotificationStore();startPublicCommentsListener();loadRememberedLogin();if(APP_MODE!=='staff')applyCustomerPublicMode();else{document.body.classList.remove('customer-public-mode');startStaffDataListeners();updateUIByPermissions();checkSavedSession();if(!currentUser)switchTab('admin');}});
+    window.addEventListener('DOMContentLoaded',()=>{applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();loadNotificationStore();attachInvoicePriceListener();renderInvoiceItems('new');startPublicCommentsListener();loadRememberedLogin();if(APP_MODE!=='staff')applyCustomerPublicMode();else{document.body.classList.remove('customer-public-mode');startStaffDataListeners();updateUIByPermissions();checkSavedSession();if(!currentUser)switchTab('admin');}});
 </script>
 </body>
 </html>
