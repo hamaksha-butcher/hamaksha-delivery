@@ -226,7 +226,7 @@
     }
 
     /* تحسين عناصر اختيار الثيم */
-    .theme-options { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:10px; }
+    .theme-options { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:10px; }
     .theme-choice {
       position:relative; min-height:60px; border:1px solid var(--border-color); border-radius:16px;
       background:var(--surface-soft); cursor:pointer; padding:8px; text-align:right;
@@ -236,7 +236,7 @@
     .theme-choice.active { border-color:var(--primary-color); box-shadow:0 0 0 3px var(--ring-color); }
     .theme-swatch { width:100%; height:24px; border-radius:10px; margin-bottom:6px; }
     .theme-choice span:last-child { display:block; font-size:9px; font-weight:800; color:var(--text-color); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    @media (max-width: 900px) { .theme-options { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+    @media (max-width: 900px) { .theme-options { grid-template-columns:repeat(4,minmax(0,1fr)); } }
     @media (max-width: 520px) { .theme-options { grid-template-columns:repeat(2,minmax(0,1fr)); } }
     /* ضبط اتجاه حقول التاريخ لمنع انعكاس الصيغة */
     input[type="date"] {
@@ -513,6 +513,9 @@
             </button>
             <button type="button" class="theme-choice" data-theme-choice="midnight" onclick="changeThemePreset('midnight')">
               <span class="theme-swatch" style="background:linear-gradient(90deg,#020617 0 65%,#fbbf24 65% 100%)"></span><span>Midnight</span>
+            </button>
+            <button type="button" class="theme-choice" data-theme-choice="butcher" onclick="changeThemePreset('butcher')">
+              <span class="theme-swatch" style="background:linear-gradient(90deg,#4a1118 0 55%,#b87333 55% 78%,#f4ead7 78% 100%)"></span><span>Butcher Pro</span>
             </button>
           </div>
         </div>
@@ -1367,7 +1370,8 @@
       emerald: { primary:'#065f46', secondary:'#34d399', bg:'#f3f8f6', surface:'#ffffff', soft:'#f0fdf7', text:'#16352b', muted:'#647e73', border:'#dbe9e3', sidebar:'#08251d', accent:'#34d399', ring:'rgba(52,211,153,.20)', shadow:'rgba(6,95,70,.10)' },
       violet: { primary:'#4338ca', secondary:'#a78bfa', bg:'#f6f5fb', surface:'#ffffff', soft:'#f4f3ff', text:'#25213b', muted:'#6b6680', border:'#e6e2f0', sidebar:'#1d1b3a', accent:'#c4b5fd', ring:'rgba(167,139,250,.20)', shadow:'rgba(67,56,202,.10)' },
       sunset: { primary:'#9a3412', secondary:'#fb923c', bg:'#fbf7f3', surface:'#ffffff', soft:'#fff7ed', text:'#3b2118', muted:'#80675d', border:'#eee1d8', sidebar:'#2a1710', accent:'#fdba74', ring:'rgba(251,146,60,.20)', shadow:'rgba(154,52,18,.10)' },
-      midnight: { primary:'#0f172a', secondary:'#fbbf24', bg:'#0b1120', surface:'#111827', soft:'#172033', text:'#f8fafc', muted:'#94a3b8', border:'#263244', sidebar:'#020617', accent:'#fbbf24', ring:'rgba(251,191,36,.20)', shadow:'rgba(0,0,0,.28)' }
+      midnight: { primary:'#0f172a', secondary:'#fbbf24', bg:'#0b1120', surface:'#111827', soft:'#172033', text:'#f8fafc', muted:'#94a3b8', border:'#263244', sidebar:'#020617', accent:'#fbbf24', ring:'rgba(251,191,36,.20)', shadow:'rgba(0,0,0,.28)' },
+      butcher: { primary:'#7f1d2d', secondary:'#b87333', bg:'#f4ead7', surface:'#fffaf2', soft:'#f8f0e3', text:'#2f211b', muted:'#76645a', border:'#e3d2bd', sidebar:'#211519', accent:'#d89b5b', ring:'rgba(127,29,45,.20)', shadow:'rgba(67,35,24,.12)' }
     };
 
     function applyThemeVars(theme) {
