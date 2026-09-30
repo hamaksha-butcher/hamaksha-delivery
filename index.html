@@ -527,6 +527,26 @@
     body.customer-public-mode #sec-track .staff-only-track,
     body.customer-public-mode #sec-track #customerOrdersResults { display:none !important; }
 
+
+    /* ===== مركز العملاء ===== */
+    .customer-page-hero{background:linear-gradient(135deg,var(--primary-color,#7f1d1d),color-mix(in srgb,var(--primary-color,#7f1d1d) 70%,#111827));border-radius:28px;padding:24px;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:0 18px 40px rgba(15,23,42,.12);}
+    .customer-kicker{font-size:9px;letter-spacing:.18em;font-weight:900;color:rgba(255,255,255,.55)}
+    .customer-hero-btn{background:#fff;color:#172033;border:1px solid rgba(255,255,255,.45);padding:10px 14px;border-radius:12px;font-size:11px;font-weight:900;box-shadow:0 8px 20px rgba(0,0,0,.08);}
+    .customer-hero-btn.ghost{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.2)}
+    .customer-metric{background:var(--surface-color,#fff);border:1px solid var(--border-color,#e5e7eb);border-radius:20px;padding:14px;display:flex;gap:10px;align-items:center;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+    .customer-metric>span{width:40px;height:40px;border-radius:13px;background:var(--surface-soft,#f8fafc);display:flex;align-items:center;justify-content:center;font-size:20px}
+    .customer-metric b{display:block;font-size:20px;font-weight:900;color:var(--text-color,#172033);line-height:1.1}.customer-metric small{display:block;font-size:9px;color:var(--muted-color,#64748b);margin-top:3px;font-weight:700}
+    .customer-field-label{display:block;font-size:10px;font-weight:900;color:var(--text-color,#172033)}
+    .customer-field{margin-top:6px;width:100%;border:1px solid var(--border-color,#e5e7eb);background:var(--surface-soft,#f8fafc);padding:11px 12px;border-radius:13px;font-size:11px;outline:none;transition:.18s}
+    .customer-field:focus,.customer-search:focus{border-color:var(--primary-color,#7f1d1d);box-shadow:0 0 0 3px var(--ring-color,rgba(127,29,29,.12));background:#fff}
+    .customer-search{width:100%;border:1px solid var(--border-color,#e5e7eb);background:var(--surface-soft,#f8fafc);padding:11px 13px;border-radius:13px;font-size:11px;outline:none}
+    .customer-record-card{background:var(--surface-color,#fff);border:1px solid var(--border-color,#e5e7eb);border-radius:20px;padding:14px;box-shadow:0 8px 18px rgba(15,23,42,.04);transition:transform .18s,box-shadow .18s,border-color .18s}
+    .customer-record-card:hover{transform:translateY(-2px);box-shadow:0 14px 26px rgba(15,23,42,.08);border-color:color-mix(in srgb,var(--primary-color,#7f1d1d) 30%,var(--border-color,#e5e7eb))}
+    .customer-avatar{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--primary-color,#7f1d1d),var(--secondary-color,#f59e0b));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;box-shadow:0 8px 18px var(--ring-color,rgba(127,29,29,.14))}
+    .customer-order-pill{font-size:9px;font-weight:900;background:var(--surface-soft,#f8fafc);color:var(--muted-color,#64748b);padding:5px 8px;border-radius:999px;white-space:nowrap}
+    .customer-record-meta{margin-top:12px;padding:10px 11px;background:var(--surface-soft,#f8fafc);border:1px solid var(--border-color,#e5e7eb);border-radius:12px;font-size:10px;color:var(--muted-color,#64748b);line-height:1.7;min-height:40px}
+    .customer-action{border-radius:10px;padding:7px 10px;font-size:9px;font-weight:900}.customer-action.primary{background:color-mix(in srgb,var(--primary-color,#7f1d1d) 9%,#fff);color:var(--primary-color,#7f1d1d)}.customer-action.edit{background:rgba(245,158,11,.12);color:#a16207}.customer-action.delete{background:rgba(220,38,38,.1);color:#b91c1c}
+    @media(max-width:767px){.customer-page-hero{padding:18px;flex-direction:column;align-items:flex-start;border-radius:22px}.customer-page-hero .flex{width:100%}.customer-hero-btn{flex:1;text-align:center}.customer-metric{padding:11px}.customer-metric b{font-size:17px}.customer-metric>span{width:34px;height:34px;font-size:17px}}
 </style>
 </head>
 <body id="appBody" class="bg-amber-50/40 min-h-screen text-gray-800">
@@ -550,6 +570,7 @@
         <button onclick="switchTab('admin'); closeSidebar()" id="tab-admin" class="tab-btn active">📦 <span>الطلبات والإدارة</span></button>
         <button onclick="switchTab('analytics'); closeSidebar()" id="tab-analytics" class="tab-btn perm-analytics hidden">💰 <span>التقارير والتحصيل</span></button>
         <button onclick="switchTab('prices'); closeSidebar()" id="tab-prices" class="tab-btn perm-prices hidden">🏷️ <span>أسعار اللحوم</span></button>
+        <button onclick="switchTab('customers'); closeSidebar()" id="tab-customers" class="tab-btn perm-customers hidden">👥 <span>العملاء</span></button>
         <button onclick="switchTab('driver'); closeSidebar()" id="tab-driver" class="tab-btn">🛵 <span>واجهة المندوب</span></button>
         <button onclick="switchTab('track'); closeSidebar()" id="tab-track" class="tab-btn">📍 <span>تتبع العملاء</span></button>
       </nav>
@@ -883,25 +904,6 @@
               </div>
               <div id="usersList" class="space-y-2 max-h-64 overflow-y-auto pt-1"></div>
             </div>
-            <!-- 👥 قاعدة بيانات العملاء + الربط الذكي بالطلبات -->
-            <div id="customerManagementCard" class="bg-white rounded-2xl shadow-xl p-5 border border-blue-100 space-y-3 perm-customers hidden">
-              <div class="flex items-center justify-between gap-2 border-b pb-2">
-                <div>
-                  <div class="flex items-center gap-2"><span class="text-lg">👥</span><h2 class="text-sm font-bold text-gray-800">قاعدة بيانات العملاء</h2></div>
-                  <p class="text-[10px] text-gray-400 mt-1">حفظ بيانات العملاء واستخدامها تلقائياً عند إنشاء الطلب</p>
-                </div>
-                <button type="button" onclick="resetCustomerManagementForm()" class="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-1.5 rounded-lg font-bold">+ عميل جديد</button>
-              </div>
-              <div class="space-y-2 bg-blue-50/60 p-3 rounded-xl border border-blue-100">
-                <input type="hidden" id="managedCustomerKey" value="">
-                <input type="text" id="managedCustomerName" placeholder="اسم العميل" class="w-full border p-2 rounded-xl text-xs bg-white">
-                <input type="text" id="managedCustomerPhone" placeholder="رقم الهاتف / واتساب" dir="ltr" class="w-full border p-2 rounded-xl text-xs bg-white text-left">
-                <textarea id="managedCustomerAddress" rows="2" placeholder="العنوان" class="w-full border p-2 rounded-xl text-xs bg-white"></textarea>
-                <button type="button" onclick="saveManagedCustomer()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl text-xs shadow">💾 حفظ بيانات العميل</button>
-              </div>
-              <input type="text" id="customerDatabaseSearch" oninput="renderCustomersList()" placeholder="🔎 بحث باسم العميل أو الهاتف" class="w-full border p-2 rounded-xl text-xs bg-gray-50">
-              <div id="customersList" class="space-y-2 max-h-80 overflow-y-auto pt-1"></div>
-            </div>
 
           </div>
 
@@ -986,6 +988,74 @@
                 </tbody>
               </table>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 👥 مركز العملاء وإدارة قاعدة البيانات -->
+    <section id="sec-customers" class="hidden space-y-6 max-w-6xl mx-auto">
+      <div id="customerAuthLock" class="bg-white rounded-3xl shadow-xl p-8 text-center max-w-md mx-auto space-y-4 border border-blue-100">
+        <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto text-3xl">👥</div>
+        <h3 class="text-xl font-black text-gray-900">مركز العملاء</h3>
+        <p class="text-xs text-gray-500">تسجيل الدخول بصلاحية الإدارة يتيح إدارة قاعدة العملاء واستخدامها مباشرة مع الطلبات.</p>
+        <button onclick="toggleAuthModal()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow">تسجيل الدخول 🔑</button>
+      </div>
+
+      <div id="customerPageContent" class="hidden space-y-5">
+        <div class="customer-page-hero">
+          <div>
+            <div class="customer-kicker">CUSTOMER CENTER</div>
+            <h2 class="text-2xl sm:text-3xl font-black text-white mt-1">مركز العملاء 👥</h2>
+            <p class="text-xs sm:text-sm text-white/75 mt-2">كل بيانات عملائك في مكان واحد، مع وصول سريع لإنشاء طلب جديد.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="resetCustomerManagementForm(); document.getElementById('managedCustomerName')?.focus()" class="customer-hero-btn">＋ عميل جديد</button>
+            <button type="button" onclick="openCustomerPickerModal()" class="customer-hero-btn ghost">اختيار للطلب</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="customer-metric"><span>👥</span><div><b id="customerMetricTotal">0</b><small>إجمالي العملاء</small></div></div>
+          <div class="customer-metric"><span>🆕</span><div><b id="customerMetricNew">0</b><small>أضيفوا مؤخرًا</small></div></div>
+          <div class="customer-metric"><span>📞</span><div><b id="customerMetricPhones">0</b><small>أرقام محفوظة</small></div></div>
+          <div class="customer-metric"><span>🔗</span><div><b id="customerMetricLinked">0</b><small>لديهم طلبات</small></div></div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-[360px_1fr] gap-5">
+          <div class="bg-white rounded-3xl shadow-xl border border-blue-100 overflow-hidden">
+            <div class="p-5 bg-gradient-to-br from-blue-50 to-white border-b border-blue-100">
+              <div class="flex items-center justify-between gap-2">
+                <div>
+                  <div class="flex items-center gap-2"><span class="text-xl">📝</span><h3 class="font-black text-gray-900">بيانات العميل</h3></div>
+                  <p class="text-[10px] text-gray-500 mt-1">إضافة أو تعديل عميل محفوظ</p>
+                </div>
+                <button type="button" onclick="resetCustomerManagementForm()" class="text-[10px] bg-white border border-blue-200 text-blue-700 px-2.5 py-1.5 rounded-xl font-bold">مسح</button>
+              </div>
+            </div>
+            <div class="p-5 space-y-3">
+              <input type="hidden" id="managedCustomerKey" value="">
+              <label class="customer-field-label">اسم العميل<input type="text" id="managedCustomerName" placeholder="مثال: الحاج أحمد" class="customer-field"></label>
+              <label class="customer-field-label">الهاتف / واتساب<input type="text" id="managedCustomerPhone" placeholder="01xxxxxxxxx" dir="ltr" class="customer-field text-left"></label>
+              <label class="customer-field-label">العنوان<textarea id="managedCustomerAddress" rows="3" placeholder="الحي، الشارع، رقم المنزل..." class="customer-field"></textarea></label>
+              <button type="button" onclick="saveManagedCustomer()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs shadow-lg">💾 حفظ بيانات العميل</button>
+              <button type="button" onclick="useCustomerForNewOrder(document.getElementById('managedCustomerKey').value)" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl text-xs">📦 استخدام في طلب جديد</button>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+            <div class="p-5 border-b border-slate-100">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 class="font-black text-gray-900">قائمة العملاء</h3>
+                  <p class="text-[10px] text-gray-500 mt-1">بحث، تعديل، استخدام في طلب، وحذف حسب الصلاحية</p>
+                </div>
+                <div class="flex-1 max-w-md">
+                  <input type="text" id="customerDatabaseSearch" oninput="renderCustomersList()" placeholder="🔎 ابحث بالاسم أو رقم الهاتف" class="w-full customer-search">
+                </div>
+              </div>
+            </div>
+            <div id="customersList" class="p-4 grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[650px] overflow-y-auto"></div>
           </div>
         </div>
       </div>
@@ -1571,6 +1641,7 @@
       admin: 'الطلبات والإدارة',
       analytics: 'التقارير والتحصيل',
       prices: 'أسعار اللحوم',
+      customers: 'العملاء',
       driver: 'واجهة المندوب',
       track: 'تتبع العملاء'
     };
@@ -1595,6 +1666,7 @@
       if(tabName === 'dashboard' && (!currentUser || currentUser.role !== 'admin')) return alert('لوحة التحكم الرئيسية مخصصة للإدارة فقط.');
       if(tabName === 'analytics' && !canUser('analytics')) return alert('عذراً، لا تملك صلاحية الاطلاع على التقارير والداشبورد.');
       if(tabName === 'prices' && !canUser('prices')) return alert('عذراً، لا تملك صلاحية الاطلاع على قائمة الأسعار.');
+      if(tabName === 'customers' && !canManageCustomers()) return alert('عذراً، لا تملك صلاحية إدارة قاعدة العملاء.');
       document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       const target = document.getElementById(`sec-${tabName}`);
@@ -1604,6 +1676,7 @@
       if(tabName === 'dashboard') { document.getElementById('dashboardAuthLock')?.classList.add('hidden'); document.getElementById('dashboardContent')?.classList.remove('hidden'); renderDashboard(); }
       if(tabName === 'analytics') { renderAnalytics(); renderCommentsList(); }
       if(tabName === 'prices') renderPrices();
+      if(tabName === 'customers') { document.getElementById('customerAuthLock')?.classList.toggle('hidden',!!currentUser && currentUser.role==='admin'); document.getElementById('customerPageContent')?.classList.toggle('hidden',!(currentUser && currentUser.role==='admin')); renderCustomersList(); }
       if(tabName === 'track') { renderPublicComments(); updateCustomerIdentityHint(); }
     }
 
@@ -1741,6 +1814,8 @@
       document.getElementById('mobileUserBadge').innerText=user.username;
       document.body.classList.remove('customer-public-mode'); document.body.classList.toggle('driver-private-mode',user.role==='driver');
       document.getElementById('authModal').classList.add('hidden'); updateUIByPermissions(); startDriverDirectoryListener();
+      document.getElementById('customerAuthLock')?.classList.toggle('hidden',!(user.role==='admin' && canManageCustomers()));
+      document.getElementById('customerPageContent')?.classList.toggle('hidden',!(user.role==='admin' && canManageCustomers()));
       if(user.role==='admin') { document.getElementById('adminAuthLock').classList.add('hidden'); document.getElementById('adminContent').classList.remove('hidden'); startAdminOrdersListener(); startUserManagementListener(); startCustomerDataListener(); switchTab('admin'); }
       else { document.getElementById('driverAuthLock').classList.add('hidden'); document.getElementById('driverContent').classList.remove('hidden'); applyDriverPrivateMode(); startDriverOrdersListener(); }
       applyFilters(); renderUsersList(); syncNavigationTitle(user.role==='driver' ? 'driver' : 'admin');
@@ -1752,7 +1827,7 @@
       document.getElementById('tab-dashboard')?.classList.toggle('hidden',!(currentUser&&currentUser.role==='admin'));
       document.getElementById('addPriceBtn')?.classList.toggle('hidden',!canUser('prices'));
       document.querySelector('.perm-users')?.classList.toggle('hidden',!canUser('users'));
-      document.querySelector('.perm-customers')?.classList.toggle('hidden',!canManageCustomers());
+      document.querySelectorAll('.perm-customers').forEach(el=>el.classList.toggle('hidden',!canManageCustomers()));
       document.getElementById('exportActionBtns')?.classList.toggle('hidden',!canUser('print'));
       const note=document.getElementById('dashboardScopeNote'); if(note) note.classList.toggle('hidden',canViewAllDrivers());
     }
@@ -1939,7 +2014,40 @@
     function closeCustomerPickerModal(){document.getElementById('customerPickerModal').classList.add('hidden');}
     function selectCustomerFromRecord(key){const c=customersCache[key];if(!c)return;document.getElementById('selectedCustomerKey').value=key;document.getElementById('custName').value=c.name||'';document.getElementById('custPhone').value=c.phone||'';document.getElementById('custAddress').value=c.address||'';document.getElementById('customerLookupStatus').innerText='✅ تم ربط الطلب بالعميل المحفوظ';document.getElementById('customerLookupStatus').className='text-[10px] font-bold text-emerald-700';closeCustomerPickerModal();}
     function renderCustomerPickerList(){const container=document.getElementById('customerPickerList');if(!container)return;const raw=document.getElementById('customerPickerSearch')?.value||'',q=normalizeName(raw),qp=normalizePhone(raw);const items=Object.keys(customersCache||{}).map(key=>({key,...customersCache[key]})).filter(c=>!q&&!qp||(q&&normalizeName(c.name).includes(q))||(qp&&normalizePhone(c.phone).includes(qp))).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'ar'));container.innerHTML=items.length?items.map(c=>`<button type="button" onclick="selectCustomerFromRecord('${c.key}')" class="w-full text-right bg-gray-50 hover:bg-blue-50 border rounded-xl p-3"><div class="flex justify-between gap-2"><b>${escapeHtml(c.name||'بدون اسم')}</b><span dir="ltr" class="text-[10px] text-gray-500">${escapeHtml(c.phone||'-')}</span></div><p class="text-[10px] text-gray-500">${escapeHtml(c.address||'بدون عنوان')}</p></button>`).join(''):'<p class="text-xs text-gray-400 text-center p-4">لا توجد نتائج.</p>'; }
-    function renderCustomersList(){const container=document.getElementById('customersList');if(!container||!canManageCustomers())return;const raw=document.getElementById('customerDatabaseSearch')?.value||'',q=normalizeName(raw),qp=normalizePhone(raw);const items=Object.keys(customersCache||{}).map(key=>({key,...customersCache[key]})).filter(c=>!q&&!qp||(q&&normalizeName(c.name).includes(q))||(qp&&normalizePhone(c.phone).includes(qp))).sort((a,b)=>Number(b.updatedAt||0)-Number(a.updatedAt||0));container.innerHTML=items.length?items.map(c=>`<div class="bg-gray-50 border rounded-xl p-3 text-xs space-y-2"><div class="flex justify-between gap-2"><b>${escapeHtml(c.name||'بدون اسم')}</b><span dir="ltr" class="font-mono text-[10px] text-gray-500">${escapeHtml(c.phone||'-')}</span></div><p class="text-[10px] text-gray-500">${escapeHtml(c.address||'بدون عنوان')}</p><div class="flex gap-1.5 justify-end"><button type="button" onclick="useCustomerForNewOrder('${c.key}')" class="bg-blue-100 text-blue-800 px-2 py-1 rounded-lg text-[10px] font-bold">استخدام في الطلب</button><button type="button" onclick="editManagedCustomer('${c.key}')" class="bg-amber-100 text-amber-800 px-2 py-1 rounded-lg text-[10px] font-bold">تعديل</button>${isSuperUser()?`<button type="button" onclick="deleteManagedCustomer('${c.key}')" class="bg-red-100 text-red-700 px-2 py-1 rounded-lg text-[10px] font-bold">حذف</button>`:''}</div></div>`).join(''):'<p class="text-xs text-gray-400 text-center p-4">لا توجد عملاء محفوظون حتى الآن.</p>'; }
+    function renderCustomersList(){
+      const container=document.getElementById('customersList');
+      if(!container||!canManageCustomers())return;
+      const raw=document.getElementById('customerDatabaseSearch')?.value||'',q=normalizeName(raw),qp=normalizePhone(raw);
+      const allItems=Object.keys(customersCache||{}).map(key=>({key,...customersCache[key]}));
+      const items=allItems.filter(c=>!q&&!qp||(q&&normalizeName(c.name).includes(q))||(qp&&normalizePhone(c.phone).includes(qp))).sort((a,b)=>Number(b.updatedAt||0)-Number(a.updatedAt||0));
+      const now=Date.now(), sevenDays=7*24*60*60*1000;
+      const recent=allItems.filter(c=>c.updatedAt && now-Number(c.updatedAt)<=sevenDays).length;
+      const phones=allItems.filter(c=>normalizePhone(c.phone)).length;
+      const linked=allItems.filter(c=>Number(c.orderCount||0)>0).length;
+      document.getElementById('customerMetricTotal')&&(document.getElementById('customerMetricTotal').innerText=allItems.length.toLocaleString('ar-EG'));
+      document.getElementById('customerMetricNew')&&(document.getElementById('customerMetricNew').innerText=recent.toLocaleString('ar-EG'));
+      document.getElementById('customerMetricPhones')&&(document.getElementById('customerMetricPhones').innerText=phones.toLocaleString('ar-EG'));
+      document.getElementById('customerMetricLinked')&&(document.getElementById('customerMetricLinked').innerText=linked.toLocaleString('ar-EG'));
+      container.innerHTML=items.length?items.map(c=>{
+        const orderCount=Number(c.orderCount||0);
+        const initials=escapeHtml(String(c.name||'عميل').trim().slice(0,1));
+        return `<div class="customer-record-card">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="customer-avatar">${initials}</div>
+              <div class="min-w-0"><b class="block text-sm font-black text-gray-900 truncate">${escapeHtml(c.name||'بدون اسم')}</b><span dir="ltr" class="block text-[10px] text-gray-500 mt-0.5 truncate">${escapeHtml(c.phone||'لا يوجد رقم')}</span></div>
+            </div>
+            <span class="customer-order-pill">${orderCount} طلب</span>
+          </div>
+          <div class="customer-record-meta"><span>📍 ${escapeHtml(c.address||'العنوان غير محفوظ')}</span></div>
+          <div class="flex flex-wrap gap-1.5 pt-1">
+            <button type="button" onclick="useCustomerForNewOrder('${c.key}')" class="customer-action primary">📦 طلب</button>
+            <button type="button" onclick="editManagedCustomer('${c.key}')" class="customer-action edit">✏️ تعديل</button>
+            ${isSuperUser()?`<button type="button" onclick="deleteManagedCustomer('${c.key}')" class="customer-action delete">🗑️ حذف</button>`:''}
+          </div>
+        </div>`;
+      }).join(''):'<div class="col-span-full py-14 text-center text-sm text-gray-400">لا توجد عملاء مطابقون للبحث.</div>';
+    }
     function resetCustomerManagementForm(){['managedCustomerKey','managedCustomerName','managedCustomerPhone','managedCustomerAddress'].forEach(id=>document.getElementById(id).value='');document.getElementById('managedCustomerName')?.focus();}
     function editManagedCustomer(key){if(!canManageCustomers())return;const c=customersCache[key];if(!c)return;document.getElementById('managedCustomerKey').value=key;document.getElementById('managedCustomerName').value=c.name||'';document.getElementById('managedCustomerPhone').value=c.phone||'';document.getElementById('managedCustomerAddress').value=c.address||'';}
     async function saveManagedCustomer(){
