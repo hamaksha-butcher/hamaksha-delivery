@@ -451,7 +451,83 @@
     .driver-empty { border:1px dashed var(--border-color, #d1d5db); }
     .driver-search { background:color-mix(in srgb, var(--card-bg, #fff) 92%, var(--primary-color, #7f1d1d) 8%); }
 
-  </style>
+  
+    /* ===== واجهة العميل الحديثة ===== */
+    #sec-track.customer-track-modern { max-width: 720px !important; }
+    #sec-track.customer-track-modern .customer-public-shell {
+      background: linear-gradient(145deg, rgba(255,255,255,.98), rgba(248,250,252,.98));
+      border: 1px solid var(--border-color, #e5e7eb);
+      box-shadow: 0 24px 70px rgba(15,23,42,.10);
+      border-radius: 30px;
+      overflow: hidden;
+    }
+    #sec-track.customer-track-modern .customer-brand-bar {
+      background:
+        radial-gradient(circle at 15% 20%, rgba(245,158,11,.20), transparent 34%),
+        linear-gradient(135deg, var(--primary-color, #7f1d1d), #431313);
+      color: #fff;
+      padding: 22px 22px 18px;
+    }
+    #sec-track.customer-track-modern .customer-brand-mark {
+      width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;
+      border-radius: 18px; background: rgba(255,255,255,.12); font-size: 28px;
+      border: 1px solid rgba(255,255,255,.15); box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+    }
+    #sec-track.customer-track-modern .customer-order-body { padding: 18px; }
+    #sec-track.customer-track-modern .customer-order-summary {
+      background: var(--surface-color, #fff); border: 1px solid var(--border-color, #e5e7eb);
+      border-radius: 20px; padding: 14px;
+    }
+    #sec-track.customer-track-modern .customer-kpi {
+      background: var(--surface-soft, #f8fafc); border: 1px solid var(--border-color, #e5e7eb);
+      border-radius: 16px; padding: 10px;
+    }
+    #sec-track.customer-track-modern .customer-map-card {
+      background: var(--surface-color, #fff); border: 1px solid var(--border-color, #e5e7eb);
+      border-radius: 22px; padding: 12px;
+    }
+    #sec-track.customer-track-modern .customer-map-inner {
+      min-height: 168px; border-radius: 18px; padding: 18px;
+      background: linear-gradient(135deg, var(--surface-soft, #f8fafc), rgba(245,158,11,.09));
+      border: 1px dashed var(--border-color, #e5e7eb);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+      text-align: center;
+    }
+    #sec-track.customer-track-modern .track-timeline { position: relative; padding: 4px 0; }
+    #sec-track.customer-track-modern .track-timeline::before {
+      content: ''; position: absolute; right: 16px; top: 14px; bottom: 14px; width: 3px;
+      background: linear-gradient(to bottom, var(--secondary-color,#f59e0b), var(--border-color,#e5e7eb));
+      border-radius: 99px;
+    }
+    #sec-track.customer-track-modern .timeline-step { position: relative; display: flex; align-items: flex-start; gap: 12px; padding: 7px 0; }
+    #sec-track.customer-track-modern .timeline-dot {
+      position: relative; z-index: 2; width: 34px; height: 34px; flex: 0 0 34px;
+      display: flex; align-items: center; justify-content: center; border-radius: 50%;
+      background: var(--surface-color,#fff); border: 2px solid var(--border-color,#e5e7eb);
+      color: var(--muted-color,#64748b); font-size: 13px; font-weight: 900;
+      box-shadow: 0 4px 14px rgba(15,23,42,.07);
+    }
+    #sec-track.customer-track-modern .timeline-step.active .timeline-dot,
+    #sec-track.customer-track-modern .timeline-step.done .timeline-dot {
+      background: var(--primary-color,#7f1d1d); border-color: var(--primary-color,#7f1d1d); color:#fff;
+    }
+    #sec-track.customer-track-modern .timeline-step.done .timeline-dot { background: #059669; border-color:#059669; }
+    #sec-track.customer-track-modern .timeline-title { font-weight: 900; font-size: 12px; color: var(--text-color,#172033); }
+    #sec-track.customer-track-modern .timeline-meta { font-size: 10px; color: var(--muted-color,#64748b); margin-top: 2px; }
+    #sec-track.customer-track-modern .customer-feedback-card {
+      background: linear-gradient(145deg, rgba(245,158,11,.10), rgba(255,255,255,.92));
+      border: 1px solid rgba(245,158,11,.28); border-radius: 22px; padding: 15px;
+    }
+    #sec-track.customer-track-modern .customer-testimonials {
+      border-top: 1px solid var(--border-color,#e5e7eb); padding-top: 14px;
+    }
+    body.customer-public-mode { background: var(--bg-color,#f6f7fb) !important; }
+    body.customer-public-mode .app-main { min-height: 100vh; }
+    body.customer-public-mode #sec-track { padding-top: 18px; padding-bottom: 28px; }
+    body.customer-public-mode #sec-track .staff-only-track,
+    body.customer-public-mode #sec-track #customerOrdersResults { display:none !important; }
+
+</style>
 </head>
 <body id="appBody" class="bg-amber-50/40 min-h-screen text-gray-800">
 
@@ -1109,12 +1185,34 @@
       </div>
     </section>
 
-    <!-- 5️⃣ صفحة تتبع العميل: الرابط يفتح طلباً واحداً فقط + التقييم والتعليقات العامة -->
-    <section id="sec-track" class="hidden space-y-6 max-w-xl mx-auto">
-      <div id="customerLinkGate" class="bg-white rounded-2xl shadow-lg p-6 border border-red-100 text-center space-y-3">
-        <div class="text-4xl">🥩</div>
-        <h2 class="text-lg font-black text-red-700">تتبع طلبك - جزارة حمكشة</h2>
-        <p id="customerLinkStatus" class="text-xs text-gray-500 font-semibold">جارٍ التحقق من رابط الطلب...</p>
+    <!-- 5️⃣ واجهة العميل والتتبع العامة + وضع الموظفين للاختبار -->
+    <section id="sec-track" class="hidden space-y-6 max-w-xl mx-auto customer-track-modern">
+      <div id="customerLinkGate" class="customer-public-shell">
+        <div class="customer-brand-bar">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="customer-brand-mark">🥩</div>
+              <div class="min-w-0">
+                <p class="text-[10px] font-bold text-white/70">جزارة حمكشة</p>
+                <h2 class="text-lg font-black truncate">تتبع طلبك</h2>
+                <p class="text-[10px] text-white/75 mt-0.5">كل تحديثات طلبك في مكان واحد</p>
+              </div>
+            </div>
+            <span class="shrink-0 bg-white/10 border border-white/15 text-[10px] font-black px-2.5 py-1.5 rounded-full">🔒 آمن</span>
+          </div>
+        </div>
+
+        <div class="customer-order-body">
+          <div class="customer-order-summary">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-[10px] font-bold text-gray-400">حالة رابط الطلب</p>
+                <p id="customerLinkStatus" class="text-xs font-black text-gray-700 mt-1">جارٍ التحقق من رابط الطلب...</p>
+              </div>
+              <div class="w-11 h-11 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-xl">📦</div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="staff-only-track bg-white rounded-2xl shadow-lg p-5 border space-y-4">
@@ -1132,25 +1230,86 @@
       </div>
       <div id="customerOrdersResults" class="staff-only-track space-y-3"><div class="bg-white rounded-2xl shadow-lg p-5 border text-center text-xs text-gray-400">استخدم البحث من وضع الموظفين فقط.</div></div>
 
-      <div id="trackResultCard" class="hidden bg-white rounded-2xl shadow-xl p-6 border space-y-4">
-        <div class="flex justify-between items-center border-b pb-2"><div><h2 class="text-base font-black text-red-700">تتبع الطلب 🥩</h2><p id="dispOrderId" class="text-xs font-mono text-gray-400">#---</p></div><span id="badgeStatus" class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">جاري المتابعة</span></div>
-        <div class="bg-gray-50 p-3 rounded-xl space-y-1 text-xs border"><p class="flex justify-between"><span>المندوب المكلف:</span><b id="cDriver" class="text-amber-800">-</b></p><p class="flex justify-between"><span>تاريخ الطلب:</span><b id="cDate" class="formatted-date font-mono text-gray-600">-</b></p></div>
-        <div id="map" class="bg-gray-50 border border-amber-200 rounded-xl p-4 text-center text-xs text-gray-600 space-y-3"><p id="mapTextInfo">اختر أحد طلباتك لعرض حالة المندوب.</p><div class="border-t pt-3 space-y-2"><button id="custShareLocBtn" onclick="toggleCustomerLocationShare()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow flex justify-center items-center gap-1.5">📍 مشاركة موقعي الحالي (GPS) مع المندوب</button><p id="custLocStatus" class="text-[11px] font-bold text-emerald-700 hidden">✅ تم إرسال موقعك للمندوب بنجاح!</p></div></div>
-        <div id="ratingBox" class="bg-amber-50 border border-amber-200 p-4 rounded-xl text-center space-y-3">
-          <div class="flex items-center justify-between gap-2 border-b border-amber-200 pb-2"><h4 class="font-bold text-xs text-amber-900">⭐ تقييم خدمة التوصيل والمندوب</h4><span id="feedbackAvailabilityBadge" class="text-[10px] font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-600">🔒 متاح بعد التسليم</span></div>
-          <p id="feedbackLockedMsg" class="text-[10px] text-gray-600 font-semibold bg-white/70 border border-amber-100 rounded-lg p-2">💡 يمكنك تقييم المندوب وكتابة تعليقك بعد تحول حالة الطلب إلى <b>تم التسليم بنجاح ✅</b>.</p>
-          <div class="flex justify-center gap-2" id="starContainer" aria-label="اختيار تقييم من 1 إلى 5 نجوم">
-            <button type="button" onclick="setStarRating(1)" onmouseenter="previewStarRating(1)" onmouseleave="restoreStarRating()" onfocus="previewStarRating(1)" onblur="restoreStarRating()" class="star-btn" title="1 نجمة" aria-label="تقييم نجمة واحدة" disabled>☆</button>
-            <button type="button" onclick="setStarRating(2)" onmouseenter="previewStarRating(2)" onmouseleave="restoreStarRating()" onfocus="previewStarRating(2)" onblur="restoreStarRating()" class="star-btn" title="2 نجمتان" aria-label="تقييم نجمتين" disabled>☆</button>
-            <button type="button" onclick="setStarRating(3)" onmouseenter="previewStarRating(3)" onmouseleave="restoreStarRating()" onfocus="previewStarRating(3)" onblur="restoreStarRating()" class="star-btn" title="3 نجوم" aria-label="تقييم ثلاث نجوم" disabled>☆</button>
-            <button type="button" onclick="setStarRating(4)" onmouseenter="previewStarRating(4)" onmouseleave="restoreStarRating()" onfocus="previewStarRating(4)" onblur="restoreStarRating()" class="star-btn" title="4 نجوم" aria-label="تقييم أربع نجوم" disabled>☆</button>
-            <button type="button" onclick="setStarRating(5)" onmouseenter="previewStarRating(5)" onmouseleave="restoreStarRating()" onfocus="previewStarRating(5)" onblur="restoreStarRating()" class="star-btn" title="5 نجوم" aria-label="تقييم خمس نجوم" disabled>☆</button>
+      <div id="trackResultCard" class="hidden customer-public-shell">
+        <div class="customer-brand-bar">
+          <div class="flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-[10px] font-bold text-white/70">طلبك الحالي</p>
+              <p id="dispOrderId" class="text-xl font-black font-mono truncate">#---</p>
+            </div>
+            <span id="badgeStatus" class="bg-white/10 border border-white/15 text-white text-[10px] font-black px-3 py-1.5 rounded-full">جاري المتابعة</span>
           </div>
-          <div><label class="block text-right text-[11px] font-bold text-gray-700 mb-1">اكتب تعليقك أو رأيك في المندوب والخدمة:</label><textarea id="custCommentText" rows="2" placeholder="اكتب ملاحظاتك هنا..." class="w-full border p-2 rounded-xl text-xs bg-white" disabled></textarea></div>
-          <button id="submitFeedbackBtn" type="button" onclick="submitFullFeedback()" class="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-bold py-2 rounded-xl text-xs shadow" disabled>إرسال التقييم والتعليق 🚀</button>
-          <p id="ratingSubmittedMsg" class="text-xs text-emerald-700 font-bold hidden"></p>
         </div>
-        <div id="publicCommentsSection" class="pt-4 border-t space-y-3"><h4 class="font-bold text-xs text-gray-800 flex items-center gap-1"><span>💬 آراء وتقييمات العملاء العامة:</span></h4><div id="publicCommentsContainer" class="space-y-2 max-h-60 overflow-y-auto"><p class="text-[11px] text-gray-400 text-center">لا توجد آراء منشورة حالياً.</p></div></div>
+
+        <div class="customer-order-body space-y-4">
+          <div class="grid grid-cols-2 gap-2">
+            <div class="customer-kpi">
+              <p class="text-[9px] text-gray-400 font-bold">المندوب</p>
+              <p id="cDriver" class="text-xs font-black text-amber-800 mt-1">-</p>
+            </div>
+            <div class="customer-kpi">
+              <p class="text-[9px] text-gray-400 font-bold">تاريخ الطلب</p>
+              <p id="cDate" class="formatted-date text-xs font-black text-gray-700 mt-1">-</p>
+            </div>
+            <div class="customer-kpi col-span-2">
+              <p class="text-[9px] text-gray-400 font-bold">إجمالي الفاتورة</p>
+              <p id="cTotal" class="text-sm font-black text-red-700 mt-1">-</p>
+            </div>
+          </div>
+
+          <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <div>
+                <p class="text-xs font-black text-gray-800">رحلة طلبك</p>
+                <p class="text-[10px] text-gray-400 mt-0.5">تتحدث الحالة تلقائيًا</p>
+              </div>
+              <span class="text-[10px] font-black bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full">LIVE</span>
+            </div>
+            <div id="customerTimeline" class="track-timeline">
+              <div class="timeline-step" data-status-key="preparing"><div class="timeline-dot">1</div><div><div class="timeline-title">تم استلام الطلب</div><div class="timeline-meta">الطلب داخل النظام</div></div></div>
+              <div class="timeline-step" data-status-key="preparing"><div class="timeline-dot">2</div><div><div class="timeline-title">جاري تجهيز الطلب</div><div class="timeline-meta">الجزارة تجهز طلبك</div></div></div>
+              <div class="timeline-step" data-status-key="delivery"><div class="timeline-dot">3</div><div><div class="timeline-title">خرج للتوصيل</div><div class="timeline-meta">المندوب في الطريق إليك</div></div></div>
+              <div class="timeline-step" data-status-key="delivered"><div class="timeline-dot">4</div><div><div class="timeline-title">تم التسليم</div><div class="timeline-meta">نأمل أن تنال الخدمة إعجابك</div></div></div>
+            </div>
+          </div>
+
+          <div class="customer-map-card">
+            <div class="flex items-center justify-between gap-2 mb-2 px-1">
+              <div><p class="text-xs font-black text-gray-800">📍 موقع المندوب</p><p class="text-[10px] text-gray-400 mt-0.5">يظهر عند تفعيل الموقع الحي</p></div>
+              <span class="text-[10px] font-black text-blue-700 bg-blue-50 px-2 py-1 rounded-full">GPS</span>
+            </div>
+            <div class="customer-map-inner" id="map">
+              <p id="mapTextInfo">اختر أحد طلباتك لعرض حالة المندوب.</p>
+              <div class="w-full border-t border-gray-200 pt-3 space-y-2">
+                <button id="custShareLocBtn" onclick="toggleCustomerLocationShare()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow flex justify-center items-center gap-1.5">📍 مشاركة موقعي الحالي مع المندوب</button>
+                <p id="custLocStatus" class="text-[11px] font-bold text-emerald-700 hidden">✅ تم إرسال موقعك للمندوب بنجاح!</p>
+              </div>
+            </div>
+          </div>
+
+          <div id="ratingBox" class="customer-feedback-card">
+            <div class="flex items-center justify-between gap-2 border-b border-amber-200/70 pb-2">
+              <div><h4 class="font-black text-xs text-amber-900">⭐ تقييم الخدمة</h4><p class="text-[10px] text-gray-500 mt-0.5">رأيك يساعدنا نحسن خدمتك</p></div>
+              <span id="feedbackAvailabilityBadge" class="text-[10px] font-black px-2 py-1 rounded-full bg-gray-100 text-gray-600">🔒 بعد التسليم</span>
+            </div>
+            <p id="feedbackLockedMsg" class="text-[10px] text-gray-600 font-semibold bg-white/75 border border-amber-100 rounded-xl p-2.5 mt-3">💡 يمكنك تقييم المندوب وكتابة تعليقك بعد تحول حالة الطلب إلى <b>تم التسليم بنجاح ✅</b>.</p>
+            <div class="flex justify-center gap-2 py-2" id="starContainer" aria-label="اختيار تقييم من 1 إلى 5 نجوم">
+              <button type="button" onclick="setStarRating(1)" onmouseenter="previewStarRating(1)" onmouseleave="restoreStarRating()" onfocus="previewStarRating(1)" onblur="restoreStarRating()" class="star-btn" title="1 نجمة" aria-label="تقييم نجمة واحدة" disabled>☆</button>
+              <button type="button" onclick="setStarRating(2)" onmouseenter="previewStarRating(2)" onmouseleave="restoreStarRating()" onfocus="previewStarRating(2)" onblur="restoreStarRating()" class="star-btn" title="2 نجمتان" aria-label="تقييم نجمتين" disabled>☆</button>
+              <button type="button" onclick="setStarRating(3)" onmouseenter="previewStarRating(3)" onmouseleave="restoreStarRating()" onfocus="previewStarRating(3)" onblur="restoreStarRating()" class="star-btn" title="3 نجوم" aria-label="تقييم ثلاث نجوم" disabled>☆</button>
+              <button type="button" onclick="setStarRating(4)" onmouseenter="previewStarRating(4)" onmouseleave="restoreStarRating()" onfocus="previewStarRating(4)" onblur="restoreStarRating()" class="star-btn" title="4 نجوم" aria-label="تقييم أربع نجوم" disabled>☆</button>
+              <button type="button" onclick="setStarRating(5)" onmouseenter="previewStarRating(5)" onmouseleave="restoreStarRating()" onfocus="previewStarRating(5)" onblur="restoreStarRating()" class="star-btn" title="5 نجوم" aria-label="تقييم خمس نجوم" disabled>☆</button>
+            </div>
+            <div><label class="block text-right text-[11px] font-bold text-gray-700 mb-1">اكتب تعليقك</label><textarea id="custCommentText" rows="3" placeholder="اكتب رأيك في المندوب والخدمة..." class="w-full border p-2.5 rounded-xl text-xs bg-white" disabled></textarea></div>
+            <button id="submitFeedbackBtn" type="button" onclick="submitFullFeedback()" class="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-bold py-2.5 rounded-xl text-xs shadow mt-2" disabled>إرسال التقييم والتعليق 🚀</button>
+            <p id="ratingSubmittedMsg" class="text-xs text-emerald-700 font-bold hidden mt-2"></p>
+          </div>
+
+          <div id="publicCommentsSection" class="customer-testimonials space-y-3">
+            <div class="flex items-center justify-between gap-2"><h4 class="font-black text-xs text-gray-800">💬 آراء العملاء</h4><span class="text-[10px] text-gray-400">تقييمات منشورة</span></div>
+            <div id="publicCommentsContainer" class="space-y-2 max-h-60 overflow-y-auto"><p class="text-[11px] text-gray-400 text-center">لا توجد آراء منشورة حالياً.</p></div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -2563,7 +2722,22 @@
     function renderCustomerOrderResults(results){const container=document.getElementById('customerOrdersResults');if(!container)return;const keys=Object.keys(results||{}).sort((a,b)=>(`${results[b]?.date||''} ${results[b]?.time||''}`).localeCompare(`${results[a]?.date||''} ${results[a]?.time||''}`));if(!keys.length){container.innerHTML='<div class="bg-white rounded-2xl shadow-lg p-5 border text-center text-xs text-red-600 font-bold">لم نجد طلبات مطابقة للبيانات المدخلة.</div>';return;}container.innerHTML=keys.map(key=>{const o=results[key]||{},amount=Number(o.totalCash||((o.orderPrice||0)+(o.deliveryPrice||0)+(o.paymentFee||0)));return`<div class="bg-white rounded-2xl shadow-lg p-4 border border-amber-100 space-y-2"><div class="flex justify-between items-center gap-2"><b class="font-mono text-red-700">#${escapeHtml(o.orderId||key)}</b><span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full text-[10px] font-bold">${escapeHtml(o.status||'')}</span></div><div class="grid grid-cols-2 gap-2 text-[10px] bg-gray-50 rounded-xl p-2 border"><span>📅 ${escapeHtml(formatDateDMY(o.date||'-'))}</span><span>💰 ${amount.toLocaleString('ar-EG')} ج.م</span><span>🛵 ${escapeHtml(o.driver||'غير محدد')}</span><span>📍 ${o.lat&&o.lng?'الموقع متاح':'لا يوجد GPS'}</span></div><button type="button" onclick="openCustomerOrder('${key}')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-xl text-xs shadow">فتح وتتبع الطلب 📍</button></div>`;}).join('');}
     async function searchCustomerOrder(){if(APP_MODE!=='staff')return alert('صفحة العميل لا تسمح بالبحث. استخدم رابط الطلب المرسل لك عبر WhatsApp فقط.');const name=document.getElementById('custIdentityName')?.value.trim()||'',phone=document.getElementById('custIdentityPhone')?.value.trim()||'',status=document.getElementById('customerIdentityStatus');if(!name&&!phone){status.innerText='⚠️ اكتب اسم العميل أو رقم الهاتف على الأقل.';return;}status.innerText='🔎 جارٍ البحث...';status.className='text-[10px] font-bold text-center text-blue-700';try{const results=await queryCustomerOrdersByIdentity(name,phone);currentCustomerSearchResults=results;currentCustomerVerified=Object.keys(results).length>0;renderCustomerOrderResults(results);status.innerText=currentCustomerVerified?`✅ تم التحقق — وجدنا ${Object.keys(results).length} طلب/طلبات.`:'❌ لا توجد طلبات مطابقة.';status.className=`text-[10px] font-bold text-center ${currentCustomerVerified?'text-emerald-700':'text-red-600'}`;if(currentRequestedOrderId&&results[currentRequestedOrderId])openCustomerOrder(currentRequestedOrderId);else if(Object.keys(results).length===1)openCustomerOrder(Object.keys(results)[0]);else document.getElementById('trackResultCard').classList.add('hidden');}catch(err){console.error(err);status.innerText='تعذر تنفيذ البحث حالياً.';}}
     function openCustomerOrder(orderKey){if(APP_MODE!=='staff')return alert('استخدم رابط الطلب الخاص بك عبر WhatsApp.');if(!currentCustomerVerified||!currentCustomerSearchResults[orderKey])return alert('لا يمكن فتح هذا الطلب قبل التحقق من اسم العميل أو رقم الهاتف.');currentTrackOrderId=orderKey;if(customerOrderRef)try{customerOrderRef.off();}catch(e){}customerOrderRef=db.ref('orders/'+orderKey);customerOrderRef.on('value',snap=>{const data=snap.val();if(data)applyCustomerTrackData(data,orderKey);});}
-    function applyCustomerTrackData(data,orderKey){document.getElementById('trackResultCard').classList.remove('hidden');document.getElementById('dispOrderId').innerText='#'+(data.orderId||orderKey);document.getElementById('cDriver').innerText=data.driver||'جاري التحديد...';document.getElementById('cDate').innerText=formatDateDMY(data.date)+' '+(data.time||'');document.getElementById('badgeStatus').innerText=data.status||'جاري المتابعة';document.getElementById('mapTextInfo').innerHTML=data.lat&&data.lng?`<div class="space-y-2"><p class="font-bold text-emerald-600">🛵 المندوب في الطريق إليك الآن!</p><a href="https://www.google.com/maps?q=${encodeURIComponent(data.lat+','+data.lng)}" target="_blank" rel="noopener" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow">📍 فتح موقع المندوب الحي على Google Maps</a></div>`:'⏳ الطلب قيد التحضير أو المندوب لم يقم بتفعيل اللوكيشن الحي بعد.';currentTrackOrderStatus=data.status||'';const delivered=currentTrackOrderStatus==='تم التسليم بنجاح ✅',locked=document.getElementById('feedbackLockedMsg'),badge=document.getElementById('feedbackAvailabilityBadge'),submit=document.getElementById('submitFeedbackBtn'),comment=document.getElementById('custCommentText'),stars=document.querySelectorAll('#starContainer .star-btn');if(delivered){locked.classList.add('hidden');badge.innerText='✅ التقييم متاح الآن';badge.className='text-[10px] font-bold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700';submit.disabled=false;comment.disabled=false;stars.forEach(b=>b.disabled=false);selectedStarsCount=Number(data.rating||0);highlightStarRating(selectedStarsCount);comment.value=data.comment||'';const msg=document.getElementById('ratingSubmittedMsg');if(data.rating){msg.innerText=`✅ تم تسجيل تقييمك بـ (${data.rating} ⭐).`;msg.classList.remove('hidden');}else msg.classList.add('hidden');}else{locked.classList.remove('hidden');badge.innerText='🔒 متاح بعد التسليم';badge.className='text-[10px] font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-600';submit.disabled=true;comment.disabled=true;stars.forEach(b=>b.disabled=true);selectedStarsCount=0;highlightStarRating(0);comment.value='';document.getElementById('ratingSubmittedMsg').classList.add('hidden');}}
+    function updateCustomerTimeline(status){
+      const steps=[...document.querySelectorAll('#customerTimeline .timeline-step')];
+      if(!steps.length)return;
+      const normalized=String(status||'');
+      let activeIndex=0;
+      if(normalized.includes('خرج للتوصيل')) activeIndex=2;
+      else if(normalized.includes('تم التسليم')) activeIndex=3;
+      else if(normalized.includes('جاري تحضير')) activeIndex=1;
+      steps.forEach((step,index)=>{
+        step.classList.remove('active','done');
+        if(index < activeIndex) step.classList.add('done');
+        else if(index === activeIndex) step.classList.add(activeIndex===3?'done':'active');
+      });
+    }
+
+    function applyCustomerTrackData(data,orderKey){document.getElementById('trackResultCard').classList.remove('hidden');document.getElementById('dispOrderId').innerText='#'+(data.orderId||orderKey);document.getElementById('cDriver').innerText=data.driver||'جاري التحديد...';document.getElementById('cDate').innerText=formatDateDMY(data.date)+' '+(data.time||'');const customerTotal=Number(data.totalCash||((data.orderPrice||0)+(data.deliveryPrice||0)+(data.paymentFee||0)));const totalEl=document.getElementById('cTotal');if(totalEl)totalEl.innerText=customerTotal.toLocaleString('ar-EG')+' ج.م';document.getElementById('badgeStatus').innerText=data.status||'جاري المتابعة';updateCustomerTimeline(data.status||'');document.getElementById('mapTextInfo').innerHTML=data.lat&&data.lng?`<div class="space-y-2"><p class="font-bold text-emerald-600">🛵 المندوب في الطريق إليك الآن!</p><a href="https://www.google.com/maps?q=${encodeURIComponent(data.lat+','+data.lng)}" target="_blank" rel="noopener" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow">📍 فتح موقع المندوب الحي على Google Maps</a></div>`:'⏳ الطلب قيد التحضير أو المندوب لم يقم بتفعيل اللوكيشن الحي بعد.';currentTrackOrderStatus=data.status||'';const delivered=currentTrackOrderStatus==='تم التسليم بنجاح ✅',locked=document.getElementById('feedbackLockedMsg'),badge=document.getElementById('feedbackAvailabilityBadge'),submit=document.getElementById('submitFeedbackBtn'),comment=document.getElementById('custCommentText'),stars=document.querySelectorAll('#starContainer .star-btn');if(delivered){locked.classList.add('hidden');badge.innerText='✅ التقييم متاح الآن';badge.className='text-[10px] font-bold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700';submit.disabled=false;comment.disabled=false;stars.forEach(b=>b.disabled=false);selectedStarsCount=Number(data.rating||0);highlightStarRating(selectedStarsCount);comment.value=data.comment||'';const msg=document.getElementById('ratingSubmittedMsg');if(data.rating){msg.innerText=`✅ تم تسجيل تقييمك بـ (${data.rating} ⭐).`;msg.classList.remove('hidden');}else msg.classList.add('hidden');}else{locked.classList.remove('hidden');badge.innerText='🔒 متاح بعد التسليم';badge.className='text-[10px] font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-600';submit.disabled=true;comment.disabled=true;stars.forEach(b=>b.disabled=true);selectedStarsCount=0;highlightStarRating(0);comment.value='';document.getElementById('ratingSubmittedMsg').classList.add('hidden');}}
     function toggleCustomerLocationShare(){if(!currentTrackOrderId)return alert('رابط الطلب غير محمّل بعد.');if(!navigator.geolocation)return alert('متصفحك لا يدعم تحديد الموقع الجغرافي');if(custWatchId){navigator.geolocation.clearWatch(custWatchId);custWatchId=null;document.getElementById('custShareLocBtn').innerText='📍 مشاركة موقعي الحالي (GPS) مع المندوب';document.getElementById('custLocStatus').classList.add('hidden');return;}custWatchId=navigator.geolocation.watchPosition(pos=>{db.ref('orders/'+currentTrackOrderId).update({custLat:pos.coords.latitude,custLng:pos.coords.longitude,customerLocationUpdatedAt:Date.now()});document.getElementById('custShareLocBtn').innerText='🔄 يتم تحديث مشاركة موقعك حياً...';document.getElementById('custLocStatus').classList.remove('hidden');},()=>alert('تعذر الوصول إلى موقعك الجغرافي (GPS)'),{enableHighAccuracy:true});}
 
     function highlightStarRating(stars) {
