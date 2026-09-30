@@ -1032,25 +1032,81 @@
       }
     }
 
-    function performLogin() {
+    async function performLogin() {
       if(APP_MODE !== 'staff') return;
-      const username = document.getElementById('loginUser').value.trim();
+      const loginValue = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPass').value.trim();
-      if(!username || !pass) return alert('يرجى كتابة اسم المستخدم وكلمة المرور');
-      db.ref('users').orderByChild('username').equalTo(username).once('value').then(snap => {
-        const data = snap.val() || {};
+      if(!loginValue || !pass) return alert('يرجى كتابة اسم المستخدم وكلمة المرور');
+
+      try {
+        // نبحث أولاً عن سجل النظام باسم المستخدم أو البريد المرتبط بحساب Firebase.
         let found = null;
-        Object.keys(data).forEach(id => { if(String(data[id]?.pass) === String(pass)) found = {...data[id], key:id}; });
-        if(!found) return alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
+        let snap = await db.ref('users').orderByChild('username').equalTo(loginValue).once('value');
+        let data = snap.val() || {};
+        Object.keys(data).forEach(id => { if(!found) found = {...data[id], key:id}; });
+
+        if(!found && loginValue.includes('@')) {
+          snap = await db.ref('users').orderByChild('authEmail').equalTo(loginValue.toLowerCase()).once('value');
+          data = snap.val() || {};
+          Object.keys(data).forEach(id => { if(!found) found = {...data[id], key:id}; });
+        }
+
+        // حساب المالك asma يمكن الدخول إليه بالبريد المرتبط به حتى لو كان سجل RTDB يستخدم username=asma.
+        if(!found) {
+          const mappedUsername = Object.keys(AUTH_EMAILS).find(u => AUTH_EMAILS[u].toLowerCase() === loginValue.toLowerCase());
+          if(mappedUsername) {
+            snap = await db.ref('users').orderByChild('username').equalTo(mappedUsername).once('value');
+            data = snap.val() || {};
+            Object.keys(data).forEach(id => { if(!found) found = {...data[id], key:id}; });
+          }
+        }
+
+        if(!found) return alert('اسم المستخدم أو البريد غير مسجل بالنظام.');
+
+        // التحقق من كلمة المرور يتم من Firebase Authentication أولاً.
+        // هذا يسمح لك بتغيير كلمة المرور من Firebase دون أن تتعطل شاشة الدخول القديمة.
+        const authEmail = found.authEmail || authEmailForUsername(found.username);
+        let authUser;
+        try {
+          if(!authReady) throw new Error('AUTH_NOT_READY');
+          const cred = await firebaseAuth.signInWithEmailAndPassword(authEmail, pass);
+          authUser = cred.user;
+        } catch(authErr) {
+          // للحسابات القديمة غير المجهزة بعد: نسمح بالدخول بالبيانات القديمة فقط كمرحلة انتقالية.
+          if(String(found.pass) !== String(pass)) {
+            console.error('Firebase login failed:', authErr);
+            return alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
+          }
+          try {
+            authUser = await ensureFirebaseAuthAccount(found);
+            await firebaseAuth.signInWithEmailAndPassword(authEmail, pass);
+          } catch(provisionErr) {
+            console.error('Firebase account provisioning failed:', provisionErr);
+            return alert('تعذر إكمال تسجيل الدخول عبر Firebase Authentication حالياً.');
+          }
+        }
+
+        // مزامنة كلمة المرور الحالية في سجل النظام حتى لا يحدث تعارض بعد Reset Password.
+        if(found.key && String(found.pass || '') !== String(pass)) {
+          await db.ref('users/' + found.key).update({ pass, authEmail, authUid: authUser?.uid || found.authUid || null, authMigratedAt: Date.now() });
+          found.pass = pass;
+          found.authEmail = authEmail;
+          if(authUser?.uid) found.authUid = authUser.uid;
+        } else if(found.key && authUser?.uid && !found.authUid) {
+          await db.ref('users/' + found.key).update({ authUid: authUser.uid, authEmail, authMigratedAt: Date.now() });
+          found.authUid = authUser.uid;
+          found.authEmail = authEmail;
+        }
+
         const remember = document.getElementById('rememberMe')?.checked;
-        if(remember) localStorage.setItem('hamaksha_remembered_login', JSON.stringify({username, pass})); else localStorage.removeItem('hamaksha_remembered_login');
-        signInEmployeeWithFirebaseAuth(found).then(()=>loginSuccess(found)).catch(authErr=>{
-          console.warn('Firebase Authentication غير متزامن مع كلمة مرور النظام الحالية لهذا الحساب:', authErr);
-          // تسجيل الدخول بالنظام الحالي يظل فعالاً حتى يتم توحيد كلمة مرور Firebase Authentication.
-          // لا نعرض رسالة خطأ للمستخدم لأن تسجيل الدخول الأساسي نجح بالفعل.
-          loginSuccess(found);
-        });
-      }).catch(err => { console.error(err); alert('تعذر الاتصال ببيانات المستخدمين حالياً.'); });
+        if(remember) localStorage.setItem('hamaksha_remembered_login', JSON.stringify({username:loginValue, pass}));
+        else localStorage.removeItem('hamaksha_remembered_login');
+
+        loginSuccess(found);
+      } catch(err) {
+        console.error(err);
+        alert('تعذر إكمال تسجيل الدخول حالياً.');
+      }
     }
 
     function stopScopedListeners() {
