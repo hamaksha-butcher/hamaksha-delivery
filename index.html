@@ -147,10 +147,97 @@
       }
     }
     :root {
-      --primary-color: #dc2626;
+      --primary-color: #7f1d1d;
       --secondary-color: #f59e0b;
-      --bg-color: #fffbeb;
+      --bg-color: #f6f7fb;
+      --surface-color: #ffffff;
+      --surface-soft: #f8fafc;
+      --text-color: #172033;
+      --muted-color: #64748b;
+      --border-color: #e5e7eb;
+      --sidebar-color: #111827;
+      --sidebar-accent: #f59e0b;
+      --ring-color: rgba(127,29,29,.18);
+      --shadow-color: rgba(15,23,42,.08);
+      --radius-lg: 18px;
     }
+
+    /* ===== نظام الثيمات العصري ===== */
+    body {
+      background: var(--bg-color) !important;
+      color: var(--text-color);
+      transition: background-color .25s ease, color .25s ease;
+    }
+    body.theme-modern .bg-white { background-color: var(--surface-color) !important; }
+    body.theme-modern .bg-gray-50,
+    body.theme-modern .bg-gray-100 { background-color: var(--surface-soft) !important; }
+    body.theme-modern .text-gray-800,
+    body.theme-modern .text-gray-700,
+    body.theme-modern .text-gray-600 { color: var(--text-color) !important; }
+    body.theme-modern .text-gray-500,
+    body.theme-modern .text-gray-400 { color: var(--muted-color) !important; }
+    body.theme-modern .border,
+    body.theme-modern .border-gray-100,
+    body.theme-modern .border-gray-200,
+    body.theme-modern .border-amber-100 { border-color: var(--border-color) !important; }
+    body.theme-modern input,
+    body.theme-modern textarea,
+    body.theme-modern select {
+      border-color: var(--border-color);
+      background-color: var(--surface-color);
+      color: var(--text-color);
+      outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+    }
+    body.theme-modern input:focus,
+    body.theme-modern textarea:focus,
+    body.theme-modern select:focus {
+      border-color: var(--primary-color) !important;
+      box-shadow: 0 0 0 4px var(--ring-color);
+    }
+    body.theme-modern .shadow,
+    body.theme-modern .shadow-md,
+    body.theme-modern .shadow-lg,
+    body.theme-modern .shadow-xl,
+    body.theme-modern .shadow-2xl {
+      box-shadow: 0 14px 34px var(--shadow-color) !important;
+    }
+    body.theme-modern .bg-red-600,
+    body.theme-modern .bg-red-700 { background-color: var(--primary-color) !important; }
+    body.theme-modern .hover\:bg-red-700:hover,
+    body.theme-modern .hover\:bg-red-800:hover { filter: brightness(.92); }
+    body.theme-modern .text-red-600,
+    body.theme-modern .text-red-700 { color: var(--primary-color) !important; }
+    body.theme-modern .bg-amber-400,
+    body.theme-modern .bg-amber-500,
+    body.theme-modern .bg-amber-600 { background-color: var(--secondary-color) !important; }
+    body.theme-modern .text-amber-700,
+    body.theme-modern .text-amber-800,
+    body.theme-modern .text-amber-900 { color: color-mix(in srgb, var(--secondary-color) 78%, #111827) !important; }
+    body.theme-modern .app-sidebar { background: var(--sidebar-color) !important; }
+    body.theme-modern .mobile-topbar { background: var(--sidebar-color) !important; }
+    body.theme-modern .tab-btn.active { box-shadow: inset -3px 0 0 var(--sidebar-accent) !important; }
+
+    /* كروت النظام: شكل حديث وهادئ */
+    body.theme-modern main.app-main > section > div,
+    body.theme-modern .print-area,
+    body.theme-modern .bg-white {
+      border-radius: var(--radius-lg);
+    }
+
+    /* تحسين عناصر اختيار الثيم */
+    .theme-options { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:10px; }
+    .theme-choice {
+      position:relative; min-height:60px; border:1px solid var(--border-color); border-radius:16px;
+      background:var(--surface-soft); cursor:pointer; padding:8px; text-align:right;
+      transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+    .theme-choice:hover { transform:translateY(-2px); box-shadow:0 10px 24px var(--shadow-color); }
+    .theme-choice.active { border-color:var(--primary-color); box-shadow:0 0 0 3px var(--ring-color); }
+    .theme-swatch { width:100%; height:24px; border-radius:10px; margin-bottom:6px; }
+    .theme-choice span:last-child { display:block; font-size:9px; font-weight:800; color:var(--text-color); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    @media (max-width: 900px) { .theme-options { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+    @media (max-width: 520px) { .theme-options { grid-template-columns:repeat(2,minmax(0,1fr)); } }
     /* ضبط اتجاه حقول التاريخ لمنع انعكاس الصيغة */
     input[type="date"] {
       direction: ltr !important;
@@ -408,11 +495,25 @@
             <span class="text-xl">🎨</span>
             <h3 class="font-bold text-xs text-gray-800">تخصيص الثيم:</h3>
           </div>
-          <div class="flex items-center gap-3">
-            <button onclick="changeTheme('#dc2626', '#f59e0b', '#fffbeb')" class="w-6 h-6 rounded-full bg-red-600 shadow" title="أحمر حمكشة"></button>
-            <button onclick="changeTheme('#1e3a8a', '#3b82f6', '#eff6ff')" class="w-6 h-6 rounded-full bg-blue-900 shadow" title="أزرق"></button>
-            <button onclick="changeTheme('#064e3b', '#10b981', '#ecfdf5')" class="w-6 h-6 rounded-full bg-emerald-900 shadow" title="أخضر"></button>
-            <button onclick="changeTheme('#18181b', '#f59e0b', '#27272a', true)" class="w-6 h-6 rounded-full bg-zinc-900 shadow" title="Dark Mode"></button>
+          <div class="theme-options w-full mt-3" role="group" aria-label="اختيار الثيم">
+            <button type="button" class="theme-choice active" data-theme-choice="hamkasha" onclick="changeThemePreset('hamkasha')">
+              <span class="theme-swatch" style="background:linear-gradient(90deg,#7f1d1d 0 65%,#f59e0b 65% 100%)"></span><span>حمكشة</span>
+            </button>
+            <button type="button" class="theme-choice" data-theme-choice="ocean" onclick="changeThemePreset('ocean')">
+              <span class="theme-swatch" style="background:linear-gradient(90deg,#0f172a 0 65%,#38bdf8 65% 100%)"></span><span>Ocean</span>
+            </button>
+            <button type="button" class="theme-choice" data-theme-choice="emerald" onclick="changeThemePreset('emerald')">
+              <span class="theme-swatch" style="background:linear-gradient(90deg,#064e3b 0 65%,#34d399 65% 100%)"></span><span>Emerald</span>
+            </button>
+            <button type="button" class="theme-choice" data-theme-choice="violet" onclick="changeThemePreset('violet')">
+              <span class="theme-swatch" style="background:linear-gradient(90deg,#312e81 0 65%,#a78bfa 65% 100%)"></span><span>Violet</span>
+            </button>
+            <button type="button" class="theme-choice" data-theme-choice="sunset" onclick="changeThemePreset('sunset')">
+              <span class="theme-swatch" style="background:linear-gradient(90deg,#9a3412 0 65%,#fb923c 65% 100%)"></span><span>Sunset</span>
+            </button>
+            <button type="button" class="theme-choice" data-theme-choice="midnight" onclick="changeThemePreset('midnight')">
+              <span class="theme-swatch" style="background:linear-gradient(90deg,#020617 0 65%,#fbbf24 65% 100%)"></span><span>Midnight</span>
+            </button>
           </div>
         </div>
 
@@ -1260,14 +1361,48 @@
       try { const data=JSON.parse(saved); if(!data?.username) return; db.ref('users').orderByChild('username').equalTo(data.username).once('value').then(snap=>{ const users=snap.val()||{}; let found=null; Object.keys(users).forEach(id=>found={...users[id],key:id}); if(found) loginSuccess(found); else localStorage.removeItem('hamaksha_user'); }); } catch(e) { localStorage.removeItem('hamaksha_user'); }
     }
 
+    const THEME_PRESETS = {
+      hamkasha: { primary:'#7f1d1d', secondary:'#f59e0b', bg:'#f6f7fb', surface:'#ffffff', soft:'#f8fafc', text:'#172033', muted:'#64748b', border:'#e5e7eb', sidebar:'#111827', accent:'#fbbf24', ring:'rgba(127,29,29,.18)', shadow:'rgba(15,23,42,.08)' },
+      ocean: { primary:'#0f4c5c', secondary:'#38bdf8', bg:'#f4f8fb', surface:'#ffffff', soft:'#f0f7fb', text:'#102a43', muted:'#627d98', border:'#dbe7ef', sidebar:'#0b1f2a', accent:'#38bdf8', ring:'rgba(56,189,248,.20)', shadow:'rgba(15,76,92,.10)' },
+      emerald: { primary:'#065f46', secondary:'#34d399', bg:'#f3f8f6', surface:'#ffffff', soft:'#f0fdf7', text:'#16352b', muted:'#647e73', border:'#dbe9e3', sidebar:'#08251d', accent:'#34d399', ring:'rgba(52,211,153,.20)', shadow:'rgba(6,95,70,.10)' },
+      violet: { primary:'#4338ca', secondary:'#a78bfa', bg:'#f6f5fb', surface:'#ffffff', soft:'#f4f3ff', text:'#25213b', muted:'#6b6680', border:'#e6e2f0', sidebar:'#1d1b3a', accent:'#c4b5fd', ring:'rgba(167,139,250,.20)', shadow:'rgba(67,56,202,.10)' },
+      sunset: { primary:'#9a3412', secondary:'#fb923c', bg:'#fbf7f3', surface:'#ffffff', soft:'#fff7ed', text:'#3b2118', muted:'#80675d', border:'#eee1d8', sidebar:'#2a1710', accent:'#fdba74', ring:'rgba(251,146,60,.20)', shadow:'rgba(154,52,18,.10)' },
+      midnight: { primary:'#0f172a', secondary:'#fbbf24', bg:'#0b1120', surface:'#111827', soft:'#172033', text:'#f8fafc', muted:'#94a3b8', border:'#263244', sidebar:'#020617', accent:'#fbbf24', ring:'rgba(251,191,36,.20)', shadow:'rgba(0,0,0,.28)' }
+    };
+
+    function applyThemeVars(theme) {
+      const root=document.documentElement, body=document.body;
+      root.style.setProperty('--primary-color', theme.primary);
+      root.style.setProperty('--secondary-color', theme.secondary);
+      root.style.setProperty('--bg-color', theme.bg);
+      root.style.setProperty('--surface-color', theme.surface);
+      root.style.setProperty('--surface-soft', theme.soft);
+      root.style.setProperty('--text-color', theme.text);
+      root.style.setProperty('--muted-color', theme.muted);
+      root.style.setProperty('--border-color', theme.border);
+      root.style.setProperty('--sidebar-color', theme.sidebar);
+      root.style.setProperty('--sidebar-accent', theme.accent);
+      root.style.setProperty('--ring-color', theme.ring);
+      root.style.setProperty('--shadow-color', theme.shadow);
+      body.classList.add('theme-modern');
+    }
+
+    function changeThemePreset(name, persist=true) {
+      const theme=THEME_PRESETS[name] || THEME_PRESETS.hamkasha;
+      applyThemeVars(theme);
+      document.querySelectorAll('[data-theme-choice]').forEach(btn=>btn.classList.toggle('active', btn.dataset.themeChoice===name));
+      if(persist) localStorage.setItem('hamaksha_theme', name);
+    }
+
     function changeTheme(primary, secondary, bg, isDark = false) {
-      document.documentElement.style.setProperty('--primary-color', primary);
-      document.documentElement.style.setProperty('--secondary-color', secondary);
-      document.getElementById('mainHeader').style.backgroundColor = primary;
-      document.getElementById('mainHeader').style.borderColor = secondary;
-      document.getElementById('mobileTopbar')?.style.setProperty('backgroundColor', primary);
-      document.body.classList.remove('bg-zinc-900','bg-amber-50/40','text-white','text-gray-800');
-      document.body.classList.add(isDark?'bg-zinc-900':'bg-amber-50/40',isDark?'text-white':'text-gray-800');
+      /* توافق خلفي مع الاستدعاءات القديمة */
+      const base = isDark ? THEME_PRESETS.midnight : { ...THEME_PRESETS.hamkasha, primary, secondary, bg };
+      applyThemeVars(base);
+    }
+
+    function loadSavedTheme() {
+      const saved=localStorage.getItem('hamaksha_theme') || 'hamkasha';
+      changeThemePreset(saved,false);
     }
 
     // --- 💳 حساب طريقة الدفع والعمولة والتوتال (إنستا باي = 0 افتراضياً) ---
@@ -2464,7 +2599,7 @@
       document.getElementById('mainHeader')?.style.setProperty('display','none','important');
       document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');switchTab('driver');
     }
-    window.addEventListener('DOMContentLoaded',()=>{startPublicCommentsListener();loadRememberedLogin();if(APP_MODE!=='staff')applyCustomerPublicMode();else{document.body.classList.remove('customer-public-mode');startStaffDataListeners();updateUIByPermissions();checkSavedSession();if(!currentUser)switchTab('admin');}});
+    window.addEventListener('DOMContentLoaded',()=>{loadSavedTheme();startPublicCommentsListener();loadRememberedLogin();if(APP_MODE!=='staff')applyCustomerPublicMode();else{document.body.classList.remove('customer-public-mode');startStaffDataListeners();updateUIByPermissions();checkSavedSession();if(!currentUser)switchTab('admin');}});
 </script>
 </body>
 </html>
