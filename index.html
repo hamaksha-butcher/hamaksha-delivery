@@ -314,6 +314,30 @@
       display: none !important;
     }
 
+
+    /* --- Modern Orders UI --- */
+    .orders-shell { border: 1px solid rgba(148,163,184,.18); }
+    .orders-toolbar { background: linear-gradient(135deg, rgba(127,29,29,.96), rgba(88,28,135,.92)); color: #fff; }
+    .orders-summary-card { background: rgba(255,255,255,.86); backdrop-filter: blur(8px); border: 1px solid rgba(148,163,184,.18); box-shadow: 0 10px 24px rgba(15,23,42,.06); }
+    .orders-filter-shell { background: rgba(248,250,252,.78); border: 1px solid rgba(148,163,184,.18); }
+    .orders-filter-input { border: 1px solid #e2e8f0; transition: all .18s ease; }
+    .orders-filter-input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 12%, transparent); outline: none; }
+    #reportsTable thead th { background: rgba(248,250,252,.96); color: #475569; font-size: 11px; letter-spacing: .01em; }
+    #reportsTable tbody tr { transition: background-color .16s ease, transform .16s ease; }
+    #reportsTable tbody tr:hover { background: rgba(248,250,252,.72); }
+    .order-status-select { min-width: 126px; border-radius: 10px; padding: .4rem .55rem; font-size: 10px; font-weight: 800; cursor: pointer; }
+    .order-status-preparing { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
+    .order-status-delivery { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .order-status-delivered { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+    .order-action-btn { border-radius: 10px; padding: .45rem .6rem; font-size: 10px; font-weight: 800; transition: transform .15s ease, box-shadow .15s ease; }
+    .order-action-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 12px rgba(15,23,42,.08); }
+    .orders-empty-state { padding: 36px 16px; text-align: center; color: #94a3b8; }
+    @media (max-width: 640px) {
+      .orders-toolbar { border-radius: 18px; }
+      #reportsTable { min-width: 760px; }
+      .orders-summary-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+
     @media print {
       #mainHeader, #mobileTopbar, #sidebarOverlay, #userBadgeBar, .no-print, #adminAuthLock, .theme-selector, #orderForm, #usersList, form, button, select, input {
         display: none !important;
@@ -730,50 +754,85 @@
 
           </div>
 
-          <!-- جدول إدارة الطلبات -->
-          <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 lg:col-span-2 space-y-4 print-area">
-            <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-3">
-              <div>
-                <h2 class="text-base font-bold text-gray-800">📊 سجل الطلبات الحية</h2>
-                <p class="text-[11px] text-gray-400 font-semibold">استعراض وتتبع الطلبات المسجلة</p>
+          <!-- إدارة الطلبات — واجهة حديثة -->
+          <div class="bg-white rounded-3xl shadow-xl orders-shell lg:col-span-2 space-y-5 print-area overflow-hidden">
+            <div class="orders-toolbar p-5 sm:p-6">
+              <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-2xl">📦</span>
+                    <h2 class="text-xl font-black">إدارة الطلبات</h2>
+                    <span id="ordersCount" class="bg-white/15 border border-white/20 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">0 طلبات</span>
+                  </div>
+                  <p class="text-[11px] text-white/75 font-semibold mt-1">متابعة الطلبات، الحالات، التحصيل وإجراءات كل طلب من مكان واحد</p>
+                </div>
+                <button type="button" onclick="switchTab('admin'); setTimeout(() => document.getElementById('custName')?.focus(), 100)" class="bg-white text-slate-900 hover:bg-slate-100 px-4 py-2.5 rounded-xl font-black text-xs shadow-lg no-print">➕ طلب جديد</button>
               </div>
-              <span id="ordersCount" class="bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full">0 طلبات</span>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 bg-gray-50 p-2.5 rounded-xl border no-print">
-              <input type="text" id="searchFilter" oninput="applyFilters()" placeholder="🔍 بحث بالرقم أو العميل..." class="border p-2 rounded-lg text-xs bg-white">
-              <select id="driverFilter" onchange="applyFilters()" class="border p-2 rounded-lg text-xs bg-white filter-driver-dropdown">
-                <option value="ALL">جميع المناديب</option>
-              </select>
-              <select id="statusFilter" onchange="applyFilters()" class="border p-2 rounded-lg text-xs bg-white">
-                <option value="ALL">كل الحالات</option>
-                <option value="جاري تحضير اللحوم 🥩">جاري التحضير</option>
-                <option value="خرج للتوصيل 🛵">خرج للتوصيل</option>
-                <option value="تم التسليم بنجاح ✅">تم التسليم</option>
-              </select>
-              <input type="date" id="dateFilter" onchange="applyFilters()" dir="ltr" class="border p-2 rounded-lg text-xs bg-white text-right">
+            <div class="px-5 sm:px-6 pb-1">
+              <div class="grid orders-summary-grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="orders-summary-card rounded-2xl p-3">
+                  <div class="text-[10px] font-bold text-slate-500">إجمالي النتائج</div>
+                  <div id="orderSummaryTotal" class="text-xl font-black text-slate-900 mt-1">0</div>
+                </div>
+                <div class="orders-summary-card rounded-2xl p-3">
+                  <div class="text-[10px] font-bold text-amber-700">قيد التحضير</div>
+                  <div id="orderSummaryPreparing" class="text-xl font-black text-amber-900 mt-1">0</div>
+                </div>
+                <div class="orders-summary-card rounded-2xl p-3">
+                  <div class="text-[10px] font-bold text-blue-700">قيد التوصيل</div>
+                  <div id="orderSummaryDelivery" class="text-xl font-black text-blue-900 mt-1">0</div>
+                </div>
+                <div class="orders-summary-card rounded-2xl p-3">
+                  <div class="text-[10px] font-bold text-emerald-700">تم التسليم</div>
+                  <div id="orderSummaryDelivered" class="text-xl font-black text-emerald-900 mt-1">0</div>
+                </div>
+              </div>
             </div>
 
-            <div id="exportActionBtns" class="flex flex-wrap items-center justify-end gap-2 pt-1 no-print hidden">
-              <button onclick="exportToPDF()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">📄 تصدير PDF</button>
-              <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">📊 تصدير Excel</button>
-              <button onclick="printReport()" class="bg-slate-700 hover:bg-slate-800 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">🖨️ طباعة ورقية</button>
+            <div class="px-5 sm:px-6 no-print">
+              <div class="orders-filter-shell rounded-2xl p-3 sm:p-4 space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-2 text-xs font-black text-slate-800">🔎 البحث والفلاتر</div>
+                  <button type="button" onclick="resetOrderFilters()" class="text-[10px] font-bold text-slate-500 hover:text-slate-900 px-2.5 py-1.5 rounded-lg bg-white border">مسح الفلاتر</button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+                  <input type="text" id="searchFilter" oninput="applyFilters()" placeholder="ابحث برقم الطلب أو اسم العميل" class="orders-filter-input sm:col-span-2 border p-2.5 rounded-xl text-xs bg-white">
+                  <select id="driverFilter" onchange="applyFilters()" class="orders-filter-input border p-2.5 rounded-xl text-xs bg-white filter-driver-dropdown">
+                    <option value="ALL">🛵 جميع المناديب</option>
+                  </select>
+                  <select id="statusFilter" onchange="applyFilters()" class="orders-filter-input border p-2.5 rounded-xl text-xs bg-white">
+                    <option value="ALL">📦 كل الحالات</option>
+                    <option value="جاري تحضير اللحوم 🥩">⏳ جاري التحضير</option>
+                    <option value="خرج للتوصيل 🛵">🛵 خرج للتوصيل</option>
+                    <option value="تم التسليم بنجاح ✅">✅ تم التسليم</option>
+                  </select>
+                  <input type="date" id="dateFilter" onchange="applyFilters()" dir="ltr" class="orders-filter-input border p-2.5 rounded-xl text-xs bg-white text-right">
+                </div>
+              </div>
             </div>
 
-            <div class="overflow-x-auto max-h-[480px] overflow-y-auto rounded-xl border">
+            <div id="exportActionBtns" class="flex flex-wrap items-center justify-end gap-2 px-5 sm:px-6 pt-1 no-print hidden">
+              <button onclick="exportToPDF()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">📄 PDF</button>
+              <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">📊 Excel</button>
+              <button onclick="printReport()" class="bg-slate-700 hover:bg-slate-800 text-white font-bold px-3 py-2 rounded-xl text-xs shadow flex items-center gap-1">🖨️ طباعة</button>
+            </div>
+
+            <div class="overflow-x-auto max-h-[540px] overflow-y-auto border-t">
               <table id="reportsTable" class="w-full text-right text-xs">
-                <thead class="bg-gray-100 font-bold sticky top-0 border-b">
+                <thead class="font-bold sticky top-0 border-b z-10">
                   <tr>
-                    <th class="p-2.5">الطلب والتاريخ</th>
-                    <th class="p-2.5">العميل والتليفون</th>
-                    <th class="p-2.5">المندوب وطريقة الدفع</th>
-                    <th class="p-2.5">المبلغ والعمولة</th>
-                    <th class="p-2.5">حالة الطلب</th>
-                    <th class="p-2.5 text-center no-print">إجراءات</th>
+                    <th class="p-3">الطلب</th>
+                    <th class="p-3">العميل</th>
+                    <th class="p-3">المندوب / الدفع</th>
+                    <th class="p-3">الإجمالي</th>
+                    <th class="p-3">الحالة</th>
+                    <th class="p-3 text-center no-print">الإجراءات</th>
                   </tr>
                 </thead>
-                <tbody id="ordersTableBody" class="divide-y divide-gray-100">
-                  <tr><td colspan="6" class="p-4 text-center text-gray-400">جاري التحميل...</td></tr>
+                <tbody id="ordersTableBody" class="divide-y divide-slate-100">
+                  <tr><td colspan="6" class="orders-empty-state">جاري تحميل الطلبات...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -1676,9 +1735,22 @@
       return '💵 كاش مع المندوب';
     }
 
+    function getOrderStatusClass(status) {
+      if(status === 'تم التسليم بنجاح ✅') return 'order-status-delivered';
+      if(status === 'خرج للتوصيل 🛵') return 'order-status-delivery';
+      return 'order-status-preparing';
+    }
+
+    function resetOrderFilters() {
+      ['searchFilter','dateFilter'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+      const driver = document.getElementById('driverFilter'); if(driver) driver.value='ALL';
+      const status = document.getElementById('statusFilter'); if(status) status.value='ALL';
+      applyFilters();
+    }
+
     function applyFilters() {
       if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin') return;
-      const search = (document.getElementById('searchFilter')?.value||'').toLowerCase();
+      const search = (document.getElementById('searchFilter')?.value||'').trim().toLowerCase();
       const driver = document.getElementById('driverFilter') ? document.getElementById('driverFilter').value : 'ALL';
       const status = document.getElementById('statusFilter').value;
       const date = document.getElementById('dateFilter').value;
@@ -1686,67 +1758,81 @@
       tbody.innerHTML = '';
 
       filteredOrdersList = [];
-      let count = 0;
+      let count = 0, preparing = 0, delivery = 0, delivered = 0;
 
       Object.keys(allOrdersCache).forEach(key => {
-        const item = allOrdersCache[key];
+        const item = allOrdersCache[key] || {};
         const displayId = item.orderId || key;
         const displayName = item.customerName || item.name || 'غير محدد';
         const displayPhone = item.phone || '';
         const displayDriver = item.driver || 'غير محدد';
         const totalCash = item.totalCash || ((item.orderPrice || 0) + (item.deliveryPrice || 0) + (item.paymentFee || 0));
 
-        const matchSearch = !search || displayName.toLowerCase().includes(search) || displayId.toLowerCase().includes(search);
+        const matchSearch = !search || String(displayName).toLowerCase().includes(search) || String(displayId).toLowerCase().includes(search) || String(displayPhone).toLowerCase().includes(search);
         const matchDriver = driver === 'ALL' || displayDriver === driver;
         const matchStatus = status === 'ALL' || item.status === status;
         const matchDate = !date || item.date === date;
 
         if (matchSearch && matchDriver && matchStatus && matchDate) {
           count++;
+          if(item.status === 'تم التسليم بنجاح ✅') delivered++;
+          else if(item.status === 'خرج للتوصيل 🛵') delivery++;
+          else preparing++;
           filteredOrdersList.push({ key, ...item, displayId, displayName, displayPhone, displayDriver, totalCash });
 
           const canEdit = canUser('edit');
           const canDelete = canUser('delete');
+          const statusClass = getOrderStatusClass(item.status);
 
           const tr = document.createElement('tr');
-          tr.className = "hover:bg-gray-50 border-b";
+          tr.className = 'hover:bg-slate-50/80';
           tr.innerHTML = `
-            <td class="p-2.5">
-              <div class="font-bold font-mono text-red-600">#${displayId}</div>
-              <div class="text-[10px] text-gray-400">
-                <span class="formatted-date">${formatDateDMY(item.date)}</span> ${item.time || ''}
-              </div>
+            <td class="p-3 align-top">
+              <div class="font-mono font-black text-red-700">#${displayId}</div>
+              <div class="text-[10px] text-slate-400 mt-1"><span class="formatted-date">${formatDateDMY(item.date)}</span> · ${item.time || '--'}</div>
             </td>
-            <td class="p-2.5">
-              <div class="font-bold">${displayName}</div>
-              <div class="text-[10px] text-gray-500 font-mono" dir="ltr">${displayPhone}</div>
+            <td class="p-3 align-top">
+              <div class="font-black text-slate-800">${displayName}</div>
+              <div class="text-[10px] text-slate-500 font-mono mt-1" dir="ltr">${displayPhone || 'بدون هاتف'}</div>
             </td>
-            <td class="p-2.5">
-              <div class="font-semibold text-gray-800">${displayDriver}</div>
-              <div class="text-[10px] text-blue-800 font-bold">${getPaymentText(item.paymentMethod)}</div>
+            <td class="p-3 align-top">
+              <div class="font-bold text-slate-800">🛵 ${displayDriver}</div>
+              <div class="text-[10px] text-blue-800 font-bold mt-1">${getPaymentText(item.paymentMethod)}</div>
             </td>
-            <td class="p-2.5">
-              <div class="font-bold font-mono text-emerald-700">${totalCash} ج.م</div>
-              ${item.paymentFee ? `<div class="text-[9px] text-gray-500">(عمولة: ${item.paymentFee}ج)</div>` : ''}
+            <td class="p-3 align-top">
+              <div class="font-black font-mono text-emerald-700">${Number(totalCash).toLocaleString('ar-EG')} ج.م</div>
+              ${item.paymentFee ? `<div class="text-[9px] text-slate-500 mt-1">عمولة ${item.paymentFee}ج</div>` : ''}
             </td>
-            <td class="p-2.5">
-              <select onchange="updateOrderStatus('${key}', this.value)" class="border p-1 rounded text-[11px] font-bold bg-amber-50 no-print">
-                <option value="جاري تحضير اللحوم 🥩" ${item.status === 'جاري تحضير اللحوم 🥩' ? 'selected' : ''}>جاري التحضير 🥩</option>
-                <option value="خرج للتوصيل 🛵" ${item.status === 'خرج للتوصيل 🛵' ? 'selected' : ''}>خرج للتوصيل 🛵</option>
-                <option value="تم التسليم بنجاح ✅" ${item.status === 'تم التسليم بنجاح ✅' ? 'selected' : ''}>تم التسليم ✅</option>
+            <td class="p-3 align-top">
+              <select onchange="updateOrderStatus('${key}', this.value)" class="order-status-select ${statusClass} no-print">
+                <option value="جاري تحضير اللحوم 🥩" ${item.status === 'جاري تحضير اللحوم 🥩' ? 'selected' : ''}>⏳ التحضير</option>
+                <option value="خرج للتوصيل 🛵" ${item.status === 'خرج للتوصيل 🛵' ? 'selected' : ''}>🛵 التوصيل</option>
+                <option value="تم التسليم بنجاح ✅" ${item.status === 'تم التسليم بنجاح ✅' ? 'selected' : ''}>✅ التسليم</option>
               </select>
               <span class="hidden print:inline font-bold">${item.status}</span>
             </td>
-            <td class="p-2.5 text-center flex items-center justify-center gap-1 no-print">
-              <button onclick="shareWhatsApp('${key}')" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-2 py-1 rounded text-[10px] font-bold shadow-sm flex items-center gap-0.5">💬 واتساب</button>
-              ${canEdit ? `<button onclick="openEditModal('${key}')" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-2 py-1 rounded text-[10px] font-bold shadow-sm">تعديل ✏️</button>` : ''}
-              ${canDelete ? `<button onclick="deleteOrder('${key}')" class="bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded text-[10px] font-bold shadow-sm">حذف 🗑️</button>` : ''}
+            <td class="p-3 align-top text-center no-print">
+              <div class="flex flex-wrap items-center justify-center gap-1">
+                <button onclick="shareWhatsApp('${key}')" class="order-action-btn bg-emerald-100 hover:bg-emerald-200 text-emerald-800">💬</button>
+                ${canEdit ? `<button onclick="openEditModal('${key}')" class="order-action-btn bg-blue-100 hover:bg-blue-200 text-blue-800">✏️</button>` : ''}
+                ${canDelete ? `<button onclick="deleteOrder('${key}')" class="order-action-btn bg-red-100 hover:bg-red-200 text-red-700">🗑️</button>` : ''}
+              </div>
             </td>
           `;
           tbody.appendChild(tr);
         }
       });
+
+      if(count === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="orders-empty-state">📭 لا توجد طلبات مطابقة للفلاتر الحالية.</td></tr>';
+      }
+
       document.getElementById('ordersCount').innerText = `${count} طلبات`;
+      const setSummary = (id, value) => { const el=document.getElementById(id); if(el) el.innerText=value; };
+      setSummary('orderSummaryTotal', count);
+      setSummary('orderSummaryPreparing', preparing);
+      setSummary('orderSummaryDelivery', delivery);
+      setSummary('orderSummaryDelivered', delivered);
     }
 
     // --- 📊 لوحة التحكم الرئيسية الجديدة ---
