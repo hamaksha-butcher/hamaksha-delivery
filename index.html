@@ -238,6 +238,23 @@
     .theme-choice span:last-child { display:block; font-size:9px; font-weight:800; color:var(--text-color); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     @media (max-width: 900px) { .theme-options { grid-template-columns:repeat(4,minmax(0,1fr)); } }
     @media (max-width: 520px) { .theme-options { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    /* ===== مركز المستخدمين والصلاحيات ===== */
+    .users-page-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;padding:24px 26px;border-radius:30px;color:#fff;background:linear-gradient(135deg,var(--sidebar-color,#111827),var(--primary-color,#7f1d1d) 55%,var(--accent-color,#b45309));box-shadow:0 18px 50px var(--shadow-color,rgba(15,23,42,.1));}
+    .users-kicker{font-size:10px;font-weight:900;letter-spacing:.18em;color:rgba(255,255,255,.62)}
+    .users-hero-btn{display:inline-flex;align-items:center;gap:6px;padding:11px 14px;border-radius:14px;background:#fff;color:var(--primary-color,#7f1d1d);font-size:11px;font-weight:900;box-shadow:0 8px 22px rgba(0,0,0,.12)}
+    .users-owner-badge{display:inline-flex;align-items:center;padding:9px 11px;border-radius:12px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.15);font-size:10px;font-weight:800}
+    .users-metric{display:flex;align-items:center;gap:11px;padding:16px;border:1px solid var(--border-color,#e5e7eb);border-radius:20px;background:var(--surface-color,#fff);box-shadow:0 10px 28px var(--shadow-color,rgba(15,23,42,.06))}
+    .users-metric>span{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:14px;background:var(--surface-soft,#f8fafc);font-size:21px}
+    .users-metric b{display:block;font-size:22px;font-weight:900;color:var(--text-color,#172033);line-height:1.05}.users-metric small{display:block;margin-top:4px;font-size:9px;font-weight:800;color:var(--muted-color,#64748b)}
+    .users-field-label{display:block;font-size:10px;font-weight:900;color:var(--text-color,#172033)}
+    .users-field{width:100%;margin-top:6px;border:1px solid var(--border-color,#e5e7eb);border-radius:14px;padding:11px 12px;font-size:12px;background:var(--surface-color,#fff);color:var(--text-color,#172033);outline:none;transition:border-color .18s,box-shadow .18s}.users-field:focus{border-color:var(--primary-color,#7f1d1d);box-shadow:0 0 0 4px var(--ring-color,rgba(127,29,29,.12))}
+    .users-search-input{width:100%;border:1px solid var(--border-color,#e5e7eb);border-radius:13px;padding:10px 11px;font-size:11px;background:var(--surface-color,#fff);color:var(--text-color,#172033);outline:none}.users-search-input:focus{border-color:var(--primary-color,#7f1d1d);box-shadow:0 0 0 4px var(--ring-color,rgba(127,29,29,.12))}
+    .users-card{border:1px solid var(--border-color,#e5e7eb);border-radius:22px;padding:14px;background:var(--surface-color,#fff);box-shadow:0 9px 24px var(--shadow-color,rgba(15,23,42,.05));transition:transform .18s,box-shadow .18s}.users-card:hover{transform:translateY(-2px);box-shadow:0 16px 34px var(--shadow-color,rgba(15,23,42,.09))}
+    .users-card-top{display:flex;align-items:center;justify-content:space-between;gap:10px}.users-avatar{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:14px;background:var(--surface-soft,#f8fafc);font-size:21px;flex:0 0 auto}.users-name{font-size:13px;color:var(--text-color,#172033);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}.users-meta{font-size:9px;font-weight:700;color:var(--muted-color,#64748b);margin-top:3px}.users-role{display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;font-size:8px;font-weight:900}.users-role-owner{background:#fef3c7;color:#92400e}.users-role-admin{background:#fee2e2;color:#b91c1c}.users-role-driver{background:#dbeafe;color:#1d4ed8}
+    .users-action{padding:7px 8px;border-radius:10px;font-size:9px;font-weight:900}.users-action.edit{background:#eff6ff;color:#1d4ed8}.users-action.delete{background:#fef2f2;color:#b91c1c}.users-permissions-box{margin-top:12px;padding:11px;border-radius:16px;background:#fffbeb;border:1px solid #fde68a}.users-permission-count{font-size:9px;font-weight:900;padding:3px 7px;border-radius:999px;background:#fef3c7;color:#92400e}.users-permissions-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:9px;font-size:9px;font-weight:800;color:#4b3b1c}.users-permissions-grid label{display:flex;align-items:center;gap:5px;min-height:25px}.users-permissions-grid input{accent-color:var(--primary-color,#7f1d1d)}.users-empty-state{min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px dashed var(--border-color,#e5e7eb);border-radius:22px;color:var(--muted-color,#64748b);font-size:11px;gap:3px}
+    @media(max-width:900px){.users-page-hero{align-items:flex-start;flex-direction:column}.users-owner-badge{max-width:100%}}
+    @media(max-width:620px){.users-permissions-grid{grid-template-columns:1fr}.users-name{max-width:130px}}
+
     /* ضبط اتجاه حقول التاريخ لمنع انعكاس الصيغة */
     input[type="date"] {
       direction: ltr !important;
@@ -571,6 +588,7 @@
         <button onclick="switchTab('analytics'); closeSidebar()" id="tab-analytics" class="tab-btn perm-analytics hidden">💰 <span>التقارير والتحصيل</span></button>
         <button onclick="switchTab('prices'); closeSidebar()" id="tab-prices" class="tab-btn perm-prices hidden">🏷️ <span>أسعار اللحوم</span></button>
         <button onclick="switchTab('customers'); closeSidebar()" id="tab-customers" class="tab-btn perm-customers hidden">👥 <span>العملاء</span></button>
+        <button onclick="switchTab('users'); closeSidebar()" id="tab-users" class="tab-btn perm-users hidden">⚙️ <span>المستخدمون والصلاحيات</span></button>
         <button onclick="switchTab('driver'); closeSidebar()" id="tab-driver" class="tab-btn">🛵 <span>واجهة المندوب</span></button>
         <button onclick="switchTab('track'); closeSidebar()" id="tab-track" class="tab-btn">📍 <span>تتبع العملاء</span></button>
       </nav>
@@ -579,6 +597,7 @@
       <div class="space-y-2">
         <button type="button" onclick="switchTab('admin'); closeSidebar(); setTimeout(() => document.getElementById('custName')?.focus(), 100)" class="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold transition">➕ <span>إضافة طلب جديد</span></button>
         <button type="button" onclick="switchTab('admin'); closeSidebar(); setTimeout(() => document.getElementById('searchFilter')?.focus(), 100)" class="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-black/10 hover:bg-black/15 text-white text-xs font-bold transition">🔎 <span>بحث في الطلبات</span></button>
+        <button type="button" onclick="switchTab('users'); closeSidebar()" class="perm-users hidden w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-black/10 hover:bg-black/15 text-white text-xs font-bold transition">⚙️ <span>إدارة المستخدمين</span></button>
       </div>
     </div>
 
@@ -885,25 +904,6 @@
               </div>
             </div>
 
-            <!-- إدارة المستخدمين والصلاحيات -->
-            <div id="usersManagementCard" class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-3 perm-users hidden">
-              <div class="flex items-center gap-2 border-b pb-2">
-                <span class="text-lg">👑</span>
-                <h2 class="text-sm font-bold text-gray-800">إدارة حسابات النظام والصلاحيات</h2>
-              </div>
-              <div class="space-y-2 bg-gray-50 p-2.5 rounded-xl border">
-                <input type="text" id="newUserName" placeholder="اسم المستخدم" class="w-full border p-2 rounded-xl text-xs bg-white">
-                <input type="password" id="newUserPass" placeholder="كلمة المرور" class="w-full border p-2 rounded-xl text-xs bg-white">
-                <select id="newUserRole" class="w-full border p-2 rounded-xl text-xs bg-white">
-                  <option value="admin">مسؤول إدارة (أدمن فرعي)</option>
-                  <option value="driver">مندوب توصيل</option>
-                </select>
-                <button onclick="addUser()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded-xl text-xs shadow">
-                  + إضافة لشبكة المستخدمين
-                </button>
-              </div>
-              <div id="usersList" class="space-y-2 max-h-64 overflow-y-auto pt-1"></div>
-            </div>
 
           </div>
 
@@ -1056,6 +1056,83 @@
               </div>
             </div>
             <div id="customersList" class="p-4 grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[650px] overflow-y-auto"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ⚙️ مركز المستخدمين والصلاحيات -->
+    <section id="sec-users" class="hidden space-y-6 max-w-7xl mx-auto perm-users">
+      <div id="usersPageAuthLock" class="bg-white rounded-3xl shadow-xl p-8 text-center max-w-md mx-auto space-y-4 border border-amber-100">
+        <div class="w-16 h-16 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mx-auto text-3xl">⚙️</div>
+        <h3 class="text-xl font-black text-gray-900">المستخدمون والصلاحيات</h3>
+        <p class="text-xs text-gray-500">هذه الصفحة مخصصة للمستخدمين الذين لديهم صلاحية إدارة الحسابات.</p>
+        <button onclick="toggleAuthModal()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-xl shadow">تسجيل الدخول 🔑</button>
+      </div>
+
+      <div id="usersPageContent" class="hidden space-y-5">
+        <div class="users-page-hero">
+          <div>
+            <div class="users-kicker">TEAM & ACCESS</div>
+            <h2 class="text-2xl sm:text-3xl font-black text-white mt-1">المستخدمون والصلاحيات ⚙️</h2>
+            <p class="text-xs sm:text-sm text-white/75 mt-2">إدارة حسابات الأدمن والمناديب وتحديد الصلاحيات من مكان واحد.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="focusNewUserForm()" class="users-hero-btn">＋ إضافة مستخدم</button>
+            <span id="usersPageOwnerBadge" class="users-owner-badge">التحكم بالصلاحيات متاح للمالك الرئيسي</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="users-metric"><span>👥</span><div><b id="usersMetricTotal">0</b><small>إجمالي الحسابات</small></div></div>
+          <div class="users-metric"><span>🛵</span><div><b id="usersMetricDrivers">0</b><small>حسابات المناديب</small></div></div>
+          <div class="users-metric"><span>🛡️</span><div><b id="usersMetricAdmins">0</b><small>حسابات الإدارة</small></div></div>
+          <div class="users-metric"><span>🔐</span><div><b id="usersMetricDelegated">0</b><small>صلاحيات ممنوحة</small></div></div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-[360px_1fr] gap-5">
+          <div class="bg-white rounded-3xl shadow-xl border border-amber-100 overflow-hidden">
+            <div class="p-5 bg-gradient-to-br from-amber-50 to-white border-b border-amber-100">
+              <div class="flex items-center gap-2"><span class="text-xl">➕</span><h3 class="font-black text-gray-900">إنشاء حساب جديد</h3></div>
+              <p class="text-[10px] text-gray-500 mt-1">أنشئ حساب أدمن فرعي أو مندوب توصيل.</p>
+            </div>
+            <div class="p-5 space-y-3">
+              <label class="users-field-label">اسم المستخدم
+                <input type="text" id="newUserName" placeholder="مثال: mohamed" class="users-field">
+              </label>
+              <label class="users-field-label">كلمة المرور
+                <input type="password" id="newUserPass" placeholder="••••••••" class="users-field">
+              </label>
+              <label class="users-field-label">نوع الحساب
+                <select id="newUserRole" class="users-field bg-white">
+                  <option value="admin">مسؤول إدارة (أدمن فرعي)</option>
+                  <option value="driver">مندوب توصيل</option>
+                </select>
+              </label>
+              <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-[10px] text-amber-900 leading-5">💡 الأدمن الفرعي يبدأ بصلاحيات مقفلة، ويمكن للمالك الرئيسي منحه الصلاحيات المناسبة لاحقًا.</div>
+              <button type="button" onclick="addUser()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-black py-3 rounded-xl shadow-lg">حفظ الحساب الجديد ✅</button>
+              <button type="button" onclick="clearNewUserForm()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl text-xs">مسح الحقول</button>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+            <div class="p-5 border-b border-slate-100">
+              <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                <div>
+                  <h3 class="font-black text-gray-900">دليل الحسابات</h3>
+                  <p class="text-[10px] text-gray-500 mt-1">تعديل الحسابات وإدارة صلاحيات الأدمن الفرعي.</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 lg:min-w-[390px]">
+                  <input type="text" id="usersSearchFilter" oninput="renderUsersList()" placeholder="🔎 بحث باسم المستخدم" class="users-search-input">
+                  <select id="usersRoleFilter" onchange="renderUsersList()" class="users-search-input bg-white">
+                    <option value="ALL">كل أنواع الحسابات</option>
+                    <option value="admin">الأدمن</option>
+                    <option value="driver">المناديب</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div id="usersList" class="p-4 grid grid-cols-1 lg:grid-cols-2 gap-3 max-h-[720px] overflow-y-auto"></div>
           </div>
         </div>
       </div>
@@ -1666,6 +1743,7 @@
       analytics: 'التقارير والتحصيل',
       prices: 'أسعار اللحوم',
       customers: 'العملاء',
+      users: 'المستخدمون والصلاحيات',
       driver: 'واجهة المندوب',
       track: 'تتبع العملاء'
     };
@@ -1691,6 +1769,7 @@
       if(tabName === 'analytics' && !canUser('analytics')) return alert('عذراً، لا تملك صلاحية الاطلاع على التقارير والداشبورد.');
       if(tabName === 'prices' && !canUser('prices')) return alert('عذراً، لا تملك صلاحية الاطلاع على قائمة الأسعار.');
       if(tabName === 'customers' && !canManageCustomers()) return alert('عذراً، لا تملك صلاحية إدارة قاعدة العملاء.');
+      if(tabName === 'users' && !canUser('users')) return alert('عذراً، لا تملك صلاحية إدارة المستخدمين والحسابات.');
       document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       const target = document.getElementById(`sec-${tabName}`);
@@ -1701,6 +1780,7 @@
       if(tabName === 'analytics') { renderAnalytics(); renderCommentsList(); }
       if(tabName === 'prices') renderPrices();
       if(tabName === 'customers') { document.getElementById('customerAuthLock')?.classList.toggle('hidden',!!currentUser && currentUser.role==='admin'); document.getElementById('customerPageContent')?.classList.toggle('hidden',!(currentUser && currentUser.role==='admin')); renderCustomersList(); }
+      if(tabName === 'users') { document.getElementById('usersPageAuthLock')?.classList.add('hidden'); document.getElementById('usersPageContent')?.classList.remove('hidden'); renderUsersList(); syncNavigationTitle('users'); }
       if(tabName === 'track') { renderPublicComments(); updateCustomerIdentityHint(); }
     }
 
@@ -1850,7 +1930,9 @@
       document.querySelector('.perm-prices')?.classList.toggle('hidden',!canUser('prices'));
       document.getElementById('tab-dashboard')?.classList.toggle('hidden',!(currentUser&&currentUser.role==='admin'));
       document.getElementById('addPriceBtn')?.classList.toggle('hidden',!canUser('prices'));
-      document.querySelector('.perm-users')?.classList.toggle('hidden',!canUser('users'));
+      document.querySelectorAll('.perm-users').forEach(el=>el.classList.toggle('hidden',!canUser('users')));
+      document.getElementById('usersPageAuthLock')?.classList.toggle('hidden',!!currentUser && canUser('users'));
+      document.getElementById('usersPageContent')?.classList.toggle('hidden',!(currentUser && canUser('users')));
       document.querySelectorAll('.perm-customers').forEach(el=>el.classList.toggle('hidden',!canManageCustomers()));
       document.getElementById('exportActionBtns')?.classList.toggle('hidden',!canUser('print'));
       const note=document.getElementById('dashboardScopeNote'); if(note) note.classList.toggle('hidden',canViewAllDrivers());
@@ -1944,6 +2026,21 @@
     }
 
     // --- 👥 إدارة المستخدمين والمناديب ---
+    function focusNewUserForm() {
+      switchTab('users');
+      setTimeout(() => document.getElementById('newUserName')?.focus(), 80);
+    }
+
+    function clearNewUserForm() {
+      const name=document.getElementById('newUserName');
+      const pass=document.getElementById('newUserPass');
+      const role=document.getElementById('newUserRole');
+      if(name) name.value='';
+      if(pass) pass.value='';
+      if(role) role.value='admin';
+      name?.focus();
+    }
+
     function addUser() {
       if(!canUser('users')) return alert('عذراً، إضافة المستخدمين تتطلب صلاحية إدارة المستخدمين');
       const username = document.getElementById('newUserName').value.trim();
@@ -1951,15 +2048,11 @@
       const role = document.getElementById('newUserRole').value;
 
       if (!username || !pass) return alert('يرجى ملء جميع البيانات');
+      if (username.toLowerCase() === 'asma') return alert('اسم المستخدم asma محجوز للحساب الرئيسي.');
 
-      db.ref('users').push({ 
-        username, pass, role,
-        perms: { edit: false, delete: false, print: false, analytics: false, prices: false, users: false, viewAllDrivers: false }
-      }).then(() => {
-        document.getElementById('newUserName').value = '';
-        document.getElementById('newUserPass').value = '';
-        alert('تمت إضافة المستخدم بنجاح ✅');
-      });
+      db.ref('users').push({ username, pass, role, perms: { edit: false, delete: false, print: false, analytics: false, prices: false, users: false, viewAllDrivers: false } })
+        .then(() => { clearNewUserForm(); alert('تمت إضافة المستخدم بنجاح ✅'); renderUsersList(); })
+        .catch(err => { console.error(err); alert('تعذر إضافة الحساب حالياً.'); });
     }
 
     function openEditUserModal(id) {
@@ -2008,10 +2101,41 @@
       dropdowns.forEach(select=>select.innerHTML='<option value="غير محدد">حدد المندوب...</option>');
       filterDriverDropdown.forEach(f=>f.innerHTML='<option value="ALL">جميع المناديب</option>');
       Object.values(driverDirectoryCache||{}).forEach(u=>{ if(!u?.username)return; dropdowns.forEach(select=>select.innerHTML+=`<option value="${escapeHtml(u.username)}">${escapeHtml(u.username)}</option>`); filterDriverDropdown.forEach(f=>f.innerHTML+=`<option value="${escapeHtml(u.username)}">${escapeHtml(u.username)}</option>`); });
-      if(!list) return; list.innerHTML=''; if(!canUser('users')) return;
-      Object.keys(allUsersCache||{}).forEach(id=>{ const u=allUsersCache[id]||{},perms=u.perms||{},isAsma=u.username==='asma';
-        list.innerHTML += `<div class="bg-white p-3 rounded-xl border text-xs shadow-sm space-y-2"><div class="flex items-center justify-between gap-2"><div class="flex items-center gap-1.5 overflow-hidden"><span class="font-bold text-gray-800 truncate">${escapeHtml(u.username||'')}</span><span class="text-[9px] px-1.5 py-0.5 rounded-full ${isAsma?'bg-amber-400 text-black font-bold':(u.role==='admin'?'bg-red-100 text-red-700 font-bold':'bg-amber-100 text-amber-800 font-bold')}">${isAsma?'المالك الرئيسي':(u.role==='admin'?'أدمن فرعي':'مندوب')}</span></div>${!isAsma?`<div class="flex items-center gap-1 shrink-0"><button onclick="openEditUserModal('${id}')" class="bg-blue-50 text-blue-700 px-2 py-1 rounded-lg font-bold text-[10px]">✏️ تعديل</button><button onclick="deleteUser('${id}')" class="bg-red-50 text-red-700 px-2 py-1 rounded-lg font-bold text-[10px]">🗑️ حذف</button></div>`:''}</div>${u.role==='admin'&&!isAsma&&isSuperUser()?`<div class="bg-amber-50 p-2.5 rounded-lg border border-amber-200 text-[10px] space-y-1.5 mt-2"><p class="font-bold text-amber-900 border-b border-amber-200 pb-1">⚙️ صلاحيات الأدمن الفرعي (خاص بـ asma):</p><div class="grid grid-cols-2 gap-1.5 font-semibold"><label><input type="checkbox" ${perms.edit?'checked':''} onchange="toggleAdminPermission('${id}','edit',this.checked)"> تعديل الطلبات ✏️</label><label><input type="checkbox" ${perms.delete?'checked':''} onchange="toggleAdminPermission('${id}','delete',this.checked)"> حذف الطلبات 🗑️</label><label><input type="checkbox" ${perms.print?'checked':''} onchange="toggleAdminPermission('${id}','print',this.checked)"> طباعة وتصدير 🖨️</label><label><input type="checkbox" ${perms.analytics?'checked':''} onchange="toggleAdminPermission('${id}','analytics',this.checked)"> التقارير والداشبورد 📊</label><label><input type="checkbox" ${perms.prices?'checked':''} onchange="toggleAdminPermission('${id}','prices',this.checked)"> تعديل الأسعار 🏷️</label><label><input type="checkbox" ${perms.users?'checked':''} onchange="toggleAdminPermission('${id}','users',this.checked)"> إدارة المستخدمين 👥</label><label class="col-span-2"><input type="checkbox" ${perms.viewAllDrivers?'checked':''} onchange="toggleAdminPermission('${id}','viewAllDrivers',this.checked)"> عرض جميع المناديب وأوردراتهم 🧭</label></div></div>`:''}</div>`;
-      });
+
+      if(!list) return;
+      list.innerHTML='';
+      if(!canUser('users')) return;
+
+      const allEntries=Object.keys(allUsersCache||{}).map(id=>({id,u:allUsersCache[id]||{}}));
+      const total=allEntries.length;
+      const drivers=allEntries.filter(x=>x.u.role==='driver').length;
+      const admins=allEntries.filter(x=>x.u.role==='admin').length;
+      const delegated=allEntries.reduce((sum,x)=>{ if(x.u.username==='asma') return sum; const p=x.u.perms||{}; return sum+['edit','delete','print','analytics','prices','users','viewAllDrivers'].filter(k=>!!p[k]).length; },0);
+      document.getElementById('usersMetricTotal')?.replaceChildren(document.createTextNode(total.toLocaleString('ar-EG')));
+      document.getElementById('usersMetricDrivers')?.replaceChildren(document.createTextNode(drivers.toLocaleString('ar-EG')));
+      document.getElementById('usersMetricAdmins')?.replaceChildren(document.createTextNode(admins.toLocaleString('ar-EG')));
+      document.getElementById('usersMetricDelegated')?.replaceChildren(document.createTextNode(delegated.toLocaleString('ar-EG')));
+      document.getElementById('usersPageOwnerBadge')?.classList.toggle('hidden',!isSuperUser());
+
+      const q=(document.getElementById('usersSearchFilter')?.value||'').trim().toLowerCase();
+      const roleFilter=document.getElementById('usersRoleFilter')?.value||'ALL';
+      const entries=allEntries.filter(({u})=>{ const name=String(u.username||'').toLowerCase(); return (!q||name.includes(q)) && (roleFilter==='ALL'||u.role===roleFilter); });
+
+      if(!entries.length){
+        list.innerHTML='<div class="users-empty-state lg:col-span-2"><div class="text-3xl mb-2">🔎</div><b>لا توجد حسابات مطابقة</b><span>غيّر البحث أو نوع الحساب لمشاهدة نتائج أخرى.</span></div>';
+        return;
+      }
+
+      list.innerHTML=entries.map(({id,u})=>{
+        const perms=u.perms||{};
+        const isAsma=u.username==='asma';
+        const roleTitle=isAsma?'المالك الرئيسي':(u.role==='admin'?'أدمن فرعي':'مندوب');
+        const roleClass=isAsma?'users-role-owner':(u.role==='admin'?'users-role-admin':'users-role-driver');
+        const granted=['edit','delete','print','analytics','prices','users','viewAllDrivers'].filter(k=>!!perms[k]).length;
+        const actions=!isAsma?`<div class="flex items-center gap-1.5 shrink-0"><button onclick="openEditUserModal('${id}')" class="users-action edit">✏️ تعديل</button><button onclick="deleteUser('${id}')" class="users-action delete">🗑️ حذف</button></div>`:'';
+        const permissionBlock=(u.role==='admin'&&!isAsma&&isSuperUser())?`<div class="users-permissions-box"><div class="flex items-center justify-between gap-2 border-b border-amber-200 pb-2"><p class="font-black text-amber-900">🔐 صلاحيات الأدمن الفرعي</p><span class="users-permission-count">${granted}/7</span></div><div class="users-permissions-grid"><label><input type="checkbox" ${perms.edit?'checked':''} onchange="toggleAdminPermission('${id}','edit',this.checked)"> تعديل الطلبات ✏️</label><label><input type="checkbox" ${perms.delete?'checked':''} onchange="toggleAdminPermission('${id}','delete',this.checked)"> حذف الطلبات 🗑️</label><label><input type="checkbox" ${perms.print?'checked':''} onchange="toggleAdminPermission('${id}','print',this.checked)"> طباعة وتصدير 🖨️</label><label><input type="checkbox" ${perms.analytics?'checked':''} onchange="toggleAdminPermission('${id}','analytics',this.checked)"> التقارير 📊</label><label><input type="checkbox" ${perms.prices?'checked':''} onchange="toggleAdminPermission('${id}','prices',this.checked)"> الأسعار 🏷️</label><label><input type="checkbox" ${perms.users?'checked':''} onchange="toggleAdminPermission('${id}','users',this.checked)"> المستخدمون 👥</label><label class="col-span-2"><input type="checkbox" ${perms.viewAllDrivers?'checked':''} onchange="toggleAdminPermission('${id}','viewAllDrivers',this.checked)"> عرض جميع المناديب والأوردرات 🧭</label></div></div>`:'';
+        return `<div class="users-card"><div class="users-card-top"><div class="flex items-center gap-3 min-w-0"><div class="users-avatar">${isAsma?'👑':(u.role==='admin'?'🛡️':'🛵')}</div><div class="min-w-0"><div class="flex flex-wrap items-center gap-1.5"><b class="users-name">${escapeHtml(u.username||'')}</b><span class="users-role ${roleClass}">${roleTitle}</span></div><div class="users-meta">${isAsma?'حساب رئيسي محمي':'حساب تشغيل للنظام'} ${u.role==='admin'&&!isAsma?`• ${granted} صلاحيات ممنوحة`:''}</div></div></div>${actions}</div>${permissionBlock}</div>`;
+      }).join('');
     }
 
     function createTrackingToken(){try{if(window.crypto?.randomUUID)return window.crypto.randomUUID().replace(/-/g,'');}catch(e){}return 'trk_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2);}
