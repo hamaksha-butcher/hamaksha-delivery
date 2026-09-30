@@ -1061,99 +1061,93 @@
       </div>
     </section>
 
-    <!-- 📊 2️⃣ داشبورد التقييم والتحصيل المالي والتعليقات (خاص بالإدارة) -->
+    <!-- 📊 2️⃣ مركز التحصيل والحسابات والتقييم -->
     <section id="sec-analytics" class="hidden space-y-6">
-      <div class="bg-white rounded-2xl shadow-xl p-6 border border-amber-100 space-y-6">
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b pb-4">
-          <div>
-            <h2 class="text-lg font-black text-red-700">📈 داشبورد أداء وتحصيل المناديب المالي</h2>
-            <p class="text-xs text-gray-500 font-semibold">متابعة الأداء، النسب المئوية، تقييمات العملاء، والعهدة المالية المحصلة كاش</p>
-          </div>
-          <div class="flex bg-gray-100 p-1 rounded-xl text-xs font-bold border">
-            <button onclick="setAnalyticsPeriod('daily')" id="time-daily" class="px-3 py-1.5 rounded-lg bg-red-600 text-white transition-all">يومي 📅</button>
-            <button onclick="setAnalyticsPeriod('weekly')" id="time-weekly" class="px-3 py-1.5 rounded-lg text-gray-600 transition-all">أسبوعي 🗓️</button>
-            <button onclick="setAnalyticsPeriod('monthly')" id="time-monthly" class="px-3 py-1.5 rounded-lg text-gray-600 transition-all">شهري 📆</button>
+      <div class="rounded-[30px] overflow-hidden border border-[var(--border-color,#e5e7eb)] shadow-xl bg-[var(--card-color,#fff)]">
+        <div class="px-5 sm:px-7 py-7 bg-gradient-to-l from-[var(--primary-color,#7f1d1d)] via-[var(--primary-color,#991b1b)] to-[var(--accent-color,#b45309)] text-white">
+          <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-5">
+            <div>
+              <div class="flex items-center gap-2 text-[11px] font-bold text-white/70"><span>💰</span><span>حمكشة • مركز الحسابات</span></div>
+              <h2 class="text-2xl sm:text-3xl font-black tracking-tight mt-1">التحصيل وأداء المناديب</h2>
+              <p id="analyticsScopeNote" class="text-xs sm:text-sm text-white/80 mt-2 font-semibold">متابعة التحصيل، التسليم، التقييم، ونسبة التتبع في مكان واحد.</p>
+            </div>
+            <div class="flex items-center gap-2 bg-black/15 rounded-2xl p-1.5 border border-white/10 self-start lg:self-auto">
+              <button onclick="setAnalyticsPeriod('daily')" id="time-daily" class="px-3.5 py-2 rounded-xl bg-white text-[var(--primary-color,#7f1d1d)] font-black text-xs shadow-sm transition-all">يومي 📅</button>
+              <button onclick="setAnalyticsPeriod('weekly')" id="time-weekly" class="px-3.5 py-2 rounded-xl text-white/85 font-bold text-xs transition-all">أسبوعي 🗓️</button>
+              <button onclick="setAnalyticsPeriod('monthly')" id="time-monthly" class="px-3.5 py-2 rounded-xl text-white/85 font-bold text-xs transition-all">شهري 📆</button>
+            </div>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-center">
-          <div class="bg-red-50 p-4 rounded-xl border border-red-100">
-            <p class="text-xs text-red-600 font-bold mb-1">إجمالي طلبات الفترة</p>
-            <h3 id="statTotalOrders" class="text-2xl font-black text-red-700">0</h3>
+        <div class="p-5 sm:p-7 space-y-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div class="flex items-center justify-between"><span class="text-[11px] font-bold text-slate-500">طلبات الفترة</span><span class="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center">📦</span></div>
+              <h3 id="statTotalOrders" class="text-2xl font-black text-slate-900 mt-3">0</h3>
+              <p class="text-[10px] text-slate-400 mt-1">إجمالي الطلبات المسجلة</p>
+            </div>
+            <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+              <div class="flex items-center justify-between"><span class="text-[11px] font-bold text-emerald-700">التحصيل</span><span class="w-8 h-8 rounded-xl bg-white border border-emerald-100 flex items-center justify-center">💵</span></div>
+              <h3 id="statTotalCash" class="text-2xl font-black text-emerald-800 mt-3">0 ج.م</h3>
+              <p class="text-[10px] text-emerald-600/70 mt-1">العهدة المسلّمة في الفترة</p>
+            </div>
+            <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+              <div class="flex items-center justify-between"><span class="text-[11px] font-bold text-amber-800">متوسط التقييم</span><span class="w-8 h-8 rounded-xl bg-white border border-amber-100 flex items-center justify-center">⭐</span></div>
+              <h3 id="statAvgRating" class="text-2xl font-black text-amber-800 mt-3">0 / 5 ⭐</h3>
+              <p class="text-[10px] text-amber-700/70 mt-1">من تقييمات العملاء المسجلة</p>
+            </div>
+            <div class="rounded-2xl border border-blue-200 bg-blue-50 p-4">
+              <div class="flex items-center justify-between"><span class="text-[11px] font-bold text-blue-700">التتبع المباشر</span><span class="w-8 h-8 rounded-xl bg-white border border-blue-100 flex items-center justify-center">📍</span></div>
+              <h3 id="statLiveTrackRate" class="text-2xl font-black text-blue-800 mt-3">0%</h3>
+              <p class="text-[10px] text-blue-700/70 mt-1">من الطلبات المسلّمة ذات GPS</p>
+            </div>
+            <div class="rounded-2xl border border-[var(--accent-color,#b45309)]/20 bg-[var(--accent-color,#b45309)]/5 p-4">
+              <div class="flex items-center justify-between"><span class="text-[11px] font-bold text-[var(--accent-color,#92400e)]">قيد المتابعة</span><span class="w-8 h-8 rounded-xl bg-white border border-[var(--accent-color,#b45309)]/10 flex items-center justify-center">⏳</span></div>
+              <h3 id="statPendingOrders" class="text-2xl font-black text-[var(--accent-color,#92400e)] mt-3">0</h3>
+              <p class="text-[10px] text-[var(--accent-color,#92400e)]/70 mt-1">طلبات لم تُسلّم بعد</p>
+            </div>
           </div>
-          <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
-            <p class="text-xs text-emerald-600 font-bold mb-1">إجمالي المبالغ المحصلة</p>
-            <h3 id="statTotalCash" class="text-2xl font-black text-emerald-700">0 ج.م</h3>
+
+          <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
+            <div class="xl:col-span-2 rounded-2xl border border-slate-200 bg-white overflow-hidden">
+              <div class="px-4 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div><h3 class="font-black text-sm text-slate-900">تحصيل المناديب</h3><p class="text-[10px] text-slate-500 mt-1">ملخص كل مندوب خلال الفترة المحددة</p></div>
+                <span class="text-[10px] font-bold bg-slate-100 text-slate-600 rounded-full px-3 py-1">مباشر من الطلبات المسجلة</span>
+              </div>
+              <div id="driverFinancialCards" class="p-4 grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[430px] overflow-y-auto"></div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div class="flex items-center justify-between gap-2 mb-4"><div><h3 class="font-black text-sm text-slate-900">ملخص الفترة</h3><p class="text-[10px] text-slate-500 mt-1">أرقام سريعة للإدارة</p></div><span id="analyticsPeriodBadge" class="bg-white border border-slate-200 text-slate-600 text-[10px] font-bold px-2.5 py-1 rounded-lg">اليوم</span></div>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between bg-white rounded-xl border border-slate-200 p-3"><span class="text-[10px] font-bold text-slate-500">تم التسليم</span><b id="finDelivered" class="text-sm font-black text-emerald-700">0</b></div>
+                <div class="flex items-center justify-between bg-white rounded-xl border border-slate-200 p-3"><span class="text-[10px] font-bold text-slate-500">متوسط التحصيل للطلب</span><b id="finAvgCash" class="text-sm font-black text-slate-900">0 ج.م</b></div>
+                <div class="flex items-center justify-between bg-white rounded-xl border border-slate-200 p-3"><span class="text-[10px] font-bold text-slate-500">متوسط التقييم</span><b id="finAvgRatingMini" class="text-sm font-black text-amber-700">0 / 5</b></div>
+                <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="flex items-center justify-between mb-2"><span class="text-[10px] font-bold text-slate-500">نسبة الإنجاز</span><b id="finCompletionRate" class="text-[10px] font-black text-red-700">0%</b></div><div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div id="finCompletionBar" class="h-full rounded-full bg-[var(--primary-color,#b91c1c)]" style="width:0%"></div></div></div>
+              </div>
+            </div>
           </div>
-          <div class="bg-amber-50 p-4 rounded-xl border border-amber-100">
-            <p class="text-xs text-amber-800 font-bold mb-1">متوسط تقييم العملاء</p>
-            <h3 id="statAvgRating" class="text-2xl font-black text-amber-700">0 / 5 ⭐</h3>
+
+          <div class="rounded-2xl border border-slate-200 overflow-hidden bg-white">
+            <div class="px-4 py-4 border-b border-slate-100 flex items-center justify-between"><div><h3 class="font-black text-sm text-slate-900">تفاصيل أداء المناديب</h3><p class="text-[10px] text-slate-500 mt-1">جدول تفصيلي للتحصيل والتسليم والتقييم</p></div></div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-right text-xs">
+                <thead class="bg-slate-50 font-bold border-b border-slate-100"><tr><th class="p-3">اسم المندوب</th><th class="p-3">إجمالي الطلبات</th><th class="p-3">تم التسليم ✅</th><th class="p-3">العهدة المباشرة المحصلة</th><th class="p-3">تقييم العملاء ⭐</th><th class="p-3">معدل الإنجاز</th><th class="p-3 text-center">التقييم الشامل</th></tr></thead>
+                <tbody id="driverAnalyticsBody" class="divide-y divide-slate-100"><tr><td colspan="7" class="p-4 text-center text-slate-400">جاري حساب التقارير...</td></tr></tbody>
+              </table>
+            </div>
           </div>
-          <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
-            <p class="text-xs text-blue-600 font-bold mb-1">نسبة التتبع والالتزام باللوكيشن</p>
-            <h3 id="statLiveTrackRate" class="text-2xl font-black text-blue-700">0%</h3>
+
+          <div class="pt-2 border-t border-slate-100 space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3"><div><h3 class="font-black text-sm text-slate-900">💬 تقييمات وتعليقات العملاء</h3><p class="text-[10px] text-slate-500 mt-1">فلترة الملاحظات ومراجعة النشر والحذف من الإدارة.</p></div></div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+              <div><label class="block text-[10px] font-bold text-slate-600 mb-1">فلترة بالمندوب</label><select id="commentDriverFilter" onchange="renderCommentsList()" class="w-full border border-slate-200 p-2.5 rounded-xl text-xs bg-white filter-driver-dropdown"><option value="ALL">جميع المناديب</option></select></div>
+              <div><label class="block text-[10px] font-bold text-slate-600 mb-1">فلترة بالتقييم</label><select id="commentRatingFilter" onchange="renderCommentsList()" class="w-full border border-slate-200 p-2.5 rounded-xl text-xs bg-white"><option value="ALL">كل التقييمات ⭐</option><option value="5">5 نجوم ⭐⭐⭐⭐⭐</option><option value="4">4 نجوم ⭐⭐⭐⭐</option><option value="3">3 نجوم ⭐⭐⭐</option><option value="2">نجمتان ⭐⭐</option><option value="1">نجمة واحدة ⭐</option></select></div>
+              <div><label class="block text-[10px] font-bold text-slate-600 mb-1">فلترة بالتاريخ</label><input type="date" id="commentDateFilter" onchange="renderCommentsList()" dir="ltr" class="w-full border border-slate-200 p-2.5 rounded-xl text-xs bg-white text-right"></div>
+            </div>
+            <div id="commentsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto"><p class="text-xs text-slate-400 p-4 text-center col-span-2">جاري تحميل التعليقات...</p></div>
           </div>
         </div>
-
-        <div class="overflow-x-auto rounded-xl border">
-          <table class="w-full text-right text-xs">
-            <thead class="bg-gray-100 font-bold border-b">
-              <tr>
-                <th class="p-3">اسم المندوب</th>
-                <th class="p-3">إجمالي الطلبات</th>
-                <th class="p-3">تم التسليم ✅</th>
-                <th class="p-3">العهدة المباشرة المحصلة (ج.م)</th>
-                <th class="p-3">تقييم العملاء ⭐</th>
-                <th class="p-3">معدل الإنجاز %</th>
-                <th class="p-3 text-center">التقييم الشامل</th>
-              </tr>
-            </thead>
-            <tbody id="driverAnalyticsBody" class="divide-y divide-gray-100">
-              <tr><td colspan="7" class="p-4 text-center text-gray-400">جاري حساب التقارير...</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- 💬 قسم سجل تقييمات وتعليقات العملاء للإدارة فقط مع الفلترة والتحكم بالنشر/الحذف -->
-        <div class="pt-6 border-t space-y-4">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            <div>
-              <h3 class="font-bold text-sm text-gray-800">💬 سجل آرائك وتعليقات العملاء (إدارة النشر والحذف)</h3>
-              <p class="text-[11px] text-gray-500">متابعة الملاحظات، الموافقة على نشر التعليق للعامة في صفحة التتبع، أو حذفه</p>
-            </div>
-          </div>
-
-          <!-- أدوات فلترة التعليقات -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-amber-50/70 p-3 rounded-xl border border-amber-200">
-            <div>
-              <label class="block text-[10px] font-bold text-amber-900 mb-1">فلترة بالمندوب:</label>
-              <select id="commentDriverFilter" onchange="renderCommentsList()" class="w-full border p-2 rounded-lg text-xs bg-white filter-driver-dropdown">
-                <option value="ALL">جميع المناديب</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold text-amber-900 mb-1">فلترة بالتقييم (النجوم):</label>
-              <select id="commentRatingFilter" onchange="renderCommentsList()" class="w-full border p-2 rounded-lg text-xs bg-white">
-                <option value="ALL">كل التقييمات ⭐</option>
-                <option value="5">5 نجوم ⭐⭐⭐⭐⭐</option>
-                <option value="4">4 نجوم ⭐⭐⭐⭐</option>
-                <option value="3">3 نجوم ⭐⭐⭐</option>
-                <option value="2">نجمتان ⭐⭐</option>
-                <option value="1">نجمة واحدة ⭐</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold text-amber-900 mb-1">فلترة بالتاريخ:</label>
-              <input type="date" id="commentDateFilter" onchange="renderCommentsList()" dir="ltr" class="w-full border p-2 rounded-lg text-xs bg-white text-right">
-            </div>
-          </div>
-
-          <!-- قائمة الكروت والملاحظات -->
-          <div id="commentsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
-            <p class="text-xs text-gray-400 p-4 text-center col-span-2">جاري تحميل التعليقات...</p>
-          </div>
-        </div>
-
       </div>
     </section>
 
@@ -2514,8 +2508,8 @@
       currentAnalyticsPeriod = period;
       ['daily', 'weekly', 'monthly'].forEach(p => {
         const btn = document.getElementById(`time-${p}`);
-        if(p === period) btn.className = "px-3 py-1.5 rounded-lg bg-red-600 text-white transition-all";
-        else btn.className = "px-3 py-1.5 rounded-lg text-gray-600 transition-all";
+        if(p === period) btn.className = "px-3.5 py-2 rounded-xl bg-white text-[var(--primary-color,#7f1d1d)] font-black text-xs shadow-sm transition-all";
+        else btn.className = "px-3.5 py-2 rounded-xl text-white/85 font-bold text-xs transition-all";
       });
       renderAnalytics();
     }
@@ -2589,6 +2583,47 @@
       document.getElementById('statTotalCash').innerText = periodTotalCash.toLocaleString('ar-EG') + ' ج.م';
       document.getElementById('statAvgRating').innerText = `${avgPeriodRating} / 5 ⭐`;
       document.getElementById('statLiveTrackRate').innerText = periodDelivered ? Math.round((periodLiveTracked / periodDelivered) * 100) + '%' : '0%';
+      const pendingOrders = Math.max(0, periodTotalOrders - periodDelivered);
+      const completionRate = periodTotalOrders ? Math.round((periodDelivered / periodTotalOrders) * 100) : 0;
+      const avgCash = periodDelivered ? Math.round(periodTotalCash / periodDelivered) : 0;
+      const periodLabels = { daily: 'اليوم', weekly: 'آخر 7 أيام', monthly: 'هذا الشهر' };
+      const miniPeriod = document.getElementById('analyticsPeriodBadge');
+      if(miniPeriod) miniPeriod.innerText = periodLabels[currentAnalyticsPeriod] || 'الفترة الحالية';
+      const pendingEl = document.getElementById('statPendingOrders');
+      if(pendingEl) pendingEl.innerText = pendingOrders;
+      const deliveredEl = document.getElementById('finDelivered');
+      if(deliveredEl) deliveredEl.innerText = periodDelivered;
+      const avgCashEl = document.getElementById('finAvgCash');
+      if(avgCashEl) avgCashEl.innerText = avgCash.toLocaleString('ar-EG') + ' ج.م';
+      const avgRatingMini = document.getElementById('finAvgRatingMini');
+      if(avgRatingMini) avgRatingMini.innerText = `${avgPeriodRating} / 5`;
+      const completionEl = document.getElementById('finCompletionRate');
+      if(completionEl) completionEl.innerText = completionRate + '%';
+      const completionBar = document.getElementById('finCompletionBar');
+      if(completionBar) completionBar.style.width = completionRate + '%';
+
+      const driverCards = document.getElementById('driverFinancialCards');
+      if(driverCards) {
+        driverCards.innerHTML = '';
+        const names = Object.keys(driversStats);
+        if(!names.length) {
+          driverCards.innerHTML = '<div class="md:col-span-2 text-center text-xs text-slate-400 py-10">لا توجد بيانات مناديب في هذه الفترة.</div>';
+        } else {
+          names.forEach(driverName => {
+            const st = driversStats[driverName];
+            const pct = st.total ? Math.round((st.delivered / st.total) * 100) : 0;
+            const avg = st.ratings.length ? (st.ratings.reduce((a,b)=>a+b,0) / st.ratings.length).toFixed(1) : '—';
+            driverCards.innerHTML += `
+              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3.5">
+                <div class="flex items-center justify-between gap-3">
+                  <div class="flex items-center gap-2 min-w-0"><span class="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-base">🛵</span><div class="min-w-0"><div class="font-black text-xs text-slate-900 truncate">${escapeHtml(driverName)}</div><div class="text-[10px] text-slate-500">${st.total} طلب • ${st.delivered} تسليم</div></div></div>
+                  <div class="text-left shrink-0"><div class="font-black text-sm text-emerald-700">${st.totalCash.toLocaleString('ar-EG')} ج.م</div><div class="text-[10px] text-amber-700 font-bold">${avg} ⭐</div></div>
+                </div>
+                <div class="mt-3"><div class="flex items-center justify-between text-[10px] mb-1"><span class="font-bold text-slate-500">نسبة الإنجاز</span><b class="text-slate-700">${pct}%</b></div><div class="h-2 bg-white border border-slate-200 rounded-full overflow-hidden"><div class="h-full rounded-full bg-[var(--primary-color,#b91c1c)]" style="width:${pct}%"></div></div></div>
+              </div>`;
+          });
+        }
+      }
 
       const analyticsBody = document.getElementById('driverAnalyticsBody');
       analyticsBody.innerHTML = '';
