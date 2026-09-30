@@ -564,6 +564,21 @@
     .customer-record-meta{margin-top:12px;padding:10px 11px;background:var(--surface-soft,#f8fafc);border:1px solid var(--border-color,#e5e7eb);border-radius:12px;font-size:10px;color:var(--muted-color,#64748b);line-height:1.7;min-height:40px}
     .customer-action{border-radius:10px;padding:7px 10px;font-size:9px;font-weight:900}.customer-action.primary{background:color-mix(in srgb,var(--primary-color,#7f1d1d) 9%,#fff);color:var(--primary-color,#7f1d1d)}.customer-action.edit{background:rgba(245,158,11,.12);color:#a16207}.customer-action.delete{background:rgba(220,38,38,.1);color:#b91c1c}
     @media(max-width:767px){.customer-page-hero{padding:18px;flex-direction:column;align-items:flex-start;border-radius:22px}.customer-page-hero .flex{width:100%}.customer-hero-btn{flex:1;text-align:center}.customer-metric{padding:11px}.customer-metric b{font-size:17px}.customer-metric>span{width:34px;height:34px;font-size:17px}}
+
+    /* ===== مركز الإعدادات ===== */
+    .settings-page-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;padding:24px 26px;border-radius:30px;color:#fff;background:linear-gradient(135deg,var(--sidebar-color,#111827),var(--primary-color,#7f1d1d) 58%,var(--secondary-color,#f59e0b));box-shadow:0 18px 50px var(--shadow-color,rgba(15,23,42,.1))}
+    .settings-kicker{font-size:10px;font-weight:900;letter-spacing:.18em;color:rgba(255,255,255,.62)}
+    .settings-owner-badge{display:inline-flex;align-items:center;padding:9px 11px;border-radius:12px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.15);font-size:10px;font-weight:800}
+    .settings-card{background:var(--surface-color,#fff);border:1px solid var(--border-color,#e5e7eb);border-radius:22px;padding:18px;box-shadow:0 10px 28px var(--shadow-color,rgba(15,23,42,.06))}
+    .settings-card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid var(--border-color,#e5e7eb);padding-bottom:12px}.settings-card-head>div{display:flex;align-items:center;gap:10px}.settings-card-head h3{margin:0;font-size:14px;font-weight:900;color:var(--text-color,#172033)}.settings-card-head p{margin:3px 0 0;font-size:9px;color:var(--muted-color,#64748b)}.settings-icon{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:13px;background:var(--surface-soft,#f8fafc);font-size:19px}.settings-pill{font-size:9px;font-weight:900;padding:5px 8px;border-radius:999px;background:var(--surface-soft,#f8fafc);color:var(--muted-color,#64748b)}
+    .settings-theme-grid{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:14px}.settings-theme-grid .theme-choice{min-height:66px}
+    .settings-label{display:block;font-size:10px;font-weight:900;color:var(--text-color,#172033)}.settings-input{width:100%;margin-top:6px;border:1px solid var(--border-color,#e5e7eb);border-radius:14px;padding:11px 12px;background:var(--surface-color,#fff);color:var(--text-color,#172033);font-size:11px;outline:none}.settings-input:focus{border-color:var(--primary-color,#7f1d1d);box-shadow:0 0 0 4px var(--ring-color,rgba(127,29,29,.12))}.settings-unit{position:absolute;left:12px;top:50%;transform:translateY(-7%);font-size:10px;font-weight:900;color:var(--muted-color,#64748b)}
+    .settings-note{margin-top:10px;font-size:9px;line-height:1.7;color:var(--muted-color,#64748b);background:var(--surface-soft,#f8fafc);border:1px solid var(--border-color,#e5e7eb);border-radius:12px;padding:8px 10px}
+    .settings-toggles{display:grid;gap:10px}.settings-toggle{display:flex;align-items:center;gap:10px;padding:11px;border:1px solid var(--border-color,#e5e7eb);border-radius:14px;background:var(--surface-soft,#f8fafc);cursor:pointer}.settings-toggle input{display:none}.settings-toggle>span{width:36px;height:20px;border-radius:999px;background:#cbd5e1;position:relative;flex:0 0 auto;transition:.2s}.settings-toggle>span:after{content:'';position:absolute;top:3px;right:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.15)}.settings-toggle input:checked+span{background:var(--primary-color,#7f1d1d)}.settings-toggle input:checked+span:after{right:19px}.settings-toggle b{display:block;font-size:10px;color:var(--text-color,#172033)}.settings-toggle small{display:block;font-size:8px;color:var(--muted-color,#64748b);margin-top:2px}
+    .settings-actions{display:flex;justify-content:flex-start;gap:10px;flex-wrap:wrap}.settings-save-btn,.settings-reset-btn{border-radius:14px;padding:10px 14px;font-size:10px;font-weight:900;cursor:pointer;transition:.18s}.settings-save-btn{background:var(--primary-color,#7f1d1d);color:#fff;box-shadow:0 10px 22px var(--shadow-color,rgba(15,23,42,.08))}.settings-reset-btn{background:var(--surface-color,#fff);color:var(--muted-color,#64748b);border:1px solid var(--border-color,#e5e7eb)}.settings-save-btn:hover,.settings-reset-btn:hover{transform:translateY(-1px)}.settings-status{padding:10px 12px;border-radius:12px;background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;font-size:10px;font-weight:900}
+    @media(max-width:900px){.settings-page-hero{align-items:flex-start;flex-direction:column}.settings-theme-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    @media(max-width:560px){.settings-theme-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.settings-card{padding:14px}}
+
 </style>
 </head>
 <body id="appBody" class="bg-amber-50/40 min-h-screen text-gray-800">
@@ -574,8 +589,8 @@
       <div class="flex items-center gap-3">
         <span class="sidebar-brand-mark">🥩</span>
         <div class="min-w-0">
-          <h1 class="text-lg font-black tracking-wide truncate">جزارة حمكشة</h1>
-          <p class="text-[10px] text-amber-200 font-semibold mt-0.5">نظام إدارة الطلبات والتوصيل</p>
+          <h1 class="text-lg font-black tracking-wide truncate" data-store-name>جزارة حمكشة</h1>
+          <p class="text-[10px] text-amber-200 font-semibold mt-0.5" data-store-tagline>نظام إدارة الطلبات والتوصيل</p>
         </div>
       </div>
     </div>
@@ -588,7 +603,8 @@
         <button onclick="switchTab('analytics'); closeSidebar()" id="tab-analytics" class="tab-btn perm-analytics hidden">💰 <span>التقارير والتحصيل</span></button>
         <button onclick="switchTab('prices'); closeSidebar()" id="tab-prices" class="tab-btn perm-prices hidden">🏷️ <span>أسعار اللحوم</span></button>
         <button onclick="switchTab('customers'); closeSidebar()" id="tab-customers" class="tab-btn perm-customers hidden">👥 <span>العملاء</span></button>
-        <button onclick="switchTab('users'); closeSidebar()" id="tab-users" class="tab-btn perm-users hidden">⚙️ <span>المستخدمون والصلاحيات</span></button>
+        <button onclick="switchTab('users'); closeSidebar()" id="tab-users" class="tab-btn perm-users hidden">👤 <span>المستخدمون والصلاحيات</span></button>
+        <button onclick="switchTab('settings'); closeSidebar()" id="tab-settings" class="tab-btn admin-only-settings hidden">⚙️ <span>الإعدادات</span></button>
         <button onclick="switchTab('driver'); closeSidebar()" id="tab-driver" class="tab-btn">🛵 <span>واجهة المندوب</span></button>
         <button onclick="switchTab('track'); closeSidebar()" id="tab-track" class="tab-btn">📍 <span>تتبع العملاء</span></button>
       </nav>
@@ -618,7 +634,7 @@
     <div class="flex items-center gap-2 min-w-0">
       <span class="text-2xl">🥩</span>
       <div class="min-w-0">
-        <div class="font-black text-sm truncate">جزارة حمكشة</div>
+        <div class="font-black text-sm truncate" data-store-name>جزارة حمكشة</div>
         <div id="mobilePageTitle" class="text-[10px] text-amber-200 font-semibold truncate">الطلبات والإدارة</div>
       </div>
     </div>
@@ -659,7 +675,7 @@
                   <span class="dashboard-live-pill"><span class="dashboard-live-dot"></span> LIVE الآن</span>
                   <span class="dashboard-soft-pill">تشغيل ومتابعة لحظية</span>
                 </div>
-                <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight">لوحة تحكم جزارة حمكشة</h2>
+                <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight">لوحة تحكم <span data-store-name>جزارة حمكشة</span></h2>
                 <p class="text-xs sm:text-sm text-white/75 mt-2 font-semibold">نظرة واحدة على الطلبات، التحصيل، وحركة المناديب خلال اليوم.</p>
                 <p id="dashboardScopeNote" class="text-[10px] text-white/70 mt-2 hidden">🔐 العرض الحالي مقيد بالطلبات التي أنشأها هذا المستخدم. يستطيع asma منح صلاحية عرض جميع المناديب والأوردرات.</p>
               </div>
@@ -761,36 +777,6 @@
       </div>
 
       <div id="adminContent" class="hidden space-y-6">
-        <div class="bg-white rounded-2xl shadow-md p-4 border border-amber-100 flex flex-wrap items-center justify-between gap-4 theme-selector">
-          <div class="flex items-center gap-2">
-            <span class="text-xl">🎨</span>
-            <h3 class="font-bold text-xs text-gray-800">تخصيص الثيم:</h3>
-          </div>
-          <div class="theme-options w-full mt-3" role="group" aria-label="اختيار الثيم">
-            <button type="button" class="theme-choice active" data-theme-choice="hamkasha" onclick="changeThemePreset('hamkasha')">
-              <span class="theme-swatch" style="background:linear-gradient(90deg,#7f1d1d 0 65%,#f59e0b 65% 100%)"></span><span>حمكشة</span>
-            </button>
-            <button type="button" class="theme-choice" data-theme-choice="ocean" onclick="changeThemePreset('ocean')">
-              <span class="theme-swatch" style="background:linear-gradient(90deg,#0f172a 0 65%,#38bdf8 65% 100%)"></span><span>Ocean</span>
-            </button>
-            <button type="button" class="theme-choice" data-theme-choice="emerald" onclick="changeThemePreset('emerald')">
-              <span class="theme-swatch" style="background:linear-gradient(90deg,#064e3b 0 65%,#34d399 65% 100%)"></span><span>Emerald</span>
-            </button>
-            <button type="button" class="theme-choice" data-theme-choice="violet" onclick="changeThemePreset('violet')">
-              <span class="theme-swatch" style="background:linear-gradient(90deg,#312e81 0 65%,#a78bfa 65% 100%)"></span><span>Violet</span>
-            </button>
-            <button type="button" class="theme-choice" data-theme-choice="sunset" onclick="changeThemePreset('sunset')">
-              <span class="theme-swatch" style="background:linear-gradient(90deg,#9a3412 0 65%,#fb923c 65% 100%)"></span><span>Sunset</span>
-            </button>
-            <button type="button" class="theme-choice" data-theme-choice="midnight" onclick="changeThemePreset('midnight')">
-              <span class="theme-swatch" style="background:linear-gradient(90deg,#020617 0 65%,#fbbf24 65% 100%)"></span><span>Midnight</span>
-            </button>
-            <button type="button" class="theme-choice" data-theme-choice="butcher" onclick="changeThemePreset('butcher')">
-              <span class="theme-swatch" style="background:linear-gradient(90deg,#4a1118 0 55%,#b87333 55% 78%,#f4ead7 78% 100%)"></span><span>Butcher Pro</span>
-            </button>
-          </div>
-        </div>
-
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="space-y-6 lg:col-span-1">
             
@@ -1139,7 +1125,47 @@
     </section>
 
     <!-- 📊 2️⃣ مركز التحصيل والحسابات والتقييم -->
-    <section id="sec-analytics" class="hidden space-y-6">
+    
+    <!-- ⚙️ مركز الإعدادات -->
+    <section id="sec-settings" class="hidden space-y-6 max-w-6xl mx-auto admin-only-settings">
+      <div class="settings-page-hero">
+        <div><div class="settings-kicker">SYSTEM CONTROL</div><h2 class="text-2xl sm:text-3xl font-black mt-1">إعدادات النظام ⚙️</h2><p class="text-[11px] text-white/70 mt-2">تحكم في هوية الجزارة، شكل البرنامج، والإعدادات الافتراضية من مكان واحد.</p></div>
+        <div class="settings-owner-badge">🔐 متاح للإدارة فقط</div>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div class="settings-card">
+          <div class="settings-card-head"><div><span class="settings-icon">🎨</span><div><h3>المظهر والثيم</h3><p>اختار الشكل المناسب للشغل أو الهوية البصرية.</p></div></div><span class="settings-pill">7 ثيمات</span></div>
+          <div class="theme-options settings-theme-grid" role="group" aria-label="اختيار الثيم">
+            <button type="button" class="theme-choice active" data-theme-choice="hamkasha" onclick="changeThemePreset('hamkasha')"><span class="theme-swatch" style="background:linear-gradient(90deg,#7f1d1d 0 65%,#f59e0b 65% 100%)"></span><span>حمكشة</span></button>
+            <button type="button" class="theme-choice" data-theme-choice="ocean" onclick="changeThemePreset('ocean')"><span class="theme-swatch" style="background:linear-gradient(90deg,#0f172a 0 65%,#38bdf8 65% 100%)"></span><span>Ocean</span></button>
+            <button type="button" class="theme-choice" data-theme-choice="emerald" onclick="changeThemePreset('emerald')"><span class="theme-swatch" style="background:linear-gradient(90deg,#064e3b 0 65%,#34d399 65% 100%)"></span><span>Emerald</span></button>
+            <button type="button" class="theme-choice" data-theme-choice="violet" onclick="changeThemePreset('violet')"><span class="theme-swatch" style="background:linear-gradient(90deg,#312e81 0 65%,#a78bfa 65% 100%)"></span><span>Violet</span></button>
+            <button type="button" class="theme-choice" data-theme-choice="sunset" onclick="changeThemePreset('sunset')"><span class="theme-swatch" style="background:linear-gradient(90deg,#9a3412 0 65%,#fb923c 65% 100%)"></span><span>Sunset</span></button>
+            <button type="button" class="theme-choice" data-theme-choice="midnight" onclick="changeThemePreset('midnight')"><span class="theme-swatch" style="background:linear-gradient(90deg,#020617 0 65%,#fbbf24 65% 100%)"></span><span>Midnight</span></button>
+            <button type="button" class="theme-choice" data-theme-choice="butcher" onclick="changeThemePreset('butcher')"><span class="theme-swatch" style="background:linear-gradient(90deg,#4a1118 0 55%,#b87333 55% 78%,#f4ead7 78% 100%)"></span><span>Butcher Pro</span></button>
+          </div>
+        </div>
+        <div class="settings-card">
+          <div class="settings-card-head"><div><span class="settings-icon">🏪</span><div><h3>هوية الجزارة</h3><p>اسم النشاط والوصف الظاهرين داخل البرنامج.</p></div></div></div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4"><div><label class="settings-label">اسم الجزارة</label><input id="settingStoreName" class="settings-input" placeholder="جزارة حمكشة"></div><div><label class="settings-label">الوصف المختصر</label><input id="settingStoreTagline" class="settings-input" placeholder="نظام إدارة الطلبات والتوصيل"></div></div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3"><div><label class="settings-label">رقم التواصل</label><input id="settingStorePhone" class="settings-input" placeholder="مثال: 01000000000" dir="ltr"></div><div><label class="settings-label">المدينة / الفرع</label><input id="settingStoreLocation" class="settings-input" placeholder="الزقازيق"></div></div>
+          <p class="settings-note">ℹ️ رقم التواصل وموقع الفرع يتم حفظهما كإعدادات محلية للواجهة في هذه المرحلة.</p>
+        </div>
+        <div class="settings-card">
+          <div class="settings-card-head"><div><span class="settings-icon">💰</span><div><h3>إعدادات الطلب الافتراضية</h3><p>قيم تساعد الكاشير وتقلل الكتابة المتكررة.</p></div></div></div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4"><div><label class="settings-label">سعر التوصيل الافتراضي</label><div class="relative"><input id="settingDefaultDelivery" type="number" min="0" step="0.01" class="settings-input pr-12" value="20"><span class="settings-unit">ج.م</span></div></div><div><label class="settings-label">العملة</label><select id="settingCurrency" class="settings-input"><option value="ج.م">جنيه مصري (ج.م)</option></select></div></div>
+          <p class="settings-note">✅ قيمة التوصيل الجديدة ستُستخدم كقيمة افتراضية عند فتح نموذج الطلب.</p>
+        </div>
+        <div class="settings-card">
+          <div class="settings-card-head"><div><span class="settings-icon">🧠</span><div><h3>سلوك النظام</h3><p>إعدادات راحة الاستخدام على نفس الجهاز.</p></div></div></div>
+          <div class="settings-toggles mt-4"><label class="settings-toggle"><input type="checkbox" id="settingRememberTheme" checked><span></span><div><b>حفظ الثيم المختار</b><small>يظل الثيم محفوظًا عند فتح البرنامج مرة أخرى.</small></div></label><label class="settings-toggle"><input type="checkbox" id="settingAutoFocusOrder"><span></span><div><b>التركيز على اسم العميل عند فتح الطلب</b><small>يساعد الكاشير على البدء بالكتابة مباشرة.</small></div></label></div>
+        </div>
+      </div>
+      <div class="settings-actions"><button type="button" onclick="saveAppSettings()" class="settings-save-btn">💾 حفظ الإعدادات</button><button type="button" onclick="resetAppSettings()" class="settings-reset-btn">↺ استعادة الإعدادات الافتراضية</button></div>
+      <div id="settingsSaveStatus" class="settings-status hidden"></div>
+    </section>
+
+<section id="sec-analytics" class="hidden space-y-6">
       <div class="rounded-[30px] overflow-hidden border border-[var(--border-color,#e5e7eb)] shadow-xl bg-[var(--card-color,#fff)]">
         <div class="px-5 sm:px-7 py-7 bg-gradient-to-l from-[var(--primary-color,#7f1d1d)] via-[var(--primary-color,#991b1b)] to-[var(--accent-color,#b45309)] text-white">
           <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-5">
@@ -1744,6 +1770,7 @@
       prices: 'أسعار اللحوم',
       customers: 'العملاء',
       users: 'المستخدمون والصلاحيات',
+      settings: 'الإعدادات',
       driver: 'واجهة المندوب',
       track: 'تتبع العملاء'
     };
@@ -1770,6 +1797,7 @@
       if(tabName === 'prices' && !canUser('prices')) return alert('عذراً، لا تملك صلاحية الاطلاع على قائمة الأسعار.');
       if(tabName === 'customers' && !canManageCustomers()) return alert('عذراً، لا تملك صلاحية إدارة قاعدة العملاء.');
       if(tabName === 'users' && !canUser('users')) return alert('عذراً، لا تملك صلاحية إدارة المستخدمين والحسابات.');
+      if(tabName === 'settings' && (!currentUser || currentUser.role !== 'admin')) return alert('عذراً، الإعدادات مخصصة للإدارة فقط.');
       document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       const target = document.getElementById(`sec-${tabName}`);
@@ -1781,6 +1809,8 @@
       if(tabName === 'prices') renderPrices();
       if(tabName === 'customers') { document.getElementById('customerAuthLock')?.classList.toggle('hidden',!!currentUser && currentUser.role==='admin'); document.getElementById('customerPageContent')?.classList.toggle('hidden',!(currentUser && currentUser.role==='admin')); renderCustomersList(); }
       if(tabName === 'users') { document.getElementById('usersPageAuthLock')?.classList.add('hidden'); document.getElementById('usersPageContent')?.classList.remove('hidden'); renderUsersList(); syncNavigationTitle('users'); }
+      if(tabName === 'settings') { loadAppSettings(); syncNavigationTitle('settings'); }
+      if(tabName === 'admin' && getAppSettings().autoFocusOrder) setTimeout(() => document.getElementById('custName')?.focus(), 120);
       if(tabName === 'track') { renderPublicComments(); updateCustomerIdentityHint(); }
     }
 
@@ -1931,6 +1961,7 @@
       document.getElementById('tab-dashboard')?.classList.toggle('hidden',!(currentUser&&currentUser.role==='admin'));
       document.getElementById('addPriceBtn')?.classList.toggle('hidden',!canUser('prices'));
       document.querySelectorAll('.perm-users').forEach(el=>el.classList.toggle('hidden',!canUser('users')));
+      document.querySelectorAll('.admin-only-settings').forEach(el=>el.classList.toggle('hidden',!(currentUser && currentUser.role==='admin')));
       document.getElementById('usersPageAuthLock')?.classList.toggle('hidden',!!currentUser && canUser('users'));
       document.getElementById('usersPageContent')?.classList.toggle('hidden',!(currentUser && canUser('users')));
       document.querySelectorAll('.perm-customers').forEach(el=>el.classList.toggle('hidden',!canManageCustomers()));
@@ -1943,6 +1974,15 @@
       const saved=localStorage.getItem('hamaksha_user'); if(!saved) return;
       try { const data=JSON.parse(saved); if(!data?.username) return; db.ref('users').orderByChild('username').equalTo(data.username).once('value').then(snap=>{ const users=snap.val()||{}; let found=null; Object.keys(users).forEach(id=>found={...users[id],key:id}); if(found) loginSuccess(found); else localStorage.removeItem('hamaksha_user'); }); } catch(e) { localStorage.removeItem('hamaksha_user'); }
     }
+
+
+    // --- ⚙️ إعدادات البرنامج المحلية ---
+    const DEFAULT_APP_SETTINGS = { storeName:'جزارة حمكشة', storeTagline:'نظام إدارة الطلبات والتوصيل', storePhone:'', storeLocation:'الزقازيق', defaultDelivery:'20', currency:'ج.م', rememberTheme:true, autoFocusOrder:false };
+    const getAppSettings = () => { try { return {...DEFAULT_APP_SETTINGS, ...(JSON.parse(localStorage.getItem('hamaksha_app_settings')||'{}')||{})}; } catch(e) { return {...DEFAULT_APP_SETTINGS}; } };
+    function applyStoreIdentity(settings){ const st=String(settings.storeName||DEFAULT_APP_SETTINGS.storeName), tag=String(settings.storeTagline||DEFAULT_APP_SETTINGS.storeTagline); document.querySelectorAll('[data-store-name]').forEach(el=>el.textContent=st); document.querySelectorAll('[data-store-tagline]').forEach(el=>el.textContent=tag); document.title=`${st} - إدارة الطلبات والتقييم والتعليقات 🥩`; }
+    function loadAppSettings(){ const st=getAppSettings(), map={settingStoreName:'storeName',settingStoreTagline:'storeTagline',settingStorePhone:'storePhone',settingStoreLocation:'storeLocation'}; Object.keys(map).forEach(id=>{const el=document.getElementById(id); if(el) el.value=st[map[id]]||'';}); document.getElementById('settingDefaultDelivery')?.setAttribute('value',st.defaultDelivery); if(document.getElementById('settingDefaultDelivery')) document.getElementById('settingDefaultDelivery').value=st.defaultDelivery; if(document.getElementById('settingCurrency')) document.getElementById('settingCurrency').value=st.currency; if(document.getElementById('settingRememberTheme')) document.getElementById('settingRememberTheme').checked=!!st.rememberTheme; if(document.getElementById('settingAutoFocusOrder')) document.getElementById('settingAutoFocusOrder').checked=!!st.autoFocusOrder; }
+    function saveAppSettings(){ const st={storeName:document.getElementById('settingStoreName')?.value.trim()||DEFAULT_APP_SETTINGS.storeName,storeTagline:document.getElementById('settingStoreTagline')?.value.trim()||DEFAULT_APP_SETTINGS.storeTagline,storePhone:document.getElementById('settingStorePhone')?.value.trim()||'',storeLocation:document.getElementById('settingStoreLocation')?.value.trim()||DEFAULT_APP_SETTINGS.storeLocation,defaultDelivery:String(Number(document.getElementById('settingDefaultDelivery')?.value||20)||0),currency:document.getElementById('settingCurrency')?.value||'ج.م',rememberTheme:!!document.getElementById('settingRememberTheme')?.checked,autoFocusOrder:!!document.getElementById('settingAutoFocusOrder')?.checked}; localStorage.setItem('hamaksha_app_settings',JSON.stringify(st)); applyStoreIdentity(st); if(st.rememberTheme){const selected=document.querySelector('[data-theme-choice].active')?.dataset.themeChoice||localStorage.getItem('hamaksha_theme'); if(selected)localStorage.setItem('hamaksha_theme',selected);}else localStorage.removeItem('hamaksha_theme'); const dp=document.getElementById('deliveryPrice'); if(dp&&!document.getElementById('custOrderId')?.value.trim()) dp.value=st.defaultDelivery; const status=document.getElementById('settingsSaveStatus'); if(status){status.innerText='✅ تم حفظ إعدادات البرنامج بنجاح.';status.classList.remove('hidden');setTimeout(()=>status.classList.add('hidden'),2500);} }
+    function resetAppSettings(){ localStorage.removeItem('hamaksha_app_settings'); localStorage.removeItem('hamaksha_theme'); applyStoreIdentity(DEFAULT_APP_SETTINGS); changeThemePreset('hamkasha',false); loadAppSettings(); const dp=document.getElementById('deliveryPrice'); if(dp) dp.value=DEFAULT_APP_SETTINGS.defaultDelivery; const status=document.getElementById('settingsSaveStatus'); if(status){status.innerText='↺ تمت استعادة الإعدادات الافتراضية.';status.classList.remove('hidden');setTimeout(()=>status.classList.add('hidden'),2500);} }
 
     const THEME_PRESETS = {
       hamkasha: { primary:'#7f1d1d', secondary:'#f59e0b', bg:'#f6f7fb', surface:'#ffffff', soft:'#f8fafc', text:'#172033', muted:'#64748b', border:'#e5e7eb', sidebar:'#111827', accent:'#fbbf24', ring:'rgba(127,29,29,.18)', shadow:'rgba(15,23,42,.08)' },
@@ -1985,7 +2025,8 @@
     }
 
     function loadSavedTheme() {
-      const saved=localStorage.getItem('hamaksha_theme') || 'hamkasha';
+      const settings=getAppSettings();
+      const saved=(settings.rememberTheme ? localStorage.getItem('hamaksha_theme') : null) || 'hamkasha';
       changeThemePreset(saved,false);
     }
 
@@ -3326,7 +3367,7 @@
       document.getElementById('editCustPhone').value = order.phone || '';
       document.getElementById('editCustAddress').value = order.address || '';
       document.getElementById('editOrderPrice').value = order.orderPrice || 0;
-      document.getElementById('editDeliveryPrice').value = order.deliveryPrice || 20;
+      document.getElementById('editDeliveryPrice').value = order.deliveryPrice || getAppSettings().defaultDelivery;
       document.getElementById('editDriverSelect').value = order.driver || 'غير محدد';
 
       document.getElementById('editOrderModal').classList.remove('hidden');
@@ -3426,7 +3467,7 @@
       document.getElementById('mainHeader')?.style.setProperty('display','none','important');
       document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');switchTab('driver');
     }
-    window.addEventListener('DOMContentLoaded',()=>{loadSavedTheme();startPublicCommentsListener();loadRememberedLogin();if(APP_MODE!=='staff')applyCustomerPublicMode();else{document.body.classList.remove('customer-public-mode');startStaffDataListeners();updateUIByPermissions();checkSavedSession();if(!currentUser)switchTab('admin');}});
+    window.addEventListener('DOMContentLoaded',()=>{applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();startPublicCommentsListener();loadRememberedLogin();if(APP_MODE!=='staff')applyCustomerPublicMode();else{document.body.classList.remove('customer-public-mode');startStaffDataListeners();updateUIByPermissions();checkSavedSession();if(!currentUser)switchTab('admin');}});
 </script>
 </body>
 </html>
