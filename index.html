@@ -1044,7 +1044,12 @@
         if(!found) return alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
         const remember = document.getElementById('rememberMe')?.checked;
         if(remember) localStorage.setItem('hamaksha_remembered_login', JSON.stringify({username, pass})); else localStorage.removeItem('hamaksha_remembered_login');
-        signInEmployeeWithFirebaseAuth(found).then(()=>loginSuccess(found)).catch(authErr=>{ console.error('Firebase Auth login failed:',authErr); loginSuccess(found); alert('تم تسجيل الدخول بالنظام الحالي، لكن لم يكتمل تجهيز Firebase Authentication لهذا الحساب بعد.'); });
+        signInEmployeeWithFirebaseAuth(found).then(()=>loginSuccess(found)).catch(authErr=>{
+          console.warn('Firebase Authentication غير متزامن مع كلمة مرور النظام الحالية لهذا الحساب:', authErr);
+          // تسجيل الدخول بالنظام الحالي يظل فعالاً حتى يتم توحيد كلمة مرور Firebase Authentication.
+          // لا نعرض رسالة خطأ للمستخدم لأن تسجيل الدخول الأساسي نجح بالفعل.
+          loginSuccess(found);
+        });
       }).catch(err => { console.error(err); alert('تعذر الاتصال ببيانات المستخدمين حالياً.'); });
     }
 
