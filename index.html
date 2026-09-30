@@ -324,6 +324,57 @@
       table { border-collapse: collapse !important; width: 100% !important; }
       th, td { border: 1px solid #000 !important; padding: 8px !important; text-align: right !important; }
     }
+
+    /* ===== Premium Dashboard ===== */
+    .dashboard-premium { --dash-gap: 18px; }
+    .dashboard-hero { position:relative; background: radial-gradient(circle at 10% 20%, rgba(255,255,255,.14), transparent 28%), linear-gradient(135deg, var(--sidebar-color) 0%, var(--primary-color) 58%, var(--secondary-color) 150%); }
+    .dashboard-hero-overlay { position:absolute; inset:0; background:linear-gradient(90deg, rgba(255,255,255,.02), rgba(255,255,255,0)); pointer-events:none; }
+    .dashboard-live-pill, .dashboard-soft-pill, .dashboard-date-pill { display:inline-flex; align-items:center; gap:7px; border-radius:999px; padding:7px 11px; font-size:10px; font-weight:900; }
+    .dashboard-live-pill { background:rgba(16,185,129,.18); color:#dcfce7; border:1px solid rgba(110,231,183,.26); }
+    .dashboard-soft-pill { background:rgba(255,255,255,.09); color:rgba(255,255,255,.82); border:1px solid rgba(255,255,255,.12); }
+    .dashboard-live-dot { width:8px; height:8px; border-radius:999px; background:#34d399; box-shadow:0 0 0 5px rgba(52,211,153,.12); }
+    .dashboard-date-pill { background:rgba(255,255,255,.11); color:#fff; border:1px solid rgba(255,255,255,.13); }
+    .dashboard-action-btn { display:inline-flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,.16); background:#fff; color:var(--primary-color); padding:10px 15px; border-radius:12px; font-size:11px; font-weight:900; box-shadow:0 10px 25px rgba(0,0,0,.14); transition:transform .18s ease, box-shadow .18s ease; }
+    .dashboard-action-btn:hover { transform:translateY(-2px); box-shadow:0 14px 30px rgba(0,0,0,.18); }
+    .dashboard-primary-btn { background:var(--primary-color); }
+    .dashboard-auth-icon { width:72px; height:72px; margin:0 auto; display:flex; align-items:center; justify-content:center; border-radius:22px; font-size:34px; background:color-mix(in srgb,var(--primary-color) 12%, white); color:var(--primary-color); border:1px solid color-mix(in srgb,var(--primary-color) 18%, white); }
+    .dashboard-kpi { position:relative; overflow:hidden; min-height:154px; padding:17px; border-radius:22px; border:1px solid var(--border-color); background:var(--surface-color); box-shadow:0 12px 30px var(--shadow-color); transition:transform .18s ease, box-shadow .18s ease; }
+    .dashboard-kpi::after { content:""; position:absolute; left:-16px; bottom:-28px; width:90px; height:90px; border-radius:999px; opacity:.08; }
+    .dashboard-kpi:hover { transform:translateY(-3px); box-shadow:0 18px 38px var(--shadow-color); }
+    .kpi-blue::after { background:#3b82f6; } .kpi-green::after { background:#10b981; } .kpi-amber::after { background:#f59e0b; } .kpi-red::after { background:#ef4444; } .kpi-purple::after { background:#8b5cf6; }
+    .kpi-top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .kpi-icon { width:38px; height:38px; display:flex; align-items:center; justify-content:center; border-radius:13px; font-size:19px; background:var(--surface-soft); }
+    .kpi-label { font-size:10px; font-weight:900; color:var(--muted-color); }
+    .kpi-value { margin-top:15px; font-size:29px; line-height:1; font-weight:1000; letter-spacing:-.8px; color:var(--text-color); }
+    .kpi-value.currency { font-size:21px; }
+    .kpi-foot { margin-top:12px; font-size:9px; color:var(--muted-color); font-weight:700; }
+    .dashboard-panel { min-width:0; background:var(--surface-color); border:1px solid var(--border-color); border-radius:22px; box-shadow:0 12px 30px var(--shadow-color); padding:17px; }
+    .panel-head { display:flex; align-items:center; justify-content:space-between; gap:12px; border-bottom:1px solid var(--border-color); padding-bottom:13px; margin-bottom:13px; }
+    .panel-head-map { align-items:flex-start; }
+    .panel-title { font-size:13px; font-weight:1000; color:var(--text-color); }
+    .panel-subtitle { font-size:9px; color:var(--muted-color); font-weight:700; margin-top:3px; }
+    .panel-link { font-size:9px; color:var(--primary-color); background:color-mix(in srgb,var(--primary-color) 8%, white); padding:7px 9px; border-radius:9px; font-weight:900; white-space:nowrap; }
+    .panel-count { font-size:9px; font-weight:900; background:var(--surface-soft); color:var(--text-color); border:1px solid var(--border-color); padding:7px 9px; border-radius:9px; white-space:nowrap; }
+    .dashboard-mini-live { font-size:8px; font-weight:1000; letter-spacing:.5px; color:#059669; background:#ecfdf5; border:1px solid #a7f3d0; padding:4px 7px; border-radius:999px; }
+    .map-legend-item { display:inline-flex; align-items:center; gap:5px; padding:6px 8px; border:1px solid var(--border-color); background:var(--surface-soft); color:var(--text-color); border-radius:9px; }
+    .map-dot { width:8px; height:8px; border-radius:999px; display:inline-block; } .dot-driver { background:#2563eb; } .dot-customer { background:#dc2626; }
+    .map-line { width:15px; height:2px; background:#10b981; border-radius:99px; display:inline-block; }
+    .map-refresh-btn { padding:6px 9px; border-radius:9px; background:var(--surface-soft); color:var(--text-color); border:1px solid var(--border-color); font-size:9px; font-weight:900; }
+    .dashboard-map-frame { border-radius:17px; overflow:hidden; border:1px solid var(--border-color); background:var(--surface-soft); padding:4px; }
+    .dashboard-scroll { scrollbar-width:thin; scrollbar-color: color-mix(in srgb,var(--primary-color) 45%, #cbd5e1) transparent; }
+    body.theme-modern .dashboard-kpi,
+    body.theme-modern .dashboard-panel { background:var(--surface-color) !important; border-color:var(--border-color) !important; }
+    body.theme-modern .dashboard-premium .bg-gray-50,
+    body.theme-modern .dashboard-premium .bg-gray-100 { background-color:var(--surface-soft) !important; }
+    @media (max-width: 640px) {
+      .dashboard-hero { border-radius:22px; }
+      .dashboard-kpi { min-height:140px; padding:14px; }
+      .kpi-value { font-size:25px; }
+      .dashboard-panel { border-radius:19px; padding:14px; }
+      .panel-head, .panel-head-map { align-items:flex-start; flex-direction:column; }
+      .panel-link, .panel-count { align-self:flex-start; }
+    }
+
   </style>
 </head>
 <body id="appBody" class="bg-amber-50/40 min-h-screen text-gray-800">
@@ -396,83 +447,112 @@
       <div class="text-[11px] text-gray-400 font-semibold">🔒 نظام محمي ومقيد الصلاحيات</div>
     </div>
 
-    <!-- 📊 لوحة التحكم الرئيسية الجديدة -->
-    <section id="sec-dashboard" class="hidden space-y-6">
-      <div id="dashboardAuthLock" class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md mx-auto space-y-4 border border-red-100">
-        <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-3xl">📊</div>
-        <h3 class="text-xl font-bold text-gray-800">لوحة التحكم الرئيسية</h3>
-        <p class="text-xs text-gray-500">سجل الدخول بحساب الإدارة لعرض الإحصائيات الحية.</p>
-        <button onclick="toggleAuthModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm">تسجيل الدخول 🔑</button>
+    <!-- 📊 لوحة التحكم الرئيسية — Premium Dashboard -->
+    <section id="sec-dashboard" class="hidden space-y-6 dashboard-premium">
+      <div id="dashboardAuthLock" class="dashboard-auth-lock bg-white rounded-2xl shadow-xl p-8 text-center max-w-md mx-auto space-y-4 border border-red-100">
+        <div class="dashboard-auth-icon">📊</div>
+        <h3 class="text-xl font-black text-gray-800">لوحة التحكم الرئيسية</h3>
+        <p class="text-xs text-gray-500 leading-6">سجل الدخول بحساب الإدارة لعرض الإحصائيات الحية وحالة الطلبات والمناديب.</p>
+        <button onclick="toggleAuthModal()" class="dashboard-primary-btn w-full text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm">تسجيل الدخول 🔑</button>
       </div>
 
       <div id="dashboardContent" class="hidden space-y-6">
-        <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4">
-            <div>
-              <h2 class="text-xl font-black text-red-700">📊 لوحة التحكم الرئيسية</h2>
-              <p class="text-xs text-gray-500 font-semibold">ملخص حي للطلبات والتحصيل وحالة المناديب اليوم</p>
-              <p id="dashboardScopeNote" class="text-[10px] text-blue-600 mt-1 hidden">🔐 العرض الحالي مقيد بالطلبات التي أنشأها هذا المستخدم. يستطيع asma منح صلاحية عرض جميع المناديب والأوردرات.</p>
-            </div>
-            <span id="dashboardDate" class="bg-amber-100 text-amber-900 px-3 py-1.5 rounded-xl text-xs font-bold"></span>
-          </div>
-
-          <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mt-5">
-            <div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 text-center">
-              <div class="text-2xl">📦</div><p class="text-[11px] font-bold text-blue-700 mt-1">طلبات اليوم</p>
-              <div id="dashTodayOrders" class="text-2xl font-black text-blue-900 mt-1">0</div>
-            </div>
-            <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 text-center">
-              <div class="text-2xl">✅</div><p class="text-[11px] font-bold text-emerald-700 mt-1">تم التسليم</p>
-              <div id="dashDelivered" class="text-2xl font-black text-emerald-900 mt-1">0</div>
-            </div>
-            <div class="bg-amber-50 border border-amber-100 rounded-2xl p-4 text-center">
-              <div class="text-2xl">🛵</div><p class="text-[11px] font-bold text-amber-700 mt-1">قيد التوصيل</p>
-              <div id="dashOutForDelivery" class="text-2xl font-black text-amber-900 mt-1">0</div>
-            </div>
-            <div class="bg-red-50 border border-red-100 rounded-2xl p-4 text-center">
-              <div class="text-2xl">⏳</div><p class="text-[11px] font-bold text-red-700 mt-1">قيد التحضير</p>
-              <div id="dashPreparing" class="text-2xl font-black text-red-900 mt-1">0</div>
-            </div>
-            <div class="bg-purple-50 border border-purple-100 rounded-2xl p-4 text-center col-span-2 lg:col-span-1">
-              <div class="text-2xl">💰</div><p class="text-[11px] font-bold text-purple-700 mt-1">تحصيل اليوم</p>
-              <div id="dashCash" class="text-xl font-black text-purple-900 mt-1">0 ج.م</div>
+        <!-- Hero -->
+        <div class="dashboard-hero rounded-3xl shadow-xl overflow-hidden">
+          <div class="dashboard-hero-overlay"></div>
+          <div class="relative p-5 sm:p-7">
+            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2 mb-3">
+                  <span class="dashboard-live-pill"><span class="dashboard-live-dot"></span> LIVE الآن</span>
+                  <span class="dashboard-soft-pill">تشغيل ومتابعة لحظية</span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight">لوحة تحكم جزارة حمكشة</h2>
+                <p class="text-xs sm:text-sm text-white/75 mt-2 font-semibold">نظرة واحدة على الطلبات، التحصيل، وحركة المناديب خلال اليوم.</p>
+                <p id="dashboardScopeNote" class="text-[10px] text-white/70 mt-2 hidden">🔐 العرض الحالي مقيد بالطلبات التي أنشأها هذا المستخدم. يستطيع asma منح صلاحية عرض جميع المناديب والأوردرات.</p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <span id="dashboardDate" class="dashboard-date-pill">اليوم</span>
+                <button type="button" onclick="switchTab('admin'); setTimeout(() => document.getElementById('custName')?.focus(), 100)" class="dashboard-action-btn">➕ طلب جديد</button>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100">
-            <div class="flex justify-between items-center border-b pb-3 mb-3">
-              <div><h3 class="font-black text-sm text-gray-800">🛵 حالة المناديب</h3><p class="text-[10px] text-gray-400">حسب الطلبات النشطة المسجلة</p></div>
-              <span id="dashDriverSummary" class="text-[10px] font-bold bg-gray-100 px-2 py-1 rounded-lg">0 مندوب</span>
-            </div>
-            <div id="dashboardDrivers" class="space-y-2 max-h-80 overflow-y-auto"></div>
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+          <div class="dashboard-kpi kpi-blue">
+            <div class="kpi-top"><span class="kpi-icon">📦</span><span class="kpi-label">طلبات اليوم</span></div>
+            <div id="dashTodayOrders" class="kpi-value">0</div>
+            <div class="kpi-foot"><span>إجمالي الطلبات المسجلة اليوم</span></div>
           </div>
-
-          <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100">
-            <div class="flex justify-between items-center border-b pb-3 mb-3">
-              <div><h3 class="font-black text-sm text-gray-800">⚠️ الطلبات النشطة</h3><p class="text-[10px] text-gray-400">آخر الطلبات التي تحتاج متابعة</p></div>
-              <button onclick="switchTab('admin')" class="text-[10px] bg-red-100 text-red-700 px-2.5 py-1 rounded-lg font-bold">فتح سجل الطلبات</button>
-            </div>
-            <div id="dashboardActiveOrders" class="space-y-2 max-h-80 overflow-y-auto"></div>
+          <div class="dashboard-kpi kpi-green">
+            <div class="kpi-top"><span class="kpi-icon">✅</span><span class="kpi-label">تم التسليم</span></div>
+            <div id="dashDelivered" class="kpi-value">0</div>
+            <div class="kpi-foot"><span>طلبات مكتملة</span></div>
+          </div>
+          <div class="dashboard-kpi kpi-amber">
+            <div class="kpi-top"><span class="kpi-icon">🛵</span><span class="kpi-label">قيد التوصيل</span></div>
+            <div id="dashOutForDelivery" class="kpi-value">0</div>
+            <div class="kpi-foot"><span>مندوبون على الطريق</span></div>
+          </div>
+          <div class="dashboard-kpi kpi-red">
+            <div class="kpi-top"><span class="kpi-icon">⏳</span><span class="kpi-label">قيد التحضير</span></div>
+            <div id="dashPreparing" class="kpi-value">0</div>
+            <div class="kpi-foot"><span>تحتاج متابعة المطبخ</span></div>
+          </div>
+          <div class="dashboard-kpi kpi-purple col-span-2 md:col-span-4 xl:col-span-1">
+            <div class="kpi-top"><span class="kpi-icon">💰</span><span class="kpi-label">تحصيل اليوم</span></div>
+            <div id="dashCash" class="kpi-value currency">0 ج.م</div>
+            <div class="kpi-foot"><span>المبالغ المحصلة</span></div>
           </div>
         </div>
 
-        <!-- 🗺️ خريطة المناديب والطلبات الحية -->
-        <div class="bg-white rounded-2xl shadow-xl p-5 border border-amber-100">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-3 mb-4">
+        <!-- Operational panels -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-5">
+          <div class="dashboard-panel xl:col-span-2">
+            <div class="panel-head">
+              <div>
+                <h3 class="panel-title">⚠️ الطلبات النشطة</h3>
+                <p class="panel-subtitle">أحدث الطلبات التي تحتاج متابعة الآن</p>
+              </div>
+              <button onclick="switchTab('admin')" class="panel-link">فتح سجل الطلبات ←</button>
+            </div>
+            <div id="dashboardActiveOrders" class="space-y-2.5 max-h-[350px] overflow-y-auto dashboard-scroll"></div>
+          </div>
+
+          <div class="dashboard-panel">
+            <div class="panel-head">
+              <div>
+                <h3 class="panel-title">🛵 حالة المناديب</h3>
+                <p class="panel-subtitle">حسب الطلبات النشطة المسجلة</p>
+              </div>
+              <span id="dashDriverSummary" class="panel-count">0 مندوب</span>
+            </div>
+            <div id="dashboardDrivers" class="space-y-2.5 max-h-[350px] overflow-y-auto dashboard-scroll"></div>
+          </div>
+        </div>
+
+        <!-- Live Map -->
+        <div class="dashboard-panel dashboard-map-panel">
+          <div class="panel-head panel-head-map">
             <div>
-              <h3 class="font-black text-sm text-gray-800">🗺️ خريطة المناديب والطلبات Live</h3>
-              <p class="text-[10px] text-gray-400">تظهر مواقع المناديب والعملاء المسجلة حالياً من نظام التتبع</p>
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 class="panel-title">🗺️ الخريطة الحية</h3>
+                <span class="dashboard-mini-live">LIVE</span>
+              </div>
+              <p class="panel-subtitle">مواقع المناديب والعملاء المسجلة حاليًا من نظام التتبع</p>
             </div>
             <div class="flex flex-wrap gap-2 text-[10px] font-bold">
-              <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-lg">🔵 مندوب</span>
-              <span class="bg-red-100 text-red-800 px-2 py-1 rounded-lg">🔴 عميل</span>
-              <span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded-lg">📏 المسافة</span>
-              <button onclick="refreshDashboardMap()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-lg">🔄 تحديث</button>
+              <span class="map-legend-item"><i class="map-dot dot-driver"></i> مندوب</span>
+              <span class="map-legend-item"><i class="map-dot dot-customer"></i> عميل</span>
+              <span class="map-legend-item"><i class="map-line"></i> المسافة</span>
+              <button onclick="refreshDashboardMap()" class="map-refresh-btn">🔄 تحديث</button>
             </div>
           </div>
-          <div id="dashboardMap" class="w-full h-[420px] rounded-2xl border border-gray-200 overflow-hidden bg-gray-100"></div>
+          <div class="dashboard-map-frame">
+            <div id="dashboardMap" class="w-full h-[420px] rounded-2xl overflow-hidden bg-gray-100"></div>
+          </div>
           <div id="dashboardMapStatus" class="text-[10px] text-gray-500 mt-2 text-center">جارٍ تجهيز الخريطة...</div>
         </div>
       </div>
