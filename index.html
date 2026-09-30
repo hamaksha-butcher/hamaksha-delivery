@@ -803,12 +803,24 @@
 
     // 🔐 المرحلة 1A: تجهيز Firebase Authentication تدريجياً بدون كسر نظام الدخول الحالي.
     const AUTH_DOMAIN_SUFFIX = '@hamaksha-auth.local';
+
+    // 🔗 ربط أسماء المستخدمين القديمة بحسابات Firebase Authentication الحقيقية.
+    // حساب Asma تم إنشاؤه في Firebase Authentication.
+    const AUTH_EMAILS = {
+      asma: 'asmaibrahiim2001@gmail.com'
+    };
+
     let firebaseAuth = null;
     let authReady = false;
     try { firebaseAuth = firebase.auth(); authReady = true; } catch(e) { console.warn('Firebase Auth غير متاح حالياً:', e); }
 
     function authEmailForUsername(username){
       const clean=String(username||'').trim().toLowerCase();
+
+      // إذا كان للمستخدم حساب Firebase حقيقي مسجل في AUTH_EMAILS نستخدمه.
+      if (AUTH_EMAILS[clean]) return AUTH_EMAILS[clean];
+
+      // باقي الحسابات تستمر بالطريقة الانتقالية الحالية بدون التأثير على النظام.
       return clean ? clean.replace(/[^a-z0-9._-]/g,'_')+AUTH_DOMAIN_SUFFIX : '';
     }
     function getSecondaryAuthApp(){
