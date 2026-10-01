@@ -3530,7 +3530,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       set('cashierMetricCollected',collected.toLocaleString('ar-EG')+' ج.م');
       const bookingAll=window.storeBookingsCache||{};
       const todayBookings=Object.keys(bookingAll).map(key=>({key,...(bookingAll[key]||{})})).filter(x=>x.pickupDate===today).sort((a,b)=>String(a.pickupTime||'').localeCompare(String(b.pickupTime||'')));
-      const upcomingBookings=Object.keys(bookingAll).map(key=>({key,...(bookingAll[key]||{})})).filter(x=>storeBookingPickupTimestamp(x)>Date.now() && x.pickupDate!==today).sort((a,b)=>storeBookingPickupTimestamp(a)-storeBookingPickupTimestamp(b));
+      const upcomingBookings=Object.keys(bookingAll).map(key=>({key,...(bookingAll[key]||{})})).filter(x=>storeBookingPickupTimestamp(x)>Date.now()).sort((a,b)=>storeBookingPickupTimestamp(a)-storeBookingPickupTimestamp(b));
       const upBadge=document.getElementById('cashierUpcomingBookingsCount');if(upBadge)upBadge.innerText=upcomingBookings.length.toLocaleString('ar-EG');
       set('cashierMetricBookings',todayBookings.length.toLocaleString('ar-EG'));
       const recentOrders=document.getElementById('cashierRecentOrders');
@@ -4353,18 +4353,49 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       const container=document.getElementById('storeBookingTodayList');if(!container)return;const all=window.storeBookingsCache||{};const today=getLocalDateInputValue();const now=Date.now();renderStoreBookingCalendar();
       const allList=Object.keys(all).map(k=>({key:k,...(all[k]||{})})).sort((a,b)=>storeBookingPickupTimestamp(a)-storeBookingPickupTimestamp(b));
       const todayList=allList.filter(x=>x.pickupDate===today);
-      const upcomingList=allList.filter(x=>{const t=storeBookingPickupTimestamp(x);return t>now && x.pickupDate!==today;});
+      const upcomingList=allList.filter(x=>storeBookingPickupTimestamp(x)>now);
       const count=document.getElementById('storeBookingTodayCount');if(count)count.innerText=todayList.length.toLocaleString('ar-EG');const up=document.getElementById('storeBookingUpcomingCount');if(up)up.innerText=upcomingList.length.toLocaleString('ar-EG');const allCount=document.getElementById('storeBookingAllCount');if(allCount)allCount.innerText=allList.length.toLocaleString('ar-EG');
       ['Today','Upcoming','All'].forEach(v=>document.getElementById('storeView'+v)?.classList.toggle('active',v.toLowerCase()===storeBookingViewMode));
       let list;if(storeBookingViewMode==='today')list=todayList;else if(storeBookingViewMode==='upcoming')list=upcomingList;else if(storeBookingViewMode==='week'){const ws=getStartOfLocalWeek(new Date()),we=new Date(ws);we.setDate(we.getDate()+7);const from=getLocalDateInputValue(ws),to=getLocalDateInputValue(we);list=allList.filter(x=>String(x.pickupDate||'')>=from&&String(x.pickupDate||'')<to);}else list=allList;
       const q=storeBookingListSearch;
-      if(q)list=list.filter(x=>`${x.bookingNumber||x.key} ${x.customerName||''} ${x.customerPhone||''}`.toLowerCase().includes(q));
+      if(q)list=list.filter(x=>`${x.bookingNumber||x.key} ${x.customerName||''} ${x.customerPhone||''} ${x.notes||''}`.toLowerCase().includes(q));
       if(storeBookingListStatus!=='ALL')list=list.filter(x=>x.status===storeBookingListStatus);
       if(storeBookingListDateFrom)list=list.filter(x=>String(x.pickupDate||'')>=storeBookingListDateFrom);
       if(storeBookingListDateTo)list=list.filter(x=>String(x.pickupDate||'')<=storeBookingListDateTo);
       list.sort((a,b)=>storeBookingPickupTimestamp(a)-storeBookingPickupTimestamp(b));
       if(!list.length){container.innerHTML='<div class="store-empty">📭 لا توجد حجوزات مطابقة للفلاتر الحالية.</div>';return;}
       container.innerHTML=list.map(b=>{const m=storeBookingStatusMeta(b.status),total=Number(b.total||0),remaining=Number(b.remainingDue||0),converted=!!b.convertedTo||b.status==='تم التحويل للدليفري 🔄';const canConvert=!converted && b.status!=='ملغي ❌' && (currentUser?.role==='admin'||canUser('storeBookings'));return `<article data-booking-key="${escapeHtml(b.key)}" class="store-booking-card ${converted?'converted':''} ${b.pickupDate===window.hamkashaBookingCalendar.selectedDate?'store-list-selected-date':''}"><div class="store-booking-card-head"><span class="store-booking-id">#${escapeHtml(b.bookingNumber||b.key)}</span><span class="store-booking-status ${m.cls}">${m.label}</span></div><div class="store-booking-meta"><div>👤 العميل<b>${escapeHtml(b.customerName||'غير محدد')}</b></div><div>📅 الاستلام<b>${escapeHtml(formatDateDMY(b.pickupDate||''))} · ${escapeHtml(b.pickupTime||'—')}</b></div><div>💰 الإجمالي<b>${total.toLocaleString('ar-EG')} ج.م</b></div><div>💳 المتبقي<b>${remaining.toLocaleString('ar-EG')} ج.م</b></div></div><div class="store-booking-actions"><button type="button" class="store-action-btn primary" onclick="printStoreBooking(${htmlJsArg(b.key)})">🧾 طباعة 80mm</button>${canConvert?`<button type="button" class="store-action-btn" onclick="openConversionModal('store',${htmlJsArg(b.key)})">🛵 تحويل لدليفري</button>`:''}${!converted&&b.status!=='جاهز للاستلام 📦'&&b.status!=='تم الاستلام ✅'&&b.status!=='ملغي ❌'?`<button type="button" class="store-action-btn" onclick="editStoreBookingStatus(${htmlJsArg(b.key)},'جاهز للاستلام 📦')">📦 جاهز</button>`:''}${!converted&&b.status!=='تم الاستلام ✅'&&b.status!=='ملغي ❌'?`<button type="button" class="store-action-btn" onclick="editStoreBookingStatus(${htmlJsArg(b.key)},'تم الاستلام ✅')">✅ استلم</button>`:''}${!converted&&b.status!=='ملغي ❌'?`<button type="button" class="store-action-btn danger" onclick="editStoreBookingStatus(${htmlJsArg(b.key)},'ملغي ❌')">✕ إلغاء</button>`:''}</div></article>`;}).join('');
+    }
+    function applyStoreBookingListFilters(){
+      const searchEl=document.getElementById('storeBookingListSearch');
+      const statusEl=document.getElementById('storeBookingListStatus');
+      const fromEl=document.getElementById('storeBookingListDateFrom');
+      const toEl=document.getElementById('storeBookingListDateTo');
+      storeBookingListSearch=String(searchEl?.value||'').trim().toLowerCase();
+      storeBookingListStatus=String(statusEl?.value||'ALL')||'ALL';
+      storeBookingListDateFrom=String(fromEl?.value||'');
+      storeBookingListDateTo=String(toEl?.value||'');
+      if(storeBookingListDateFrom&&storeBookingListDateTo&&storeBookingListDateFrom>storeBookingListDateTo){
+        const hold=storeBookingListDateFrom;storeBookingListDateFrom=storeBookingListDateTo;storeBookingListDateTo=hold;
+        if(fromEl)fromEl.value=storeBookingListDateFrom;
+        if(toEl)toEl.value=storeBookingListDateTo;
+      }
+      renderStoreBookingList();
+    }
+    function resetStoreBookingListFilters(){
+      storeBookingListSearch='';
+      storeBookingListStatus='ALL';
+      storeBookingListDateFrom='';
+      storeBookingListDateTo='';
+      const searchEl=document.getElementById('storeBookingListSearch');
+      const statusEl=document.getElementById('storeBookingListStatus');
+      const fromEl=document.getElementById('storeBookingListDateFrom');
+      const toEl=document.getElementById('storeBookingListDateTo');
+      if(searchEl)searchEl.value='';
+      if(statusEl)statusEl.value='ALL';
+      if(fromEl)fromEl.value='';
+      if(toEl)toEl.value='';
+      renderStoreBookingList();
     }
     function renderStoreBookingToday(){renderStoreBookingList();}
     async function editStoreBookingStatus(key,status){if(!currentUser||(currentUser.role!=='admin'&&!canUser('storeBookings')))return;try{await db.ref('storeBookings/'+key).update({status,updatedAt:Date.now(),updatedBy:currentUser.username});await logActivity('update','storeBooking',`تحديث حالة حجز المحل #${key} إلى ${status}`,key,{status});addNotification(status==='تم الاستلام ✅'?'delivered':'status','تحديث حجز المحل',`#${key} — ${status}`,key);}catch(e){console.error(e);alert('تعذر تحديث حالة الحجز حالياً.');}}
