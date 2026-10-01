@@ -1072,6 +1072,24 @@
     .cashier-catalog-ready span:not(.catalog-ready-dot){display:block!important;font-size:8px!important;color:#047857!important;margin-top:2px!important;font-weight:800!important}
     .cashier-catalog-view-btn{background:#fff!important;border:1px solid rgba(5,150,105,.22)!important;color:#047857!important;border-radius:12px!important;padding:8px 11px!important;font-size:9px!important;font-weight:1000!important}
     @media(max-width:900px){.cashier-home-grid{grid-template-columns:1fr!important}.cashier-catalog-ready{align-items:flex-start!important;flex-direction:column!important}.cashier-catalog-view-btn{width:100%!important}}
+
+    /* ===== STEP 33 / STORE BOOKING PRO ===== */
+    .store-booking-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:12px}
+    .store-overview-card{background:var(--surface-color,#fff);border:1px solid var(--border-color,#e5e7eb);border-radius:16px;padding:11px;box-shadow:0 8px 22px var(--shadow-color,rgba(15,23,42,.06))}
+    .store-overview-card b{display:block;font-size:17px;font-weight:1000;color:var(--text-color,#172033);margin-top:2px}.store-overview-card span{display:block;font-size:8px;font-weight:800;color:var(--muted-color,#64748b)}
+    .store-booking-list-toolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:10px;background:var(--surface-soft,#f8fafc);border:1px solid var(--border-color,#e5e7eb);border-radius:16px;margin-bottom:10px}
+    .store-list-switch{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.store-list-switch button{border:1px solid var(--border-color,#e5e7eb);background:var(--surface-color,#fff);color:var(--muted-color,#64748b);border-radius:12px;padding:8px;font-size:8px;font-weight:1000;cursor:pointer}.store-list-switch button.active{background:var(--primary-color,#7f1d1d);color:#fff;border-color:transparent}
+    .store-booking-filter-label{display:block;font-size:7px;font-weight:900;color:var(--muted-color,#64748b);margin-bottom:4px}.store-booking-filter-input{width:100%;border:1px solid var(--border-color,#e5e7eb);background:var(--surface-color,#fff);color:var(--text-color,#172033);border-radius:10px;padding:8px 9px;font-size:8px;outline:none}
+    .store-booking-filter-actions{display:flex;align-items:end;gap:6px}.store-booking-filter-clear{border:1px solid var(--border-color,#e5e7eb);background:var(--surface-color,#fff);color:var(--muted-color,#64748b);border-radius:10px;padding:8px 10px;font-size:8px;font-weight:900;cursor:pointer;width:100%}
+    .store-booking-status.converted{background:#f3e8ff;color:#6b21a8;border-color:#d8b4fe}
+    .store-booking-card.converted{opacity:.82}
+    .store-booking-customer-tools{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-top:5px;flex-wrap:wrap}.store-booking-customer-status{font-size:8px;font-weight:900;color:var(--muted-color,#64748b);padding:5px 7px;border-radius:9px;background:var(--surface-soft,#f8fafc);border:1px solid var(--border-color,#e5e7eb)}
+    .store-booking-mini-history{margin-top:8px;border:1px dashed var(--border-color,#dbe3ea);border-radius:12px;padding:7px;background:var(--surface-soft,#f8fafc)}.store-booking-mini-history-head{font-size:8px;font-weight:1000;color:var(--text-color,#172033);margin-bottom:5px}.store-booking-mini-history-list{display:grid;gap:4px;max-height:120px;overflow:auto}.store-booking-mini-history-row{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:6px 7px;background:var(--surface-color,#fff);border:1px solid var(--border-color,#e5e7eb);border-radius:9px;font-size:7px}.store-booking-mini-history-row b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--primary-color,#7f1d1d)}
+    .customer-history-modal{position:fixed;inset:0;background:rgba(2,6,23,.68);backdrop-filter:blur(6px);z-index:90;display:none;align-items:center;justify-content:center;padding:14px}.customer-history-modal.open{display:flex}.customer-history-dialog{width:min(760px,100%);max-height:90vh;overflow:hidden;background:var(--surface-color,#fff);border:1px solid var(--border-color,#e5e7eb);border-radius:24px;box-shadow:0 26px 70px rgba(15,23,42,.25)}.customer-history-dialog-head{padding:16px;border-bottom:1px solid var(--border-color,#e5e7eb);display:flex;align-items:center;justify-content:space-between;gap:8px}.customer-history-dialog-head h3{font-size:14px;font-weight:1000;color:var(--text-color,#172033)}.customer-history-dialog-head p{font-size:8px;color:var(--muted-color,#64748b);margin-top:2px}.customer-history-dialog-body{padding:14px;overflow:auto;max-height:calc(90vh - 84px)}.customer-full-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:10px}.customer-full-summary-card{padding:9px;border-radius:13px;background:var(--surface-soft,#f8fafc);border:1px solid var(--border-color,#e5e7eb)}.customer-full-summary-card span{display:block;font-size:7px;color:var(--muted-color,#64748b);font-weight:800}.customer-full-summary-card b{display:block;font-size:13px;color:var(--text-color,#172033);font-weight:1000;margin-top:2px}.customer-full-list{display:grid;gap:7px}.customer-full-row{display:grid;grid-template-columns:1.2fr 1.1fr .9fr .8fr auto;gap:8px;align-items:center;padding:10px;border-radius:14px;background:var(--surface-soft,#f8fafc);border:1px solid var(--border-color,#e5e7eb)}.customer-full-row .type{font-size:7px;font-weight:1000;padding:4px 6px;border-radius:8px;display:inline-flex;width:max-content}.customer-full-row .id{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:8px;font-weight:1000;color:var(--primary-color,#7f1d1d)}.customer-full-row .meta{font-size:7px;color:var(--muted-color,#64748b);line-height:1.6}.customer-full-row .amount{font-size:9px;font-weight:1000;color:#047857;text-align:left}.customer-full-row button{border:1px solid var(--border-color,#e5e7eb);background:var(--surface-color,#fff);color:var(--primary-color,#7f1d1d);border-radius:9px;padding:6px 8px;font-size:7px;font-weight:1000;cursor:pointer}
+    .conversion-modal{position:fixed;inset:0;background:rgba(2,6,23,.72);backdrop-filter:blur(7px);z-index:95;display:none;align-items:center;justify-content:center;padding:14px}.conversion-modal.open{display:flex}.conversion-dialog{width:min(500px,100%);background:var(--surface-color,#fff);border:1px solid var(--border-color,#e5e7eb);border-radius:24px;box-shadow:0 26px 70px rgba(15,23,42,.25);padding:16px}.conversion-dialog h3{font-size:14px;font-weight:1000;color:var(--text-color,#172033)}.conversion-dialog p{font-size:8px;color:var(--muted-color,#64748b);margin-top:3px;line-height:1.7}.conversion-fields{display:grid;gap:9px;margin-top:12px}.conversion-field label{display:block;font-size:8px;font-weight:900;color:var(--text-color,#172033);margin-bottom:5px}.conversion-field input,.conversion-field select{width:100%;border:1px solid var(--border-color,#e5e7eb);background:var(--surface-soft,#f8fafc);color:var(--text-color,#172033);border-radius:11px;padding:9px;font-size:9px}.conversion-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}.conversion-actions button{border:0;border-radius:11px;padding:10px;font-size:9px;font-weight:1000;cursor:pointer}.conversion-actions .primary{background:var(--primary-color,#7f1d1d);color:#fff}.conversion-actions .secondary{background:var(--surface-soft,#f8fafc);color:var(--muted-color,#64748b);border:1px solid var(--border-color,#e5e7eb)}
+    .notification-permission-btn{border:1px solid var(--border-color,#e5e7eb);background:var(--surface-color,#fff);color:var(--primary-color,#7f1d1d);border-radius:10px;padding:7px 9px;font-size:8px;font-weight:900;cursor:pointer}
+    @media(max-width:760px){.store-booking-overview{grid-template-columns:1fr 1fr}.store-booking-list-toolbar{grid-template-columns:1fr}.store-list-switch{grid-column:auto}.customer-full-summary{grid-template-columns:1fr 1fr}.customer-full-row{grid-template-columns:1fr 1fr}.customer-full-row .amount{text-align:right}}
+    @media(max-width:520px){.store-booking-overview{grid-template-columns:1fr}.store-list-switch{grid-template-columns:1fr}.customer-full-summary{grid-template-columns:1fr 1fr}.conversion-actions{grid-template-columns:1fr}}
   </style>
 </head>
 <body id="appBody" class="bg-amber-50/40 min-h-screen text-gray-800">
@@ -1172,11 +1190,7 @@
   <div id="notificationPanel" class="notification-panel" aria-hidden="true">
     <div class="notification-head">
       <div><h3>🔔 الإشعارات</h3><p id="notificationSummary">لا توجد إشعارات جديدة</p></div>
-      <div class="notification-actions">
-        <button type="button" class="notification-mini-btn" onclick="markAllNotificationsRead()">تعليم الكل كمقروء</button>
-        <button type="button" class="notification-mini-btn" onclick="clearNotifications()">مسح</button>
-        <button type="button" class="notification-mini-btn" onclick="closeNotifications()">✕</button>
-      </div>
+      <div class="notification-actions"><button type="button" class="notification-permission-btn" onclick="requestBrowserNotifications()">🔔 تفعيل</button><button type="button" class="notification-mini-btn" onclick="markAllNotificationsRead()">تعليم الكل كمقروء</button><button type="button" class="notification-mini-btn" onclick="clearNotifications()">مسح</button><button type="button" class="notification-mini-btn" onclick="closeNotifications()">✕</button></div>
     </div>
     <div id="notificationList" class="notification-list"><div class="notification-empty">📭 لا توجد إشعارات حالياً.</div></div>
   </div>
@@ -1223,7 +1237,7 @@
         <div class="cashier-catalog-ready"><div><span class="catalog-ready-dot"></span><div><b>المنيو جاهزة للبيع</b><span id="cashierCatalogReadyText">47 صنفًا جاهزًا للاختيار</span></div></div><button type="button" onclick="switchTab('admin');setTimeout(()=>document.getElementById('invoiceCatalogSearch')?.focus(),150)" class="cashier-catalog-view-btn">فتح المنيو ↗</button></div>
         <div class="cashier-home-panels">
           <div class="cashier-home-panel"><h3>آخر فواتير التوصيل</h3><div id="cashierRecentOrders" class="cashier-mini-list"><div class="cashier-mini-item">لا توجد بيانات بعد.</div></div></div>
-          <div class="cashier-home-panel"><h3>حجوزات المحل اليوم</h3><div id="cashierRecentBookings" class="cashier-mini-list"><div class="cashier-mini-item">لا توجد حجوزات اليوم.</div></div></div>
+          <div class="cashier-home-panel"><div style="display:flex;align-items:center;justify-content:space-between;gap:6px"><h3>حجوزات المحل اليوم</h3><span id="cashierUpcomingBookingsCount" class="customer-history-summary">0 القادمة</span></div><div id="cashierRecentBookings" class="cashier-mini-list"><div class="cashier-mini-item">لا توجد حجوزات اليوم.</div></div></div>
         </div>
       </div>
     </section>
@@ -1631,7 +1645,7 @@
           <form id="storeBookingForm" onsubmit="submitStoreBooking(event)">
             <div class="store-booking-form-grid">
               <div class="store-booking-field"><label class="store-booking-label">اسم العميل</label><input id="storeBookingCustomerName" class="store-booking-input" required placeholder="اسم العميل"></div>
-              <div class="store-booking-field"><label class="store-booking-label">رقم الهاتف</label><input id="storeBookingCustomerPhone" class="store-booking-input" dir="ltr" required placeholder="01xxxxxxxxx" oninput="lookupStoreBookingCustomer(this.value)"></div>
+              <div class="store-booking-field"><label class="store-booking-label">رقم الهاتف</label><input id="storeBookingCustomerPhone" class="store-booking-input" dir="ltr" required placeholder="01xxxxxxxxx" oninput="lookupStoreBookingCustomer(this.value)"><input type="hidden" id="storeBookingCustomerKey" value=""><div class="store-booking-customer-tools"><span id="storeBookingCustomerStatus" class="store-booking-customer-status">عميل جديد — سيتم حفظه تلقائيًا</span><button type="button" class="store-action-btn" onclick="openCustomerPickerModal('store')">👥 قاعدة العملاء</button></div><div id="storeBookingCustomerHistory" class="store-booking-mini-history"><div class="store-booking-mini-history-head">📜 آخر عمليات العميل</div><div id="storeBookingCustomerHistoryList" class="store-booking-mini-history-list"><div class="text-[7px] text-slate-400">اكتب رقم العميل لعرض تاريخه.</div></div></div></div>
               <div class="store-booking-field"><label class="store-booking-label">تاريخ الاستلام</label><input id="storeBookingPickupDate" type="date" class="store-booking-input" required dir="ltr"></div>
               <div class="store-booking-field"><label class="store-booking-label">وقت الاستلام</label><input id="storeBookingPickupTime" type="time" class="store-booking-input" required dir="ltr"></div>
               <div class="store-booking-field" style="grid-column:1/-1"><label class="store-booking-label">ملاحظات الحجز</label><textarea id="storeBookingNotes" class="store-booking-textarea" placeholder="مثال: تقطيع وسط — الاستلام بعد 6 مساءً"></textarea></div>
@@ -1679,7 +1693,20 @@
         </div>
 
         <div class="store-booking-panel">
-          <div class="store-booking-panel-head"><div><span class="pos-kicker">TODAY</span><h3>📅 حجوزات اليوم</h3><p>الحجوزات الجديدة والاستلامات الخاصة بالمحل.</p></div><span id="storeBookingTodayCount" class="customer-history-summary">0 حجز</span></div>
+          <div class="store-booking-panel-head"><div><span class="pos-kicker">BOOKINGS DESK</span><h3>📅 كشف حجوزات المحل</h3><p>اليوم، الحجوزات القادمة، والبحث المتقدم في جميع الحجوزات.</p></div><button type="button" class="store-action-btn" onclick="resetStoreBookingListFilters()">↺ تحديث</button></div>
+          <div class="store-booking-overview">
+            <div class="store-overview-card"><span>اليوم</span><b id="storeBookingTodayCount">0</b></div>
+            <div class="store-overview-card"><span>القادمة</span><b id="storeBookingUpcomingCount">0</b></div>
+            <div class="store-overview-card"><span>كل الحجوزات</span><b id="storeBookingAllCount">0</b></div>
+          </div>
+          <div class="store-booking-list-toolbar">
+            <div class="store-list-switch"><button type="button" id="storeViewToday" onclick="setStoreBookingView('today')">📅 حجوزات اليوم</button><button type="button" id="storeViewUpcoming" onclick="setStoreBookingView('upcoming')">⏭️ الحجوزات القادمة</button><button type="button" id="storeViewAll" onclick="setStoreBookingView('all')">📚 كل الحجوزات</button></div>
+            <div><label class="store-booking-filter-label">بحث</label><input id="storeBookingListSearch" class="store-booking-filter-input" placeholder="رقم الحجز أو اسم العميل أو الهاتف" oninput="applyStoreBookingListFilters()"></div>
+            <div><label class="store-booking-filter-label">حالة الحجز</label><select id="storeBookingListStatus" class="store-booking-filter-input" onchange="applyStoreBookingListFilters()"><option value="ALL">كل الحالات</option><option value="محجوز 🟡">محجوز</option><option value="جاهز للاستلام 📦">جاهز للاستلام</option><option value="تم الاستلام ✅">تم الاستلام</option><option value="ملغي ❌">ملغي</option><option value="تم التحويل للدليفري 🔄">تم التحويل للدليفري</option></select></div>
+            <div><label class="store-booking-filter-label">من تاريخ</label><input id="storeBookingListDateFrom" type="date" class="store-booking-filter-input" onchange="applyStoreBookingListFilters()" dir="ltr"></div>
+            <div><label class="store-booking-filter-label">إلى تاريخ</label><input id="storeBookingListDateTo" type="date" class="store-booking-filter-input" onchange="applyStoreBookingListFilters()" dir="ltr"></div>
+            <div class="store-booking-filter-actions"><button type="button" class="store-booking-filter-clear" onclick="resetStoreBookingListFilters()">مسح الفلاتر</button></div>
+          </div>
           <div id="storeBookingTodayList" class="store-booking-list"><div class="store-empty">جاري تحميل حجوزات المحل...</div></div>
         </div>
       </div>
@@ -2474,8 +2501,39 @@
         </div>
         <div class="order-details-section rounded-2xl p-4"><div class="flex items-center justify-between gap-2 border-b pb-3 mb-4"><div class="flex items-center gap-2"><span class="text-lg">🧭</span><div><h3 class="text-sm font-black text-slate-800">رحلة الطلب</h3><p class="text-[9px] text-slate-400">تطور حالة الطلب</p></div></div><span id="detailsTrackingState" class="text-[10px] font-bold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">GPS غير متاح</span></div><div id="detailsTimeline" class="order-detail-timeline"></div></div>
         <div class="order-details-section rounded-2xl p-4"><div class="flex items-center gap-2 border-b pb-3 mb-3"><span class="text-lg">📍</span><div><h3 class="text-sm font-black text-slate-800">التتبع والموقع</h3><p class="text-[9px] text-slate-400">حالة اللوكيشن الخاصة بالطلب</p></div></div><div id="detailsLocationBox" class="rounded-2xl bg-slate-50 border p-3 text-xs text-slate-500">لا يوجد موقع مسجل لهذا الطلب.</div></div>
-        <div class="order-details-actions grid grid-cols-2 sm:grid-cols-4 gap-2"><button id="detailsWhatsAppBtn" class="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow">💬 واتساب</button><button id="detailsPrintInvoiceBtn" class="rounded-xl receipt-print-btn font-bold text-xs shadow">🧾 فاتورة 80mm</button><button id="detailsEditBtn" class="rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow">✏️ تعديل</button><button id="detailsDeleteBtn" class="rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow">🗑️ حذف</button><button onclick="closeOrderDetails()" class="rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs">إغلاق</button></div>
+        <div class="order-details-actions grid grid-cols-2 sm:grid-cols-5 gap-2"><button id="detailsWhatsAppBtn" class="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow">💬 واتساب</button><button id="detailsPrintInvoiceBtn" class="rounded-xl receipt-print-btn font-bold text-xs shadow">🧾 فاتورة 80mm</button><button id="detailsConvertBtn" class="rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow">↔️ تحويل</button><button id="detailsEditBtn" class="rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow">✏️ تعديل</button><button id="detailsDeleteBtn" class="rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow">🗑️ حذف</button><button onclick="closeOrderDetails()" class="rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs">إغلاق</button></div>
       </div>
+    </div>
+  </div>
+
+
+  <!-- STEP 33: نافذة كل طلبات العميل -->
+  <div id="customerHistoryModal" class="customer-history-modal" aria-hidden="true">
+    <div class="customer-history-dialog">
+      <div class="customer-history-dialog-head">
+        <div><span class="pos-kicker">CUSTOMER HISTORY</span><h3 id="customerHistoryModalTitle">📜 سجل العميل</h3><p id="customerHistoryModalSub">كل طلبات التوصيل وحجوزات المحل.</p></div>
+        <button type="button" onclick="closeCustomerFullHistory()" class="store-action-btn">✕</button>
+      </div>
+      <div class="customer-history-dialog-body">
+        <div id="customerFullSummary" class="customer-full-summary"></div>
+        <div id="customerFullHistoryList" class="customer-full-list"><div class="customer-history-empty">جاري تحميل سجل العميل...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 33: نافذة التحويل بين التوصيل وحجز المحل -->
+  <div id="conversionModal" class="conversion-modal" aria-hidden="true">
+    <div class="conversion-dialog">
+      <input type="hidden" id="conversionSourceType" value="">
+      <input type="hidden" id="conversionSourceKey" value="">
+      <h3 id="conversionModalTitle">↔️ تحويل الطلب</h3>
+      <p id="conversionModalText">اختر البيانات اللازمة لإتمام التحويل بدون فقد بيانات العميل أو الفاتورة.</p>
+      <div class="conversion-fields">
+        <div id="conversionDriverField" class="conversion-field hidden"><label>المندوب الجديد</label><select id="conversionDriverSelect"></select></div>
+        <div id="conversionDeliveryPriceField" class="conversion-field hidden"><label>سعر التوصيل</label><input id="conversionDeliveryPrice" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div>
+        <div id="conversionPickupFields" class="hidden" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="conversion-field"><label>تاريخ الاستلام</label><input id="conversionPickupDate" type="date" dir="ltr"></div><div class="conversion-field"><label>وقت الاستلام</label><input id="conversionPickupTime" type="time" dir="ltr"></div></div>
+      </div>
+      <div class="conversion-actions"><button type="button" class="primary" onclick="confirmConversion()">✅ تأكيد التحويل</button><button type="button" class="secondary" onclick="closeConversionModal()">إلغاء</button></div>
     </div>
   </div>
 
@@ -2600,6 +2658,14 @@
     let activityLogsRef = null;
     let activityLogsCache = {};
     let storeBookingSelectedProductKey = '';
+    let storeBookingViewMode = 'today';
+    let storeBookingListSearch = '';
+    let storeBookingListStatus = 'ALL';
+    let storeBookingListDateFrom = '';
+    let storeBookingListDateTo = '';
+    let storeBookingReminderState = {};
+    let storeReminderTimer = null;
+    let customerPickerContext = 'order';
 
     // --- 🔔 مركز الإشعارات ---
     function notificationStorageKey(){
@@ -2610,12 +2676,23 @@
       const userKey = currentUser?.username || (APP_MODE === 'staff' ? 'guest' : 'customer');
       return `hamaksha_notice_state_${userKey}`;
     }
+    function storeBookingReminderStateKey(){
+      const userKey=currentUser?.username||'guest';
+      return `hamaksha_store_booking_reminders_${userKey}`;
+    }
+    function loadStoreBookingReminderState(){
+      try{storeBookingReminderState=JSON.parse(localStorage.getItem(storeBookingReminderStateKey())||'{}');}catch(e){storeBookingReminderState={};}
+    }
+    function saveStoreBookingReminderState(){
+      try{localStorage.setItem(storeBookingReminderStateKey(),JSON.stringify(storeBookingReminderState));}catch(e){}
+    }
     function loadNotificationStore(){
       if(APP_MODE!=='staff') return;
       try {
         notificationsCache = JSON.parse(localStorage.getItem(notificationStorageKey())||'[]');
         notificationOrderState = JSON.parse(localStorage.getItem(notificationStateKey())||'{}');
       } catch(e) { notificationsCache=[]; notificationOrderState={}; }
+      loadStoreBookingReminderState();
       renderNotificationCenter();
     }
     function saveNotificationStore(){
@@ -2639,12 +2716,23 @@
       notificationsCache=notificationsCache.slice(0,80);
       saveNotificationStore();
       renderNotificationCenter();
+      showBrowserNotification(title,text);
     }
     function notificationMeta(type){
       if(type==='new') return {dot:'bg-red-500',icon:'🆕'};
       if(type==='delivery') return {dot:'bg-blue-500',icon:'🛵'};
       if(type==='delivered') return {dot:'bg-emerald-500',icon:'✅'};
+      if(type==='booking-hour') return {dot:'bg-violet-500',icon:'⏰'};
+      if(type==='booking-soon') return {dot:'bg-orange-500',icon:'🚨'};
       return {dot:'bg-amber-500',icon:'🔔'};
+    }
+    async function requestBrowserNotifications(){
+      if(!('Notification' in window)) return alert('المتصفح لا يدعم إشعارات سطح المكتب.');
+      const p=await Notification.requestPermission();
+      alert(p==='granted'?'تم تفعيل إشعارات المتصفح ✅':'لم يتم تفعيل إشعارات المتصفح.');
+    }
+    function showBrowserNotification(title,text){
+      try{if('Notification' in window && Notification.permission==='granted') new Notification(title,{body:text});}catch(e){}
     }
     function renderNotificationCenter(){
       const list=document.getElementById('notificationList'), summary=document.getElementById('notificationSummary');
@@ -2679,8 +2767,9 @@
     function openNotification(id){
       const n=notificationsCache.find(x=>x.id===id); if(!n)return; n.read=true; saveNotificationStore(); renderNotificationCenter(); closeNotifications();
       if(n.orderKey && APP_MODE==='staff'){
-        if(currentUser?.role==='driver') fetchDriverOrder(n.orderKey);
-        else if(currentUser?.role==='admin'){ switchTab('admin'); setTimeout(()=>{ const search=document.getElementById('searchFilter'); if(search){search.value=n.orderKey; applyFilters(); search.focus();} },120); }
+        if(String(n.orderKey).startsWith('STORE-')){ switchTab('store-booking'); setTimeout(()=>openStoreBookingByKey(n.orderKey),140); }
+        else if(currentUser?.role==='driver') fetchDriverOrder(n.orderKey);
+        else if(currentUser?.role==='admin'||currentUser?.role==='cashier'){ switchTab('admin'); setTimeout(()=>{ const search=document.getElementById('searchFilter'); if(search){search.value=n.orderKey; applyFilters(); search.focus();} },120); }
       }
     }
     document.addEventListener('click',(event)=>{
@@ -2942,7 +3031,7 @@
       staffOrdersRef=staffUsersRef=driverOrdersRef=driverDirectoryRef=customersRef=activityLogsRef=storeBookingsRef=null;
       allOrdersCache={}; driverOrdersCache={}; allUsersCache={}; driverDirectoryCache={}; customersCache={}; activityLogsCache={};
       pricesListenerAttached=false;
-      notificationInitialized=false; notificationOrderState={};
+      notificationInitialized=false; notificationOrderState={}; storeBookingReminderState={}; if(storeReminderTimer){clearInterval(storeReminderTimer);storeReminderTimer=null;}
     }
 
     function startDriverDirectoryListener() {
@@ -2967,7 +3056,7 @@
       if(APP_MODE!=='staff' || !currentUser || (currentUser.role!=='admin' && currentUser.role!=='cashier') || !canManageCustomers()) return;
       try { customersRef?.off(); } catch(e){}
       customersRef=db.ref('customers');
-      customersRef.on('value',snap=>{ const remote=snap.val()||{}; let local={}; try{local=JSON.parse(localStorage.getItem('hamaksha_local_customers')||'{}');}catch(e){} customersCache={...local,...remote}; renderCustomersList(); });
+      customersRef.on('value',snap=>{ const remote=snap.val()||{}; let local={}; try{local=JSON.parse(localStorage.getItem('hamaksha_local_customers')||'{}');}catch(e){} customersCache={...local,...remote}; renderCustomersList(); const storePhone=document.getElementById('storeBookingCustomerPhone')?.value||''; if(storePhone) lookupStoreBookingCustomer(storePhone); });
     }
 
     function startAdminOrdersListener() {
@@ -3064,6 +3153,8 @@
       set('cashierMetricCollected',collected.toLocaleString('ar-EG')+' ج.م');
       const bookingAll=window.storeBookingsCache||{};
       const todayBookings=Object.keys(bookingAll).map(key=>({key,...(bookingAll[key]||{})})).filter(x=>x.pickupDate===today).sort((a,b)=>String(a.pickupTime||'').localeCompare(String(b.pickupTime||'')));
+      const upcomingBookings=Object.keys(bookingAll).map(key=>({key,...(bookingAll[key]||{})})).filter(x=>storeBookingPickupTimestamp(x)>Date.now() && x.pickupDate!==today).sort((a,b)=>storeBookingPickupTimestamp(a)-storeBookingPickupTimestamp(b));
+      const upBadge=document.getElementById('cashierUpcomingBookingsCount');if(upBadge)upBadge.innerText=upcomingBookings.length.toLocaleString('ar-EG');
       set('cashierMetricBookings',todayBookings.length.toLocaleString('ar-EG'));
       const recentOrders=document.getElementById('cashierRecentOrders');
       if(recentOrders){recentOrders.innerHTML=todayOrders.slice().sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0)).slice(0,8).map(o=>`<button type="button" class="cashier-mini-item" onclick="switchTab('admin');setTimeout(()=>openOrderDetails(${htmlJsArg(o.key)}),80)"><span>#${escapeHtml(o.orderId||o.key)} · ${escapeHtml(o.customerName||'عميل')}</span><b>${Number(o.totalCash||0).toLocaleString('ar-EG')} ج.م</b></button>`).join('')||'<div class="cashier-mini-item">لا توجد فواتير توصيل اليوم.</div>';}
@@ -3121,7 +3212,7 @@
       document.getElementById('sidebarUserBadge').innerText=`${user.username} • ${roleTitle}`;
       document.getElementById('mobileUserBadge').innerText=user.username;
       document.body.classList.remove('customer-public-mode','staff-logged-out'); document.body.classList.toggle('driver-private-mode',user.role==='driver'); document.body.classList.toggle('cashier-mode',user.role==='cashier'); document.getElementById('staffLoginGate')?.classList.add('hidden');
-      document.getElementById('authModal').classList.add('hidden'); updateUIByPermissions(); startDriverDirectoryListener(); if(user.role==='admin'||user.role==='cashier') attachInvoicePriceListener(); if(user.role!=='cashier') startActivityLogListener();
+      document.getElementById('authModal').classList.add('hidden'); updateUIByPermissions(); startDriverDirectoryListener(); if(user.role==='admin'||user.role==='cashier') attachInvoicePriceListener(); if(user.role==='admin'||user.role==='cashier') initStoreBookingPage(); if(user.role!=='cashier') startActivityLogListener();
       const customerAllowed=user.role==='admin' || (user.role==='cashier' && canManageCustomers());
       document.getElementById('customerAuthLock')?.classList.toggle('hidden',!customerAllowed);
       document.getElementById('customerPageContent')?.classList.toggle('hidden',!customerAllowed);
@@ -3576,9 +3667,9 @@
 
     function smartLookupCustomer(phone){ if(APP_MODE!=='staff'||!currentUser||(currentUser.role!=='admin'&&currentUser.role!=='cashier'))return; const status=document.getElementById('customerLookupStatus'); const c=findCustomerByPhone(phone); if(c&&canManageCustomers()){document.getElementById('selectedCustomerKey').value=c.key;document.getElementById('custName').value=c.name||'';document.getElementById('custAddress').value=c.address||'';status.innerText='✅ تم العثور على العميل وربط بياناته تلقائياً';status.className='text-[10px] font-bold text-emerald-700';} else {document.getElementById('selectedCustomerKey').value=''; if(String(phone||'').trim()){status.innerText='عميل جديد — سيتم حفظه تلقائياً عند تسجيل الطلب';status.className='text-[10px] font-bold text-blue-700';} else status.innerText='';} renderCustomerOrderHistory(phone);}
     function clearSelectedCustomer(){document.getElementById('selectedCustomerKey').value='';document.getElementById('customerLookupStatus').innerText='وضع عميل جديد';document.getElementById('customerLookupStatus').className='text-[10px] font-bold text-gray-500';renderCustomerOrderHistory(document.getElementById('custPhone')?.value||'');}
-    function openCustomerPickerModal(){if(!canManageCustomers())return alert('لا تملك صلاحية استخدام قاعدة العملاء.');document.getElementById('customerPickerModal').classList.remove('hidden');document.getElementById('customerPickerSearch').value='';renderCustomerPickerList();}
+    function openCustomerPickerModal(context='order'){if(!canManageCustomers())return alert('لا تملك صلاحية استخدام قاعدة العملاء.');customerPickerContext=context||'order';document.getElementById('customerPickerModal').classList.remove('hidden');document.getElementById('customerPickerSearch').value='';renderCustomerPickerList();}
     function closeCustomerPickerModal(){document.getElementById('customerPickerModal').classList.add('hidden');}
-    function selectCustomerFromRecord(key){const c=customersCache[key];if(!c)return;document.getElementById('selectedCustomerKey').value=key;document.getElementById('custName').value=c.name||'';document.getElementById('custPhone').value=c.phone||'';document.getElementById('custAddress').value=c.address||'';document.getElementById('customerLookupStatus').innerText='✅ تم ربط الطلب بالعميل المحفوظ';document.getElementById('customerLookupStatus').className='text-[10px] font-bold text-emerald-700';renderCustomerOrderHistory(c.phone||'');closeCustomerPickerModal();}
+    function selectCustomerFromRecord(key){const c=customersCache[key];if(!c)return;if(customerPickerContext==='store'){document.getElementById('storeBookingCustomerKey').value=key;document.getElementById('storeBookingCustomerName').value=c.name||'';document.getElementById('storeBookingCustomerPhone').value=c.phone||'';const st=document.getElementById('storeBookingCustomerStatus');if(st){st.innerText='✅ تم ربط العميل المحفوظ';st.style.color='#047857';}renderStoreBookingCustomerPreview(c.phone||'');closeCustomerPickerModal();return;}document.getElementById('selectedCustomerKey').value=key;document.getElementById('custName').value=c.name||'';document.getElementById('custPhone').value=c.phone||'';document.getElementById('custAddress').value=c.address||'';document.getElementById('customerLookupStatus').innerText='✅ تم ربط الطلب بالعميل المحفوظ';document.getElementById('customerLookupStatus').className='text-[10px] font-bold text-emerald-700';renderCustomerOrderHistory(c.phone||'');closeCustomerPickerModal();}
     function renderCustomerPickerList(){const container=document.getElementById('customerPickerList');if(!container)return;const raw=document.getElementById('customerPickerSearch')?.value||'',q=normalizeName(raw),qp=normalizePhone(raw);const items=Object.keys(customersCache||{}).map(key=>({key,...customersCache[key]})).filter(c=>!q&&!qp||(q&&normalizeName(c.name).includes(q))||(qp&&normalizePhone(c.phone).includes(qp))).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'ar'));container.innerHTML=items.length?items.map(c=>`<button type="button" onclick="selectCustomerFromRecord('${c.key}')" class="w-full text-right bg-gray-50 hover:bg-blue-50 border rounded-xl p-3"><div class="flex justify-between gap-2"><b>${escapeHtml(c.name||'بدون اسم')}</b><span dir="ltr" class="text-[10px] text-gray-500">${escapeHtml(c.phone||'-')}</span></div><p class="text-[10px] text-gray-500">${escapeHtml(c.address||'بدون عنوان')}</p></button>`).join(''):'<p class="text-xs text-gray-400 text-center p-4">لا توجد نتائج.</p>'; }
     function renderCustomersList(){
       const container=document.getElementById('customersList');
@@ -3608,6 +3699,7 @@
           <div class="customer-record-meta"><span>📍 ${escapeHtml(c.address||'العنوان غير محفوظ')}</span></div>
           <div class="flex flex-wrap gap-1.5 pt-1">
             <button type="button" onclick="useCustomerForNewOrder('${c.key}')" class="customer-action primary">📦 طلب</button>
+            <button type="button" onclick="openCustomerFullHistory('${c.key}')" class="customer-action">📜 كل الطلبات</button>
             <button type="button" onclick="editManagedCustomer('${c.key}')" class="customer-action edit">✏️ تعديل</button>
             ${isSuperUser()?`<button type="button" onclick="deleteManagedCustomer('${c.key}')" class="customer-action delete">🗑️ حذف</button>`:''}
           </div>
@@ -3725,22 +3817,28 @@
       storeBookingItems=[];storeBookingMain='';storeBookingSub='';storeBookingSearch='';storeBookingSelectedProductKey='';storeBookingPaymentMode='unpaid';
       const date=new Date();const dateStr=date.toISOString().split('T')[0];
       const set=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val??'';};
-      set('storeBookingCustomerName','');set('storeBookingCustomerPhone','');set('storeBookingPickupDate',dateStr);set('storeBookingPickupTime','18:00');set('storeBookingNotes','');set('storeBookingStatus','محجوز 🟡');set('storeBookingDeposit','0');set('storeBookingNumberPreview',generateStoreBookingNumber());set('storeBookingSearch','');set('storeBookingItemQty','1');set('storeBookingItemUnitPrice','0');
-      document.getElementById('storeBookingSelectedLabel').innerText='لم يتم اختيار صنف';document.getElementById('storeBookingResult')?.classList.add('hidden');
+      set('storeBookingCustomerName','');set('storeBookingCustomerPhone','');set('storeBookingCustomerKey','');set('storeBookingPickupDate',dateStr);set('storeBookingPickupTime','18:00');set('storeBookingNotes','');set('storeBookingStatus','محجوز 🟡');set('storeBookingDeposit','0');set('storeBookingNumberPreview',generateStoreBookingNumber());set('storeBookingSearch','');set('storeBookingItemQty','1');set('storeBookingItemUnitPrice','0');
+      document.getElementById('storeBookingSelectedLabel').innerText='لم يتم اختيار صنف';document.getElementById('storeBookingResult')?.classList.add('hidden');const st=document.getElementById('storeBookingCustomerStatus');if(st){st.innerText='عميل جديد — سيتم حفظه تلقائيًا';st.style.color='';}document.getElementById('storeBookingCustomerHistoryList')&&(document.getElementById('storeBookingCustomerHistoryList').innerHTML='<div class="text-[7px] text-slate-400">اكتب رقم العميل لعرض تاريخه.</div>');
       renderStoreBookingCatalog();renderStoreBookingItems();setStoreBookingPayment('unpaid');
     }
     function lookupStoreBookingCustomer(phone){
-      const c=findCustomerByPhone(phone);if(!c)return;
-      const n=document.getElementById('storeBookingCustomerName');if(n&&!n.value)n.value=c.name||'';
+      const normalized=normalizePhone(phone),c=findCustomerByPhone(phone),n=document.getElementById('storeBookingCustomerName'),keyEl=document.getElementById('storeBookingCustomerKey'),status=document.getElementById('storeBookingCustomerStatus');
+      if(c){if(keyEl)keyEl.value=c.key||'';if(n)n.value=c.name||'';if(status){status.innerText='✅ تم العثور على العميل وحفظ الربط';status.style.color='#047857';}renderStoreBookingCustomerPreview(c.phone||phone);return;}
+      if(keyEl)keyEl.value='';if(status){status.innerText=normalized?'🆕 عميل جديد — سيتم حفظه تلقائيًا':'اكتب رقم العميل';status.style.color=normalized?'#1d4ed8':'';}renderStoreBookingCustomerPreview(phone);
+    }
+    async function renderStoreBookingCustomerPreview(phone){
+      const list=document.getElementById('storeBookingCustomerHistoryList');if(!list)return;const pn=normalizePhone(phone);if(!pn){list.innerHTML='<div class="text-[7px] text-slate-400">اكتب رقم العميل لعرض تاريخه.</div>';return;}
+      try{const ordersSnap=await db.ref('orders').orderByChild('phoneNormalized').equalTo(pn).once('value');let bookingSnap=await db.ref('storeBookings').orderByChild('customerPhoneNormalized').equalTo(pn).once('value').catch(()=>({val:()=>({})}));let os=ordersSnap.val()||{},bs=bookingSnap.val()||{};if(!Object.keys(bs).length){const fallback=await db.ref('storeBookings').once('value');const raw=fallback.val()||{};bs=Object.fromEntries(Object.entries(raw).filter(([k,v])=>normalizePhone(v?.customerPhone||'')===pn));}let rows=[];Object.keys(os).forEach(k=>rows.push({kind:'delivery',key:k,...(os[k]||{})}));Object.keys(bs).forEach(k=>rows.push({kind:'store',key:k,...(bs[k]||{})}));if(!rows.length){list.innerHTML='<div class="text-[7px] text-slate-400">لا توجد عمليات سابقة لهذا العميل.</div>';return;}rows.sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0));list.innerHTML=rows.slice(0,5).map(x=>{const id=x.kind==='store'?(x.bookingNumber||x.key):(x.orderId||x.key),amount=Number(x.kind==='store'?x.total:x.totalCash)||0;return `<div class="store-booking-mini-history-row"><b>#${escapeHtml(id)}</b><span>${x.kind==='store'?'🏪 حجز':'🛵 دليفري'}</span><span>${escapeHtml(x.status||'')}</span><strong>${amount.toLocaleString('ar-EG')} ج.م</strong></div>`;}).join('');}catch(e){list.innerHTML='<div class="text-[7px] text-slate-400">تعذر تحميل سجل العميل الآن.</div>';}
     }
     function initStoreBookingPage(){
       if(APP_MODE!=='staff'||!currentUser||!['admin','cashier'].includes(currentUser.role))return;
       const now=new Date(),dateEl=document.getElementById('storeBookingPickupDate'),timeEl=document.getElementById('storeBookingPickupTime'),numEl=document.getElementById('storeBookingNumberPreview');
-      if(dateEl&&!dateEl.value)dateEl.value=now.toISOString().split('T')[0];
+      if(dateEl&&!dateEl.value)dateEl.value=getLocalDateInputValue(now);
       if(timeEl&&!timeEl.value)timeEl.value='18:00';
       if(numEl&&!numEl.value)numEl.value=generateStoreBookingNumber();
       renderStoreBookingCatalog();renderStoreBookingItems();
-      if(!storeBookingsRef){storeBookingsRef=db.ref('storeBookings');storeBookingsRef.on('value',snap=>{window.storeBookingsCache=snap.val()||{};renderStoreBookingToday();renderCashierHome();},err=>console.error('Store bookings listener:',err));}
+      if(!storeBookingsRef){storeBookingsRef=db.ref('storeBookings');storeBookingsRef.on('value',snap=>{window.storeBookingsCache=snap.val()||{};renderStoreBookingToday();renderCashierHome();checkStoreBookingReminders();},err=>console.error('Store bookings listener:',err));}
+      startStoreBookingReminderTimer();
       renderStoreBookingPaymentSummary();
     }
     function getStoreBookingItemsTotal(){return storeBookingItems.reduce((s,it)=>s+Number(it.total||0),0)}
@@ -3843,22 +3941,46 @@
       const data=(window.storeBookingsCache||{})[key];if(!data)return alert('لم يتم العثور على بيانات الحجز.');
       const w=window.open('about:blank','_blank');if(!w)return alert('اسمح للنوافذ المنبثقة من المتصفح ثم أعد المحاولة.');w.document.write(buildStoreBookingThermalReceipt(data,key));w.document.close();
     }
-    function storeBookingStatusMeta(status){if(status==='تم الاستلام ✅')return {label:'تم الاستلام',cls:'bg-emerald-100 text-emerald-800'};if(status==='جاهز للاستلام 📦')return {label:'جاهز للاستلام',cls:'bg-blue-100 text-blue-800'};if(status==='ملغي ❌')return {label:'ملغي',cls:'bg-slate-100 text-slate-600'};return {label:'محجوز',cls:'bg-amber-100 text-amber-800'};}
-    function renderStoreBookingToday(){
-      const container=document.getElementById('storeBookingTodayList');if(!container)return;const all=window.storeBookingsCache||{};const today=new Date().toISOString().split('T')[0];const list=Object.keys(all).map(k=>({key:k,...all[k]})).filter(x=>x.pickupDate===today).sort((a,b)=>String(a.pickupTime||'').localeCompare(String(b.pickupTime||'')));
-      const count=document.getElementById('storeBookingTodayCount');if(count)count.innerText=`${list.length} حجز`;
-      if(!list.length){container.innerHTML='<div class="store-empty">لا توجد حجوزات استلام اليوم.</div>';return;}
-      container.innerHTML=list.map(b=>{const m=storeBookingStatusMeta(b.status);const total=Number(b.total||0),remaining=Number(b.remainingDue||0);return `<article class="store-booking-card"><div class="store-booking-card-head"><span class="store-booking-id">#${escapeHtml(b.bookingNumber||b.key)}</span><span class="store-booking-status ${m.cls}">${m.label}</span></div><div class="store-booking-meta"><div>👤 العميل<b>${escapeHtml(b.customerName||'غير محدد')}</b></div><div>⏰ الاستلام<b>${escapeHtml(b.pickupTime||'—')}</b></div><div>💰 الإجمالي<b>${total.toLocaleString('ar-EG')} ج.م</b></div><div>💳 المتبقي<b>${remaining.toLocaleString('ar-EG')} ج.م</b></div></div><div class="store-booking-actions"><button type="button" class="store-action-btn primary" onclick="printStoreBooking(${htmlJsArg(b.key)})">🧾 طباعة 80mm</button><button type="button" class="store-action-btn" onclick="editStoreBookingStatus(${htmlJsArg(b.key)},'جاهز للاستلام 📦')">📦 جاهز</button><button type="button" class="store-action-btn" onclick="editStoreBookingStatus(${htmlJsArg(b.key)},'تم الاستلام ✅')">✅ استلم</button><button type="button" class="store-action-btn danger" onclick="editStoreBookingStatus(${htmlJsArg(b.key)},'ملغي ❌')">✕ إلغاء</button></div></article>`;}).join('');
+    function getLocalDateInputValue(date=new Date()){const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,'0'),d=String(date.getDate()).padStart(2,'0');return `${y}-${m}-${d}`;}
+    function storeBookingStatusMeta(status){if(status==='تم الاستلام ✅')return {label:'تم الاستلام',cls:'bg-emerald-100 text-emerald-800'};if(status==='جاهز للاستلام 📦')return {label:'جاهز للاستلام',cls:'bg-blue-100 text-blue-800'};if(status==='ملغي ❌')return {label:'ملغي',cls:'bg-slate-100 text-slate-600'};if(status==='تم التحويل للدليفري 🔄')return {label:'تم التحويل للدليفري',cls:'converted'};return {label:'محجوز',cls:'bg-amber-100 text-amber-800'};}
+    function storeBookingPickupTimestamp(b){if(!b?.pickupDate||!b?.pickupTime)return 0;const t=new Date(`${b.pickupDate}T${b.pickupTime}`).getTime();return Number.isFinite(t)?t:0;}
+    function setStoreBookingView(mode){storeBookingViewMode=mode;['today','upcoming','all'].forEach(v=>document.getElementById('storeView'+v.charAt(0).toUpperCase()+v.slice(1))?.classList.toggle('active',v===mode));renderStoreBookingList();}
+    function resetStoreBookingListFilters(){storeBookingViewMode='today';storeBookingListSearch='';storeBookingListStatus='ALL';storeBookingListDateFrom='';storeBookingListDateTo='';const ids=['storeBookingListSearch','storeBookingListDateFrom','storeBookingListDateTo'];ids.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});const st=document.getElementById('storeBookingListStatus');if(st)st.value='ALL';['Today','Upcoming','All'].forEach(v=>document.getElementById('storeView'+v)?.classList.toggle('active',v.toLowerCase()===storeBookingViewMode));renderStoreBookingList();}
+    function applyStoreBookingListFilters(){storeBookingListSearch=(document.getElementById('storeBookingListSearch')?.value||'').trim().toLowerCase();storeBookingListStatus=document.getElementById('storeBookingListStatus')?.value||'ALL';storeBookingListDateFrom=document.getElementById('storeBookingListDateFrom')?.value||'';storeBookingListDateTo=document.getElementById('storeBookingListDateTo')?.value||'';renderStoreBookingList();}
+    function openStoreBookingByKey(key){const card=document.querySelector(`[data-booking-key="${CSS.escape(key)}"]`);if(card){card.scrollIntoView({behavior:'smooth',block:'center'});card.style.boxShadow='0 0 0 3px rgba(124,58,237,.26)';setTimeout(()=>card.style.boxShadow='',1800);}else{storeBookingListSearch=String(key).toLowerCase();const el=document.getElementById('storeBookingListSearch');if(el)el.value=key;storeBookingViewMode='all';applyStoreBookingListFilters();}}
+    function renderStoreBookingList(){
+      const container=document.getElementById('storeBookingTodayList');if(!container)return;const all=window.storeBookingsCache||{};const today=getLocalDateInputValue();const now=Date.now();
+      const allList=Object.keys(all).map(k=>({key:k,...(all[k]||{})})).sort((a,b)=>storeBookingPickupTimestamp(a)-storeBookingPickupTimestamp(b));
+      const todayList=allList.filter(x=>x.pickupDate===today);
+      const upcomingList=allList.filter(x=>{const t=storeBookingPickupTimestamp(x);return t>now && x.pickupDate!==today;});
+      const count=document.getElementById('storeBookingTodayCount');if(count)count.innerText=todayList.length.toLocaleString('ar-EG');const up=document.getElementById('storeBookingUpcomingCount');if(up)up.innerText=upcomingList.length.toLocaleString('ar-EG');const allCount=document.getElementById('storeBookingAllCount');if(allCount)allCount.innerText=allList.length.toLocaleString('ar-EG');
+      ['Today','Upcoming','All'].forEach(v=>document.getElementById('storeView'+v)?.classList.toggle('active',v.toLowerCase()===storeBookingViewMode));
+      let list=storeBookingViewMode==='today'?todayList:storeBookingViewMode==='upcoming'?upcomingList:allList;
+      const q=storeBookingListSearch;
+      if(q)list=list.filter(x=>`${x.bookingNumber||x.key} ${x.customerName||''} ${x.customerPhone||''}`.toLowerCase().includes(q));
+      if(storeBookingListStatus!=='ALL')list=list.filter(x=>x.status===storeBookingListStatus);
+      if(storeBookingListDateFrom)list=list.filter(x=>String(x.pickupDate||'')>=storeBookingListDateFrom);
+      if(storeBookingListDateTo)list=list.filter(x=>String(x.pickupDate||'')<=storeBookingListDateTo);
+      list.sort((a,b)=>storeBookingPickupTimestamp(a)-storeBookingPickupTimestamp(b));
+      if(!list.length){container.innerHTML='<div class="store-empty">📭 لا توجد حجوزات مطابقة للفلاتر الحالية.</div>';return;}
+      container.innerHTML=list.map(b=>{const m=storeBookingStatusMeta(b.status),total=Number(b.total||0),remaining=Number(b.remainingDue||0),converted=!!b.convertedTo||b.status==='تم التحويل للدليفري 🔄';const canConvert=!converted && b.status!=='ملغي ❌' && (currentUser?.role==='admin'||canUser('storeBookings'));return `<article data-booking-key="${escapeHtml(b.key)}" class="store-booking-card ${converted?'converted':''}"><div class="store-booking-card-head"><span class="store-booking-id">#${escapeHtml(b.bookingNumber||b.key)}</span><span class="store-booking-status ${m.cls}">${m.label}</span></div><div class="store-booking-meta"><div>👤 العميل<b>${escapeHtml(b.customerName||'غير محدد')}</b></div><div>📅 الاستلام<b>${escapeHtml(formatDateDMY(b.pickupDate||''))} · ${escapeHtml(b.pickupTime||'—')}</b></div><div>💰 الإجمالي<b>${total.toLocaleString('ar-EG')} ج.م</b></div><div>💳 المتبقي<b>${remaining.toLocaleString('ar-EG')} ج.م</b></div></div><div class="store-booking-actions"><button type="button" class="store-action-btn primary" onclick="printStoreBooking(${htmlJsArg(b.key)})">🧾 طباعة 80mm</button>${canConvert?`<button type="button" class="store-action-btn" onclick="openConversionModal('store',${htmlJsArg(b.key)})">🛵 تحويل لدليفري</button>`:''}${!converted&&b.status!=='جاهز للاستلام 📦'&&b.status!=='تم الاستلام ✅'&&b.status!=='ملغي ❌'?`<button type="button" class="store-action-btn" onclick="editStoreBookingStatus(${htmlJsArg(b.key)},'جاهز للاستلام 📦')">📦 جاهز</button>`:''}${!converted&&b.status!=='تم الاستلام ✅'&&b.status!=='ملغي ❌'?`<button type="button" class="store-action-btn" onclick="editStoreBookingStatus(${htmlJsArg(b.key)},'تم الاستلام ✅')">✅ استلم</button>`:''}${!converted&&b.status!=='ملغي ❌'?`<button type="button" class="store-action-btn danger" onclick="editStoreBookingStatus(${htmlJsArg(b.key)},'ملغي ❌')">✕ إلغاء</button>`:''}</div></article>`;}).join('');
     }
-    async function editStoreBookingStatus(key,status){if(!currentUser||(currentUser.role!=='admin'&&!canUser('storeBookings')))return;try{await db.ref('storeBookings/'+key).update({status,updatedAt:Date.now(),updatedBy:currentUser.username});await logActivity('update','storeBooking',`تحديث حالة حجز المحل #${key} إلى ${status}`,key,{status});}catch(e){console.error(e);alert('تعذر تحديث حالة الحجز حالياً.');}}
+    function renderStoreBookingToday(){renderStoreBookingList();}
+    async function editStoreBookingStatus(key,status){if(!currentUser||(currentUser.role!=='admin'&&!canUser('storeBookings')))return;try{await db.ref('storeBookings/'+key).update({status,updatedAt:Date.now(),updatedBy:currentUser.username});await logActivity('update','storeBooking',`تحديث حالة حجز المحل #${key} إلى ${status}`,key,{status});addNotification(status==='تم الاستلام ✅'?'delivered':'status','تحديث حجز المحل',`#${key} — ${status}`,key);}catch(e){console.error(e);alert('تعذر تحديث حالة الحجز حالياً.');}}
+    function checkStoreBookingReminders(){
+      if(APP_MODE!=='staff'||!currentUser)return;const all=window.storeBookingsCache||{},now=Date.now();let changed=false;
+      Object.keys(all).forEach(key=>{const b=all[key]||{},status=String(b.status||'');if(status==='ملغي ❌'||status==='تم الاستلام ✅'||status==='تم التحويل للدليفري 🔄')return;const state=storeBookingReminderState[key]||{};const created=Number(b.createdAt||0);if(created&&now>=created+60*60*1000&&!state.hour){storeBookingReminderState[key]={...state,hour:true};addNotification('booking-hour','مرّت ساعة على حجز المحل',`الحجز #${b.bookingNumber||key} للعميل ${b.customerName||'عميل'} ما زال في المتابعة.`,key);changed=true;}const pickup=storeBookingPickupTimestamp(b);if(pickup&&now>=pickup-30*60*1000&&now<pickup&&!state.before30){storeBookingReminderState[key]={...(storeBookingReminderState[key]||state),before30:true};addNotification('booking-soon','موعد الاستلام بعد 30 دقيقة',`الحجز #${b.bookingNumber||key} للعميل ${b.customerName||'عميل'} — موعد الاستلام ${b.pickupTime||''}.`,key);changed=true;}});if(changed)saveStoreBookingReminderState();}
+    function startStoreBookingReminderTimer(){if(storeReminderTimer)clearInterval(storeReminderTimer);storeReminderTimer=setInterval(checkStoreBookingReminders,30000);checkStoreBookingReminders();}
     async function submitStoreBooking(e){
       e.preventDefault();if(APP_MODE!=='staff'||!currentUser||(currentUser.role!=='admin'&&!canUser('storeBookings')))return alert('حجز المحل غير متاح لهذا الحساب.');
       if(!storeBookingItems.length)return alert('أضف صنفًا واحدًا على الأقل للحجز.');
       const name=document.getElementById('storeBookingCustomerName').value.trim(),phone=document.getElementById('storeBookingCustomerPhone').value.trim(),pickupDate=document.getElementById('storeBookingPickupDate').value,pickupTime=document.getElementById('storeBookingPickupTime').value,notes=document.getElementById('storeBookingNotes').value.trim(),status=document.getElementById('storeBookingStatus').value,total=getStoreBookingItemsTotal();
-      const bookingNumber=document.getElementById('storeBookingNumberPreview').value||generateStoreBookingNumber();let paidAmount=0;if(storeBookingPaymentMode==='paid')paidAmount=total;else if(storeBookingPaymentMode==='deposit')paidAmount=Math.min(total,Math.max(0,Number(document.getElementById('storeBookingDeposit').value)||0));const remainingDue=Math.max(0,total-paidAmount);let customerId=null;try{customerId=await upsertCustomerRecord(name,phone,'',null,true,true);}catch(err){console.error('Store booking customer save:',err);}
-      const key=bookingNumber;const payload={bookingNumber,bookingType:'store',customerName:name,customerPhone:phone,customerId:customerId||null,pickupDate,pickupTime,notes,items:storeBookingItems.map(it=>({...it})),total,paidAmount,remainingDue,paymentStatus:storeBookingPaymentMode,status,createdBy:currentUser.username,createdAt:Date.now(),updatedAt:Date.now()};
+      const bookingNumber=document.getElementById('storeBookingNumberPreview').value||generateStoreBookingNumber();let paidAmount=0;if(storeBookingPaymentMode==='paid')paidAmount=total;else if(storeBookingPaymentMode==='deposit')paidAmount=Math.min(total,Math.max(0,Number(document.getElementById('storeBookingDeposit').value)||0));const remainingDue=Math.max(0,total-paidAmount);const selectedCustomerKey=document.getElementById('storeBookingCustomerKey').value||null;let customerId=selectedCustomerKey;let customerAddress='';try{const existing=selectedCustomerKey?customersCache[selectedCustomerKey]:findCustomerByPhone(phone);customerAddress=existing?.address||'';customerId=await upsertCustomerRecord(name,phone,customerAddress,selectedCustomerKey,true);}catch(err){console.error('Store booking customer save:',err);}
+      const key=bookingNumber;const payload={bookingNumber,bookingType:'store',customerName:name,customerPhone:phone,customerPhoneNormalized:normalizePhone(phone),customerId:customerId||null,pickupDate,pickupTime,notes,items:storeBookingItems.map(it=>({...it})),total,paidAmount,remainingDue,paymentStatus:storeBookingPaymentMode,status,createdBy:currentUser.username,createdAt:Date.now(),updatedAt:Date.now()};
       try{await db.ref('storeBookings/'+key).set(payload);await logActivity('create','storeBooking',`إنشاء حجز محل #${bookingNumber} للعميل ${name}`,key,{total,paidAmount,remainingDue});window.storeBookingsCache=window.storeBookingsCache||{};window.storeBookingsCache[key]=payload;renderStoreBookingToday();renderCashierHome();
         const result=document.getElementById('storeBookingResult');if(result){result.classList.remove('hidden');result.innerHTML=`<div class="font-black text-xs">✅ تم حفظ الحجز <span class="font-mono">#${escapeHtml(bookingNumber)}</span> بنجاح.</div><div class="text-[9px] mt-1">المدفوع: ${paidAmount.toLocaleString('ar-EG')} ج.م · المتبقي: ${remainingDue.toLocaleString('ar-EG')} ج.م</div><div class="flex gap-2 mt-2"><button type="button" class="store-action-btn primary" onclick="printStoreBooking(${htmlJsArg(key)})">🧾 طباعة فاتورة 80mm</button><button type="button" class="store-action-btn" onclick="resetStoreBookingForm()">＋ حجز جديد</button></div>`;}
+        addNotification('new','حجز محل جديد',`تم إنشاء الحجز #${bookingNumber} للعميل ${name} — الاستلام ${pickupDate} ${pickupTime}`,key);
+        saveStoreBookingReminderState();
         resetStoreBookingForm();
       }catch(err){console.error(err);alert('تعذر حفظ حجز المحل. إذا كانت القاعدة تمنع المسار storeBookings فسنحتاج إضافة صلاحية الكتابة له في Firebase Rules.');}
     }
@@ -4003,6 +4125,7 @@
                 <button onclick="printThermalInvoice('${key}')" class="order-action-btn bg-slate-200 hover:bg-slate-300 text-slate-800" title="طباعة فاتورة 80mm">🧾</button>
                 ${canEdit ? `<button onclick="toggleOrderPayment('${key}')" class="order-action-btn payment-quick-btn ${paymentState.isPaid ? 'bg-amber-100 hover:bg-amber-200 text-amber-800' : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800'}" title="${paymentState.isPaid ? 'تسجيل غير مدفوع' : 'تسجيل مدفوع'}">${paymentState.isPaid ? '↩️' : '💳'}</button>` : ''}
                 ${canEdit ? `<button onclick="openEditModal('${key}')" class="order-action-btn bg-blue-100 hover:bg-blue-200 text-blue-800">✏️</button>` : ''}
+                ${canEdit ? `<button onclick="openConversionModal('delivery','${key}')" class="order-action-btn bg-violet-100 hover:bg-violet-200 text-violet-800" title="تحويل لحجز محل">🏪</button>` : ''}
                 ${canDelete ? `<button onclick="deleteOrder('${key}')" class="order-action-btn bg-red-100 hover:bg-red-200 text-red-700">🗑️</button>` : ''}
               </div>
             </td>
@@ -5120,6 +5243,45 @@
       return steps.map((step,i)=>({...step,done:i<idx,current:i===idx}));
     }
 
+
+    async function openCustomerFullHistory(customerKey){
+      const c=customersCache[customerKey]||{};const phone=String(c.phone||'');if(!phone&&!c.customerId)return alert('هذا العميل لا يملك رقم هاتف محفوظًا يمكن البحث به.');
+      document.getElementById('customerHistoryModal')?.classList.add('open');document.getElementById('customerHistoryModal')?.setAttribute('aria-hidden','false');document.getElementById('customerHistoryModalTitle').innerText=`📜 سجل العميل — ${c.name||'عميل'}`;document.getElementById('customerHistoryModalSub').innerText=`${phone||'بدون هاتف'} · كل طلبات التوصيل وحجوزات المحل`;
+      const listEl=document.getElementById('customerFullHistoryList'),summary=document.getElementById('customerFullSummary');listEl.innerHTML='<div class="customer-history-empty">⏳ جاري تحميل كل الطلبات...</div>';summary.innerHTML='';
+      try{
+        const pn=normalizePhone(phone);const ordersSnap=await (pn?db.ref('orders').orderByChild('phoneNormalized').equalTo(pn).once('value'):db.ref('orders').once('value'));let bookingsSnap=await (pn?db.ref('storeBookings').orderByChild('customerPhoneNormalized').equalTo(pn).once('value').catch(()=>({val:()=>({})})):db.ref('storeBookings').once('value'));let os=ordersSnap.val()||{},bs=bookingsSnap.val()||{};if(pn&&!Object.keys(bs).length){const fallback=await db.ref('storeBookings').once('value');const raw=fallback.val()||{};bs=Object.fromEntries(Object.entries(raw).filter(([k,v])=>normalizePhone(v?.customerPhone||'')===pn||String(v?.customerId||'')===String(customerKey)));}const rows=[];Object.keys(os).forEach(k=>{const o=os[k]||{};if(!pn||normalizePhone(o.phone||'')===pn||String(o.customerId||'')===String(customerKey))rows.push({kind:'delivery',key:k,id:o.orderId||k,date:o.date,time:o.time,status:o.status||'',amount:Number(o.totalCash||0),paid:Number(o.paidAmount||0),raw:o});});Object.keys(bs).forEach(k=>{const b=bs[k]||{};if(!pn||normalizePhone(b.customerPhone||'')===pn||String(b.customerId||'')===String(customerKey))rows.push({kind:'store',key:k,id:b.bookingNumber||k,date:b.pickupDate,time:b.pickupTime,status:b.status||'',amount:Number(b.total||0),paid:Number(b.paidAmount||0),raw:b});});rows.sort((a,b)=>{const ta=new Date(`${a.date||''}T${a.time||'00:00'}`).getTime()||0,tb=new Date(`${b.date||''}T${b.time||'00:00'}`).getTime()||0;return tb-ta;});
+        const totalSpend=rows.reduce((s,x)=>s+x.amount,0),delCount=rows.filter(x=>x.kind==='delivery').length,storeCount=rows.filter(x=>x.kind==='store').length,paid=rows.reduce((s,x)=>s+x.paid,0);summary.innerHTML=`<div class="customer-full-summary-card"><span>إجمالي العمليات</span><b>${rows.length.toLocaleString('ar-EG')}</b></div><div class="customer-full-summary-card"><span>طلبات التوصيل</span><b>${delCount.toLocaleString('ar-EG')}</b></div><div class="customer-full-summary-card"><span>حجوزات المحل</span><b>${storeCount.toLocaleString('ar-EG')}</b></div><div class="customer-full-summary-card"><span>إجمالي المدفوع</span><b>${paid.toLocaleString('ar-EG')} ج.م</b></div>`;
+        if(!rows.length){listEl.innerHTML='<div class="customer-history-empty">📭 لا توجد طلبات أو حجوزات محفوظة لهذا العميل.</div>';return;}
+        listEl.innerHTML=rows.map(x=>{const type=x.kind==='store'?'<span class="type" style="background:#fef3c7;color:#92400e">🏪 حجز محل</span>':'<span class="type" style="background:#dbeafe;color:#1d4ed8">🛵 دليفري</span>';return `<div class="customer-full-row"><div><div class="id">#${escapeHtml(x.id)}</div>${type}</div><div class="meta">📅 ${escapeHtml(formatDateDMY(x.date||'-'))}<br>⏰ ${escapeHtml(x.time||'--')}</div><div class="meta">${escapeHtml(x.status||'غير محدد')}<br>💳 مدفوع: ${x.paid.toLocaleString('ar-EG')} ج.م</div><div class="amount">${x.amount.toLocaleString('ar-EG')} ج.م</div><button type="button" onclick="${x.kind==='store'?`switchTab('store-booking');setTimeout(()=>openStoreBookingByKey(${htmlJsArg(x.key)}),120)`:`switchTab('admin');setTimeout(()=>{const q=document.getElementById('searchFilter');if(q){q.value=${htmlJsArg(x.id)};applyFilters();}},120)`}">فتح</button></div>`;}).join('');
+      }catch(e){console.error(e);listEl.innerHTML='<div class="customer-history-empty">❌ تعذر تحميل سجل العميل حاليًا.</div>';}
+    }
+    function closeCustomerFullHistory(){document.getElementById('customerHistoryModal')?.classList.remove('open');document.getElementById('customerHistoryModal')?.setAttribute('aria-hidden','true');}
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeCustomerFullHistory();closeConversionModal();}});
+
+    function openConversionModal(sourceType,sourceKey){
+      if(APP_MODE!=='staff'||!currentUser)return;if(sourceType==='store'&&!(currentUser.role==='admin'||canUser('storeBookings')))return alert('لا تملك صلاحية تحويل حجز المحل.');if(sourceType==='delivery'&&!(currentUser.role==='admin'||canUser('sales')))return alert('لا تملك صلاحية تحويل الطلب.');
+      const data=sourceType==='store'?(window.storeBookingsCache||{})[sourceKey]:allOrdersCache[sourceKey];if(!data)return alert('لم يتم العثور على المستند المطلوب.');if(data.convertedTo)return alert('هذا المستند تم تحويله بالفعل.');
+      document.getElementById('conversionSourceType').value=sourceType;document.getElementById('conversionSourceKey').value=sourceKey;document.getElementById('conversionModal').classList.add('open');document.getElementById('conversionModal').setAttribute('aria-hidden','false');
+      const driverField=document.getElementById('conversionDriverField'),priceField=document.getElementById('conversionDeliveryPriceField'),pickupFields=document.getElementById('conversionPickupFields');
+      if(sourceType==='store'){
+        document.getElementById('conversionModalTitle').innerText='🛵 تحويل حجز المحل إلى دليفري';document.getElementById('conversionModalText').innerText=`سيتم إنشاء طلب توصيل جديد مع الحفاظ على العميل والأصناف والمدفوع والمتبقي، ثم تعليم الحجز بأنه تم تحويله.`;driverField.classList.remove('hidden');priceField.classList.remove('hidden');pickupFields.classList.add('hidden');
+        const sel=document.getElementById('conversionDriverSelect');const drivers=Object.values(driverDirectoryCache||{}).map(x=>x.username).filter(Boolean).sort((a,b)=>a.localeCompare(b,'ar'));sel.innerHTML='<option value="غير محدد">غير محدد</option>'+drivers.map(d=>`<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');document.getElementById('conversionDeliveryPrice').value=String(getAppSettings().defaultDelivery||0);
+      }else{
+        document.getElementById('conversionModalTitle').innerText='🏪 تحويل طلب التوصيل إلى حجز محل';document.getElementById('conversionModalText').innerText=`سيتم إنشاء حجز محل جديد بدون مندوب مع الحفاظ على الأصناف والعميل والمبالغ المدفوعة.`;driverField.classList.add('hidden');priceField.classList.add('hidden');pickupFields.classList.remove('hidden');const srcDate=data.date||getLocalDateInputValue();const pickup=document.getElementById('conversionPickupDate');const pt=document.getElementById('conversionPickupTime');pickup.value=srcDate;pt.value='18:00';
+      }
+    }
+    function closeConversionModal(){document.getElementById('conversionModal')?.classList.remove('open');document.getElementById('conversionModal')?.setAttribute('aria-hidden','true');}
+    async function confirmConversion(){
+      const sourceType=document.getElementById('conversionSourceType').value,sourceKey=document.getElementById('conversionSourceKey').value;if(!sourceType||!sourceKey)return;
+      try{
+        if(sourceType==='store'){
+          const b=(window.storeBookingsCache||{})[sourceKey];if(!b)return;const driver=document.getElementById('conversionDriverSelect').value||'غير محدد',deliveryPrice=Number(document.getElementById('conversionDeliveryPrice').value)||0;const orderId='HAMKASHA-'+Date.now().toString().slice(-8)+Math.floor(10+Math.random()*90);const items=normalizeInvoiceItems(b.items||[]),orderPrice=Number(b.total||invoiceItemsTotal(items)||0),totalCash=orderPrice+deliveryPrice;const paidAmount=Math.min(totalCash,Number(b.paidAmount||0)),remainingDue=Math.max(0,totalCash-paidAmount),now=new Date(),trackingToken=createTrackingToken();const payload={orderId,orderType:'delivery',customerName:b.customerName||'',phone:b.customerPhone||'',phoneNormalized:normalizePhone(b.customerPhone||''),address:customersCache[b.customerId]?.address||'',items,orderPrice,deliveryPrice,paymentMethod:remainingDue>0?'cash':'cash',paymentFee:0,totalCash,paidAmount,remainingDue,changeDue:0,isPaid:remainingDue<=0,driver,status:driver==='غير محدد'?'جاري تحضير اللحوم 🥩':'جاهز للتوصيل 📦',rating:null,comment:null,isPublished:false,date:now.toISOString().split('T')[0],time:now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),lat:null,lng:null,custLat:null,custLng:null,customerId:b.customerId||null,customerNameNormalized:normalizeName(b.customerName||''),createdBy:currentUser.username,createdAt:Date.now(),trackingToken,convertedFrom:'storeBooking',convertedFromKey:sourceKey,convertedAt:Date.now(),convertedBy:currentUser.username};await db.ref('orders/'+orderId).set(payload);await db.ref('storeBookings/'+sourceKey).update({convertedTo:orderId,conversionType:'delivery',convertedAt:Date.now(),convertedBy:currentUser.username,status:'تم التحويل للدليفري 🔄'});await logActivity('update','storeBooking',`تحويل حجز المحل #${sourceKey} إلى طلب دليفري #${orderId}`,sourceKey,{orderId});await logActivity('create','order',`إنشاء طلب دليفري من حجز المحل #${sourceKey}`,orderId,{sourceKey});addNotification('delivery','تم تحويل الحجز إلى دليفري',`#${sourceKey} → #${orderId} — ${driver}`,orderId);closeConversionModal();alert('تم تحويل الحجز إلى دليفري بنجاح ✅');
+        }else{
+          const o=allOrdersCache[sourceKey];if(!o)return;const pickupDate=document.getElementById('conversionPickupDate').value,pickupTime=document.getElementById('conversionPickupTime').value;if(!pickupDate||!pickupTime)return alert('اختر تاريخ ووقت الاستلام.');const bookingNumber=generateStoreBookingNumber();const items=normalizeInvoiceItems(o.items||[]),orderPrice=Number(o.orderPrice||invoiceItemsTotal(items)||0),total=orderPrice+Number(o.paymentFee||0),paidAmount=Math.min(total,Number(o.paidAmount||0)),remainingDue=Math.max(total-paidAmount,0),paymentStatus=paidAmount>=total?'paid':paidAmount>0?'deposit':'unpaid';const payload={bookingNumber,bookingType:'store',customerName:o.customerName||'',customerPhone:o.phone||'',customerPhoneNormalized:normalizePhone(o.phone||''),customerId:o.customerId||null,pickupDate,pickupTime,notes:`تحويل من طلب دليفري #${o.orderId||sourceKey}${o.address?` — العنوان السابق: ${o.address}`:''}`,items, total,paidAmount,remainingDue,paymentStatus,status:'محجوز 🟡',createdBy:currentUser.username,createdAt:Date.now(),updatedAt:Date.now(),convertedFrom:'delivery',convertedFromKey:sourceKey,convertedAt:Date.now(),convertedBy:currentUser.username};await db.ref('storeBookings/'+bookingNumber).set(payload);await db.ref('orders/'+sourceKey).update({convertedTo:bookingNumber,conversionType:'storeBooking',convertedAt:Date.now(),convertedBy:currentUser.username,status:'تم التحويل لحجز المحل 🔄'});await logActivity('update','order',`تحويل الطلب #${sourceKey} إلى حجز محل #${bookingNumber}`,sourceKey,{bookingNumber});await logActivity('create','storeBooking',`إنشاء حجز محل من الطلب #${sourceKey}`,bookingNumber,{sourceKey});addNotification('status','تم تحويل الطلب إلى حجز محل',`#${sourceKey} → حجز #${bookingNumber} — استلام ${pickupDate} ${pickupTime}`,bookingNumber);closeConversionModal();alert('تم تحويل الطلب إلى حجز محل بنجاح ✅');
+        }
+      }catch(e){console.error(e);alert('تعذر تنفيذ التحويل حاليًا. تحقق من Firebase Rules ثم أعد المحاولة.');}
+    }
+
     function openOrderDetails(key) {
       if(APP_MODE!=='staff'||!currentUser||!((currentUser.role==='admin')||(currentUser.role==='cashier' && allOrdersCache[key]))||!allOrdersCache[key]) return;
       const order=allOrdersCache[key]||{}; const total=Number(order.totalCash||((order.orderPrice||0)+(order.deliveryPrice||0)+(order.paymentFee||0)))||0; const status=order.status||'جاري تحضير اللحوم 🥩';
@@ -5129,7 +5291,7 @@
       const timeline=document.getElementById('detailsTimeline'); timeline.innerHTML=getOrderDetailsSteps(status).map(step=>`<div class="order-detail-step ${step.done?'done ':''}${step.current?'current':''}"><span class="order-detail-dot"></span><div class="step-title">${step.title}</div><div class="step-meta">${step.meta}</div></div>`).join('');
       const state=document.getElementById('detailsTrackingState'), box=document.getElementById('detailsLocationBox');
       if(order.lat&&order.lng){ state.innerText='GPS متاح'; state.className='text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full'; const updated=order.locationUpdatedAt?new Date(order.locationUpdatedAt).toLocaleString('ar-EG'):'غير محدد'; box.innerHTML=`<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><b class="text-emerald-700">📍 الموقع متاح</b><div class="text-[10px] mt-1 text-slate-400">آخر تحديث: ${escapeHtml(updated)}</div></div><a href="https://www.google.com/maps?q=${encodeURIComponent(order.lat+','+order.lng)}" target="_blank" rel="noopener" class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-xl">فتح الموقع في الخريطة ↗</a></div>`; } else { state.innerText='GPS غير متاح'; state.className='text-[10px] font-bold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full'; box.innerHTML='<span>لا يوجد موقع GPS مسجل لهذا الطلب حاليًا.</span>'; }
-      document.getElementById('detailsWhatsAppBtn').onclick=()=>shareWhatsApp(key); document.getElementById('detailsPrintInvoiceBtn').onclick=()=>printThermalInvoice(key); document.getElementById('detailsEditBtn').onclick=()=>{closeOrderDetails();openEditModal(key);}; document.getElementById('detailsDeleteBtn').onclick=()=>{closeOrderDetails();deleteOrder(key);};
+      document.getElementById('detailsWhatsAppBtn').onclick=()=>shareWhatsApp(key); document.getElementById('detailsPrintInvoiceBtn').onclick=()=>printThermalInvoice(key); document.getElementById('detailsConvertBtn').onclick=()=>{closeOrderDetails();openConversionModal('delivery',key);}; document.getElementById('detailsConvertBtn').innerText=order.convertedTo?'✅ تم التحويل':'🏪 تحويل لحجز محل'; document.getElementById('detailsConvertBtn').disabled=!!order.convertedTo; document.getElementById('detailsEditBtn').onclick=()=>{closeOrderDetails();openEditModal(key);}; document.getElementById('detailsDeleteBtn').onclick=()=>{closeOrderDetails();deleteOrder(key);};
       document.getElementById('orderDetailsModal').classList.remove('hidden');
     }
 
