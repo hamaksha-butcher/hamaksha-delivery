@@ -1049,6 +1049,15 @@
       visibility:visible !important;
       pointer-events:auto !important;
     }
+    /* نافذة الدخول أعلى من بوابة الدخول نفسها: البوابة تختفي مؤقتًا أثناء فتح الـModal */
+    body.auth-modal-open #staffLoginGate {
+      display:none !important;
+      visibility:hidden !important;
+      pointer-events:none !important;
+    }
+    #authModal {
+      z-index:11001 !important;
+    }
 </style>
 </head>
 <body id="appBody" class="bg-amber-50/40 min-h-screen text-gray-800">
@@ -2865,11 +2874,15 @@
     function toggleAuthModal() {
       const modal = document.getElementById('authModal');
       if(!modal) return;
+      const willOpen = modal.classList.contains('hidden');
       modal.classList.toggle('hidden');
-      if(!modal.classList.contains('hidden')) {
+      if(willOpen) {
+        document.body.classList.add('auth-modal-open');
         updateLoginContext();
         loadRememberedLogin();
-        setTimeout(() => document.getElementById('loginUser')?.focus(), 50);
+        setTimeout(() => document.getElementById('loginUser')?.focus(), 80);
+      } else {
+        document.body.classList.remove('auth-modal-open');
       }
     }
 
@@ -5192,7 +5205,7 @@
       document.getElementById('mainHeader')?.style.setProperty('display','none','important');
       document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');switchTab('driver');
     }
-    window.addEventListener('DOMContentLoaded',()=>{if(APP_MODE==='staff'){document.body.classList.add('staff-logged-out');document.body.classList.remove('customer-public-mode','driver-private-mode','cashier-mode');}applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();if(APP_MODE!=='staff'){startPublicCommentsListener();applyCustomerPublicMode();return;}loadRememberedLogin();startPublicCommentsListener();checkSavedSession();if(currentUser){document.body.classList.remove('staff-logged-out');}updateUIByPermissions();});
+    window.addEventListener('DOMContentLoaded',()=>{if(APP_MODE==='staff'){document.body.classList.add('staff-logged-out');document.body.classList.remove('customer-public-mode','driver-private-mode','cashier-mode','auth-modal-open');}applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();if(APP_MODE!=='staff'){startPublicCommentsListener();applyCustomerPublicMode();return;}loadRememberedLogin();startPublicCommentsListener();checkSavedSession();if(currentUser){document.body.classList.remove('staff-logged-out');}updateUIByPermissions();});
 </script>
 </body>
 </html>
