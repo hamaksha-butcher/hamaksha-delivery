@@ -728,7 +728,50 @@
     .pos-catalog-search{width:100%;border:1px solid var(--border-color);background:var(--surface-color);color:var(--text-color);border-radius:12px;padding:10px 34px 10px 10px;font-size:10px;outline:none;}
     .pos-catalog-search:focus{border-color:var(--primary-color);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary-color) 9%,transparent);}
     .pos-search-icon{position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--muted-color);font-size:18px;line-height:1;}
+    
     .pos-category-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px;}
+    .pos-breadcrumb{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;padding:8px 10px;border:1px solid var(--border-color);background:var(--surface-soft);border-radius:12px;}
+    .pos-breadcrumb-path{display:flex;align-items:center;gap:6px;min-width:0;font-size:9px;font-weight:1000;color:var(--text-color);}
+    .pos-breadcrumb-path span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .pos-back-btn{border:1px solid var(--border-color);background:var(--surface-color);color:var(--muted-color);padding:6px 9px;border-radius:9px;font-size:8px;font-weight:1000;cursor:pointer;white-space:nowrap;}
+    .pos-subcategory-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px;}
+    .pos-subcategory-card{border:1px solid var(--border-color);background:var(--surface-color);border-radius:13px;padding:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:right;color:var(--text-color);cursor:pointer;transition:.16s ease;}
+    .pos-subcategory-card:hover,.pos-subcategory-card.active{border-color:color-mix(in srgb,var(--primary-color) 42%,var(--border-color));background:color-mix(in srgb,var(--primary-color) 6%,var(--surface-color));box-shadow:0 8px 16px rgba(15,23,42,.07);}
+    .pos-subcategory-card b{font-size:9px;font-weight:1000;line-height:1.5;}
+    .pos-subcategory-card small{font-size:7px;color:var(--muted-color);font-weight:900;white-space:nowrap;}
+    .pos-subcategory-icon{width:27px;height:27px;border-radius:9px;display:grid;place-items:center;background:color-mix(in srgb,var(--primary-color) 9%,var(--surface-color));font-size:14px;flex:none;}
+    .pos-hierarchy-empty{border:1px dashed var(--border-color);background:var(--surface-soft);border-radius:14px;padding:18px;text-align:center;color:var(--muted-color);font-size:9px;font-weight:900;margin-top:10px;}
+    @media (max-width: 900px){.pos-category-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.pos-subcategory-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    @media (max-width: 520px){.pos-subcategory-grid{grid-template-columns:1fr;}.pos-breadcrumb{align-items:flex-start;}.pos-add-bar{grid-template-columns:1fr 1fr;}.pos-add-line-btn{grid-column:1/-1;}}
+
+    .price-main-group{border:1px solid var(--border-color);background:var(--surface-soft);border-radius:20px;overflow:hidden;box-shadow:0 4px 14px rgba(15,23,42,.04);}
+    .price-main-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 15px;background:linear-gradient(180deg,color-mix(in srgb,var(--primary-color) 8%,var(--surface-color)),var(--surface-color));border-bottom:1px solid var(--border-color);}
+    .price-main-title{display:flex;align-items:center;gap:9px;min-width:0;}
+    .price-main-icon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:color-mix(in srgb,var(--primary-color) 10%,var(--surface-color));font-size:17px;flex:none;}
+    .price-main-title b{font-size:12px;font-weight:1000;color:var(--text-color);display:block;}
+    .price-main-title small{font-size:8px;color:var(--muted-color);font-weight:800;display:block;margin-top:2px;}
+    .price-group-toggle{border:1px solid color-mix(in srgb,var(--primary-color) 18%,var(--border-color));background:var(--surface-color);color:var(--primary-color);padding:7px 9px;border-radius:10px;font-size:8px;font-weight:1000;cursor:pointer;white-space:nowrap;}
+    .price-main-body{padding:12px;display:flex;flex-direction:column;gap:10px;}
+    .price-sub-group{border:1px solid var(--border-color);background:var(--surface-color);border-radius:16px;overflow:hidden;}
+    .price-sub-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border-color);background:var(--surface-soft);}
+    .price-sub-head b{font-size:10px;font-weight:1000;color:var(--primary-color);}
+    .price-sub-head span{font-size:8px;color:var(--muted-color);font-weight:900;}
+    .price-sub-body{padding:10px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
+    .price-item-card{position:relative;overflow:hidden;border:1px solid var(--border-color);background:var(--surface-color);border-radius:15px;padding:11px;box-shadow:0 2px 8px rgba(15,23,42,.03);}
+    .price-item-card:before{content:'';position:absolute;top:0;right:0;left:0;height:3px;background:linear-gradient(90deg,var(--primary-color),var(--accent-color));opacity:.9;}
+    .price-item-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding-top:2px;}
+    .price-item-name{font-size:10px;font-weight:1000;line-height:1.6;color:var(--text-color);}
+    .price-item-value{text-align:left;direction:ltr;white-space:nowrap;}
+    .price-item-value b{font-size:17px;font-weight:1000;color:var(--primary-color);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+    .price-item-value small{display:block;font-size:7px;color:var(--muted-color);font-weight:900;text-align:right;margin-top:1px;}
+    .price-item-meta{margin-top:9px;padding-top:8px;border-top:1px dashed var(--border-color);display:flex;align-items:center;justify-content:space-between;gap:8px;}
+    .price-item-meta span{font-size:8px;color:var(--muted-color);font-weight:800;}
+    .price-item-actions{display:flex;gap:5px;}
+    .price-item-action{border:0;padding:5px 7px;border-radius:8px;font-size:8px;font-weight:1000;cursor:pointer;}
+    .price-global-actions{display:flex;gap:6px;flex-wrap:wrap;}
+    .price-global-btn{border:1px solid var(--border-color);background:var(--surface-color);color:var(--text-color);padding:7px 10px;border-radius:10px;font-size:8px;font-weight:1000;cursor:pointer;}
+    @media (max-width: 700px){.price-sub-body{grid-template-columns:1fr;}}
+
     .pos-category-card{min-height:92px;border:1px solid var(--border-color);background:linear-gradient(180deg,var(--surface-color),var(--surface-soft));border-radius:14px;padding:10px 7px 7px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--text-color);transition:.16s ease;cursor:pointer;}
     .pos-category-card:hover,.pos-category-card.active{border-color:color-mix(in srgb,var(--primary-color) 42%,var(--border-color));box-shadow:0 10px 18px rgba(15,23,42,.08);transform:translateY(-1px);}
     .pos-category-card.active{background:linear-gradient(180deg,color-mix(in srgb,var(--primary-color) 9%,var(--surface-color)),var(--surface-color));}
@@ -1561,7 +1604,7 @@
             </div>
           </div>
 
-          <div class="flex items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center justify-between gap-3">
             <div class="flex flex-wrap gap-2" id="priceCategoryChips">
               <button type="button" onclick="setPriceCategory('all')" data-price-cat="all" class="price-chip px-3 py-1.5 rounded-full text-[10px] font-black bg-gray-900 text-white">الكل</button>
               <button type="button" onclick="setPriceCategory('red')" data-price-cat="red" class="price-chip px-3 py-1.5 rounded-full text-[10px] font-black bg-gray-100 text-gray-600 hover:bg-gray-200">اللحوم الحمراء</button>
@@ -1569,7 +1612,13 @@
               <button type="button" onclick="setPriceCategory('minced')" data-price-cat="minced" class="price-chip px-3 py-1.5 rounded-full text-[10px] font-black bg-gray-100 text-gray-600 hover:bg-gray-200">المفروم والمصنعات</button>
               <button type="button" onclick="setPriceCategory('extras')" data-price-cat="extras" class="price-chip px-3 py-1.5 rounded-full text-[10px] font-black bg-gray-100 text-gray-600 hover:bg-gray-200">الكماليات</button>
             </div>
-            <span id="priceResultsCount" class="shrink-0 text-[10px] font-black text-gray-400">0 صنف</span>
+            <div class="flex items-center gap-2">
+              <div class="price-global-actions">
+                <button type="button" class="price-global-btn" onclick="setAllPriceGroupsCollapsed(false)">▾ إظهار الكل</button>
+                <button type="button" class="price-global-btn" onclick="setAllPriceGroupsCollapsed(true)">▸ إخفاء الكل</button>
+              </div>
+              <span id="priceResultsCount" class="shrink-0 text-[10px] font-black text-gray-400">0 صنف</span>
+            </div>
           </div>
 
           <div id="priceListContainer" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -2606,7 +2655,9 @@
       renderNewOrderCatalog();
     }
 
+    function htmlJsArg(value){return escapeHtml(JSON.stringify(value));}
     let newOrderCatalogMain = '';
+    let newOrderCatalogSub = '';
     let newOrderCatalogSearch = '';
     function getNewOrderCatalogData(){
       const select=document.getElementById('invoiceItemProduct');
@@ -2614,29 +2665,55 @@
       const rows=[];
       Array.from(select.options||[]).forEach(opt=>{
         if(!opt.value || opt.value==='__custom__') return;
-        rows.push({key:opt.value,name:opt.dataset.name||opt.textContent||'',main:opt.dataset.main||'أصناف أخرى',sub:opt.dataset.sub||'غير مصنف',price:opt.dataset.price||'0',priceDisplay:opt.dataset.priceDisplay||opt.dataset.price||'0',unit:opt.dataset.unit||'كيلو'});
+        rows.push({key:opt.value,name:opt.dataset.name||opt.textContent||'',main:opt.dataset.main||'أصناف أخرى',sub:opt.dataset.sub||'',price:opt.dataset.price||'0',priceDisplay:opt.dataset.priceDisplay||opt.dataset.price||'0',unit:opt.dataset.unit||'كيلو'});
       });
       return rows;
+    }
+    function getCatalogMatches(){
+      const rows=getNewOrderCatalogData();
+      const search=String(newOrderCatalogSearch||'').trim().toLowerCase();
+      return search?rows.filter(r=>`${r.name} ${r.main} ${r.sub}`.toLowerCase().includes(search)):rows;
     }
     function renderNewOrderCatalog(){
       const catEl=document.getElementById('invoiceCategoryGrid'),prodEl=document.getElementById('invoiceProductGrid');
       if(!catEl||!prodEl) return;
-      const rows=getNewOrderCatalogData();
-      const search=String(newOrderCatalogSearch||'').trim().toLowerCase();
-      const filtered=search?rows.filter(r=>`${r.name} ${r.main} ${r.sub}`.toLowerCase().includes(search)):rows;
-      const mains=[];filtered.forEach(r=>{if(!mains.includes(r.main))mains.push(r.main);});
-      if(!newOrderCatalogMain || !mains.includes(newOrderCatalogMain)) newOrderCatalogMain=mains[0]||'';
-      catEl.innerHTML=mains.map(main=>`<button type="button" class="pos-category-card ${main===newOrderCatalogMain?'active':''}" onclick="selectNewOrderCategory(${JSON.stringify(main)})"><span class="pos-category-icon">🥩</span><b>${escapeHtml(main)}</b><small>عرض الأصناف</small></button>`).join('');
-      const mainRows=filtered.filter(r=>r.main===newOrderCatalogMain);
-      const subGroups={};mainRows.forEach(r=>{(subGroups[r.sub] ||= []).push(r);});
-      if(!newOrderCatalogMain){prodEl.innerHTML='<div class="pos-empty">لا توجد أصناف في المنيو حاليًا.</div>';return;}
-      document.getElementById('invoiceCatalogHint')?.replaceChildren(document.createTextNode(`${mainRows.length} صنف`));
-      prodEl.innerHTML=Object.entries(subGroups).map(([sub,items])=>`<div class="pos-subgroup"><div class="pos-subtitle">${escapeHtml(sub||'أصناف')}</div><div class="pos-items-grid">${items.map(r=>`<button type="button" class="pos-product-card" data-key="${escapeHtml(r.key)}" onclick="chooseNewInvoiceProduct(${JSON.stringify(r.key)})"><span class="pos-product-name">${escapeHtml(r.name)}</span><span class="pos-product-price">${escapeHtml(r.priceDisplay)} ج.م/${escapeHtml(r.unit)}</span></button>`).join('')}</div></div>`).join('') || '<div class="pos-empty">لا توجد أصناف مطابقة للبحث.</div>';
+      const rows=getCatalogMatches();
+      const mains=[];
+      rows.forEach(r=>{if(!mains.includes(r.main))mains.push(r.main);});
+      if(!newOrderCatalogMain || !mains.includes(newOrderCatalogMain)) {newOrderCatalogMain='';newOrderCatalogSub='';}
+      catEl.innerHTML=mains.map(main=>{
+        const mainRows=rows.filter(r=>r.main===main);
+        const subCount=new Set(mainRows.map(r=>r.sub||'')).size;
+        return `<button type="button" class="pos-category-card ${main===newOrderCatalogMain?'active':''}" onclick="selectNewOrderCategory(${htmlJsArg(main)})"><span class="pos-category-icon">🥩</span><b>${escapeHtml(main)}</b><small>${mainRows.length} صنف · ${subCount} قسم فرعي</small></button>`;
+      }).join('');
+      if(!newOrderCatalogMain){
+        prodEl.innerHTML='<div class="pos-hierarchy-empty">👆 اختار قسمًا رئيسيًا لعرض الأقسام الفرعية والأصناف.</div>';
+        const hint=document.getElementById('invoiceCatalogHint'); if(hint)hint.innerText=rows.length?`${rows.length} صنف في المنيو`:'المنيو فارغة';
+        return;
+      }
+      const mainRows=rows.filter(r=>r.main===newOrderCatalogMain);
+      const subs=[];
+      mainRows.forEach(r=>{const sub=r.sub||'';if(!subs.includes(sub))subs.push(sub);});
+      if(!newOrderCatalogSub || !subs.includes(newOrderCatalogSub)) newOrderCatalogSub=subs.length===1?subs[0]:'';
+      const breadcrumb=`<div class="pos-breadcrumb"><div class="pos-breadcrumb-path"><span>القسم:</span><b>${escapeHtml(newOrderCatalogMain)}</b>${newOrderCatalogSub?`<span>←</span><b>${escapeHtml(newOrderCatalogSub)}</b>`:''}</div><div class="flex items-center gap-1.5">${newOrderCatalogSub?`<button type="button" class="pos-back-btn" onclick="selectNewOrderSubcategory('')">↩ الأقسام الفرعية</button>`:''}<button type="button" class="pos-back-btn" onclick="resetNewOrderCategory()">↩ الأقسام الرئيسية</button></div></div>`;
+      const subButtons=subs.map(sub=>{
+        const count=mainRows.filter(r=>r.sub===sub).length;
+        const active=sub===newOrderCatalogSub;
+        return `<button type="button" class="pos-subcategory-card ${active?'active':''}" onclick="selectNewOrderSubcategory(${htmlJsArg(sub)})"><span class="pos-subcategory-icon">▦</span><b>${escapeHtml(sub||'أصناف مباشرة')}</b><small>${count} صنف</small></button>`;
+      }).join('');
+      const subWrap=subs.length>1?`<div class="pos-subcategory-grid">${subButtons}</div>`:'';
+      let targetRows=[];
+      if(newOrderCatalogSub) targetRows=mainRows.filter(r=>r.sub===newOrderCatalogSub); else if(subs.length<=1) targetRows=mainRows;
+      const productHtml=targetRows.length?`<div class="pos-items-grid">${targetRows.map(r=>`<button type="button" class="pos-product-card" data-key="${escapeHtml(r.key)}" onclick="chooseNewInvoiceProduct(${htmlJsArg(r.key)})"><span class="pos-product-name">${escapeHtml(r.name)}</span><span class="pos-product-price">${escapeHtml(r.priceDisplay)} ج.م/${escapeHtml(r.unit)}</span></button>`).join('')}</div>`:`<div class="pos-hierarchy-empty">👆 اختار قسمًا فرعيًا لعرض الأصناف المتاحة وإضافتها للفاتورة.</div>`;
+      prodEl.innerHTML=breadcrumb+subWrap+`<div class="mt-3">${productHtml}</div>`;
+      const hint=document.getElementById('invoiceCatalogHint'); if(hint)hint.innerText=newOrderCatalogSub?`${targetRows.length} صنف داخل ${newOrderCatalogSub}`:`${mainRows.length} صنف داخل ${newOrderCatalogMain}`;
       const selected=document.getElementById('invoiceItemProduct')?.value||'';
       document.querySelectorAll('#invoiceProductGrid .pos-product-card').forEach(b=>b.classList.toggle('selected',b.dataset.key===selected));
     }
-    function selectNewOrderCategory(main){newOrderCatalogMain=main;renderNewOrderCatalog();}
-    function filterNewOrderCatalog(value){newOrderCatalogSearch=value||'';newOrderCatalogMain='';renderNewOrderCatalog();}
+    function selectNewOrderCategory(main){newOrderCatalogMain=main;newOrderCatalogSub='';renderNewOrderCatalog();}
+    function resetNewOrderCategory(){newOrderCatalogMain='';newOrderCatalogSub='';renderNewOrderCatalog();}
+    function selectNewOrderSubcategory(sub){newOrderCatalogSub=sub;renderNewOrderCatalog();}
+    function filterNewOrderCatalog(value){newOrderCatalogSearch=value||'';newOrderCatalogMain='';newOrderCatalogSub='';renderNewOrderCatalog();}
     function chooseNewInvoiceProduct(key){
       const select=document.getElementById('invoiceItemProduct');if(!select)return;
       select.value=key;handleInvoiceProductChange('new');
@@ -2645,22 +2722,6 @@
       document.querySelectorAll('#invoiceProductGrid .pos-product-card').forEach(b=>b.classList.toggle('selected',b.dataset.key===key));
       document.getElementById('invoiceItemQty')?.focus();
     }
-    function handleInvoiceProductChange(mode){
-      const isEdit=mode==='edit',select=document.getElementById(isEdit?'editInvoiceItemProduct':'invoiceItemProduct'),qty=document.getElementById(isEdit?'editInvoiceItemQty':'invoiceItemQty'),price=document.getElementById(isEdit?'editInvoiceItemUnitPrice':'invoiceItemUnitPrice'),wrap=document.getElementById(isEdit?'editInvoiceCustomNameWrap':'invoiceCustomNameWrap'),name=document.getElementById(isEdit?'editInvoiceItemName':'invoiceItemName'),unit=document.getElementById(isEdit?'editInvoiceItemUnit':'invoiceItemUnit'),opt=select?.selectedOptions?.[0],display=opt?.dataset?.priceDisplay||opt?.dataset?.price||'0';
-      if(select?.value==='__custom__'){
-        wrap?.classList.add('show');if(name)name.value='';if(unit)unit.value='كيلو';if(price){price.value='0';price.placeholder='0';}
-      }else{
-        wrap?.classList.remove('show');
-        if(opt){
-          if(price){const numeric=Number(opt.dataset.price||0);price.value=numeric;price.placeholder=display.includes('/')?display:'0';}
-          if(unit)unit.value=opt.dataset.unit||'كيلو';
-          if(name)name.value=opt.dataset.name||'';
-          if(display.includes('/')) setTimeout(()=>alert(`سعر ${opt.dataset.name||'الصنف'} في المنيو: ${display} ج.م — اختر السعر المناسب يدويًا قبل الإضافة.`),10);
-        }
-      }
-      if(qty&&!qty.value)qty.value='1';
-    }
-
     document.addEventListener('keydown',e=>{if(e.key==='Enter' && document.activeElement?.id==='invoiceItemQty' && document.getElementById('invoiceItemProduct')?.value){e.preventDefault();addInvoiceItem('new');}});
     function addInvoiceItem(mode){const isEdit=mode==='edit',select=document.getElementById(isEdit?'editInvoiceItemProduct':'invoiceItemProduct'),qtyEl=document.getElementById(isEdit?'editInvoiceItemQty':'invoiceItemQty'),priceEl=document.getElementById(isEdit?'editInvoiceItemUnitPrice':'invoiceItemUnitPrice'),nameEl=document.getElementById(isEdit?'editInvoiceItemName':'invoiceItemName'),unitEl=document.getElementById(isEdit?'editInvoiceItemUnit':'invoiceItemUnit'),product=select?.value||'',qty=Number(qtyEl?.value)||0,unitPrice=Number(priceEl?.value)||0,name=(product==='__custom__'?(nameEl?.value||'').trim():(select?.selectedOptions?.[0]?.dataset?.name||nameEl?.value||'').trim()),unit=(unitEl?.value||select?.selectedOptions?.[0]?.dataset?.unit||'كيلو').trim()||'كيلو';if(!name)return alert('اكتب اسم الصنف أو اختر صنفًا من القائمة.');if(qty<=0)return alert('أدخل كمية صحيحة.');if(unitPrice<=0)return alert('أدخل سعر وحدة صحيحًا قبل إضافة الصنف.');const items=getInvoiceItemsState(mode);items.push({name,qty,unitPrice,unit,total:qty*unitPrice,priceKey:product&&product!=='__custom__'?product:null});setInvoiceItemsState(mode,items);if(isEdit)editInvoiceItemsTouched=true;renderInvoiceItems(mode);syncOrderPriceFromInvoice(mode);if(select)select.value='';if(qtyEl)qtyEl.value='1';if(priceEl){priceEl.value='0';priceEl.placeholder='0';}if(nameEl)nameEl.value='';if(unitEl)unitEl.value='كيلو';document.getElementById(isEdit?'editInvoiceCustomNameWrap':'invoiceCustomNameWrap')?.classList.remove('show');}
     function updateInvoiceItem(mode,index,field,value){const items=getInvoiceItemsState(mode);if(!items[index])return;items[index][field]=(field==='qty'||field==='unitPrice')?Number(value)||0:String(value);items[index].total=(Number(items[index].qty)||0)*(Number(items[index].unitPrice)||0);if(mode==='edit')editInvoiceItemsTouched=true;renderInvoiceItems(mode);syncOrderPriceFromInvoice(mode);}
@@ -3693,6 +3754,14 @@
       renderPriceCatalog();
     }
 
+    let priceMainCollapsed = {};
+    function setPriceMainCollapsed(main, collapsed){priceMainCollapsed[String(main)]=!!collapsed;renderPriceCatalog();}
+    function setAllPriceGroupsCollapsed(collapsed){
+      const entries=getMergedMenuPriceEntries();
+      const mains=[...new Set(entries.map(({item})=>String(item.mainCategory||item.main||'قائمة الأسعار')))].filter(Boolean);
+      mains.forEach(main=>priceMainCollapsed[main]=!!collapsed);
+      renderPriceCatalog();
+    }
     function renderPriceCatalog(){
       const container = document.getElementById('priceListContainer');
       if(!container) return;
@@ -3704,44 +3773,42 @@
         const matchesQ = !q || haystack.includes(q);
         const matchesCat = activePriceCategory === 'all' || getPriceCategory(item) === activePriceCategory;
         return matchesQ && matchesCat;
-      }).sort((a,b) => {
-        if(sort === 'priceAsc') return Number(a.item.price||0) - Number(b.item.price||0);
-        if(sort === 'priceDesc') return Number(b.item.price||0) - Number(a.item.price||0);
-        return String(a.item.name||'').localeCompare(String(b.item.name||''), 'ar');
       });
-
+      const grouped={};
+      filtered.forEach(entry=>{
+        const main=String(entry.item.mainCategory||entry.item.main||'أصناف أخرى');
+        const sub=String(entry.item.subCategory||entry.item.sub||'');
+        (grouped[main] ||= {});
+        (grouped[main][sub] ||= []).push(entry);
+      });
       const count = document.getElementById('priceResultsCount');
       if(count) count.innerText = `${filtered.length} صنف`;
       if(!filtered.length){
-        container.innerHTML = '<div class="col-span-full rounded-3xl border border-dashed border-gray-200 bg-gray-50 p-10 text-center"><div class="text-4xl mb-2">🔎</div><p class="text-xs font-bold text-gray-500">لا توجد أصناف مطابقة للبحث أو التصنيف الحالي.</p></div>';
+        container.className='grid grid-cols-1 gap-4';
+        container.innerHTML='<div class="rounded-3xl border border-dashed border-gray-200 bg-gray-50 p-10 text-center"><div class="text-4xl mb-2">🔎</div><p class="text-xs font-bold text-gray-500">لا توجد أصناف مطابقة للبحث أو التصنيف الحالي.</p></div>';
         return;
       }
       const canEditPrices = canUser('prices');
-      container.innerHTML = filtered.map(({key,item,isOfficial}) => {
-        const priceText=menuPriceText(item);
-        const category = getPriceCategory(item);
-        const badge = category === 'minced' ? 'مفروم/مصنعات' : category === 'extras' ? 'كماليات' : category === 'lambGoat' ? 'ضاني/ماعز' : 'لحوم حمراء';
-        const sub = item.subCategory || '';
-        const editButton = canEditPrices && !String(key).startsWith('menu::') ? `<button onclick="openEditPriceModal('${escapeHtml(key)}')" class="px-2.5 py-1.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 text-[10px] font-black">✏️ تعديل</button><button onclick="deletePriceItem('${escapeHtml(key)}')" class="px-2.5 py-1.5 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 text-[10px] font-black">🗑️ حذف</button>` : '';
-        return `
-          <article class="group relative overflow-hidden rounded-3xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-lg transition-all duration-200">
-            <div class="absolute top-0 right-0 left-0 h-1 bg-gradient-to-l from-[var(--primary-color,#7f1d1d)] to-[var(--accent-color,#b45309)]"></div>
-            <div class="flex items-start justify-between gap-3 pt-1">
-              <div class="min-w-0">
-                <div class="flex flex-wrap gap-1.5"><span class="inline-flex px-2 py-1 rounded-full bg-gray-100 text-gray-500 text-[9px] font-black">${badge}</span>${sub?`<span class="inline-flex px-2 py-1 rounded-full bg-amber-50 text-amber-700 text-[9px] font-black">${escapeHtml(sub)}</span>`:''}${isOfficial?`<span class="inline-flex px-2 py-1 rounded-full bg-red-50 text-red-700 text-[9px] font-black">منيو رسمي</span>`:''}</div>
-                <h4 class="font-black text-sm text-gray-900 mt-2 leading-6">${escapeHtml(item.name || 'صنف بدون اسم')}</h4>
-                <p class="text-[10px] text-gray-500 font-semibold mt-1">السعر لكل ${escapeHtml(item.unit || 'كيلو')}</p>
-              </div>
-              <div class="text-left shrink-0">
-                <div class="text-2xl font-black text-[var(--primary-color,#991b1b)] font-mono leading-none">${escapeHtml(priceText)}</div>
-                <div class="text-[10px] font-black text-gray-400 mt-1">ج.م</div>
-              </div>
-            </div>
-            <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
-              <span class="text-[10px] text-gray-400 font-semibold">${escapeHtml(item.mainCategory||'قائمة الأسعار')}</span>
-              ${editButton ? `<div class="flex gap-1.5">${editButton}</div>` : '<span class="text-[9px] font-black text-emerald-600">✓ ضمن المنيو الرسمي</span>'}
-            </div>
-          </article>`;
+      const mainNames=Object.keys(grouped);
+      container.className='grid grid-cols-1 gap-4';
+      container.innerHTML=mainNames.map(main=>{
+        const mainGroups=grouped[main];
+        const mainEntries=Object.values(mainGroups).flat();
+        const collapsed=!!priceMainCollapsed[main];
+        const subNames=Object.keys(mainGroups);
+        const body=subNames.map(sub=>{
+          const items=[...mainGroups[sub]].sort((a,b)=>{
+            if(sort==='priceAsc')return Number(a.item.price||0)-Number(b.item.price||0);
+            if(sort==='priceDesc')return Number(b.item.price||0)-Number(a.item.price||0);
+            return String(a.item.name||'').localeCompare(String(b.item.name||''),'ar');
+          });
+          return `<section class="price-sub-group"><div class="price-sub-head"><div><b>${escapeHtml(sub||'أصناف مباشرة')}</b></div><span>${items.length} صنف</span></div><div class="price-sub-body">${items.map(({key,item,isOfficial})=>{
+            const priceText=menuPriceText(item);const subText=item.subCategory||'';
+            const editButton=canEditPrices&&!String(key).startsWith('menu::')?`<div class="price-item-actions"><button class="price-item-action bg-blue-50 text-blue-700" onclick="openEditPriceModal('${escapeHtml(key)}')">✏️ تعديل</button><button class="price-item-action bg-red-50 text-red-700" onclick="deletePriceItem('${escapeHtml(key)}')">🗑️ حذف</button></div>`:'';
+            return `<article class="price-item-card"><div class="price-item-head"><div><div class="price-item-name">${escapeHtml(item.name||'صنف بدون اسم')}</div><div class="text-[8px] text-gray-400 font-bold mt-1">السعر لكل ${escapeHtml(item.unit||'كيلو')}</div></div><div class="price-item-value"><b>${escapeHtml(priceText)}</b><small>ج.م</small></div></div><div class="price-item-meta"><span>${isOfficial?'✓ منيو رسمي':escapeHtml(subText||main)}</span>${editButton}</div></article>`;
+          }).join('')}</div></section>`;
+        }).join('');
+        return `<section class="price-main-group"><div class="price-main-head"><div class="price-main-title"><span class="price-main-icon">🥩</span><div><b>${escapeHtml(main)}</b><small>${mainEntries.length} صنف · ${subNames.length} قسم فرعي</small></div></div><button type="button" class="price-group-toggle" onclick="setPriceMainCollapsed(${htmlJsArg(main)},${!collapsed})">${collapsed?'▾ عرض الأصناف':'▴ إخفاء الأصناف'}</button></div>${collapsed?'':`<div class="price-main-body">${body}</div>`}</section>`;
       }).join('');
     }
 
@@ -4223,7 +4290,7 @@
       document.getElementById('mainHeader')?.style.setProperty('display','none','important');
       document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');switchTab('driver');
     }
-    window.addEventListener('DOMContentLoaded',()=>{applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();loadNotificationStore();attachInvoicePriceListener();renderInvoiceItems('new');startPublicCommentsListener();loadRememberedLogin();if(APP_MODE!=='staff')applyCustomerPublicMode();else{document.body.classList.remove('customer-public-mode');startStaffDataListeners();updateUIByPermissions();checkSavedSession();if(!currentUser)switchTab('admin');}});
+    window.addEventListener('DOMContentLoaded',()=>{applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();loadNotificationStore();attachInvoicePriceListener();newOrderCatalogMain='';newOrderCatalogSub='';renderInvoiceItems('new');startPublicCommentsListener();loadRememberedLogin();if(APP_MODE!=='staff')applyCustomerPublicMode();else{document.body.classList.remove('customer-public-mode');startStaffDataListeners();updateUIByPermissions();checkSavedSession();if(!currentUser)switchTab('admin');}});
 </script>
 </body>
 </html>
