@@ -1129,6 +1129,55 @@
     .store-calendar-selection{margin-top:9px;display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}.store-calendar-selection-info{font-size:9px;color:#334155;font-weight:900}.store-calendar-selection-actions{display:flex;gap:5px;flex-wrap:wrap}
     .store-conflict-box{margin-top:9px;border:1px solid #fed7aa;background:#fff7ed;border-radius:12px;padding:9px;font-size:9px;color:#9a3412;font-weight:900;display:none}.store-conflict-box.show{display:block}.store-conflict-box strong{display:block;color:#7c2d12;margin-bottom:4px}
     @media(max-width:900px){.store-calendar-day{min-height:52px}.store-calendar-wrap{padding:10px}.store-calendar-grid{gap:4px}}
+
+
+/* ===== STEP 39: FIX NOTIFICATION UI + SIDEBAR CLICK LAYER ===== */
+.notification-bell{
+  position:relative!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  width:42px!important;height:42px!important;border-radius:13px!important;
+  background:rgba(255,255,255,.10)!important;color:#fff!important;
+  border:1px solid rgba(255,255,255,.12)!important;cursor:pointer!important;
+  z-index:210!important;pointer-events:auto!important;
+}
+.sidebar-notification-btn{
+  flex:0 0 auto!important;position:relative!important;z-index:215!important;
+  box-shadow:0 8px 18px rgba(0,0,0,.12)!important;
+}
+.notification-bell:hover{background:rgba(255,255,255,.16)!important}
+.notification-badge{
+  position:absolute!important;top:-4px!important;left:-4px!important;min-width:19px!important;height:19px!important;
+  padding:0 5px!important;border-radius:999px!important;background:#ef4444!important;color:#fff!important;
+  border:2px solid var(--sidebar-color,#111827)!important;font-size:9px!important;font-weight:900!important;
+  display:none!important;align-items:center!important;justify-content:center!important;line-height:1!important;z-index:220!important;
+}
+.notification-badge.show{display:flex!important}
+.notification-panel{
+  position:fixed!important;z-index:10050!important;top:78px!important;
+  right:calc(var(--sidebar-width,280px) + 14px)!important;
+  width:min(390px,calc(100vw - var(--sidebar-width,280px) - 28px))!important;
+  max-height:min(610px,calc(100vh - 96px))!important;
+  background:var(--surface-color,#fff)!important;color:var(--text-color,#172033)!important;
+  border:1px solid var(--border-color,#e5e7eb)!important;border-radius:22px!important;
+  box-shadow:0 24px 60px rgba(15,23,42,.22)!important;overflow:hidden!important;display:none!important;
+  pointer-events:none!important;
+}
+.notification-panel.open[aria-hidden="false"]{display:flex!important;flex-direction:column!important;visibility:visible!important;pointer-events:auto!important}
+.notification-panel[aria-hidden="true"],.notification-panel:not(.open){display:none!important;visibility:hidden!important;pointer-events:none!important}
+.notification-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 16px;border-bottom:1px solid var(--border-color,#e5e7eb);background:var(--surface-soft,#f8fafc)}
+.notification-head h3{margin:0;font-size:13px;font-weight:900}.notification-head p{margin:2px 0 0;font-size:9px;color:var(--muted-color,#64748b)}
+.notification-actions{display:flex;gap:6px;flex-wrap:wrap}.notification-mini-btn,.notification-permission-btn{border:1px solid var(--border-color,#e5e7eb);background:var(--surface-color,#fff);color:var(--muted-color,#64748b);border-radius:10px;padding:7px 9px;font-size:9px;font-weight:900;cursor:pointer}
+.notification-list{overflow:auto;padding:8px;display:grid;gap:7px}.notification-item{display:flex;gap:10px;padding:11px;border:1px solid var(--border-color,#e5e7eb);border-radius:15px;background:var(--surface-color,#fff);cursor:pointer;transition:.16s}.notification-item:hover{transform:translateY(-1px)}.notification-item.unread{background:var(--surface-soft,#f8fafc);border-color:var(--primary-color,#7f1d1d)}
+.notification-dot{width:10px;height:10px;border-radius:999px;margin-top:5px;flex:0 0 auto}.notification-content{min-width:0;flex:1}.notification-title{font-size:10px;font-weight:900;color:var(--text-color,#172033);line-height:1.6}.notification-text{font-size:9px;color:var(--muted-color,#64748b);line-height:1.7;margin-top:2px}.notification-time{font-size:8px;color:var(--muted-color,#94a3b8);margin-top:5px;font-weight:800}.notification-empty{padding:36px 18px;text-align:center;color:var(--muted-color,#64748b);font-size:10px;font-weight:800}
+.sidebar-scroll{position:relative;z-index:60}.app-sidebar{z-index:100!important;pointer-events:auto!important}.app-sidebar .tab-btn,.app-sidebar button{position:relative;z-index:110;pointer-events:auto!important}
+.sidebar-overlay{z-index:90!important;pointer-events:none}.sidebar-overlay.open{pointer-events:auto}
+body.cashier-mode .app-sidebar{z-index:100!important;pointer-events:auto!important;overflow-y:auto!important;overflow-x:hidden!important}
+body.cashier-mode .app-sidebar .sidebar-scroll{overflow:visible!important;pointer-events:auto!important;z-index:101}
+body.cashier-mode .app-sidebar .tab-btn{pointer-events:auto!important;cursor:pointer!important}
+body.cashier-mode main.app-main{margin-right:var(--sidebar-width)!important}
+body.staff-logged-out .notification-panel,body.staff-logged-out .sidebar-notification-btn,body.staff-logged-out .mobile-notification-btn{display:none!important;pointer-events:none!important}
+@media(max-width:767px){
+  .notification-panel{top:66px!important;right:12px!important;width:calc(100vw - 24px)!important;max-height:72vh!important}
+}
 </style>
 </head>
 <body id="appBody" class="bg-amber-50/40 min-h-screen text-gray-800">
