@@ -1260,6 +1260,10 @@ body.cashier-mode #tab-admin{display:flex!important;visibility:visible!important
    The cashier home section must be allowed to hide when another sidebar page is selected. */
 body.cashier-mode #sec-cashier-home.hidden{display:none!important;}
 body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
+
+    /* 📝 مسودات فواتير الكاشير */
+    .pos-draft-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:linear-gradient(135deg,#f8fafc,#eef6f8);border:1px solid #cbd5e1;border-radius:14px;padding:9px 11px;margin-bottom:12px;box-shadow:0 3px 12px rgba(15,23,42,.04)}
+    .pos-draft-info{display:flex;align-items:center;gap:8px;min-width:0}.pos-draft-icon{width:30px;height:30px;border-radius:10px;background:#0f4c5c;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;flex:0 0 auto}.pos-draft-copy{min-width:0}.pos-draft-copy b{display:block;font-size:10px;color:#0f172a}.pos-draft-copy span{display:block;font-size:9px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pos-draft-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.pos-draft-btn{border:1px solid #cbd5e1;background:#fff;color:#0f4c5c;border-radius:9px;padding:6px 9px;font-size:9px;font-weight:800;cursor:pointer;transition:.15s}.pos-draft-btn:hover{transform:translateY(-1px);box-shadow:0 3px 8px rgba(15,23,42,.08)}.pos-draft-btn.primary{background:#0f4c5c;color:#fff;border-color:#0f4c5c}.pos-draft-btn.danger{color:#b91c1c}.pos-draft-status{font-size:8px;font-weight:800;color:#64748b;margin-right:auto}.pos-draft-bar.has-draft{border-color:#93c5fd;background:linear-gradient(135deg,#eff6ff,#f8fafc)}
 </style>
 
 </head>
@@ -1555,6 +1559,17 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
               </div>
 
               <form id="orderForm" class="pos-order-form">
+
+<div id="deliveryDraftBar" class="pos-draft-bar" data-draft-type="delivery">
+  <div class="pos-draft-info"><div class="pos-draft-icon">📝</div><div class="pos-draft-copy"><b>مسودة الفاتورة</b><span id="deliveryDraftStatus">الحفظ التلقائي غير نشط حتى تبدأ الفاتورة</span></div></div>
+  <div class="pos-draft-actions">
+    <button type="button" class="pos-draft-btn primary" onclick="savePosDraft('delivery',true)">💾 حفظ</button>
+    <button type="button" class="pos-draft-btn" onclick="restorePosDraft('delivery')">↩️ استعادة</button>
+    <button type="button" class="pos-draft-btn danger" onclick="clearPosDraft('delivery')">🗑️ مسح</button>
+  </div>
+  <span id="deliveryDraftClock" class="pos-draft-status"></span>
+</div>
+
   <!-- بيانات العميل / يسار -->
   <section class="pos-panel pos-customer-panel">
     <div class="pos-panel-head">
@@ -1825,6 +1840,17 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
           </div>
 
           <form id="storeBookingForm" onsubmit="submitStoreBooking(event)">
+
+<div id="storeBookingDraftBar" class="pos-draft-bar" data-draft-type="store">
+  <div class="pos-draft-info"><div class="pos-draft-icon">📝</div><div class="pos-draft-copy"><b>مسودة الحجز</b><span id="storeBookingDraftStatus">الحفظ التلقائي غير نشط حتى تبدأ الحجز</span></div></div>
+  <div class="pos-draft-actions">
+    <button type="button" class="pos-draft-btn primary" onclick="savePosDraft('store',true)">💾 حفظ</button>
+    <button type="button" class="pos-draft-btn" onclick="restorePosDraft('store')">↩️ استعادة</button>
+    <button type="button" class="pos-draft-btn danger" onclick="clearPosDraft('store')">🗑️ مسح</button>
+  </div>
+  <span id="storeBookingDraftClock" class="pos-draft-status"></span>
+</div>
+
             <div class="store-booking-form-grid">
               <div class="store-booking-field"><label class="store-booking-label">اسم العميل</label><input id="storeBookingCustomerName" class="store-booking-input" required placeholder="اسم العميل"></div>
               <div class="store-booking-field"><label class="store-booking-label">رقم الهاتف</label><input id="storeBookingCustomerPhone" class="store-booking-input" dir="ltr" required placeholder="01xxxxxxxxx" oninput="lookupStoreBookingCustomer(this.value)"><input type="hidden" id="storeBookingCustomerKey" value=""><div class="store-booking-customer-tools"><span id="storeBookingCustomerStatus" class="store-booking-customer-status">عميل جديد — سيتم حفظه تلقائيًا</span><button type="button" class="store-action-btn" onclick="openCustomerPickerModal('store')">👥 قاعدة العملاء</button></div><div id="storeBookingCustomerHistory" class="store-booking-mini-history"><div class="store-booking-mini-history-head">📜 آخر عمليات العميل</div><div id="storeBookingCustomerHistoryList" class="store-booking-mini-history-list"><div class="text-[7px] text-slate-400">اكتب رقم العميل لعرض تاريخه.</div></div></div></div>
@@ -3123,6 +3149,64 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       if(mobileTitle) mobileTitle.innerText = title;
     }
 
+    
+    // --- 📝 مسودات فواتير الكاشير: حفظ تلقائي + استعادة بعد التحديث ---
+    let draftSaveTimers={delivery:null,store:null};
+    let draftAutoSaveBound=false;
+    function posDraftStorageKey(type){const user=currentUser?.username||'guest';return `hamaksha_pos_draft_${type}_${user}`;}
+    function posDraftHasMeaningfulData(type){
+      if(type==='delivery'){
+        return !!(invoiceItems.length||document.getElementById('custName')?.value.trim()||document.getElementById('custPhone')?.value.trim()||document.getElementById('custAddress')?.value.trim()||document.getElementById('custOrderId')?.value.trim());
+      }
+      const today=getLocalDateInputValue(new Date());
+      return !!(storeBookingItems.length||document.getElementById('storeBookingCustomerName')?.value.trim()||document.getElementById('storeBookingCustomerPhone')?.value.trim()||document.getElementById('storeBookingNotes')?.value.trim()||Number(document.getElementById('storeBookingDeposit')?.value||0)>0||document.getElementById('storeBookingPickupDate')?.value!==today||document.getElementById('storeBookingPickupTime')?.value!=='18:00');
+    }
+    function collectPosDraft(type){
+      if(type==='delivery') return {
+        type:'delivery',savedAt:Date.now(),fields:{
+          custOrderId:document.getElementById('custOrderId')?.value||'',custName:document.getElementById('custName')?.value||'',custPhone:document.getElementById('custPhone')?.value||'',custAddress:document.getElementById('custAddress')?.value||'',selectedCustomerKey:document.getElementById('selectedCustomerKey')?.value||'',deliveryPrice:document.getElementById('deliveryPrice')?.value||'',paymentMethod:document.getElementById('paymentMethod')?.value||'cash',paymentFee:document.getElementById('paymentFee')?.value||'0',paymentPaidAmount:document.getElementById('paymentPaidAmount')?.value||'0',driverSelect:document.getElementById('driverSelect')?.value||'غير محدد'
+        },items:invoiceItems.map(x=>({...x}))
+      };
+      return {
+        type:'store',savedAt:Date.now(),fields:{
+          customerName:document.getElementById('storeBookingCustomerName')?.value||'',customerPhone:document.getElementById('storeBookingCustomerPhone')?.value||'',customerKey:document.getElementById('storeBookingCustomerKey')?.value||'',pickupDate:document.getElementById('storeBookingPickupDate')?.value||'',pickupTime:document.getElementById('storeBookingPickupTime')?.value||'',notes:document.getElementById('storeBookingNotes')?.value||'',status:document.getElementById('storeBookingStatus')?.value||'محجوز 🟡',deposit:document.getElementById('storeBookingDeposit')?.value||'0',bookingNumber:document.getElementById('storeBookingNumberPreview')?.value||'' ,search:document.getElementById('storeBookingSearch')?.value||'',itemQty:document.getElementById('storeBookingItemQty')?.value||'1',itemUnitPrice:document.getElementById('storeBookingItemUnitPrice')?.value||'0'
+        },items:storeBookingItems.map(x=>({...x})),main:storeBookingMain,sub:storeBookingSub,selectedProductKey:storeBookingSelectedProductKey,paymentMode:storeBookingPaymentMode
+      };
+    }
+    function formatDraftTime(ts){try{return new Date(Number(ts)).toLocaleString('ar-EG',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return 'الآن';}}
+    function renderPosDraftStatus(type){
+      const key=posDraftStorageKey(type),raw=localStorage.getItem(key);const bar=document.getElementById(type==='delivery'?'deliveryDraftBar':'storeBookingDraftBar');const status=document.getElementById(type==='delivery'?'deliveryDraftStatus':'storeBookingDraftStatus');const clock=document.getElementById(type==='delivery'?'deliveryDraftClock':'storeBookingDraftClock');if(!bar||!status)return;
+      if(!raw){bar.classList.remove('has-draft');status.innerText=type==='delivery'?'الحفظ التلقائي سيبدأ عند إدخال بيانات أو أصناف.':'الحفظ التلقائي سيبدأ عند إدخال بيانات أو أصناف.';if(clock)clock.innerText='';return;}
+      try{const d=JSON.parse(raw);bar.classList.add('has-draft');status.innerText=`آخر مسودة محفوظة: ${formatDraftTime(d.savedAt)} — ${Number(d.items?.length||0)} صنف`;if(clock)clock.innerText='💡 متاحة بعد التحديث';}catch(e){localStorage.removeItem(key);bar.classList.remove('has-draft');status.innerText='';if(clock)clock.innerText='';}
+    }
+    function savePosDraft(type,manual=false){
+      if(APP_MODE!=='staff'||!currentUser||!['admin','cashier'].includes(currentUser.role))return;
+      if(!posDraftHasMeaningfulData(type)){if(manual)alert('لا توجد بيانات كافية لحفظ مسودة بعد.');return;}
+      try{localStorage.setItem(posDraftStorageKey(type),JSON.stringify(collectPosDraft(type)));renderPosDraftStatus(type);if(manual){const status=document.getElementById(type==='delivery'?'deliveryDraftStatus':'storeBookingDraftStatus');if(status)status.innerText='✅ تم حفظ المسودة بنجاح — سيتم تحديثها تلقائيًا مع التغييرات.';}}catch(e){console.warn('Draft save failed',e);if(manual)alert('تعذر حفظ المسودة على هذا الجهاز.');}
+    }
+    function schedulePosDraftSave(type){clearTimeout(draftSaveTimers[type]);draftSaveTimers[type]=setTimeout(()=>savePosDraft(type,false),550);}
+    function clearPosDraft(type){localStorage.removeItem(posDraftStorageKey(type));renderPosDraftStatus(type);}
+    function restorePosDraft(type){
+      const raw=localStorage.getItem(posDraftStorageKey(type));if(!raw)return alert('لا توجد مسودة محفوظة.');let d;try{d=JSON.parse(raw);}catch(e){clearPosDraft(type);return alert('المسودة غير صالحة وتم مسحها.');}
+      if(!confirm('استعادة المسودة ستستبدل البيانات الحالية في هذه الفاتورة. هل تريد المتابعة؟'))return;
+      if(type==='delivery'){
+        const f=d.fields||{},set=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val??'';};
+        set('custOrderId',f.custOrderId);set('custName',f.custName);set('custPhone',f.custPhone);set('custAddress',f.custAddress);set('selectedCustomerKey',f.selectedCustomerKey);set('deliveryPrice',f.deliveryPrice);set('paymentMethod',f.paymentMethod||'cash');set('paymentFee',f.paymentFee||'0');set('paymentPaidAmount',f.paymentPaidAmount||'0');set('driverSelect',f.driverSelect||'غير محدد');invoiceItems=normalizeInvoiceItems(d.items||[]);renderInvoiceItems('new');syncOrderPriceFromInvoice('new');calculateTotalBill();try{smartLookupCustomer(f.custPhone||'');}catch(e){};
+      }else{
+        const f=d.fields||{},set=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val??'';};
+        set('storeBookingCustomerName',f.customerName);set('storeBookingCustomerPhone',f.customerPhone);set('storeBookingCustomerKey',f.customerKey);set('storeBookingPickupDate',f.pickupDate);set('storeBookingPickupTime',f.pickupTime);set('storeBookingNotes',f.notes);set('storeBookingStatus',f.status||'محجوز 🟡');set('storeBookingDeposit',f.deposit||'0');set('storeBookingNumberPreview',f.bookingNumber||generateStoreBookingNumber());set('storeBookingSearch',f.search||'');set('storeBookingItemQty',f.itemQty||'1');set('storeBookingItemUnitPrice',f.itemUnitPrice||'0');storeBookingItems=Array.isArray(d.items)?d.items.map(x=>({...x,total:Number(x.total)||Number(x.qty||0)*Number(x.unitPrice||0)})):[];storeBookingMain=d.main||'';storeBookingSub=d.sub||'';storeBookingSelectedProductKey=d.selectedProductKey||'';renderStoreBookingCatalog();renderStoreBookingItems();setStoreBookingPayment(d.paymentMode||'unpaid');lookupStoreBookingCustomer(f.customerPhone||'');
+      }
+      renderPosDraftStatus(type);
+      const status=document.getElementById(type==='delivery'?'deliveryDraftStatus':'storeBookingDraftStatus');if(status)status.innerText='✅ تم استعادة المسودة.';
+    }
+    function installPosDraftAutoSave(){
+      if(draftAutoSaveBound)return;draftAutoSaveBound=true;
+      const bind=(form,type)=>{if(!form)return;['input','change'].forEach(ev=>form.addEventListener(ev,()=>schedulePosDraftSave(type)));form.addEventListener('click',e=>{if(e.target.closest('button,input,select,textarea'))schedulePosDraftSave(type);});};
+      bind(document.getElementById('orderForm'),'delivery');bind(document.getElementById('storeBookingForm'),'store');
+      window.addEventListener('beforeunload',()=>{savePosDraft('delivery',false);savePosDraft('store',false);});
+    }
+    function initPosDrafts(){if(APP_MODE!=='staff'||!currentUser)return;installPosDraftAutoSave();renderPosDraftStatus('delivery');renderPosDraftStatus('store');}
+
     function switchTab(tabName) {
       if(APP_MODE !== 'staff') tabName = 'track';
       if(APP_MODE === 'staff' && currentUser?.role === 'driver' && tabName !== 'profile') tabName = 'driver';
@@ -3202,14 +3286,14 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
       try {
         if(tabName === 'store-booking') {
-          attachInvoicePriceListener();
+          attachInvoicePriceListener(); renderPosDraftStatus('store');
           initStoreBookingPage();
           renderStoreBookingToday();
         }
       } catch(err) { console.error('Store booking render error:', err); }
 
       try {
-        if(tabName === 'admin') attachInvoicePriceListener();
+        if(tabName === 'admin') { attachInvoicePriceListener(); renderPosDraftStatus('delivery'); }
       } catch(err) { console.error('Invoice render error:', err); }
 
       try {
@@ -3515,7 +3599,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         if(user.role==='cashier') { document.querySelector('#tab-admin span')?.replaceChildren(document.createTextNode('فاتورة توصيل')); initStoreBookingPage(); switchTab('cashier-home'); }
         else { document.querySelector('#tab-admin span')?.replaceChildren(document.createTextNode('الطلبات والإدارة')); switchTab('admin'); }
       } else { document.getElementById('driverAuthLock').classList.add('hidden'); document.getElementById('driverContent').classList.remove('hidden'); applyDriverPrivateMode(); startDriverOrdersListener(); }
-      applyFilters(); renderUsersList(); renderMyProfile(); if(user.role!=='cashier') startActivityLogListener(); logActivity('login','system',`تسجيل دخول المستخدم ${user.username}`); syncNavigationTitle(user.role==='driver' ? 'driver' : user.role==='cashier' ? 'cashier-home' : 'admin');
+      applyFilters(); renderUsersList(); renderMyProfile(); if(user.role!=='cashier') startActivityLogListener(); logActivity('login','system',`تسجيل دخول المستخدم ${user.username}`); initPosDrafts(); syncNavigationTitle(user.role==='driver' ? 'driver' : user.role==='cashier' ? 'cashier-home' : 'admin');
     }
 
     function updateUIByPermissions() {
@@ -4303,6 +4387,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         const result=document.getElementById('storeBookingResult');if(result){result.classList.remove('hidden');result.innerHTML=`<div class="font-black text-xs">✅ تم حفظ الحجز <span class="font-mono">#${escapeHtml(bookingNumber)}</span> بنجاح.</div><div class="text-[9px] mt-1">المدفوع: ${paidAmount.toLocaleString('ar-EG')} ج.م · المتبقي: ${remainingDue.toLocaleString('ar-EG')} ج.م</div><div class="flex gap-2 mt-2"><button type="button" class="store-action-btn primary" onclick="printStoreBooking(${htmlJsArg(key)})">🧾 طباعة فاتورة 80mm</button><button type="button" class="store-action-btn" onclick="resetStoreBookingForm()">＋ حجز جديد</button></div>`;}
         addNotification('new','حجز محل جديد',`تم إنشاء الحجز #${bookingNumber} للعميل ${name} — الاستلام ${pickupDate} ${pickupTime}`,key);
         saveStoreBookingReminderState();
+        clearPosDraft('store');
         resetStoreBookingForm();
       }catch(err){console.error(err);alert('تعذر حفظ حجز المحل. إذا كانت القاعدة تمنع المسار storeBookings فسنحتاج إضافة صلاحية الكتابة له في Firebase Rules.');}
     }
@@ -4318,7 +4403,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         logActivity('create','order',`إنشاء طلب جديد #${orderId} للعميل ${name}`,orderId,{total:totalCash,driver});
         saveLastInvoiceForRepeat(orderPayload);
         const baseUrl=window.location.href.split('?')[0],trackUrl=`${baseUrl}?tab=track&id=${encodeURIComponent(orderId)}&token=${encodeURIComponent(trackingToken)}`;lastCreatedOrderKey=orderId;lastCreatedOrderSnapshot=orderPayload;document.getElementById('trackingLink').value=trackUrl;document.getElementById('waBtn').href=`https://wa.me/${phone}?text=${encodeURIComponent('أهلاً بك 🥩\nطلبك لدى جزارة حمكشة رقم: #'+orderId+'\nالإجمالي المطلوب شامل العمولة والتوصيل: '+totalCash+' ج.م\nرابط متابعة طلبك فقط لمتابعة الحالة وموقع المندوب والتقييم والتعليق:\n'+trackUrl)}`;document.getElementById('result').classList.remove('hidden');
-        ['custOrderId','custName','custPhone','custAddress','selectedCustomerKey'].forEach(id=>document.getElementById(id).value='');document.getElementById('paymentFee').value='0';document.getElementById('paymentPaidAmount').value='0';document.getElementById('deliveryPrice').value=getAppSettings().defaultDelivery;invoiceItems=[];renderInvoiceItems('new');syncOrderPriceFromInvoice('new');document.getElementById('customerLookupStatus').innerText='';document.getElementById('invoiceItemProduct').value='';document.getElementById('invoiceItemQty').value='1';document.getElementById('invoiceItemUnitPrice').value='0';document.getElementById('invoiceCustomNameWrap').classList.remove('show');alert('تم تسجيل الطلب كفاتورة وحفظ الأصناف والعميل بنجاح ✅');
+        clearPosDraft('delivery'); ['custOrderId','custName','custPhone','custAddress','selectedCustomerKey'].forEach(id=>document.getElementById(id).value='');document.getElementById('paymentFee').value='0';document.getElementById('paymentPaidAmount').value='0';document.getElementById('deliveryPrice').value=getAppSettings().defaultDelivery;invoiceItems=[];renderInvoiceItems('new');syncOrderPriceFromInvoice('new');document.getElementById('customerLookupStatus').innerText='';document.getElementById('invoiceItemProduct').value='';document.getElementById('invoiceItemQty').value='1';document.getElementById('invoiceItemUnitPrice').value='0';document.getElementById('invoiceCustomNameWrap').classList.remove('show');alert('تم تسجيل الطلب كفاتورة وحفظ الأصناف والعميل بنجاح ✅');
       }).catch(err=>{console.error(err);alert('تعذر تسجيل الطلب حالياً.');});
     });
 
