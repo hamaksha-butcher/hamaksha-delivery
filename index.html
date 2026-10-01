@@ -2722,6 +2722,40 @@
       document.querySelectorAll('#invoiceProductGrid .pos-product-card').forEach(b=>b.classList.toggle('selected',b.dataset.key===key));
       document.getElementById('invoiceItemQty')?.focus();
     }
+    function handleInvoiceProductChange(mode){
+      const isEdit=mode==='edit';
+      const select=document.getElementById(isEdit?'editInvoiceItemProduct':'invoiceItemProduct');
+      const qty=document.getElementById(isEdit?'editInvoiceItemQty':'invoiceItemQty');
+      const price=document.getElementById(isEdit?'editInvoiceItemUnitPrice':'invoiceItemUnitPrice');
+      const wrap=document.getElementById(isEdit?'editInvoiceCustomNameWrap':'invoiceCustomNameWrap');
+      const name=document.getElementById(isEdit?'editInvoiceItemName':'invoiceItemName');
+      const unit=document.getElementById(isEdit?'editInvoiceItemUnit':'invoiceItemUnit');
+      const opt=select?.selectedOptions?.[0];
+      const display=opt?.dataset?.priceDisplay||opt?.dataset?.price||'0';
+      if(select?.value==='__custom__'){
+        wrap?.classList.add('show');
+        if(name) name.value='';
+        if(unit) unit.value='كيلو';
+        if(price){ price.value='0'; price.placeholder='0'; }
+      }else{
+        wrap?.classList.remove('show');
+        if(opt){
+          if(price){
+            const numeric=Number(opt.dataset.price||0);
+            price.value=numeric;
+            price.placeholder=display.includes('/')?display:'0';
+          }
+          if(unit) unit.value=opt.dataset.unit||'كيلو';
+          if(name) name.value=opt.dataset.name||'';
+        }
+      }
+      if(qty && !qty.value) qty.value='1';
+      if(!isEdit){
+        const label=document.getElementById('selectedInvoiceProductLabel');
+        if(label) label.innerText=opt?.dataset?.name || (select?.value==='__custom__'?'صنف مخصص':'لم يتم اختيار صنف');
+      }
+    }
+
     document.addEventListener('keydown',e=>{if(e.key==='Enter' && document.activeElement?.id==='invoiceItemQty' && document.getElementById('invoiceItemProduct')?.value){e.preventDefault();addInvoiceItem('new');}});
     function addInvoiceItem(mode){const isEdit=mode==='edit',select=document.getElementById(isEdit?'editInvoiceItemProduct':'invoiceItemProduct'),qtyEl=document.getElementById(isEdit?'editInvoiceItemQty':'invoiceItemQty'),priceEl=document.getElementById(isEdit?'editInvoiceItemUnitPrice':'invoiceItemUnitPrice'),nameEl=document.getElementById(isEdit?'editInvoiceItemName':'invoiceItemName'),unitEl=document.getElementById(isEdit?'editInvoiceItemUnit':'invoiceItemUnit'),product=select?.value||'',qty=Number(qtyEl?.value)||0,unitPrice=Number(priceEl?.value)||0,name=(product==='__custom__'?(nameEl?.value||'').trim():(select?.selectedOptions?.[0]?.dataset?.name||nameEl?.value||'').trim()),unit=(unitEl?.value||select?.selectedOptions?.[0]?.dataset?.unit||'كيلو').trim()||'كيلو';if(!name)return alert('اكتب اسم الصنف أو اختر صنفًا من القائمة.');if(qty<=0)return alert('أدخل كمية صحيحة.');if(unitPrice<=0)return alert('أدخل سعر وحدة صحيحًا قبل إضافة الصنف.');const items=getInvoiceItemsState(mode);items.push({name,qty,unitPrice,unit,total:qty*unitPrice,priceKey:product&&product!=='__custom__'?product:null});setInvoiceItemsState(mode,items);if(isEdit)editInvoiceItemsTouched=true;renderInvoiceItems(mode);syncOrderPriceFromInvoice(mode);if(select)select.value='';if(qtyEl)qtyEl.value='1';if(priceEl){priceEl.value='0';priceEl.placeholder='0';}if(nameEl)nameEl.value='';if(unitEl)unitEl.value='كيلو';document.getElementById(isEdit?'editInvoiceCustomNameWrap':'invoiceCustomNameWrap')?.classList.remove('show');}
     function updateInvoiceItem(mode,index,field,value){const items=getInvoiceItemsState(mode);if(!items[index])return;items[index][field]=(field==='qty'||field==='unitPrice')?Number(value)||0:String(value);items[index].total=(Number(items[index].qty)||0)*(Number(items[index].unitPrice)||0);if(mode==='edit')editInvoiceItemsTouched=true;renderInvoiceItems(mode);syncOrderPriceFromInvoice(mode);}
