@@ -1562,6 +1562,23 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         <button type="button" onclick="switchTab('track'); closeSidebar();" data-nav-tab="track" id="tab-track" class="tab-btn cashier-hide">📍 <span>تتبع العملاء</span></button>
       </nav>
 
+      <div id="dailySessionSidebarCard" class="daily-session-card">
+        <div class="daily-session-row">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="daily-session-dot" id="dailySessionSidebarDot"></span>
+            <div class="daily-session-main">
+              <div class="daily-session-kicker">DAILY SHIFT</div>
+              <div class="daily-session-title" id="dailySessionSidebarTitle">اليومية مغلقة</div>
+              <div class="daily-session-meta" id="dailySessionSidebarMeta">لا يمكن تسجيل عمليات قبل فتح اليومية.</div>
+            </div>
+          </div>
+          <div class="daily-session-actions">
+            <button type="button" id="dailySessionOpenBtn" class="daily-session-btn primary hidden" onclick="openDailySession()">فتح</button>
+            <button type="button" id="dailySessionCloseBtn" class="daily-session-btn danger hidden" onclick="closeDailySession()">إغلاق</button>
+          </div>
+        </div>
+      </div>
+
       <div class="sidebar-nav-label cashier-hide">الوصول السريع</div>
       <div class="space-y-2 cashier-hide">
         <button type="button" onclick="switchTab('admin'); closeSidebar(); setTimeout(() => document.getElementById('custName')?.focus(), 100)" class="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold transition">➕ <span>إضافة طلب جديد</span></button>
@@ -1787,8 +1804,31 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         <div class="space-y-6">
           <div class="space-y-6">
             
+            <div id="dailySessionAdminCard" class="daily-session-admin-card">
+              <div class="daily-session-copy">
+                <div class="status-line">
+                  <span class="status-badge" id="dailySessionAdminBadge">🔴 اليومية مغلقة</span>
+                  <span class="text-[9px] font-bold text-slate-400" id="dailySessionAdminDate">—</span>
+                </div>
+                <b>🔐 التحكم في اليومية</b>
+                <span id="dailySessionAdminMeta">افتح يومية اليوم لبدء تسجيل الطلبات والحجوزات وتشغيل عمليات العمل.</span>
+              </div>
+              <div class="daily-session-actions">
+                <button type="button" id="dailySessionAdminOpenBtn" class="daily-session-btn primary" onclick="openDailySession()">فتح يومية جديدة</button>
+                <button type="button" id="dailySessionAdminCloseBtn" class="daily-session-btn danger hidden" onclick="closeDailySession()">إغلاق اليومية</button>
+              </div>
+            </div>
+
             <!-- نموذج إضافة طلب — Modern Order Form -->
-            <div class="order-form-card bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-4">
+            <div class="order-form-card pos-reference-workspace bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-4">
+              <div id="dailyOrderLock" class="daily-operational-lock hidden" aria-live="polite">
+                <div class="daily-operational-lock-card">
+                  <div class="daily-operational-lock-icon">🔒</div>
+                  <h3>اليومية مغلقة</h3>
+                  <p>لا يمكن تسجيل أو تعديل العمليات الآن. <b>اطلب من الإدارة فتح يومية جديدة</b> لبدء العمل.</p>
+                  <button type="button" class="daily-lock-btn" onclick="switchTab('admin')">الانتقال للتحكم في اليومية</button>
+                </div>
+              </div>
               <div class="order-form-hero rounded-2xl p-4 text-white">
                 <div class="flex items-start justify-between gap-3">
                   <div>
@@ -2081,6 +2121,14 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
       <div class="store-booking-page">
         <div class="store-booking-panel">
+          <div id="dailyStoreBookingLock" class="daily-operational-lock hidden" aria-live="polite">
+            <div class="daily-operational-lock-card">
+              <div class="daily-operational-lock-icon">🔒</div>
+              <h3>اليومية مغلقة</h3>
+              <p>تسجيل الحجوزات والتعديلات والتحويلات متوقف حتى <b>تفتح الإدارة يومية جديدة</b>.</p>
+              <button type="button" class="daily-lock-btn" onclick="switchTab('admin')">فتح شاشة اليومية</button>
+            </div>
+          </div>
           <div class="store-booking-panel-head">
             <div><span class="pos-kicker">NEW STORE BOOKING</span><h3>📝 تسجيل حجز جديد</h3><p>سجّل العميل والموعد والأصناف ثم اطبع إيصال 80mm للحجز.</p></div>
             <button type="button" class="store-action-btn" onclick="resetStoreBookingForm()">↺ فاتورة جديدة</button>
@@ -2171,13 +2219,18 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
             <div class="store-overview-card"><span>كل الحجوزات</span><b id="storeBookingAllCount">0</b></div>
           </div>
           <div class="store-calendar-wrap">
-            <div class="store-calendar-head">
-              <div><div class="store-calendar-head-title">🗓️ تقويم الحجوزات</div><div id="storeCalendarMonthLabel" class="store-calendar-month">جاري التحميل...</div></div>
-              <div class="store-calendar-nav"><button type="button" onclick="shiftStoreCalendarMonth(-1)">‹ السابق</button><button type="button" onclick="shiftStoreCalendarMonth(1)">التالي ›</button></div>
+            <button type="button" id="storeCalendarToggle" class="store-calendar-toggle" onclick="toggleStoreCalendar()" aria-expanded="false" aria-controls="storeCalendarCollapsible">
+              <span>🗓️ تقويم الحجوزات</span><span class="arrow" id="storeCalendarToggleArrow">⌄</span>
+            </button>
+            <div id="storeCalendarCollapsible" class="store-calendar-collapsible is-collapsed">
+              <div class="store-calendar-head">
+                <div><div class="store-calendar-head-title">🗓️ تقويم الحجوزات</div><div id="storeCalendarMonthLabel" class="store-calendar-month">جاري التحميل...</div></div>
+                <div class="store-calendar-nav"><button type="button" onclick="shiftStoreCalendarMonth(-1)">‹ السابق</button><button type="button" onclick="shiftStoreCalendarMonth(1)">التالي ›</button></div>
+              </div>
+              <div id="storeCalendarGrid" class="store-calendar-grid"></div>
+              <div class="store-calendar-selection"><div id="storeCalendarSelectionInfo" class="store-calendar-selection-info">اختر يومًا لعرض حجوزاته.</div><div class="store-calendar-selection-actions"><button type="button" class="store-calendar-action" onclick="selectStoreCalendarDate(getLocalDateInputValue())">📅 اليوم</button><button type="button" class="store-calendar-action" onclick="setStoreBookingView('week')">🗓️ هذا الأسبوع</button><button type="button" class="store-calendar-action" onclick="setStoreBookingView('all')">📚 الكل</button></div></div>
+              <div id="storeBookingConflictBox" class="store-conflict-box"></div>
             </div>
-            <div id="storeCalendarGrid" class="store-calendar-grid"></div>
-            <div class="store-calendar-selection"><div id="storeCalendarSelectionInfo" class="store-calendar-selection-info">اختر يومًا لعرض حجوزاته.</div><div class="store-calendar-selection-actions"><button type="button" class="store-calendar-action" onclick="selectStoreCalendarDate(getLocalDateInputValue())">📅 اليوم</button><button type="button" class="store-calendar-action" onclick="setStoreBookingView('week')">🗓️ هذا الأسبوع</button><button type="button" class="store-calendar-action" onclick="setStoreBookingView('all')">📚 الكل</button></div></div>
-            <div id="storeBookingConflictBox" class="store-conflict-box"></div>
           </div>
 
           <div class="store-booking-list-toolbar">
@@ -2620,6 +2673,14 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       </div>
 
       <div id="driverContent" class="hidden space-y-5">
+        <div id="dailyDriverLock" class="daily-operational-lock hidden" aria-live="polite">
+          <div class="daily-operational-lock-card">
+            <div class="daily-operational-lock-icon">🔒</div>
+            <h3>اليومية مغلقة</h3>
+            <p>تحديث الحالات وبث الموقع متوقف حاليًا. <b>اطلب من الإدارة فتح يومية جديدة</b>.</p>
+            <button type="button" class="daily-lock-btn" onclick="switchTab('profile')">عرض حالة الحساب</button>
+          </div>
+        </div>
         <div class="driver-hero rounded-3xl p-5 sm:p-6 shadow-xl overflow-hidden relative">
           <div class="absolute -left-8 -top-10 w-32 h-32 rounded-full bg-white/10 blur-2xl"></div>
           <div class="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -3188,6 +3249,9 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     let customersCache = {};
     let publicCommentsCache = {};
     let currentUser = null;
+    let currentDailySession = null;
+    let dailySessionRef = null;
+    let dailySessionLoaded = false;
 
     document.addEventListener('keydown', (event) => {
       if(event.key === 'Enter' && !document.getElementById('authModal')?.classList.contains('hidden')) {
@@ -3548,6 +3612,76 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     }
     function initPosDrafts(){if(APP_MODE!=='staff'||!currentUser)return;installPosDraftAutoSave();renderPosDraftStatus('delivery');renderPosDraftStatus('store');}
 
+
+    // ===== STEP 53: DAILY OPERATING SESSION =====
+    function isOwnerOrAdmin(){ return !!currentUser && (currentUser.role==='admin' || isSuperUser()); }
+    function dailyToday(){ return getLocalDateInputValue(new Date()); }
+    function dailySessionIsOpen(){ return !!(currentDailySession && currentDailySession.status==='open' && currentDailySession.businessDate===dailyToday()); }
+    function requireDailyOpen(action='تنفيذ العملية'){
+      if(!currentUser) return false;
+      if(!dailySessionLoaded){ alert('جارٍ التحقق من حالة اليومية، حاول مرة أخرى بعد لحظة.'); return false; }
+      if(!dailySessionIsOpen()){ alert(`لا يمكن ${action} الآن لأن اليومية مغلقة. افتح يومية اليوم من شاشة الإدارة أولًا.`); renderDailySessionUI(); return false; }
+      return true;
+    }
+    function dailySessionDisplayMeta(session){
+      if(!session) return 'لا توجد يومية مفتوحة حاليًا.';
+      const date=session.businessDate||'—';
+      const opened=session.openedAt?new Date(session.openedAt).toLocaleString('ar-EG',{dateStyle:'short',timeStyle:'short'}):'';
+      const by=session.openedBy||'—';
+      return `${date} · فتحها ${by}${opened?` · ${opened}`:''}`;
+    }
+    function renderDailySessionUI(){
+      const open=dailySessionIsOpen(), owner=isOwnerOrAdmin();
+      const side=document.getElementById('dailySessionSidebarCard');
+      if(side){ side.classList.toggle('is-open',open); const title=document.getElementById('dailySessionSidebarTitle'),meta=document.getElementById('dailySessionSidebarMeta'); if(title)title.innerText=open?'اليومية مفتوحة ✅':'اليومية مغلقة 🔒'; if(meta)meta.innerText=open?dailySessionDisplayMeta(currentDailySession):'لا يمكن تسجيل عمليات قبل فتح اليومية.'; }
+      const sideOpen=document.getElementById('dailySessionOpenBtn'),sideClose=document.getElementById('dailySessionCloseBtn');
+      if(sideOpen)sideOpen.classList.toggle('hidden',!owner||open); if(sideClose)sideClose.classList.toggle('hidden',!owner||!open);
+      const adminCard=document.getElementById('dailySessionAdminCard'),badge=document.getElementById('dailySessionAdminBadge'),date=document.getElementById('dailySessionAdminDate'),meta=document.getElementById('dailySessionAdminMeta'),openBtn=document.getElementById('dailySessionAdminOpenBtn'),closeBtn=document.getElementById('dailySessionAdminCloseBtn');
+      if(adminCard){adminCard.classList.toggle('is-open',open); if(badge)badge.innerText=open?'🟢 اليومية مفتوحة':'🔴 اليومية مغلقة'; if(date)date.innerText=currentDailySession?.businessDate||dailyToday(); if(meta)meta.innerText=open?`جلسة اليوم مفتوحة بواسطة ${currentDailySession.openedBy||'—'} منذ ${currentDailySession.openedAt?new Date(currentDailySession.openedAt).toLocaleString('ar-EG',{dateStyle:'short',timeStyle:'short'}):'—'}`:'افتح يومية اليوم لبدء تسجيل الطلبات والحجوزات وتشغيل عمليات العمل.'; if(openBtn)openBtn.classList.toggle('hidden',!owner||open); if(closeBtn)closeBtn.classList.toggle('hidden',!owner||!open);}
+      const lockIds=['dailyOrderLock','dailyStoreBookingLock','dailyDriverLock']; lockIds.forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('hidden',open);});
+    }
+    function startDailySessionListener(){
+      if(APP_MODE!=='staff'||!currentUser)return;
+      try{dailySessionRef?.off();}catch(e){}
+      dailySessionLoaded=false; currentDailySession=null; renderDailySessionUI();
+      dailySessionRef=db.ref('dailySessions/current');
+      dailySessionRef.on('value',snap=>{currentDailySession=snap.val()||null;dailySessionLoaded=true;renderDailySessionUI();});
+    }
+    async function openDailySession(){
+      if(!isOwnerOrAdmin())return alert('فتح اليومية متاح للإدارة فقط.');
+      const today=dailyToday();
+      try{
+        const freshSnap=await db.ref('dailySessions/current').once('value');
+        currentDailySession=freshSnap.val()||null; dailySessionLoaded=true; renderDailySessionUI();
+      }catch(e){console.error(e);return alert('تعذر قراءة حالة اليومية الحالية.');}
+      if(dailySessionIsOpen())return alert('اليومية الحالية مفتوحة بالفعل.');
+      if(currentDailySession?.status==='open'&&currentDailySession.businessDate!==today){
+        const oldDate=currentDailySession.businessDate||'اليوم السابق';
+        if(!confirm(`هناك يومية مفتوحة بتاريخ ${oldDate}. سيتم إغلاقها ثم فتح يومية اليوم ${today}. هل تريد المتابعة؟`))return;
+        await closeDailySession(true);
+      }
+      const sessionRef=db.ref('dailySessions').push(), sessionId=sessionRef.key, now=Date.now();
+      const payload={sessionId,businessDate:today,status:'open',openedAt:now,openedBy:currentUser.username,createdAt:now};
+      try{
+        await sessionRef.set(payload);await db.ref('dailySessions/current').set(payload);currentDailySession=payload;dailySessionLoaded=true;await logActivity('create','system',`فتح يومية جديدة بتاريخ ${today}`,sessionId,{businessDate:today});renderDailySessionUI();alert(`تم فتح يومية ${today} بنجاح ✅`);
+      }catch(e){console.error(e);alert('تعذر فتح اليومية. تحقق من Firebase Rules.');}
+    }
+    async function closeDailySession(silent=false){
+      if(!isOwnerOrAdmin())return alert('إغلاق اليومية متاح للإدارة فقط.');
+      try{const freshSnap=await db.ref('dailySessions/current').once('value');currentDailySession=freshSnap.val()||null;dailySessionLoaded=true;}catch(e){console.error(e);if(!silent)alert('تعذر قراءة حالة اليومية الحالية.');return;}
+      const session=currentDailySession;if(!session||session.status!=='open')return silent?null:alert('لا توجد يومية مفتوحة حاليًا.');
+      if(!silent&&!confirm(`هل تريد إغلاق اليومية الحالية بتاريخ ${session.businessDate||'—'}؟ بعد الإغلاق لن يستطيع الكاشير أو المندوب تنفيذ عمليات حتى فتح يومية جديدة.`))return;
+      const now=Date.now(), update={status:'closed',closedAt:now,closedBy:currentUser.username};
+      try{await db.ref(`dailySessions/${session.sessionId}`).update(update);await db.ref('dailySessions/current').update(update);currentDailySession={...session,...update};dailySessionLoaded=true;await logActivity('update','system',`إغلاق اليومية بتاريخ ${session.businessDate||'—'}`,session.sessionId,{businessDate:session.businessDate});renderDailySessionUI();if(!silent)alert('تم إغلاق اليومية بنجاح ✅');}
+      catch(e){console.error(e);if(!silent)alert('تعذر إغلاق اليومية. تحقق من Firebase Rules.');}
+    }
+    function toggleStoreCalendar(){
+      const wrap=document.getElementById('storeCalendarCollapsible'),btn=document.getElementById('storeCalendarToggle');if(!wrap||!btn)return;const open=wrap.classList.contains('is-open');wrap.classList.toggle('is-open',!open);wrap.classList.toggle('is-collapsed',open);btn.classList.toggle('open',!open);btn.setAttribute('aria-expanded',String(!open));try{localStorage.setItem('hamaksha_store_calendar_open',!open?'1':'0');}catch(e){}
+    }
+    function restoreStoreCalendarToggle(){
+      const saved=localStorage.getItem('hamaksha_store_calendar_open'); if(saved==='1'){const wrap=document.getElementById('storeCalendarCollapsible'),btn=document.getElementById('storeCalendarToggle');if(wrap&&btn){wrap.classList.add('is-open');wrap.classList.remove('is-collapsed');btn.classList.add('open');btn.setAttribute('aria-expanded','true');}}
+    }
+
     function switchTab(tabName) {
       if(APP_MODE !== 'staff') tabName = 'track';
       if(APP_MODE === 'staff' && currentUser?.role === 'driver' && tabName !== 'profile') tabName = 'driver';
@@ -3630,6 +3764,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
           attachInvoicePriceListener(); renderPosDraftStatus('store');
           initStoreBookingPage();
           renderStoreBookingToday();
+          restoreStoreCalendarToggle();
         }
       } catch(err) { console.error('Store booking render error:', err); }
 
@@ -3745,8 +3880,9 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     }
 
     function stopScopedListeners() {
-      [staffOrdersRef,staffUsersRef,driverOrdersRef,driverDirectoryRef,customersRef,activityLogsRef,storeBookingsRef].forEach(ref => { try { ref?.off(); } catch(e){} });
-      staffOrdersRef=staffUsersRef=driverOrdersRef=driverDirectoryRef=customersRef=activityLogsRef=storeBookingsRef=null;
+      [staffOrdersRef,staffUsersRef,driverOrdersRef,driverDirectoryRef,customersRef,activityLogsRef,storeBookingsRef,dailySessionRef].forEach(ref => { try { ref?.off(); } catch(e){} });
+      staffOrdersRef=staffUsersRef=driverOrdersRef=driverDirectoryRef=customersRef=activityLogsRef=storeBookingsRef=dailySessionRef=null;
+      currentDailySession=null; dailySessionLoaded=false;
       allOrdersCache={}; driverOrdersCache={}; allUsersCache={}; driverDirectoryCache={}; customersCache={}; activityLogsCache={};
       pricesListenerAttached=false;
       notificationInitialized=false; notificationOrderState={}; storeBookingReminderState={}; if(storeReminderTimer){clearInterval(storeReminderTimer);storeReminderTimer=null;}
@@ -3930,7 +4066,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       document.getElementById('sidebarUserBadge').innerText=`${user.username} • ${roleTitle}`;
       document.getElementById('mobileUserBadge').innerText=user.username;
       document.body.classList.remove('customer-public-mode','staff-logged-out'); document.body.classList.toggle('driver-private-mode',user.role==='driver'); document.body.classList.toggle('cashier-mode',user.role==='cashier'); document.getElementById('staffLoginGate')?.classList.add('hidden');
-      document.getElementById('authModal').classList.add('hidden'); installDirectSidebarButtons(); updateUIByPermissions(); startDriverDirectoryListener(); if(user.role==='admin'||user.role==='cashier') attachInvoicePriceListener(); if(user.role==='admin'||user.role==='cashier') initStoreBookingPage(); if(user.role!=='cashier') startActivityLogListener();
+      document.getElementById('authModal').classList.add('hidden'); installDirectSidebarButtons(); updateUIByPermissions(); startDailySessionListener(); startDriverDirectoryListener(); if(user.role==='admin'||user.role==='cashier') attachInvoicePriceListener(); if(user.role==='admin'||user.role==='cashier') initStoreBookingPage(); if(user.role!=='cashier') startActivityLogListener();
       const customerAllowed=user.role==='admin' || (user.role==='cashier' && canManageCustomers());
       document.getElementById('customerAuthLock')?.classList.toggle('hidden',!customerAllowed);
       document.getElementById('customerPageContent')?.classList.toggle('hidden',!customerAllowed);
@@ -4824,7 +4960,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     function printEditedStoreBooking(){const key=document.getElementById('storeBookingEditKey')?.value;if(key)printStoreBooking(key);}
     function convertEditedStoreBookingToDelivery(){const key=document.getElementById('storeBookingEditKey')?.value;if(!key)return;if(isStoreBookingEditDirty())return alert('هناك تعديلات غير محفوظة. اضغط «حفظ التعديلات» أولًا ثم حوّل الحجز للدليفري حتى لا تضيع التعديلات.');closeStoreBookingEditModal();setTimeout(()=>openConversionModal('store',key),80);}
     function summarizeStoreBookingEdit(before,after){const changes=[];if((before.customerName||'')!==(after.customerName||'')||(before.customerPhone||'')!==(after.customerPhone||''))changes.push('بيانات العميل');if((before.pickupDate||'')!==(after.pickupDate||'')||(before.pickupTime||'')!==(after.pickupTime||''))changes.push(`موعد الاستلام ${before.pickupDate||''} ${before.pickupTime||''} → ${after.pickupDate||''} ${after.pickupTime||''}`);if((before.notes||'')!==(after.notes||''))changes.push('الملاحظات');if((before.status||'')!==(after.status||''))changes.push(`الحالة: ${after.status}`);const oldItems=normalizeInvoiceItems(before.items||[]),newItems=normalizeInvoiceItems(after.items||[]);if(JSON.stringify(oldItems)!==JSON.stringify(newItems))changes.push(`الأصناف: ${oldItems.length} → ${newItems.length}`);if(Number(before.total||0)!==Number(after.total||0))changes.push(`الإجمالي: ${Number(before.total||0)} → ${Number(after.total||0)} ج.م`);if(Number(before.paidAmount||0)!==Number(after.paidAmount||0))changes.push(`المدفوع: ${Number(before.paidAmount||0)} → ${Number(after.paidAmount||0)} ج.م`);return changes.join(' · ')||'تعديل بيانات الحجز';}
-    async function saveStoreBookingEdit(){if(storeBookingEditSaving)return;if(!canEditStoreBooking())return alert('لا تملك صلاحية تعديل حجوزات المحل.');const key=document.getElementById('storeBookingEditKey')?.value,current=(window.storeBookingsCache||{})[key];if(!key||!current)return alert('لم يتم العثور على الحجز.');if(current.convertedTo||current.status==='تم التحويل للدليفري 🔄')return alert('هذا الحجز تم تحويله لدليفري بالفعل.');if(!storeBookingEditItems.length)return alert('يجب أن يحتوي الحجز على صنف واحد على الأقل.');const name=document.getElementById('storeBookingEditCustomerName')?.value.trim()||'',phone=document.getElementById('storeBookingEditCustomerPhone')?.value.trim()||'',pickupDate=document.getElementById('storeBookingEditPickupDate')?.value||'',pickupTime=document.getElementById('storeBookingEditPickupTime')?.value||'',notes=document.getElementById('storeBookingEditNotes')?.value.trim()||'',status=document.getElementById('storeBookingEditStatus')?.value||'محجوز 🟡';if(!name)return alert('اسم العميل مطلوب.');if(!phone)return alert('رقم الهاتف مطلوب.');if(!pickupDate||!pickupTime)return alert('تاريخ ووقت الاستلام مطلوبان.');const conflicts=findStoreBookingTimeConflicts(pickupDate,pickupTime,key);if(conflicts.length){showStoreBookingConflictForCurrentForm();if(!confirm(`يوجد ${conflicts.length} حجز في نفس/قرب موعد الاستلام الجديد. هل تريد المتابعة؟`))return;}const total=invoiceItemsTotal(storeBookingEditItems.map(it=>({...it,total:(Number(it.qty)||0)*(Number(it.unitPrice)||0)})));const paidEl=document.getElementById('storeBookingEditPaidAmount');let paidAmount=Math.max(0,Number(paidEl?.value)||0);if(paidAmount>total)paidAmount=total;const remainingDue=Math.max(0,total-paidAmount),paymentStatus=paidAmount>=total?'paid':paidAmount>0?'deposit':'unpaid';if(Number(current.paidAmount||0)!==paidAmount){if(!confirm(`سيتم تغيير المدفوع المسجل من ${Number(current.paidAmount||0)} إلى ${paidAmount} ج.م. هل تؤكد؟`))return;}let customerId=current.customerId||null;try{const oldPhone=normalizePhone(current.customerPhone||'');const newPhone=normalizePhone(phone);if(customerId&&oldPhone&&newPhone&&oldPhone!==newPhone){const matched=findCustomerByPhone(phone);customerId=matched?.key||null;}const existing=customerId?customersCache[customerId]:findCustomerByPhone(phone);const address=existing?.address||'';customerId=await upsertCustomerRecord(name,phone,address,customerId,false);}catch(e){console.error('Store booking edit customer save:',e);}const update={customerName:name,customerPhone:phone,customerPhoneNormalized:normalizePhone(phone),customerId:customerId||null,pickupDate,pickupTime,notes,status,items:storeBookingEditItems.map(it=>({...it,total:(Number(it.qty)||0)*(Number(it.unitPrice)||0)})),total,paidAmount,remainingDue,paymentStatus,updatedAt:Date.now(),updatedBy:currentUser.username};const next={...current,...update};storeBookingEditSaving=true;document.querySelector('.store-booking-edit-dialog')?.classList.add('store-booking-edit-loading');const btn=document.getElementById('storeBookingEditSaveBtn');if(btn)btn.innerText='⏳ جارٍ الحفظ...';try{await db.ref('storeBookings/'+key).update(update);window.storeBookingsCache=window.storeBookingsCache||{};window.storeBookingsCache[key]=next;storeBookingEditOriginalSnapshot=getStoreBookingEditSnapshot();await logActivity('update','storeBooking',`تعديل حجز المحل #${current.bookingNumber||key}: ${summarizeStoreBookingEdit(current,next)}`,key,{before:{total:current.total||0,paidAmount:current.paidAmount||0,status:current.status||''},after:{total,paidAmount,status}});addNotification('status','تم تعديل حجز المحل',`#${current.bookingNumber||key} — ${name} — ${formatDateDMY(pickupDate)} ${pickupTime}`,key);renderStoreBookingList();renderCashierHome();closeStoreBookingEditModal();alert('تم حفظ تعديل حجز المحل بنجاح ✅');}catch(e){console.error(e);alert('تعذر حفظ تعديلات الحجز حاليًا. تحقق من Firebase Rules ثم أعد المحاولة.');}finally{storeBookingEditSaving=false;document.querySelector('.store-booking-edit-dialog')?.classList.remove('store-booking-edit-loading');if(btn)btn.innerText='💾 حفظ التعديلات';}}
+    async function saveStoreBookingEdit(){if(storeBookingEditSaving)return;if(!canEditStoreBooking())return alert('لا تملك صلاحية تعديل حجوزات المحل.');if(!requireDailyOpen('حفظ تعديل حجز المحل'))return;const key=document.getElementById('storeBookingEditKey')?.value,current=(window.storeBookingsCache||{})[key];if(!key||!current)return alert('لم يتم العثور على الحجز.');if(current.convertedTo||current.status==='تم التحويل للدليفري 🔄')return alert('هذا الحجز تم تحويله لدليفري بالفعل.');if(!storeBookingEditItems.length)return alert('يجب أن يحتوي الحجز على صنف واحد على الأقل.');const name=document.getElementById('storeBookingEditCustomerName')?.value.trim()||'',phone=document.getElementById('storeBookingEditCustomerPhone')?.value.trim()||'',pickupDate=document.getElementById('storeBookingEditPickupDate')?.value||'',pickupTime=document.getElementById('storeBookingEditPickupTime')?.value||'',notes=document.getElementById('storeBookingEditNotes')?.value.trim()||'',status=document.getElementById('storeBookingEditStatus')?.value||'محجوز 🟡';if(!name)return alert('اسم العميل مطلوب.');if(!phone)return alert('رقم الهاتف مطلوب.');if(!pickupDate||!pickupTime)return alert('تاريخ ووقت الاستلام مطلوبان.');const conflicts=findStoreBookingTimeConflicts(pickupDate,pickupTime,key);if(conflicts.length){showStoreBookingConflictForCurrentForm();if(!confirm(`يوجد ${conflicts.length} حجز في نفس/قرب موعد الاستلام الجديد. هل تريد المتابعة؟`))return;}const total=invoiceItemsTotal(storeBookingEditItems.map(it=>({...it,total:(Number(it.qty)||0)*(Number(it.unitPrice)||0)})));const paidEl=document.getElementById('storeBookingEditPaidAmount');let paidAmount=Math.max(0,Number(paidEl?.value)||0);if(paidAmount>total)paidAmount=total;const remainingDue=Math.max(0,total-paidAmount),paymentStatus=paidAmount>=total?'paid':paidAmount>0?'deposit':'unpaid';if(Number(current.paidAmount||0)!==paidAmount){if(!confirm(`سيتم تغيير المدفوع المسجل من ${Number(current.paidAmount||0)} إلى ${paidAmount} ج.م. هل تؤكد؟`))return;}let customerId=current.customerId||null;try{const oldPhone=normalizePhone(current.customerPhone||'');const newPhone=normalizePhone(phone);if(customerId&&oldPhone&&newPhone&&oldPhone!==newPhone){const matched=findCustomerByPhone(phone);customerId=matched?.key||null;}const existing=customerId?customersCache[customerId]:findCustomerByPhone(phone);const address=existing?.address||'';customerId=await upsertCustomerRecord(name,phone,address,customerId,false);}catch(e){console.error('Store booking edit customer save:',e);}const update={customerName:name,customerPhone:phone,customerPhoneNormalized:normalizePhone(phone),customerId:customerId||null,pickupDate,pickupTime,notes,status,items:storeBookingEditItems.map(it=>({...it,total:(Number(it.qty)||0)*(Number(it.unitPrice)||0)})),total,paidAmount,remainingDue,paymentStatus,updatedAt:Date.now(),updatedBy:currentUser.username,businessDate:currentDailySession?.businessDate||dailyToday(),dailySessionId:currentDailySession?.sessionId||current.dailySessionId||null};const next={...current,...update};storeBookingEditSaving=true;document.querySelector('.store-booking-edit-dialog')?.classList.add('store-booking-edit-loading');const btn=document.getElementById('storeBookingEditSaveBtn');if(btn)btn.innerText='⏳ جارٍ الحفظ...';try{await db.ref('storeBookings/'+key).update(update);window.storeBookingsCache=window.storeBookingsCache||{};window.storeBookingsCache[key]=next;storeBookingEditOriginalSnapshot=getStoreBookingEditSnapshot();await logActivity('update','storeBooking',`تعديل حجز المحل #${current.bookingNumber||key}: ${summarizeStoreBookingEdit(current,next)}`,key,{before:{total:current.total||0,paidAmount:current.paidAmount||0,status:current.status||''},after:{total,paidAmount,status}});addNotification('status','تم تعديل حجز المحل',`#${current.bookingNumber||key} — ${name} — ${formatDateDMY(pickupDate)} ${pickupTime}`,key);renderStoreBookingList();renderCashierHome();closeStoreBookingEditModal();alert('تم حفظ تعديل حجز المحل بنجاح ✅');}catch(e){console.error(e);alert('تعذر حفظ تعديلات الحجز حاليًا. تحقق من Firebase Rules ثم أعد المحاولة.');}finally{storeBookingEditSaving=false;document.querySelector('.store-booking-edit-dialog')?.classList.remove('store-booking-edit-loading');if(btn)btn.innerText='💾 حفظ التعديلات';}}
 
     function renderStoreBookingList(){
       const container=document.getElementById('storeBookingTodayList');if(!container)return;const all=window.storeBookingsCache||{};const today=getLocalDateInputValue();const now=Date.now();renderStoreBookingCalendar();
@@ -4875,7 +5011,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       renderStoreBookingList();
     }
     function renderStoreBookingToday(){renderStoreBookingList();}
-    async function editStoreBookingStatus(key,status){if(!currentUser||(currentUser.role!=='admin'&&!canUser('storeBookings')))return;try{await db.ref('storeBookings/'+key).update({status,updatedAt:Date.now(),updatedBy:currentUser.username});await logActivity('update','storeBooking',`تحديث حالة حجز المحل #${key} إلى ${status}`,key,{status});addNotification(status==='تم الاستلام ✅'?'delivered':'status','تحديث حجز المحل',`#${key} — ${status}`,key);}catch(e){console.error(e);alert('تعذر تحديث حالة الحجز حالياً.');}}
+    async function editStoreBookingStatus(key,status){if(!currentUser||(currentUser.role!=='admin'&&!canUser('storeBookings')))return;if(!requireDailyOpen('تحديث حالة حجز المحل'))return;try{await db.ref('storeBookings/'+key).update({status,updatedAt:Date.now(),updatedBy:currentUser.username,dailySessionId:currentDailySession?.sessionId||((window.storeBookingsCache||{})[key]?.dailySessionId)||null,businessDate:currentDailySession?.businessDate||dailyToday()});await logActivity('update','storeBooking',`تحديث حالة حجز المحل #${key} إلى ${status}`,key,{status});addNotification(status==='تم الاستلام ✅'?'delivered':'status','تحديث حجز المحل',`#${key} — ${status}`,key);}catch(e){console.error(e);alert('تعذر تحديث حالة الحجز حالياً.');}}
     function checkStoreBookingReminders(){
       if(APP_MODE!=='staff'||!currentUser)return;const all=window.storeBookingsCache||{},now=Date.now();let changed=false;
       Object.keys(all).forEach(key=>{const b=all[key]||{},status=String(b.status||'');if(status==='ملغي ❌'||status==='تم الاستلام ✅'||status==='تم التحويل للدليفري 🔄')return;const state=storeBookingReminderState[key]||{};const created=Number(b.createdAt||0);if(created&&now>=created+60*60*1000&&!state.hour){storeBookingReminderState[key]={...state,hour:true};addNotification('booking-hour','مرّت ساعة على حجز المحل',`الحجز #${b.bookingNumber||key} للعميل ${b.customerName||'عميل'} ما زال في المتابعة.`,key);changed=true;}const pickup=storeBookingPickupTimestamp(b);if(pickup&&now>=pickup-30*60*1000&&now<pickup&&!state.before30){storeBookingReminderState[key]={...(storeBookingReminderState[key]||state),before30:true};addNotification('booking-soon','موعد الاستلام بعد 30 دقيقة',`الحجز #${b.bookingNumber||key} للعميل ${b.customerName||'عميل'} — موعد الاستلام ${b.pickupTime||''}.`,key);changed=true;}});if(changed)saveStoreBookingReminderState();}
@@ -4886,11 +5022,12 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
     async function submitStoreBooking(e){
       e.preventDefault();if(APP_MODE!=='staff'||!currentUser||(currentUser.role!=='admin'&&!canUser('storeBookings')))return alert('حجز المحل غير متاح لهذا الحساب.');
+      if(!requireDailyOpen('تسجيل حجز المحل'))return;
       if(!storeBookingItems.length)return alert('أضف صنفًا واحدًا على الأقل للحجز.');
       const name=document.getElementById('storeBookingCustomerName').value.trim(),phone=document.getElementById('storeBookingCustomerPhone').value.trim(),pickupDate=document.getElementById('storeBookingPickupDate').value,pickupTime=document.getElementById('storeBookingPickupTime').value,notes=document.getElementById('storeBookingNotes').value.trim(),status=document.getElementById('storeBookingStatus').value,total=getStoreBookingItemsTotal();
       if(!validateStoreBookingConflict(pickupDate,pickupTime))return;
       const bookingNumber=document.getElementById('storeBookingNumberPreview').value||generateStoreBookingNumber();let paidAmount=0;if(storeBookingPaymentMode==='paid')paidAmount=total;else if(storeBookingPaymentMode==='deposit')paidAmount=Math.min(total,Math.max(0,Number(document.getElementById('storeBookingDeposit').value)||0));const remainingDue=Math.max(0,total-paidAmount);const selectedCustomerKey=document.getElementById('storeBookingCustomerKey').value||null;let customerId=selectedCustomerKey;let customerAddress='';try{const existing=selectedCustomerKey?customersCache[selectedCustomerKey]:findCustomerByPhone(phone);customerAddress=existing?.address||'';customerId=await upsertCustomerRecord(name,phone,customerAddress,selectedCustomerKey,true);}catch(err){console.error('Store booking customer save:',err);}
-      const key=bookingNumber;const payload={bookingNumber,bookingType:'store',customerName:name,customerPhone:phone,customerPhoneNormalized:normalizePhone(phone),customerId:customerId||null,pickupDate,pickupTime,notes,items:storeBookingItems.map(it=>({...it})),total,paidAmount,remainingDue,paymentStatus:storeBookingPaymentMode,status,createdBy:currentUser.username,createdAt:Date.now(),updatedAt:Date.now()};
+      const key=bookingNumber;const payload={bookingNumber,bookingType:'store',customerName:name,customerPhone:phone,customerPhoneNormalized:normalizePhone(phone),customerId:customerId||null,pickupDate,pickupTime,notes,items:storeBookingItems.map(it=>({...it})),total,paidAmount,remainingDue,paymentStatus:storeBookingPaymentMode,status,createdBy:currentUser.username,createdAt:Date.now(),updatedAt:Date.now(),businessDate:currentDailySession?.businessDate||dailyToday(),dailySessionId:currentDailySession?.sessionId||null};
       try{await db.ref('storeBookings/'+key).set(payload);await logActivity('create','storeBooking',`إنشاء حجز محل #${bookingNumber} للعميل ${name}`,key,{total,paidAmount,remainingDue});window.storeBookingsCache=window.storeBookingsCache||{};window.storeBookingsCache[key]=payload;renderStoreBookingToday();renderCashierHome();
         const result=document.getElementById('storeBookingResult');if(result){result.classList.remove('hidden');result.innerHTML=`<div class="font-black text-xs">✅ تم حفظ الحجز <span class="font-mono">#${escapeHtml(bookingNumber)}</span> بنجاح.</div><div class="text-[9px] mt-1">المدفوع: ${paidAmount.toLocaleString('ar-EG')} ج.م · المتبقي: ${remainingDue.toLocaleString('ar-EG')} ج.م</div><div class="flex gap-2 mt-2"><button type="button" class="store-action-btn primary" onclick="printStoreBooking(${htmlJsArg(key)})">🧾 طباعة فاتورة 80mm</button><button type="button" class="store-action-btn" onclick="resetStoreBookingForm()">＋ حجز جديد</button></div>`;}
         addNotification('new','حجز محل جديد',`تم إنشاء الحجز #${bookingNumber} للعميل ${name} — الاستلام ${pickupDate} ${pickupTime}`,key);
@@ -4903,10 +5040,11 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     // --- إدارة الطلبات ---
     document.getElementById('orderForm').addEventListener('submit', async (e) => {
       e.preventDefault();if(APP_MODE!=='staff'||!currentUser||(currentUser.role!=='admin'&&(currentUser.role!=='cashier'||!canUser('sales'))))return alert('تسجيل الفواتير متاح للكاشير والإدارة فقط.');
+      if(!requireDailyOpen('تسجيل الفاتورة'))return;
       const items=invoiceItems.map(item=>({...item}));if(!items.length)return alert('أضف صنفًا واحدًا على الأقل إلى الفاتورة قبل تسجيل الطلب.');
       const customId=document.getElementById('custOrderId').value.trim(),orderId=customId||('HAMKASHA-'+Math.floor(10000+Math.random()*90000));const name=document.getElementById('custName').value.trim(),phone=document.getElementById('custPhone').value.trim(),address=document.getElementById('custAddress').value.trim();
       const orderPrice=invoiceItemsTotal(items),deliveryPrice=Number(document.getElementById('deliveryPrice').value)||0,paymentMethod=document.getElementById('paymentMethod').value,paymentFee=Number(document.getElementById('paymentFee').value)||0,totalCash=orderPrice+deliveryPrice+paymentFee,driver=document.getElementById('driverSelect').value,now=new Date();const paidInput=Number(document.getElementById('paymentPaidAmount')?.value)||0;const paidAmount=paymentMethod==='cash'?paidInput:totalCash;const remainingDue=paymentMethod==='cash'?Math.max(0,totalCash-paidAmount):0;const changeDue=paymentMethod==='cash'?Math.max(0,paidAmount-totalCash):0;const selectedKey=document.getElementById('selectedCustomerKey').value||null;let customerId=selectedKey;try{customerId=await upsertCustomerRecord(name,phone,address,selectedKey,true,true);}catch(err){console.error('Customer auto-save error:',err);}const trackingToken=createTrackingToken();
-      const orderPayload={orderId,customerName:name,phone,address,items,orderPrice,deliveryPrice,paymentMethod,paymentFee,totalCash,paidAmount,remainingDue,changeDue,isPaid:remainingDue<=0,driver,status:'جاري تحضير اللحوم 🥩',rating:null,comment:null,isPublished:false,date:now.toISOString().split('T')[0],time:now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),lat:null,lng:null,custLat:null,custLng:null,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name),createdBy:currentUser.username,createdAt:Date.now(),trackingToken};
+      const orderPayload={orderId,customerName:name,phone,address,items,orderPrice,deliveryPrice,paymentMethod,paymentFee,totalCash,paidAmount,remainingDue,changeDue,isPaid:remainingDue<=0,driver,status:'جاري تحضير اللحوم 🥩',rating:null,comment:null,isPublished:false,date:now.toISOString().split('T')[0],time:now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),lat:null,lng:null,custLat:null,custLng:null,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name),createdBy:currentUser.username,createdAt:Date.now(),businessDate:currentDailySession?.businessDate||dailyToday(),dailySessionId:currentDailySession?.sessionId||null,trackingToken};
       db.ref('orders/'+orderId).set(orderPayload).then(()=>{
         logActivity('create','order',`إنشاء طلب جديد #${orderId} للعميل ${name}`,orderId,{total:totalCash,driver});
         saveLastInvoiceForRepeat(orderPayload);
@@ -4915,7 +5053,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       }).catch(err=>{console.error(err);alert('تعذر تسجيل الطلب حالياً.');});
     });
 
-    function updateOrderStatus(orderKey, newStatus) { if(APP_MODE!=='staff'||!currentUser||(currentUser.role!=='admin'&&currentUser.role!=='cashier')||(currentUser.role==='cashier'&&!canUser('edit'))||!allOrdersCache[orderKey]) return; db.ref('orders/'+orderKey).update({status:newStatus}).then(()=>logActivity('update','order',`تحديث حالة الطلب #${allOrdersCache[orderKey].orderId||orderKey} إلى ${newStatus}`,orderKey,{status:newStatus})); }
+    function updateOrderStatus(orderKey, newStatus) { if(APP_MODE!=='staff'||!currentUser||(currentUser.role!=='admin'&&currentUser.role!=='cashier')||(currentUser.role==='cashier'&&!canUser('edit'))||!allOrdersCache[orderKey]) return; if(!requireDailyOpen('تحديث حالة الطلب')) return; db.ref('orders/'+orderKey).update({status:newStatus,updatedAt:Date.now(),updatedBy:currentUser.username,dailySessionId:currentDailySession?.sessionId||allOrdersCache[orderKey]?.dailySessionId||null}).then(()=>logActivity('update','order',`تحديث حالة الطلب #${allOrdersCache[orderKey].orderId||orderKey} إلى ${newStatus}`,orderKey,{status:newStatus})); }
 
     function getPaymentText(method) {
       if(method === 'vodafone') return '📱 فودافون كاش';
@@ -4954,6 +5092,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     }
     async function toggleOrderPayment(key){
       if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!allOrdersCache[key]||!canUser('edit'))return;
+      if(!requireDailyOpen('تحديث حالة الدفع'))return;
       const item=allOrdersCache[key]||{};
       const state=getOrderPaymentState(item), nextPaid=!state.isPaid;
       const paidAmount=nextPaid?state.total:0, remainingDue=nextPaid?0:state.total, changeDue=0;
@@ -6145,6 +6284,288 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
   
 
 
+
+    /* ===== STEP 53: DAILY OPERATING SESSION + COMPACT BOOKING CALENDAR ===== */
+    .daily-session-card{margin:12px 0;padding:10px 12px;border:1px solid rgba(148,163,184,.25);border-radius:14px;background:linear-gradient(135deg,rgba(15,76,92,.16),rgba(15,23,42,.18));color:#fff}
+    .daily-session-row{display:flex;align-items:center;justify-content:space-between;gap:8px}.daily-session-main{min-width:0}.daily-session-kicker{font-size:8px;font-weight:1000;letter-spacing:.08em;opacity:.65}.daily-session-title{font-size:11px;font-weight:1000;margin-top:2px}.daily-session-meta{font-size:8px;font-weight:800;color:rgba(255,255,255,.62);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .daily-session-dot{width:9px;height:9px;border-radius:999px;background:#ef4444;display:inline-block;box-shadow:0 0 0 4px rgba(239,68,68,.12);flex:0 0 auto}.daily-session-card.is-open .daily-session-dot{background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.12)}
+    .daily-session-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap}.daily-session-btn{border:0;border-radius:9px;padding:7px 9px;font-size:8px;font-weight:1000;cursor:pointer}.daily-session-btn.primary{background:#fbbf24;color:#3f1d0b}.daily-session-btn.danger{background:#ef4444;color:#fff}.daily-session-btn.secondary{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.14)}.daily-session-btn:disabled{opacity:.5;cursor:not-allowed}
+    .daily-session-admin-card{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 14px;border:1px solid #dbe7ef;border-radius:18px;background:linear-gradient(135deg,#f8fafc,#ffffff);box-shadow:0 8px 24px rgba(15,23,42,.05)}
+    .daily-session-admin-card .status-line{display:flex;align-items:center;gap:8px}.daily-session-admin-card .status-badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 9px;font-size:9px;font-weight:1000;background:#fee2e2;color:#991b1b}.daily-session-admin-card.is-open .status-badge{background:#dcfce7;color:#166534}.daily-session-admin-card .daily-session-copy b{display:block;font-size:11px;color:#0f172a}.daily-session-admin-card .daily-session-copy span{display:block;font-size:8px;color:#64748b;margin-top:2px}
+    .daily-session-notice{margin-bottom:10px;padding:10px 12px;border-radius:14px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:9px;font-weight:900;display:none}.daily-session-notice.show{display:block}.daily-session-notice strong{display:block;font-size:10px;margin-bottom:3px}
+    .daily-operational-lock{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(248,250,252,.88);backdrop-filter:blur(5px);border-radius:inherit;padding:20px}.daily-operational-lock.hidden{display:none}.daily-operational-lock-card{width:min(430px,92%);background:#fff;border:1px solid #fecaca;border-radius:20px;padding:22px;text-align:center;box-shadow:0 18px 50px rgba(15,23,42,.16)}.daily-operational-lock-icon{width:48px;height:48px;border-radius:14px;background:#fee2e2;color:#b91c1c;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:23px}.daily-operational-lock-card h3{font-size:14px;font-weight:1000;color:#111827;margin:0}.daily-operational-lock-card p{font-size:9px;line-height:1.8;color:#64748b;margin:7px 0 0}.daily-operational-lock-card b{color:#991b1b}.daily-operational-lock-card .daily-lock-btn{margin-top:12px;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:10px;background:#7f1d1d;color:#fff;padding:9px 13px;font-size:9px;font-weight:1000;cursor:pointer}
+    #sec-admin .order-form-card{position:relative}
+    #sec-store-booking > .store-booking-page > .store-booking-panel:first-child{position:relative}
+    #sec-driver #driverContent{position:relative}
+    /* Compact booking calendar: header button toggles a small expandable drawer instead of full-height display. */
+    .store-calendar-wrap{padding:8px!important;margin:10px 0 4px!important;}
+    .store-calendar-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid #cbd5e1;background:#fff;border-radius:12px;padding:8px 11px;font-size:10px;font-weight:1000;color:#0f172a;cursor:pointer;min-height:38px}.store-calendar-toggle:hover{background:#f8fafc}.store-calendar-toggle .arrow{font-size:16px;line-height:1;transition:transform .16s}.store-calendar-toggle.open .arrow{transform:rotate(180deg)}
+    .store-calendar-collapsible{margin-top:8px;overflow:hidden;transition:max-height .18s ease,opacity .18s ease}.store-calendar-collapsible.is-collapsed{max-height:0!important;opacity:0;pointer-events:none}.store-calendar-collapsible.is-open{max-height:640px;opacity:1}
+    /* Delivery POS: align visual hierarchy with the compact two-pane reference while preserving existing field IDs and logic. */
+    @media (min-width:951px){
+      #sec-admin .order-form-card{padding:12px!important;background:transparent!important;border:0!important;box-shadow:none!important}
+      #sec-admin .order-form-hero{border:1px solid rgba(148,163,184,.25)!important;box-shadow:none!important}
+      #sec-admin #orderForm.pos-order-form{grid-template-columns:minmax(360px,420px) minmax(0,1fr)!important;grid-template-rows:48px minmax(165px,1fr) minmax(190px,.9fr) minmax(132px,.65fr) 72px 52px!important;}
+      #sec-admin #orderForm .pos-customer-panel{border-radius:16px!important;}
+      #sec-admin #orderForm .pos-catalog-panel{border-radius:16px!important;}
+      #sec-admin #orderForm .pos-cart-panel{border-radius:16px!important;}
+      #sec-admin #orderForm .pos-payment-panel{border-radius:16px!important;}
+      #sec-admin #orderForm .pos-driver-panel{border-radius:16px!important;}
+      #sec-admin #orderForm .pos-submit-btn{border-radius:14px!important;}
+      #sec-admin #invoiceProductGrid .pos-items-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+    }
+    @media (max-width:950px){
+      .daily-session-admin-card{align-items:flex-start}
+      .daily-session-actions{width:100%}.daily-session-actions .daily-session-btn{flex:1}
+      .daily-operational-lock{position:fixed;inset:72px 10px 10px 10px;border-radius:18px}
+    }
+
+
+    /* ===== STEP 54: REFERENCE POS ORDER SCREEN + DAILY SESSION GATE =====
+       Visual/layout scope is limited to the delivery-order workspace.
+       Business logic, field IDs, catalog hierarchy and calculations remain unchanged. */
+    @media (min-width: 951px){
+      #sec-admin .order-form-card.pos-reference-workspace{
+        background:#071018!important;
+        border:1px solid #263544!important;
+        box-shadow:0 14px 36px rgba(2,8,23,.28)!important;
+        border-radius:22px!important;
+        padding:10px!important;
+        color:#e5edf4!important;
+      }
+      #sec-admin .order-form-card.pos-reference-workspace .order-form-hero{
+        background:linear-gradient(180deg,#0e1822,#0b131b)!important;
+        border:1px solid #2b3b4b!important;
+        border-radius:16px!important;
+        padding:8px 11px!important;
+        margin-bottom:8px!important;
+        color:#f8fafc!important;
+      }
+      #sec-admin .order-form-card.pos-reference-workspace .order-form-hero p{color:#8fa3b5!important}
+      #sec-admin .order-form-card.pos-reference-workspace .order-form-hero .order-smart-btn{background:#182633!important;border-color:#385166!important;color:#f1f5f9!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-order-form{
+        grid-template-columns:minmax(315px,36%) minmax(0,64%)!important;
+        grid-template-rows:44px 180px minmax(250px,1fr) 118px 62px 52px!important;
+        height:calc(100dvh - 272px)!important;
+        min-height:520px!important;
+        max-height:760px!important;
+        overflow:hidden!important;
+        gap:9px!important;
+      }
+      #sec-admin .order-form-card.pos-reference-workspace .pos-panel{
+        background:#0a141e!important;
+        border:1px solid #314252!important;
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+        color:#e5edf4!important;
+        padding:10px!important;
+        border-radius:15px!important;
+      }
+      #sec-admin .order-form-card.pos-reference-workspace .pos-panel-head,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-catalog-head{
+        border-color:#263746!important;
+        padding-bottom:7px!important;
+        margin-bottom:7px!important;
+      }
+      #sec-admin .order-form-card.pos-reference-workspace .pos-kicker,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-panel-head p,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-catalog-head p,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-tab-muted,
+      #sec-admin .order-form-card.pos-reference-workspace .order-label{color:#8ba0b1!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-panel-head h3,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-catalog-head h3,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-products-title,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-selected-product b{color:#edf4f8!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-tabs{background:#0c1823!important;border-color:#2a3a49!important;margin-bottom:7px!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-tab{color:#91a5b4!important;padding:6px 13px!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-tab.active{background:#0f2631!important;color:#f8fafc!important;box-shadow:none!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-catalog-search,
+      #sec-admin .order-form-card.pos-reference-workspace .order-input,
+      #sec-admin .order-form-card.pos-reference-workspace .invoice-field{
+        background:#07121b!important;color:#eef6fb!important;border-color:#314655!important;
+      }
+      #sec-admin .order-form-card.pos-reference-workspace .pos-catalog-search::placeholder,
+      #sec-admin .order-form-card.pos-reference-workspace .order-input::placeholder,
+      #sec-admin .order-form-card.pos-reference-workspace .invoice-field::placeholder{color:#6f8597!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-category-card,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-product-card{
+        background:linear-gradient(180deg,#101d29,#0b151e)!important;
+        border-color:#334756!important;color:#eef6fb!important;box-shadow:none!important;
+      }
+      #sec-admin .order-form-card.pos-reference-workspace .pos-category-card:hover,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-category-card.active,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-product-card:hover,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-product-card.selected{
+        background:linear-gradient(180deg,#132c39,#10212c)!important;border-color:#37b7d8!important;
+        box-shadow:0 0 0 1px rgba(55,183,216,.16)!important;transform:none!important;
+      }
+      #sec-admin .order-form-card.pos-reference-workspace .pos-category-icon{background:#132631!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-category-card b,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-product-name{color:#f4f8fa!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-category-card small,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-product-price{color:#8fb2c2!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-product-price{background:#10232d!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-breadcrumb{background:#0c1822!important;border-color:#2b3e4d!important;color:#dbe8ef!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-back-btn,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-small-btn,
+      #sec-admin .order-form-card.pos-reference-workspace .repeat-invoice-btn{background:#0f202c!important;border-color:#324654!important;color:#dbe8ef!important}
+      #sec-admin .order-form-card.pos-reference-workspace .invoice-items-table-wrap{background:#07121b!important;border-color:#2b3d4a!important}
+      #sec-admin .order-form-card.pos-reference-workspace .invoice-items-table th{background:#0d1a25!important;color:#90a4b4!important;border-color:#243645!important}
+      #sec-admin .order-form-card.pos-reference-workspace .invoice-items-table td{color:#e5edf4!important;border-color:#243645!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-cart-total,
+      #sec-admin .order-form-card.pos-reference-workspace .order-total-card,
+      #sec-admin .order-form-card.pos-reference-workspace .payment-settlement-card{
+        background:#0d1a25!important;border-color:#2c4050!important;color:#eef6fb!important;
+      }
+      #sec-admin .order-form-card.pos-reference-workspace .pos-add-bar{
+        background:#0c1822!important;border-color:#304453!important;
+        box-shadow:0 -8px 18px rgba(2,8,23,.22)!important;
+      }
+      #sec-admin .order-form-card.pos-reference-workspace .pos-add-line-btn,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-submit-btn{
+        background:linear-gradient(180deg,#ed3b34,#bd2622)!important;border-color:#fa5e55!important;color:#fff!important;
+      }
+      #sec-admin .order-form-card.pos-reference-workspace .pos-submit-btn{height:52px!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-driver-panel{min-height:0!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-customer-panel{overflow:auto!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-cart-panel{overflow:hidden!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-cart-table-wrap{height:calc(100% - 56px)!important;max-height:none!important;overflow:auto!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-catalog-panel{
+        min-height:0!important;height:100%!important;overflow:hidden!important;
+      }
+      #sec-admin .order-form-card.pos-reference-workspace #invoiceCategoryGrid,
+      #sec-admin .order-form-card.pos-reference-workspace #invoiceProductGrid{min-height:0!important;overflow:auto!important;overscroll-behavior:contain!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-category-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-items-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+      #sec-admin .order-form-card.pos-reference-workspace .daily-operational-lock{background:rgba(3,10,17,.90)!important;backdrop-filter:blur(5px)!important}
+      #sec-admin .order-form-card.pos-reference-workspace .daily-operational-lock-card{background:#0b1721!important;border-color:#70423f!important;color:#eef6fb!important}
+      #sec-admin .order-form-card.pos-reference-workspace .daily-operational-lock-card h3{color:#fff!important}
+      #sec-admin .order-form-card.pos-reference-workspace .daily-operational-lock-card p{color:#9db0bf!important}
+    }
+
+    @media(max-width:950px){
+      #sec-admin .order-form-card.pos-reference-workspace{border-radius:18px!important}
+    }
+
+    /* Keep the booking calendar as a compact optional drawer; never expand it by default. */
+    #storeCalendarCollapsible.is-collapsed{display:none!important}
+    #storeCalendarCollapsible.is-open{display:block!important}
+
+    /* ===== STEP 54: COMPACT DELIVERY POS — REFERENCE LAYOUT =====
+       Scope: delivery order-entry workspace only. Existing IDs, handlers,
+       calculations, catalog hierarchy, daily gates and Firebase writes stay intact. */
+    @media (min-width: 951px){
+      #sec-admin .order-form-card.pos-reference-workspace{
+        background:#0a1119!important;
+        border:1px solid #263543!important;
+        border-radius:18px!important;
+        box-shadow:0 18px 40px rgba(2,8,23,.28)!important;
+        padding:9px!important;
+        overflow:hidden!important;
+      }
+      #sec-admin .order-form-card.pos-reference-workspace .order-form-hero{
+        background:#0d1721!important;
+        border:1px solid #2d3e4d!important;
+        border-radius:13px!important;
+        padding:7px 10px!important;
+        margin-bottom:7px!important;
+        min-height:44px!important;
+      }
+      #sec-admin .order-form-card.pos-reference-workspace .order-form-hero h2{font-size:13px!important;margin-top:0!important}
+      #sec-admin .order-form-card.pos-reference-workspace .order-form-hero p{font-size:8px!important;color:#8da0af!important}
+      #sec-admin .order-form-card.pos-reference-workspace .order-form-hero .order-smart-btn{font-size:8px!important;padding:6px 8px!important;border-color:#385166!important;background:#142331!important;color:#dce8ef!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-order-form{
+        grid-template-columns:minmax(315px,36%) minmax(0,64%)!important;
+        grid-template-rows:40px minmax(120px,1.0fr) minmax(205px,1.6fr) 112px 54px 48px!important;
+        height:calc(100dvh - 292px)!important;
+        min-height:560px!important;
+        max-height:760px!important;
+        gap:8px!important;
+        overflow:hidden!important;
+      }
+      #sec-admin .order-form-card.pos-reference-workspace .pos-order-form #deliveryDraftBar{grid-row:1!important;min-height:0!important;margin:0!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-order-form .pos-customer-panel{grid-row:2!important;overflow:auto!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-order-form .pos-cart-panel{grid-row:3!important;min-height:0!important;overflow:hidden!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-order-form .pos-payment-panel{grid-row:4!important;min-height:0!important;overflow:auto!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-order-form .pos-driver-panel{grid-row:5!important;min-height:0!important;overflow:auto!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-order-form .pos-submit-btn{grid-row:6!important;min-height:0!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-panel{
+        background:#0c1721!important;
+        border:1px solid #314454!important;
+        border-radius:14px!important;
+        box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+        color:#e9f1f6!important;
+        padding:9px!important;
+      }
+      #sec-admin .order-form-card.pos-reference-workspace .pos-panel-head,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-catalog-head{
+        border-color:#263846!important;
+        padding-bottom:6px!important;
+        margin-bottom:6px!important;
+      }
+      #sec-admin .order-form-card.pos-reference-workspace .pos-panel-head h3,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-catalog-head h3,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-products-title{color:#f1f6f9!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-panel-head p,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-catalog-head p,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-kicker,
+      #sec-admin .order-form-card.pos-reference-workspace .order-label,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-tab-muted{color:#849aa9!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-tabs{background:#0a151e!important;border-color:#273a49!important;padding:2px!important;margin-bottom:6px!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-tab{font-size:8px!important;padding:6px 12px!important;color:#899eac!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-tab.active{background:#102833!important;color:#fff!important;box-shadow:none!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-catalog-search,
+      #sec-admin .order-form-card.pos-reference-workspace .order-input,
+      #sec-admin .order-form-card.pos-reference-workspace .invoice-field{
+        background:#07121b!important;
+        border-color:#304655!important;
+        color:#edf5f9!important;
+        box-shadow:none!important;
+      }
+      #sec-admin .order-form-card.pos-reference-workspace .pos-catalog-search{padding:8px 32px 8px 9px!important;border-radius:10px!important;font-size:9px!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-catalog-search::placeholder,
+      #sec-admin .order-form-card.pos-reference-workspace .order-input::placeholder,
+      #sec-admin .order-form-card.pos-reference-workspace .invoice-field::placeholder{color:#607687!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-category-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:7px!important;margin-top:7px!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-category-card{min-height:70px!important;border-color:#344a59!important;background:linear-gradient(180deg,#101e2a,#0b151e)!important;border-radius:11px!important;padding:7px 6px!important;box-shadow:none!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-category-card b{font-size:9px!important;color:#eef5f8!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-category-card small{font-size:6px!important;color:#7890a0!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-category-icon{width:27px!important;height:27px!important;border-radius:8px!important;background:#132632!important;font-size:14px!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-category-card:hover,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-category-card.active{border-color:#2ea8c5!important;background:linear-gradient(180deg,#122936,#0e202a)!important;transform:none!important;box-shadow:none!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-breadcrumb{margin-top:7px!important;padding:6px 8px!important;background:#0d1b26!important;border-color:#2b3e4d!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-breadcrumb-path{font-size:8px!important;color:#dbe7ed!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-back-btn{padding:5px 8px!important;background:#0e202c!important;border-color:#334b5b!important;color:#d9e6ec!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-subcategory-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important;margin-top:7px!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-subcategory-card{padding:8px!important;min-height:58px!important;background:#0d1b26!important;border-color:#314654!important;color:#edf5f9!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-items-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-product-card{min-height:68px!important;padding:7px!important;border-color:#344a59!important;background:linear-gradient(180deg,#101e2a,#0b151e)!important;box-shadow:none!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-product-name{font-size:8px!important;color:#eef5f8!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-product-price{font-size:7px!important;color:#87bfd0!important;background:#10242e!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-product-card:hover,
+      #sec-admin .order-form-card.pos-reference-workspace .pos-product-card.selected{border-color:#35b7d4!important;background:#10232e!important;box-shadow:0 0 0 1px rgba(53,183,212,.14)!important;transform:none!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-products-title{font-size:8px!important;margin:8px 2px 4px!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-cart-table-wrap{height:calc(100% - 46px)!important;max-height:none!important;overflow:auto!important;background:#07121b!important;border-color:#293c4b!important;border-radius:10px!important}
+      #sec-admin .order-form-card.pos-reference-workspace .invoice-items-table th{background:#0d1b26!important;color:#8399a8!important;border-color:#243746!important;padding:5px!important;font-size:7px!important}
+      #sec-admin .order-form-card.pos-reference-workspace .invoice-items-table td{color:#e7f0f4!important;border-color:#243746!important;padding:5px!important;font-size:7px!important}
+      #sec-admin .order-form-card.pos-reference-workspace .invoice-qty-controls button{background:#0e202b!important;color:#dbe8ee!important;border-color:#304756!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-cart-total{margin-top:6px!important;padding:7px 9px!important;background:#10222d!important;border-color:#2e4555!important;color:#eef5f8!important}
+      #sec-admin .order-form-card.pos-reference-workspace .payment-settlement-card,
+      #sec-admin .order-form-card.pos-reference-workspace .order-total-card{background:#0d1b26!important;border-color:#2d4251!important;color:#eef5f8!important}
+      #sec-admin .order-form-card.pos-reference-workspace .payment-settlement-mini{background:#0b1721!important;border-color:#293f4e!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-add-bar{display:none!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-driver-panel .order-smart-btn{font-size:7px!important;padding:5px 7px!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-submit-btn{height:48px!important;border-radius:11px!important;background:linear-gradient(180deg,#f1443d,#be2824)!important;border:1px solid #ff6a62!important;color:#fff!important;box-shadow:none!important}
+      #sec-admin .order-form-card.pos-reference-workspace .daily-operational-lock{background:rgba(4,10,16,.93)!important;backdrop-filter:blur(5px)!important}
+      #sec-admin .order-form-card.pos-reference-workspace .daily-operational-lock-card{background:#0b1721!important;border-color:#694642!important;color:#eef6fa!important}
+    }
+    @media(max-width:950px){
+      #sec-admin .order-form-card.pos-reference-workspace{overflow:visible!important}
+      #sec-admin .order-form-card.pos-reference-workspace .pos-add-bar{display:grid!important}
+    }
+
+    /* Calendar stays a compact arrow-controlled drawer by default. */
+    #storeCalendarCollapsible.is-collapsed{display:none!important;max-height:0!important;overflow:hidden!important}
+    #storeCalendarCollapsible.is-open{display:block!important}
 </style></head><body><div class="receipt"><div class="center"><div class="brand">🥩 ${escapeHtml(settings.storeName||'جزارة حمكشة')}</div><div class="tag">${escapeHtml(settings.storeTagline||'نظام إدارة الطلبات والتوصيل')}</div><div class="title">فاتورة بيع</div><div class="meta">رقم الطلب: <b>#${escapeHtml(order?.orderId||key)}</b><br>التاريخ: ${escapeHtml(formatDateDMY(order?.date||''))} ${escapeHtml(order?.time||'')}</div></div><div class="rule"></div><div class="customer"><b>العميل:</b> ${escapeHtml(order?.customerName||order?.name||'غير محدد')}<br><b>الهاتف:</b> ${escapeHtml(order?.phone||'—')}<br><b>العنوان:</b> ${escapeHtml(order?.address||'—')}</div><table class="items"><thead><tr><th>الصنف</th><th>كمية</th><th>سعر</th><th>إجمالي</th></tr></thead><tbody>${itemRows}</tbody></table><div class="totals"><div><span>إجمالي الأصناف</span><b>${orderPrice.toLocaleString('ar-EG')} ${currency}</b></div><div><span>التوصيل</span><b>${delivery.toLocaleString('ar-EG')} ${currency}</b></div><div><span>عمولة الدفع</span><b>${fee.toLocaleString('ar-EG')} ${currency}</b></div><div><span>الدفع</span><b>${escapeHtml(getPaymentText(order?.paymentMethod||'cash').replace(/^[^\p{L}\p{N}]+/u,''))}</b></div><div><span>المدفوع</span><b>${Number(order?.paidAmount??(order?.paymentMethod==='cash'?total:total)).toLocaleString('ar-EG')} ${currency}</b></div><div><span>المتبقي</span><b>${Number(order?.remainingDue??Math.max(0,total-Number(order?.paidAmount||0))).toLocaleString('ar-EG')} ${currency}</b></div><div><span>الباقي للعميل</span><b>${Number(order?.changeDue??Math.max(0,Number(order?.paidAmount||0)-total)).toLocaleString('ar-EG')} ${currency}</b></div><div class="grand"><span>الإجمالي النهائي</span><b>${total.toLocaleString('ar-EG')} ${currency}</b></div></div><div class="rule"></div><div class="footer">${settings.storePhone?`واتساب: ${escapeHtml(settings.storePhone)}<br>`:''}${settings.storeLocation?`الموقع: ${escapeHtml(settings.storeLocation)}<br>`:''}شكرًا لثقتكم في جزارة حمكشة 🥩<br>نتمنى لكم وجبة طيبة</div></div><script>window.onload=function(){setTimeout(function(){window.print()},120)};<\/script></body></html>`;}
     function printThermalInvoice(key,orderOverride=null){if(APP_MODE!=='staff'&&!orderOverride)return;const order=orderOverride||allOrdersCache[key];if(!order)return alert('تعذر العثور على بيانات الفاتورة.');const win=window.open('','_blank','width=420,height=760');if(!win)return alert('اسمح بفتح النوافذ المنبثقة لطباعة الفاتورة.');win.document.open();win.document.write(buildThermalReceipt(order,key));win.document.close();}
     function printLastCreatedInvoice(){if(!lastCreatedOrderSnapshot)return alert('لا توجد فاتورة جديدة جاهزة للطباعة.');printThermalInvoice(lastCreatedOrderKey,lastCreatedOrderSnapshot);}
@@ -6241,11 +6662,12 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     function closeConversionModal(){document.getElementById('conversionModal')?.classList.remove('open');document.getElementById('conversionModal')?.setAttribute('aria-hidden','true');}
     async function confirmConversion(){
       const sourceType=document.getElementById('conversionSourceType').value,sourceKey=document.getElementById('conversionSourceKey').value;if(!sourceType||!sourceKey)return;
+      if(!requireDailyOpen('تنفيذ التحويل'))return;
       try{
         if(sourceType==='store'){
-          const b=(window.storeBookingsCache||{})[sourceKey];if(!b)return;const driver=document.getElementById('conversionDriverSelect').value||'غير محدد',deliveryPrice=Number(document.getElementById('conversionDeliveryPrice').value)||0;const orderId='HAMKASHA-'+Date.now().toString().slice(-8)+Math.floor(10+Math.random()*90);const items=normalizeInvoiceItems(b.items||[]),orderPrice=Number(b.total||invoiceItemsTotal(items)||0),totalCash=orderPrice+deliveryPrice;const paidAmount=Math.min(totalCash,Number(b.paidAmount||0)),remainingDue=Math.max(0,totalCash-paidAmount),now=new Date(),trackingToken=createTrackingToken();const payload={orderId,orderType:'delivery',customerName:b.customerName||'',phone:b.customerPhone||'',phoneNormalized:normalizePhone(b.customerPhone||''),address:customersCache[b.customerId]?.address||'',items,orderPrice,deliveryPrice,paymentMethod:remainingDue>0?'cash':'cash',paymentFee:0,totalCash,paidAmount,remainingDue,changeDue:0,isPaid:remainingDue<=0,driver,status:driver==='غير محدد'?'جاري تحضير اللحوم 🥩':'جاهز للتوصيل 📦',rating:null,comment:null,isPublished:false,date:now.toISOString().split('T')[0],time:now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),lat:null,lng:null,custLat:null,custLng:null,customerId:b.customerId||null,customerNameNormalized:normalizeName(b.customerName||''),createdBy:currentUser.username,createdAt:Date.now(),trackingToken,convertedFrom:'storeBooking',convertedFromKey:sourceKey,convertedAt:Date.now(),convertedBy:currentUser.username};await db.ref('orders/'+orderId).set(payload);await db.ref('storeBookings/'+sourceKey).update({convertedTo:orderId,conversionType:'delivery',convertedAt:Date.now(),convertedBy:currentUser.username,status:'تم التحويل للدليفري 🔄'});await logActivity('update','storeBooking',`تحويل حجز المحل #${sourceKey} إلى طلب دليفري #${orderId}`,sourceKey,{orderId});await logActivity('create','order',`إنشاء طلب دليفري من حجز المحل #${sourceKey}`,orderId,{sourceKey});addNotification('delivery','تم تحويل الحجز إلى دليفري',`#${sourceKey} → #${orderId} — ${driver}`,orderId);closeConversionModal();alert('تم تحويل الحجز إلى دليفري بنجاح ✅');
+          const b=(window.storeBookingsCache||{})[sourceKey];if(!b)return;const driver=document.getElementById('conversionDriverSelect').value||'غير محدد',deliveryPrice=Number(document.getElementById('conversionDeliveryPrice').value)||0;const orderId='HAMKASHA-'+Date.now().toString().slice(-8)+Math.floor(10+Math.random()*90);const items=normalizeInvoiceItems(b.items||[]),orderPrice=Number(b.total||invoiceItemsTotal(items)||0),totalCash=orderPrice+deliveryPrice;const paidAmount=Math.min(totalCash,Number(b.paidAmount||0)),remainingDue=Math.max(0,totalCash-paidAmount),now=new Date(),trackingToken=createTrackingToken();const payload={orderId,orderType:'delivery',customerName:b.customerName||'',phone:b.customerPhone||'',phoneNormalized:normalizePhone(b.customerPhone||''),address:customersCache[b.customerId]?.address||'',items,orderPrice,deliveryPrice,paymentMethod:remainingDue>0?'cash':'cash',paymentFee:0,totalCash,paidAmount,remainingDue,changeDue:0,isPaid:remainingDue<=0,driver,status:driver==='غير محدد'?'جاري تحضير اللحوم 🥩':'جاهز للتوصيل 📦',rating:null,comment:null,isPublished:false,date:now.toISOString().split('T')[0],time:now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),lat:null,lng:null,custLat:null,custLng:null,customerId:b.customerId||null,customerNameNormalized:normalizeName(b.customerName||''),createdBy:currentUser.username,createdAt:Date.now(),trackingToken,convertedFrom:'storeBooking',convertedFromKey:sourceKey,businessDate:currentDailySession?.businessDate||dailyToday(),dailySessionId:currentDailySession?.sessionId||b.dailySessionId||null,convertedAt:Date.now(),convertedBy:currentUser.username};await db.ref('orders/'+orderId).set(payload);await db.ref('storeBookings/'+sourceKey).update({convertedTo:orderId,conversionType:'delivery',convertedAt:Date.now(),convertedBy:currentUser.username,status:'تم التحويل للدليفري 🔄'});await logActivity('update','storeBooking',`تحويل حجز المحل #${sourceKey} إلى طلب دليفري #${orderId}`,sourceKey,{orderId});await logActivity('create','order',`إنشاء طلب دليفري من حجز المحل #${sourceKey}`,orderId,{sourceKey});addNotification('delivery','تم تحويل الحجز إلى دليفري',`#${sourceKey} → #${orderId} — ${driver}`,orderId);closeConversionModal();alert('تم تحويل الحجز إلى دليفري بنجاح ✅');
         }else{
-          const o=allOrdersCache[sourceKey];if(!o)return;const pickupDate=document.getElementById('conversionPickupDate').value,pickupTime=document.getElementById('conversionPickupTime').value;if(!pickupDate||!pickupTime)return alert('اختر تاريخ ووقت الاستلام.');const bookingNumber=generateStoreBookingNumber();const items=normalizeInvoiceItems(o.items||[]),orderPrice=Number(o.orderPrice||invoiceItemsTotal(items)||0),total=orderPrice+Number(o.paymentFee||0),paidAmount=Math.min(total,Number(o.paidAmount||0)),remainingDue=Math.max(total-paidAmount,0),paymentStatus=paidAmount>=total?'paid':paidAmount>0?'deposit':'unpaid';const payload={bookingNumber,bookingType:'store',customerName:o.customerName||'',customerPhone:o.phone||'',customerPhoneNormalized:normalizePhone(o.phone||''),customerId:o.customerId||null,pickupDate,pickupTime,notes:`تحويل من طلب دليفري #${o.orderId||sourceKey}${o.address?` — العنوان السابق: ${o.address}`:''}`,items, total,paidAmount,remainingDue,paymentStatus,status:'محجوز 🟡',createdBy:currentUser.username,createdAt:Date.now(),updatedAt:Date.now(),convertedFrom:'delivery',convertedFromKey:sourceKey,convertedAt:Date.now(),convertedBy:currentUser.username};await db.ref('storeBookings/'+bookingNumber).set(payload);await db.ref('orders/'+sourceKey).update({convertedTo:bookingNumber,conversionType:'storeBooking',convertedAt:Date.now(),convertedBy:currentUser.username,status:'تم التحويل لحجز المحل 🔄'});await logActivity('update','order',`تحويل الطلب #${sourceKey} إلى حجز محل #${bookingNumber}`,sourceKey,{bookingNumber});await logActivity('create','storeBooking',`إنشاء حجز محل من الطلب #${sourceKey}`,bookingNumber,{sourceKey});addNotification('status','تم تحويل الطلب إلى حجز محل',`#${sourceKey} → حجز #${bookingNumber} — استلام ${pickupDate} ${pickupTime}`,bookingNumber);closeConversionModal();alert('تم تحويل الطلب إلى حجز محل بنجاح ✅');
+          const o=allOrdersCache[sourceKey];if(!o)return;const pickupDate=document.getElementById('conversionPickupDate').value,pickupTime=document.getElementById('conversionPickupTime').value;if(!pickupDate||!pickupTime)return alert('اختر تاريخ ووقت الاستلام.');const bookingNumber=generateStoreBookingNumber();const items=normalizeInvoiceItems(o.items||[]),orderPrice=Number(o.orderPrice||invoiceItemsTotal(items)||0),total=orderPrice+Number(o.paymentFee||0),paidAmount=Math.min(total,Number(o.paidAmount||0)),remainingDue=Math.max(total-paidAmount,0),paymentStatus=paidAmount>=total?'paid':paidAmount>0?'deposit':'unpaid';const payload={bookingNumber,bookingType:'store',customerName:o.customerName||'',customerPhone:o.phone||'',customerPhoneNormalized:normalizePhone(o.phone||''),customerId:o.customerId||null,pickupDate,pickupTime,notes:`تحويل من طلب دليفري #${o.orderId||sourceKey}${o.address?` — العنوان السابق: ${o.address}`:''}`,items, total,paidAmount,remainingDue,paymentStatus,status:'محجوز 🟡',createdBy:currentUser.username,createdAt:Date.now(),updatedAt:Date.now(),convertedFrom:'delivery',convertedFromKey:sourceKey,businessDate:currentDailySession?.businessDate||dailyToday(),dailySessionId:currentDailySession?.sessionId||o.dailySessionId||null,convertedAt:Date.now(),convertedBy:currentUser.username};await db.ref('storeBookings/'+bookingNumber).set(payload);await db.ref('orders/'+sourceKey).update({convertedTo:bookingNumber,conversionType:'storeBooking',convertedAt:Date.now(),convertedBy:currentUser.username,status:'تم التحويل لحجز المحل 🔄'});await logActivity('update','order',`تحويل الطلب #${sourceKey} إلى حجز محل #${bookingNumber}`,sourceKey,{bookingNumber});await logActivity('create','storeBooking',`إنشاء حجز محل من الطلب #${sourceKey}`,bookingNumber,{sourceKey});addNotification('status','تم تحويل الطلب إلى حجز محل',`#${sourceKey} → حجز #${bookingNumber} — استلام ${pickupDate} ${pickupTime}`,bookingNumber);closeConversionModal();alert('تم تحويل الطلب إلى حجز محل بنجاح ✅');
         }
       }catch(e){console.error(e);alert('تعذر تنفيذ التحويل حاليًا. تحقق من Firebase Rules ثم أعد المحاولة.');}
     }
@@ -6272,12 +6694,13 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     }
     function closeEditModal(){document.getElementById('editOrderModal').classList.add('hidden');}
     async function saveEditOrder(){
-      if(APP_MODE!=='staff'||!currentUser||(currentUser.role!=='admin'&&currentUser.role!=='cashier'))return;if(!canUser('edit'))return alert('عذراً، ليس لديك صلاحية حفظ التعديلات.');const key=document.getElementById('editKey').value;if(!key||!allOrdersCache[key])return alert('لا تملك الوصول إلى هذا الطلب.');const current=allOrdersCache[key]||{};const name=document.getElementById('editCustName').value.trim(),phone=document.getElementById('editCustPhone').value.trim(),address=document.getElementById('editCustAddress').value.trim(),deliveryPrice=Number(document.getElementById('editDeliveryPrice').value)||0,driver=document.getElementById('editDriverSelect').value;let customerId=current.customerId||null;try{customerId=await upsertCustomerRecord(name,phone,address,customerId,false);}catch(e){}const update={customerName:name,phone,address,deliveryPrice,driver,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name)};let orderPrice,totalCash;if(editInvoiceItemsTouched){const items=editInvoiceItems.map(item=>({...item,total:(Number(item.qty)||0)*(Number(item.unitPrice)||0)}));orderPrice=invoiceItemsTotal(items);update.items=items;}else{orderPrice=Number(current.orderPrice||0);}totalCash=orderPrice+deliveryPrice+Number(current.paymentFee||0);update.orderPrice=orderPrice;update.totalCash=totalCash;const paidCheckbox=document.getElementById('editPaidCheckbox');const isPaid=!!paidCheckbox?.checked;update.isPaid=isPaid;update.paidAmount=isPaid?totalCash:0;update.remainingDue=isPaid?0:totalCash;update.changeDue=0;db.ref('orders/'+key).update(update).then(()=>{logActivity('update','order',`تعديل بيانات الطلب #${allOrdersCache[key]?.orderId||key}`,key,{total:totalCash,driver});alert('تم حفظ بيانات الطلب والفاتورة وحالة الدفع بنجاح ✅');closeEditModal();editInvoiceItemsTouched=false;});
+      if(APP_MODE!=='staff'||!currentUser||(currentUser.role!=='admin'&&currentUser.role!=='cashier'))return;if(!canUser('edit'))return alert('عذراً، ليس لديك صلاحية حفظ التعديلات.');if(!requireDailyOpen('حفظ تعديل الفاتورة'))return;const key=document.getElementById('editKey').value;if(!key||!allOrdersCache[key])return alert('لا تملك الوصول إلى هذا الطلب.');const current=allOrdersCache[key]||{};const name=document.getElementById('editCustName').value.trim(),phone=document.getElementById('editCustPhone').value.trim(),address=document.getElementById('editCustAddress').value.trim(),deliveryPrice=Number(document.getElementById('editDeliveryPrice').value)||0,driver=document.getElementById('editDriverSelect').value;let customerId=current.customerId||null;try{customerId=await upsertCustomerRecord(name,phone,address,customerId,false);}catch(e){}const update={customerName:name,phone,address,deliveryPrice,driver,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name),dailySessionId:currentDailySession?.sessionId||current.dailySessionId||null,businessDate:dailyToday()};let orderPrice,totalCash;if(editInvoiceItemsTouched){const items=editInvoiceItems.map(item=>({...item,total:(Number(item.qty)||0)*(Number(item.unitPrice)||0)}));orderPrice=invoiceItemsTotal(items);update.items=items;}else{orderPrice=Number(current.orderPrice||0);}totalCash=orderPrice+deliveryPrice+Number(current.paymentFee||0);update.orderPrice=orderPrice;update.totalCash=totalCash;const paidCheckbox=document.getElementById('editPaidCheckbox');const isPaid=!!paidCheckbox?.checked;update.isPaid=isPaid;update.paidAmount=isPaid?totalCash:0;update.remainingDue=isPaid?0:totalCash;update.changeDue=0;db.ref('orders/'+key).update(update).then(()=>{logActivity('update','order',`تعديل بيانات الطلب #${allOrdersCache[key]?.orderId||key}`,key,{total:totalCash,driver});alert('تم حفظ بيانات الطلب والفاتورة وحالة الدفع بنجاح ✅');closeEditModal();editInvoiceItemsTouched=false;});
     }
 
     function deleteOrder(id) {
       if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!allOrdersCache[id]) return;
       if(!canUser('delete')) return alert('عذراً، ليس لديك صلاحية الحذف.');
+      if(!requireDailyOpen('حذف الطلب')) return;
       if(confirm(`هل تريد حذف هذا الطلب بشكل نهائي؟`)) db.ref('orders/' + id).remove().then(()=>logActivity('delete','order',`حذف الطلب #${allOrdersCache[id]?.orderId||id}`,id));
     }
 
@@ -6326,9 +6749,9 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     function getDriverOrderKeyFromInput(id){const typed=String(id||'').trim();if(!typed)return null;if(driverOrdersCache[typed])return typed;return Object.keys(driverOrdersCache).find(k=>driverOrdersCache[k]?.orderId===typed)||(Object.keys(driverOrdersCache).find(k=>String(driverOrdersCache[k]?.orderId||'').includes(typed))||null);}
     function populateDriverOrderCard(key,data){currentDriverOrderKey=key;document.getElementById('orderId').value=data.orderId||key;document.getElementById('dCustName').innerText=data.customerName||data.name||'--';document.getElementById('dCustAddress').innerText=data.address||'--';document.getElementById('dPayMethod').innerText=getPaymentText(data.paymentMethod);document.getElementById('dTotalCash').innerText=(data.totalCash||((data.orderPrice||0)+(data.deliveryPrice||0)+(data.paymentFee||0)))+' ج.م';const driverItems=normalizeInvoiceItems(data.items||[]),driverItemsEl=document.getElementById('driverInvoiceItems');if(driverItemsEl)driverItemsEl.innerHTML=driverItems.length?`<table class="invoice-details-table"><thead><tr><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead><tbody>${driverItems.map(it=>`<tr><td><b>${escapeHtml(it.name)}</b></td><td>${Number(it.qty).toLocaleString('ar-EG')}</td><td>${Number(it.unitPrice).toLocaleString('ar-EG')} ج.م</td><td><b>${Number(it.total).toLocaleString('ar-EG')} ج.م</b></td></tr>`).join('')}</tbody></table>`:'<div class="text-[10px] text-gray-400 text-center py-2">لا توجد أصناف مفصلة.</div>';document.getElementById('dStatus').innerText=data.status||'--';document.getElementById('driverStatusSelect').value=data.status||'جاري تحضير اللحوم 🥩';document.getElementById('driverOrderCard').classList.remove('hidden');}
     function fetchDriverOrder(keyOverride=null){if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='driver')return;const key=getDriverOrderKeyFromInput(keyOverride||document.getElementById('orderId').value.trim());if(!key)return alert('عذراً، هذا الطلب غير مسند إليك أو غير موجود ضمن طلباتك.');populateDriverOrderCard(key,driverOrdersCache[key]);}
-    function driverChangeStatus(newStatus){if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='driver')return;const key=currentDriverOrderKey||getDriverOrderKeyFromInput(document.getElementById('orderId').value.trim());if(!key||!driverOrdersCache[key])return alert('اختر طلباً من طلباتك أولاً.');db.ref('orders/'+key).update({status:newStatus}).then(()=>document.getElementById('driverStatus').innerText='✅ تم تحديث حالة الطلب إلى: '+newStatus);}
+    function driverChangeStatus(newStatus){if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='driver')return;if(!requireDailyOpen('تحديث حالة الطلب'))return;const key=currentDriverOrderKey||getDriverOrderKeyFromInput(document.getElementById('orderId').value.trim());if(!key||!driverOrdersCache[key])return alert('اختر طلباً من طلباتك أولاً.');db.ref('orders/'+key).update({status:newStatus}).then(()=>document.getElementById('driverStatus').innerText='✅ تم تحديث حالة الطلب إلى: '+newStatus);}
     let watchId=null;
-    function startDelivery(){if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='driver')return;const key=currentDriverOrderKey||getDriverOrderKeyFromInput(document.getElementById('orderId').value.trim());if(!key||!driverOrdersCache[key])return alert('اختر طلباً من طلباتك أولاً.');if(!navigator.geolocation)return alert('المتصفح لا يدعم تحديد الموقع الجغرافي');if(watchId){navigator.geolocation.clearWatch(watchId);watchId=null;document.getElementById('driverStatus').innerText='🛑 تم إيقاف بث الموقع الحي.';document.getElementById('startBtn').innerText='📍 بدء بث اللوكيشن الحي Live (اختياري)';document.getElementById('stopBtn').classList.add('hidden');return;}watchId=navigator.geolocation.watchPosition(pos=>{db.ref('orders/'+key).update({lat:pos.coords.latitude,lng:pos.coords.longitude,locationUpdatedAt:Date.now()});document.getElementById('driverStatus').innerText='📍 يتم الآن بث موقعك الحي بنجاح...';document.getElementById('startBtn').innerText='🔄 جاري بث اللوكيشن حياً...';document.getElementById('stopBtn').classList.remove('hidden');},()=>alert('تعذر الوصول إلى نظام تحديد المواقع (GPS)'),{enableHighAccuracy:true});}
+    function startDelivery(){if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='driver')return;if(!requireDailyOpen('بث الموقع الحي'))return;const key=currentDriverOrderKey||getDriverOrderKeyFromInput(document.getElementById('orderId').value.trim());if(!key||!driverOrdersCache[key])return alert('اختر طلباً من طلباتك أولاً.');if(!navigator.geolocation)return alert('المتصفح لا يدعم تحديد الموقع الجغرافي');if(watchId){navigator.geolocation.clearWatch(watchId);watchId=null;document.getElementById('driverStatus').innerText='🛑 تم إيقاف بث الموقع الحي.';document.getElementById('startBtn').innerText='📍 بدء بث اللوكيشن الحي Live (اختياري)';document.getElementById('stopBtn').classList.add('hidden');return;}watchId=navigator.geolocation.watchPosition(pos=>{db.ref('orders/'+key).update({lat:pos.coords.latitude,lng:pos.coords.longitude,locationUpdatedAt:Date.now()});document.getElementById('driverStatus').innerText='📍 يتم الآن بث موقعك الحي بنجاح...';document.getElementById('startBtn').innerText='🔄 جاري بث اللوكيشن حياً...';document.getElementById('stopBtn').classList.remove('hidden');},()=>alert('تعذر الوصول إلى نظام تحديد المواقع (GPS)'),{enableHighAccuracy:true});}
     function stopDelivery(){if(watchId){navigator.geolocation.clearWatch(watchId);watchId=null;}document.getElementById('driverStatus').innerText='🛑 تم إيقاف بث الموقع الحي.';document.getElementById('startBtn').innerText='📍 بدء بث اللوكيشن الحي Live (اختياري)';document.getElementById('stopBtn').classList.add('hidden');}
 
     async function loadCustomerOrderFromSecureLink(){
