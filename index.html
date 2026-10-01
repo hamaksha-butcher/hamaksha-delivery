@@ -984,7 +984,7 @@
 
                 <section class="invoice-items-shell">
                   <div class="invoice-items-head">
-                    <div class="invoice-items-title"><span class="icon">🧾</span><div><h3>أصناف الفاتورة</h3><p>أضف كل صنف مع الكمية وسعر الوحدة</p></div></div>
+                    <div class="invoice-items-title"><span class="icon">🧾</span><div><h3>أصناف الفاتورة</h3><p>اختيار من المنيو الرسمي حسب القسم الرئيسي والفرعي، أو إضافة صنف مخصص.</p></div></div>
                     <span class="optional-badge">الإجمالي تلقائي</span>
                   </div>
                   <div class="invoice-add-grid">
@@ -1473,9 +1473,12 @@
               <h2 class="text-2xl sm:text-3xl font-black tracking-tight mt-1">كتالوج أسعار اللحوم</h2>
               <p class="text-xs sm:text-sm text-white/80 mt-2 font-semibold">أسعار واضحة وسريعة التحديث، مناسبة للاستخدام اليومي.</p>
             </div>
-            <button id="addPriceBtn" onclick="openAddPriceModal()" class="hidden self-start lg:self-auto bg-white text-[var(--primary-color,#7f1d1d)] hover:bg-white/90 font-black text-xs px-4 py-3 rounded-2xl shadow-lg transition-all">
-              ＋ إضافة صنف جديد
-            </button>
+            <div class="flex flex-wrap gap-2 self-start lg:self-auto">
+              <button type="button" onclick="installOfficialMenu()" class="bg-white/15 hover:bg-white/25 border border-white/20 text-white font-black text-xs px-4 py-3 rounded-2xl transition-all">🥩 تثبيت منيو الجزارة</button>
+              <button id="addPriceBtn" onclick="openAddPriceModal()" class="hidden bg-white text-[var(--primary-color,#7f1d1d)] hover:bg-white/90 font-black text-xs px-4 py-3 rounded-2xl shadow-lg transition-all">
+                ＋ إضافة صنف جديد
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1498,9 +1501,10 @@
           <div class="flex items-center justify-between gap-3">
             <div class="flex flex-wrap gap-2" id="priceCategoryChips">
               <button type="button" onclick="setPriceCategory('all')" data-price-cat="all" class="price-chip px-3 py-1.5 rounded-full text-[10px] font-black bg-gray-900 text-white">الكل</button>
-              <button type="button" onclick="setPriceCategory('meat')" data-price-cat="meat" class="price-chip px-3 py-1.5 rounded-full text-[10px] font-black bg-gray-100 text-gray-600 hover:bg-gray-200">لحوم</button>
-              <button type="button" onclick="setPriceCategory('ready')" data-price-cat="ready" class="price-chip px-3 py-1.5 rounded-full text-[10px] font-black bg-gray-100 text-gray-600 hover:bg-gray-200">جاهزات</button>
-              <button type="button" onclick="setPriceCategory('offal')" data-price-cat="offal" class="price-chip px-3 py-1.5 rounded-full text-[10px] font-black bg-gray-100 text-gray-600 hover:bg-gray-200">أحشاء</button>
+              <button type="button" onclick="setPriceCategory('red')" data-price-cat="red" class="price-chip px-3 py-1.5 rounded-full text-[10px] font-black bg-gray-100 text-gray-600 hover:bg-gray-200">اللحوم الحمراء</button>
+              <button type="button" onclick="setPriceCategory('lambGoat')" data-price-cat="lambGoat" class="price-chip px-3 py-1.5 rounded-full text-[10px] font-black bg-gray-100 text-gray-600 hover:bg-gray-200">الضاني والماعز</button>
+              <button type="button" onclick="setPriceCategory('minced')" data-price-cat="minced" class="price-chip px-3 py-1.5 rounded-full text-[10px] font-black bg-gray-100 text-gray-600 hover:bg-gray-200">المفروم والمصنعات</button>
+              <button type="button" onclick="setPriceCategory('extras')" data-price-cat="extras" class="price-chip px-3 py-1.5 rounded-full text-[10px] font-black bg-gray-100 text-gray-600 hover:bg-gray-200">الكماليات</button>
             </div>
             <span id="priceResultsCount" class="shrink-0 text-[10px] font-black text-gray-400">0 صنف</span>
           </div>
@@ -2509,9 +2513,52 @@
       return [];
     }
     function syncOrderPriceFromInvoice(mode){const total=invoiceItemsTotal(getInvoiceItemsState(mode));const target=document.getElementById(mode==='edit'?'editOrderPrice':'orderPrice');if(target&&(mode==='new'||editInvoiceItemsTouched))target.value=total.toFixed(2).replace(/\.00$/,'');const totalEl=document.getElementById(mode==='edit'?'invoiceItemsTotalEdit':'invoiceItemsTotalNew');if(totalEl)totalEl.innerText=total.toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2})+' ج.م';if(mode==='new')calculateTotalBill();}
-    function renderInvoiceProductOptions(){[['invoiceItemProduct','new'],['editInvoiceItemProduct','edit']].forEach(([id])=>{const select=document.getElementById(id);if(!select)return;const current=select.value;const options=['<option value="">اختر من قائمة الأسعار...</option>','<option value="__custom__">✍️ صنف مخصص</option>'];Object.entries(pricesCache||{}).forEach(([key,item])=>{if(!item?.name)return;options.push(`<option value="${escapeHtml(key)}" data-name="${escapeHtml(item.name)}" data-price="${Number(item.price||0)}" data-unit="${escapeHtml(item.unit||'كيلو')}">${escapeHtml(item.name)} — ${Number(item.price||0).toLocaleString('ar-EG')} ج.م/${escapeHtml(item.unit||'كيلو')}</option>`);});select.innerHTML=options.join('');if(current&&Array.from(select.options).some(o=>o.value===current))select.value=current;});}
-    function handleInvoiceProductChange(mode){const isEdit=mode==='edit',select=document.getElementById(isEdit?'editInvoiceItemProduct':'invoiceItemProduct'),qty=document.getElementById(isEdit?'editInvoiceItemQty':'invoiceItemQty'),price=document.getElementById(isEdit?'editInvoiceItemUnitPrice':'invoiceItemUnitPrice'),wrap=document.getElementById(isEdit?'editInvoiceCustomNameWrap':'invoiceCustomNameWrap'),name=document.getElementById(isEdit?'editInvoiceItemName':'invoiceItemName'),unit=document.getElementById(isEdit?'editInvoiceItemUnit':'invoiceItemUnit'),opt=select?.selectedOptions?.[0];if(select?.value==='__custom__'){wrap?.classList.add('show');if(name)name.value='';if(unit)unit.value='كيلو';if(price)price.value='0';}else{wrap?.classList.remove('show');if(opt){if(price)price.value=opt.dataset.price||0;if(unit)unit.value=opt.dataset.unit||'كيلو';if(name)name.value=opt.dataset.name||'';}}if(qty&&!qty.value)qty.value='1';}
-    function addInvoiceItem(mode){const isEdit=mode==='edit',select=document.getElementById(isEdit?'editInvoiceItemProduct':'invoiceItemProduct'),qtyEl=document.getElementById(isEdit?'editInvoiceItemQty':'invoiceItemQty'),priceEl=document.getElementById(isEdit?'editInvoiceItemUnitPrice':'invoiceItemUnitPrice'),nameEl=document.getElementById(isEdit?'editInvoiceItemName':'invoiceItemName'),unitEl=document.getElementById(isEdit?'editInvoiceItemUnit':'invoiceItemUnit'),product=select?.value||'',qty=Number(qtyEl?.value)||0,unitPrice=Number(priceEl?.value)||0,name=(product==='__custom__'?(nameEl?.value||'').trim():(select?.selectedOptions?.[0]?.dataset?.name||nameEl?.value||'').trim()),unit=(unitEl?.value||select?.selectedOptions?.[0]?.dataset?.unit||'كيلو').trim()||'كيلو';if(!name)return alert('اكتب اسم الصنف أو اختر صنفًا من القائمة.');if(qty<=0)return alert('أدخل كمية صحيحة.');if(unitPrice<0)return alert('أدخل سعر وحدة صحيح.');const items=getInvoiceItemsState(mode);items.push({name,qty,unitPrice,unit,total:qty*unitPrice,priceKey:product&&product!=='__custom__'?product:null});setInvoiceItemsState(mode,items);if(isEdit)editInvoiceItemsTouched=true;renderInvoiceItems(mode);syncOrderPriceFromInvoice(mode);if(select)select.value='';if(qtyEl)qtyEl.value='1';if(priceEl)priceEl.value='0';if(nameEl)nameEl.value='';if(unitEl)unitEl.value='كيلو';document.getElementById(isEdit?'editInvoiceCustomNameWrap':'invoiceCustomNameWrap')?.classList.remove('show');}
+    function renderInvoiceProductOptions(){
+      [['invoiceItemProduct','new'],['editInvoiceItemProduct','edit']].forEach(([id])=>{
+        const select=document.getElementById(id); if(!select)return;
+        const current=select.value;
+        const entries=getMergedMenuPriceEntries();
+        const groups={};
+        entries.forEach(({key,item,isOfficial})=>{
+          const main=item.mainCategory||item.main||'أصناف أخرى';
+          const sub=item.subCategory||item.sub||'';
+          const groupKey=main+'||'+sub;
+          if(!groups[groupKey])groups[groupKey]={main,sub,items:[]};
+          groups[groupKey].items.push({key,item,isOfficial});
+        });
+        const options=['<option value="">اختر صنفًا من المنيو...</option>','<option value="__custom__">✍️ صنف مخصص</option>'];
+        Object.values(groups).forEach(group=>{
+          const label=group.sub?`${group.main} — ${group.sub}`:group.main;
+          options.push(`<optgroup label="${escapeHtml(label)}">`);
+          group.items.forEach(({key,item})=>{
+            const display=menuPriceText(item);
+            const numeric=Number(item.price||0);
+            options.push(`<option value="${escapeHtml(key)}" data-name="${escapeHtml(item.name||'')}" data-price="${numeric}" data-price-display="${escapeHtml(display)}" data-unit="${escapeHtml(item.unit||'كيلو')}">${escapeHtml(item.name||'صنف')} — ${escapeHtml(display)} ج.م/${escapeHtml(item.unit||'كيلو')}</option>`);
+          });
+          options.push('</optgroup>');
+        });
+        select.innerHTML=options.join('');
+        if(current&&Array.from(select.options).some(o=>o.value===current))select.value=current;
+      });
+    }
+
+    function handleInvoiceProductChange(mode){
+      const isEdit=mode==='edit',select=document.getElementById(isEdit?'editInvoiceItemProduct':'invoiceItemProduct'),qty=document.getElementById(isEdit?'editInvoiceItemQty':'invoiceItemQty'),price=document.getElementById(isEdit?'editInvoiceItemUnitPrice':'invoiceItemUnitPrice'),wrap=document.getElementById(isEdit?'editInvoiceCustomNameWrap':'invoiceCustomNameWrap'),name=document.getElementById(isEdit?'editInvoiceItemName':'invoiceItemName'),unit=document.getElementById(isEdit?'editInvoiceItemUnit':'invoiceItemUnit'),opt=select?.selectedOptions?.[0],display=opt?.dataset?.priceDisplay||opt?.dataset?.price||'0';
+      if(select?.value==='__custom__'){
+        wrap?.classList.add('show');if(name)name.value='';if(unit)unit.value='كيلو';if(price){price.value='0';price.placeholder='0';}
+      }else{
+        wrap?.classList.remove('show');
+        if(opt){
+          if(price){const numeric=Number(opt.dataset.price||0);price.value=numeric;price.placeholder=display.includes('/')?display:'0';}
+          if(unit)unit.value=opt.dataset.unit||'كيلو';
+          if(name)name.value=opt.dataset.name||'';
+          if(display.includes('/')) setTimeout(()=>alert(`سعر ${opt.dataset.name||'الصنف'} في المنيو: ${display} ج.م — اختر السعر المناسب يدويًا قبل الإضافة.`),10);
+        }
+      }
+      if(qty&&!qty.value)qty.value='1';
+    }
+
+    function addInvoiceItem(mode){const isEdit=mode==='edit',select=document.getElementById(isEdit?'editInvoiceItemProduct':'invoiceItemProduct'),qtyEl=document.getElementById(isEdit?'editInvoiceItemQty':'invoiceItemQty'),priceEl=document.getElementById(isEdit?'editInvoiceItemUnitPrice':'invoiceItemUnitPrice'),nameEl=document.getElementById(isEdit?'editInvoiceItemName':'invoiceItemName'),unitEl=document.getElementById(isEdit?'editInvoiceItemUnit':'invoiceItemUnit'),product=select?.value||'',qty=Number(qtyEl?.value)||0,unitPrice=Number(priceEl?.value)||0,name=(product==='__custom__'?(nameEl?.value||'').trim():(select?.selectedOptions?.[0]?.dataset?.name||nameEl?.value||'').trim()),unit=(unitEl?.value||select?.selectedOptions?.[0]?.dataset?.unit||'كيلو').trim()||'كيلو';if(!name)return alert('اكتب اسم الصنف أو اختر صنفًا من القائمة.');if(qty<=0)return alert('أدخل كمية صحيحة.');if(unitPrice<=0)return alert('أدخل سعر وحدة صحيحًا قبل إضافة الصنف.');const items=getInvoiceItemsState(mode);items.push({name,qty,unitPrice,unit,total:qty*unitPrice,priceKey:product&&product!=='__custom__'?product:null});setInvoiceItemsState(mode,items);if(isEdit)editInvoiceItemsTouched=true;renderInvoiceItems(mode);syncOrderPriceFromInvoice(mode);if(select)select.value='';if(qtyEl)qtyEl.value='1';if(priceEl){priceEl.value='0';priceEl.placeholder='0';}if(nameEl)nameEl.value='';if(unitEl)unitEl.value='كيلو';document.getElementById(isEdit?'editInvoiceCustomNameWrap':'invoiceCustomNameWrap')?.classList.remove('show');}
     function updateInvoiceItem(mode,index,field,value){const items=getInvoiceItemsState(mode);if(!items[index])return;items[index][field]=(field==='qty'||field==='unitPrice')?Number(value)||0:String(value);items[index].total=(Number(items[index].qty)||0)*(Number(items[index].unitPrice)||0);if(mode==='edit')editInvoiceItemsTouched=true;renderInvoiceItems(mode);syncOrderPriceFromInvoice(mode);}
     function removeInvoiceItem(mode,index){const items=getInvoiceItemsState(mode);items.splice(index,1);setInvoiceItemsState(mode,items);if(mode==='edit')editInvoiceItemsTouched=true;renderInvoiceItems(mode);syncOrderPriceFromInvoice(mode);}
     function renderInvoiceItems(mode){const body=document.getElementById(mode==='edit'?'invoiceItemsBodyEdit':'invoiceItemsBodyNew');if(!body)return;const items=getInvoiceItemsState(mode)||[],empty=mode==='edit'?'لا توجد أصناف مفصلة لهذا الطلب.':'لم تتم إضافة أصناف بعد. اختر صنفًا وأضفه للفاتورة.';if(!items.length){body.innerHTML=`<tr><td colspan="6" class="invoice-items-empty">${empty}</td></tr>`;const totalEl=document.getElementById(mode==='edit'?'invoiceItemsTotalEdit':'invoiceItemsTotalNew');if(totalEl)totalEl.innerText='0 ج.م';return;}body.innerHTML=items.map((it,i)=>`<tr><td class="font-bold">${escapeHtml(it.name||'صنف')}</td><td>${escapeHtml(it.unit||'كيلو')}</td><td class="text-center"><input class="invoice-line-input" type="number" min="0.01" step="0.01" value="${Number(it.qty||0)}" onchange="updateInvoiceItem('${mode}',${i},'qty',this.value)"></td><td class="text-center"><input class="invoice-line-input" type="number" min="0" step="0.01" value="${Number(it.unitPrice||0)}" onchange="updateInvoiceItem('${mode}',${i},'unitPrice',this.value)"></td><td class="text-center font-black">${Number(it.total||0).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2})} ج.م</td><td class="text-center"><button type="button" class="invoice-remove-btn" onclick="removeInvoiceItem('${mode}',${i})" title="حذف الصنف">✕</button></td></tr>`).join('');const totalEl=document.getElementById(mode==='edit'?'invoiceItemsTotalEdit':'invoiceItemsTotalNew');if(totalEl)totalEl.innerText=invoiceItemsTotal(items).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2})+' ج.م';}
@@ -3432,16 +3479,105 @@
       if(!count)container.innerHTML='<p class="text-[11px] text-gray-400 text-center">لا توجد آراء منشورة حالياً.</p>';
     }
 
+    // --- 🥩 المنيو الرسمي: الأقسام الرئيسية + الأقسام الفرعية + الأصناف والأسعار ---
+    const MENU_CATALOG = [
+      {id:"red-1",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم الممتاز",name:"عرق فلتو",price:470,unit:'كيلو'},
+      {id:"red-2",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم الممتاز",name:"عرق تريبيانكو",price:470,unit:'كيلو'},
+      {id:"red-3",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم الممتاز",name:"وش فخدة",price:470,unit:'كيلو'},
+      {id:"red-4",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم الممتاز",name:"بفتيك",price:470,unit:'كيلو'},
+      {id:"red-5",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم الممتاز",name:"استيك",price:470,unit:'كيلو'},
+      {id:"red-6",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم الممتاز",name:"موزة",price:470,unit:'كيلو'},
+      {id:"red-7",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم الممتاز",name:"سمانة",price:470,unit:'كيلو'},
+      {id:"red-8",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم اللحم الأحمر",name:"سن",price:460,unit:'كيلو'},
+      {id:"red-9",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم اللحم الأحمر",name:"رقيه",price:460,unit:'كيلو'},
+      {id:"red-10",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم اللحم الأحمر",name:"سمانة",price:460,unit:'كيلو'},
+      {id:"red-11",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم اللحم الأحمر",name:"كتف",price:460,unit:'كيلو'},
+      {id:"red-12",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم اللحم الأحمر",name:"كولاته",price:460,unit:'كيلو'},
+      {id:"red-13",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم اللحم الأحمر",name:"جرمه لوج",price:460,unit:'كيلو'},
+      {id:"red-14",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم اللحم الأحمر",name:"شاورما",price:460,unit:'كيلو'},
+      {id:"red-15",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم اللحم الأحمر",name:"كباب حله",price:460,unit:'كيلو'},
+      {id:"red-16",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم البتلو",name:"ريش بتلو",price:400,unit:'كيلو'},
+      {id:"red-17",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم البتلو",name:"بتلو بالعظم",price:420,unit:'كيلو'},
+      {id:"red-18",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم البتلو",name:"بتلو مشفي",price:500,unit:'كيلو'},
+      {id:"red-19",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم البتلو",name:"بوفتيك بتلو",price:500,unit:'كيلو'},
+      {id:"red-20",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم الوسط والمليبس",name:"لحم وسط",price:430,unit:'كيلو'},
+      {id:"red-21",main:"اللحوم الحمراء والقطيعات المميزة",sub:"قسم الوسط والمليبس",name:"لحم ملبس (ضلوع)",price:380,unit:'كيلو'},
+      {id:"lamb-22",main:"الضاني والماعز",sub:"الضاني",name:"لحم ضاني (فخده/كتف)",price:460,unit:'كيلو'},
+      {id:"lamb-23",main:"الضاني والماعز",sub:"الضاني",name:"ريش ضاني",price:480,unit:'كيلو'},
+      {id:"lamb-24",main:"الضاني والماعز",sub:"الضاني",name:"كبدة ضاني كاملة",price:460,unit:'كيلو'},
+      {id:"lamb-25",main:"الضاني والماعز",sub:"الضاني",name:"ليه ضاني",price:270,unit:'كيلو'},
+      {id:"lamb-26",main:"الضاني والماعز",sub:"الماعز",name:"لحم ماعز (ريش/فخده/كتف)",price:480,unit:'كيلو'},
+      {id:"lamb-27",main:"الضاني والماعز",sub:"الماعز",name:"كبدة ماعز كاملة",price:480,unit:'كيلو'},
+      {id:"minced-28",main:"المفروم والمصنعات والكبدة العجالي",sub:"قسم المفروم",name:"مفروم أحمر",price:460,unit:'كيلو'},
+      {id:"minced-29",main:"المفروم والمصنعات والكبدة العجالي",sub:"قسم المفروم",name:"مفروم وسط",price:430,unit:'كيلو'},
+      {id:"minced-30",main:"المفروم والمصنعات والكبدة العجالي",sub:"قسم المفروم",name:"مفروم ملبس",price:380,unit:'كيلو'},
+      {id:"minced-31",main:"المفروم والمصنعات والكبدة العجالي",sub:"قسم المفروم",name:"مفروم جواوشي",price:350,unit:'كيلو'},
+      {id:"minced-32",main:"المفروم والمصنعات والكبدة العجالي",sub:"قسم المصنعات",name:"سجق / برجر / كفتة حاتي",price:380,unit:'كيلو'},
+      {id:"minced-33",main:"المفروم والمصنعات والكبدة العجالي",sub:"قسم المصنعات",name:"طرب",price:440,unit:'كيلو'},
+      {id:"minced-34",main:"المفروم والمصنعات والكبدة العجالي",sub:"قسم الكبدة العجالي",name:"كبدة مشكلة (قلب، كلاوي، حلويات)",price:460,unit:'كيلو'},
+      {id:"minced-35",main:"المفروم والمصنعات والكبدة العجالي",sub:"قسم الكبدة العجالي",name:"قلب على كلاوي",price:440,unit:'كيلو'},
+      {id:"extras-36",main:"الكماليات",sub:"",name:"ممبار",price:230,unit:'كيلو'},
+      {id:"extras-37",main:"الكماليات",sub:"",name:"كوارع",price:0,priceDisplay:"350/300",unit:'كيلو'},
+      {id:"extras-38",main:"الكماليات",sub:"",name:"طحال",price:0,priceDisplay:"150/100",unit:'كيلو'},
+      {id:"extras-39",main:"الكماليات",sub:"",name:"عكاوي",price:380,unit:'كيلو'},
+      {id:"extras-40",main:"الكماليات",sub:"",name:"مخ",price:0,priceDisplay:"300/250",unit:'كيلو'},
+      {id:"extras-41",main:"الكماليات",sub:"",name:"لحمة راس",price:180,unit:'كيلو'},
+      {id:"extras-42",main:"الكماليات",sub:"",name:"حلويات",price:200,unit:'كيلو'},
+      {id:"extras-43",main:"الكماليات",sub:"",name:"نخاع / خاصي",price:200,unit:'كيلو'},
+      {id:"extras-44",main:"الكماليات",sub:"",name:"كرشه / دوش بعظمه",price:120,unit:'كيلو'},
+      {id:"extras-45",main:"الكماليات",sub:"",name:"قضيب",price:80,unit:'كيلو'},
+      {id:"extras-46",main:"الكماليات",sub:"",name:"فشه",price:100,unit:'كيلو'},
+      {id:"extras-47",main:"الكماليات",sub:"",name:"دهن كلاوي",price:70,unit:'كيلو'}
+    ];
+
+    function normalizeMenuName(name){return normalizeName(name||'').replace(/[()\u0640\-\/]/g,'').replace(/\s+/g,'').trim();}
+    function menuPriceText(item){return String(item?.priceDisplay||((Number(item?.price)||0).toLocaleString('ar-EG')));}
+    function getMergedMenuPriceEntries(){
+      const existing=Object.entries(pricesCache||{}).map(([key,item])=>({key,item:item||{}}));
+      const byMenuId=new Map(),byName=new Map();
+      existing.forEach(entry=>{
+        if(entry.item.menuId) byMenuId.set(String(entry.item.menuId),entry);
+        if(entry.item.name) byName.set(normalizeMenuName(entry.item.name),entry);
+      });
+      const official=MENU_CATALOG.map(menuItem=>{
+        const match=byMenuId.get(menuItem.id)||byName.get(normalizeMenuName(menuItem.name));
+        const merged={...menuItem,...(match?.item||{}),mainCategory:menuItem.main,subCategory:menuItem.sub||'',menuId:menuItem.id,source:'official'};
+        if(menuItem.priceDisplay && !match?.item?.priceDisplay) merged.priceDisplay=menuItem.priceDisplay;
+        return {key:match?.key||`menu::${menuItem.id}`,item:merged,isOfficial:true};
+      });
+      const used=new Set(official.map(e=>e.key));
+      const custom=existing.filter(e=>!used.has(e.key) && !e.item?.menuId).map(e=>({...e,isOfficial:false}));
+      return [...official,...custom];
+    }
+
+    async function installOfficialMenu(){
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!canUser('prices')) return alert('تثبيت المنيو متاح للإدارة صاحبة صلاحية الأسعار فقط.');
+      const existing=Object.values(pricesCache||{});
+      const byMenuId=new Set(existing.map(x=>String(x?.menuId||'')));
+      const byName=new Set(existing.map(x=>normalizeMenuName(x?.name||'')));
+      const missing=MENU_CATALOG.filter(item=>!byMenuId.has(item.id)&&!byName.has(normalizeMenuName(item.name)));
+      if(!missing.length) return alert('المنيو الرسمي موجود بالفعل داخل قائمة الأسعار ✅');
+      const updates={};
+      missing.forEach(item=>{const key=db.ref('prices').push().key;updates[key]={...item,menuId:item.id,mainCategory:item.main,subCategory:item.sub||'',source:'official-menu',priceDisplay:item.priceDisplay||String(item.price)};});
+      await db.ref('prices').update(updates);
+      alert(`تمت إضافة ${missing.length} صنف من المنيو الرسمي ✅`);
+    }
+
     // --- 🏷️ قسم أسعار اللحوم وإدارتها المباشرة ---
     let pricesCache = {};
     let activePriceCategory = 'all';
     let pricesListenerAttached = false;
 
     function getPriceCategory(item){
+      const main=String(item?.mainCategory||item?.main||'');
+      if(main==='الضاني والماعز') return 'lambGoat';
+      if(main==='المفروم والمصنعات والكبدة العجالي') return 'minced';
+      if(main==='الكماليات') return 'extras';
+      if(main==='اللحوم الحمراء والقطيعات المميزة') return 'red';
       const name = String(item?.name || '').toLowerCase();
-      if(/كفتة|سجق|برجر|جاهز|شيش|حواوشي/.test(name)) return 'ready';
-      if(/كبد|كلاوي|طحال|فشة|قلب|مخ|أحشاء/.test(name)) return 'offal';
-      return 'meat';
+      if(/كفتة|سجق|برجر|جاهز|شيش|حواوشي/.test(name)) return 'minced';
+      if(/كبد|كلاوي|طحال|فشة|قلب|مخ|أحشاء/.test(name)) return 'extras';
+      return 'red';
     }
 
     function setPriceCategory(category){
@@ -3458,10 +3594,10 @@
       if(!container) return;
       const q = String(document.getElementById('priceSearchInput')?.value || '').trim().toLowerCase();
       const sort = document.getElementById('priceSortSelect')?.value || 'name';
-      const entries = Object.entries(pricesCache || {}).map(([key,item]) => ({key, item:item||{}}));
+      const entries = getMergedMenuPriceEntries();
       const filtered = entries.filter(({item}) => {
-        const name = String(item.name||'').toLowerCase();
-        const matchesQ = !q || name.includes(q);
+        const haystack = [item.name,item.mainCategory,item.subCategory].filter(Boolean).join(' ').toLowerCase();
+        const matchesQ = !q || haystack.includes(q);
         const matchesCat = activePriceCategory === 'all' || getPriceCategory(item) === activePriceCategory;
         return matchesQ && matchesCat;
       }).sort((a,b) => {
@@ -3472,63 +3608,65 @@
 
       const count = document.getElementById('priceResultsCount');
       if(count) count.innerText = `${filtered.length} صنف`;
-
       if(!filtered.length){
         container.innerHTML = '<div class="col-span-full rounded-3xl border border-dashed border-gray-200 bg-gray-50 p-10 text-center"><div class="text-4xl mb-2">🔎</div><p class="text-xs font-bold text-gray-500">لا توجد أصناف مطابقة للبحث أو التصنيف الحالي.</p></div>';
         return;
       }
-
       const canEditPrices = canUser('prices');
-      container.innerHTML = filtered.map(({key,item}) => {
-        const price = Number(item.price||0);
+      container.innerHTML = filtered.map(({key,item,isOfficial}) => {
+        const priceText=menuPriceText(item);
         const category = getPriceCategory(item);
-        const badge = category === 'ready' ? 'جاهز' : category === 'offal' ? 'أحشاء' : 'لحوم';
+        const badge = category === 'minced' ? 'مفروم/مصنعات' : category === 'extras' ? 'كماليات' : category === 'lambGoat' ? 'ضاني/ماعز' : 'لحوم حمراء';
+        const sub = item.subCategory || '';
+        const editButton = canEditPrices && !String(key).startsWith('menu::') ? `<button onclick="openEditPriceModal('${escapeHtml(key)}')" class="px-2.5 py-1.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 text-[10px] font-black">✏️ تعديل</button><button onclick="deletePriceItem('${escapeHtml(key)}')" class="px-2.5 py-1.5 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 text-[10px] font-black">🗑️ حذف</button>` : '';
         return `
           <article class="group relative overflow-hidden rounded-3xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-lg transition-all duration-200">
             <div class="absolute top-0 right-0 left-0 h-1 bg-gradient-to-l from-[var(--primary-color,#7f1d1d)] to-[var(--accent-color,#b45309)]"></div>
             <div class="flex items-start justify-between gap-3 pt-1">
               <div class="min-w-0">
-                <span class="inline-flex px-2 py-1 rounded-full bg-gray-100 text-gray-500 text-[9px] font-black">${badge}</span>
+                <div class="flex flex-wrap gap-1.5"><span class="inline-flex px-2 py-1 rounded-full bg-gray-100 text-gray-500 text-[9px] font-black">${badge}</span>${sub?`<span class="inline-flex px-2 py-1 rounded-full bg-amber-50 text-amber-700 text-[9px] font-black">${escapeHtml(sub)}</span>`:''}${isOfficial?`<span class="inline-flex px-2 py-1 rounded-full bg-red-50 text-red-700 text-[9px] font-black">منيو رسمي</span>`:''}</div>
                 <h4 class="font-black text-sm text-gray-900 mt-2 leading-6">${escapeHtml(item.name || 'صنف بدون اسم')}</h4>
                 <p class="text-[10px] text-gray-500 font-semibold mt-1">السعر لكل ${escapeHtml(item.unit || 'كيلو')}</p>
               </div>
               <div class="text-left shrink-0">
-                <div class="text-2xl font-black text-[var(--primary-color,#991b1b)] font-mono leading-none">${price.toLocaleString('ar-EG')}</div>
+                <div class="text-2xl font-black text-[var(--primary-color,#991b1b)] font-mono leading-none">${escapeHtml(priceText)}</div>
                 <div class="text-[10px] font-black text-gray-400 mt-1">ج.م</div>
               </div>
             </div>
             <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
-              <span class="text-[10px] text-gray-400 font-semibold">محدث ضمن قائمة الأسعار</span>
-              ${canEditPrices ? `<div class="flex gap-1.5"><button onclick="openEditPriceModal('${key}')" class="px-2.5 py-1.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 text-[10px] font-black">✏️ تعديل</button><button onclick="deletePriceItem('${key}')" class="px-2.5 py-1.5 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 text-[10px] font-black">🗑️ حذف</button></div>` : ''}
+              <span class="text-[10px] text-gray-400 font-semibold">${escapeHtml(item.mainCategory||'قائمة الأسعار')}</span>
+              ${editButton ? `<div class="flex gap-1.5">${editButton}</div>` : '<span class="text-[9px] font-black text-emerald-600">✓ ضمن المنيو الرسمي</span>'}
             </div>
           </article>`;
       }).join('');
     }
 
-    function renderPrices() {
+
+    async function renderPrices() {
       if(!canUser('prices')) return;
       if(pricesListenerAttached) { renderPriceCatalog(); return; }
       pricesListenerAttached = true;
-      db.ref('prices').on('value', (snap) => {
+      db.ref('prices').on('value', async (snap) => {
         pricesCache = snap.val() || {};
         renderInvoiceProductOptions();
-
-        const defaultPrices = [
-          { name: 'لحم كندوز ممتاز', price: 470, unit: 'كيلو' },
-          { name: 'لحم ضاني (فخده/كتف)', price: 460, unit: 'كيلو' },
-          { name: 'كفتة حاتي جاهزة', price: 380, unit: 'كيلو' },
-          { name: 'مفروم أحمر ممتاز', price: 460, unit: 'كيلو' },
-          { name: 'كبده عجالي مشكلة', price: 460, unit: 'كيلو' },
-          { name: 'سجق بلدي حمكشة', price: 380, unit: 'كيلو' }
-        ];
-
-        if (Object.keys(pricesCache).length === 0) {
-          defaultPrices.forEach(dp => db.ref('prices').push(dp));
-          return;
-        }
         renderPriceCatalog();
+        if(currentUser?.role==='admin' && canUser('prices')) {
+          try { await ensureOfficialMenuInPrices(); } catch(err) { console.error('Official menu sync error:',err); }
+        }
       });
     }
+
+    async function ensureOfficialMenuInPrices(){
+      const existing=Object.values(pricesCache||{});
+      const byMenuId=new Set(existing.map(x=>String(x?.menuId||'')));
+      const byName=new Set(existing.map(x=>normalizeMenuName(x?.name||'')));
+      const missing=MENU_CATALOG.filter(item=>!byMenuId.has(item.id)&&!byName.has(normalizeMenuName(item.name)));
+      if(!missing.length)return;
+      const updates={};
+      missing.forEach(item=>{const key=db.ref('prices').push().key;updates[key]={...item,menuId:item.id,mainCategory:item.main,subCategory:item.sub||'',source:'official-menu',priceDisplay:item.priceDisplay||String(item.price)};});
+      await db.ref('prices').update(updates);
+    }
+
 
     function openAddPriceModal() {
       if(!canUser('prices')) return alert('عذراً، ليس لديك صلاحية تعديل أو إضافة أسعار.');
