@@ -11,12 +11,14 @@
     body { font-family: 'Cairo', sans-serif; transition: background-color 0.3s, color 0.3s; }
 
     /* ===== الواجهة الجديدة: Sidebar + Header للموبايل ===== */
+    :root { --sidebar-width: 280px; }
     .app-sidebar {
       position: fixed;
       top: 0;
       right: 0;
-      width: 280px;
-      height: 100vh;
+      width: var(--sidebar-width);
+      height: 100dvh;
+      min-height: 100vh;
       z-index: 40;
       display: flex;
       flex-direction: column;
@@ -25,11 +27,15 @@
       box-shadow: -8px 0 30px rgba(0,0,0,.12);
       transition: transform .25s ease, background-color .3s ease;
     }
+    .app-sidebar { overflow: hidden; }
     .app-sidebar .sidebar-scroll {
+      min-height: 0;
       overflow-y: auto;
       overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
       scrollbar-width: thin;
     }
+    .sidebar-brand, .sidebar-footer { flex-shrink: 0; }
     .sidebar-brand {
       padding: 22px 18px 18px;
       border-bottom: 1px solid rgba(255,255,255,.14);
@@ -1145,10 +1151,13 @@
     <div class="sidebar-brand">
       <div class="flex items-center gap-3">
         <span class="sidebar-brand-mark">🥩</span>
-        <div class="min-w-0">
+        <div class="min-w-0 flex-1">
           <h1 class="text-lg font-black tracking-wide truncate" data-store-name>جزارة حمكشة</h1>
           <p class="text-[10px] text-amber-200 font-semibold mt-0.5" data-store-tagline>نظام إدارة الطلبات والتوصيل</p>
         </div>
+        <button id="sidebarNotificationButton" type="button" class="sidebar-notification-btn notification-bell notification-trigger" onclick="toggleNotifications(event)" aria-label="فتح الإشعارات" title="الإشعارات">
+          <span class="text-base">🔔</span><span id="notificationBadgeDesktop" class="notification-badge">0</span>
+        </button>
       </div>
     </div>
 
@@ -1213,11 +1222,6 @@
     </div>
   </div>
   <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
-
-  <!-- 🔔 زر الإشعارات العائم: يظهر الجرس فقط، وتُفتح اللوحة عند الضغط -->
-  <button id="desktopNotificationButton" type="button" class="desktop-notification-fab notification-bell notification-trigger" onclick="toggleNotifications(event)" aria-label="فتح الإشعارات" title="الإشعارات">
-    <span class="text-base">🔔</span><span id="notificationBadgeDesktop" class="notification-badge">0</span>
-  </button>
 
   <!-- 🔔 لوحة الإشعارات: مخفية افتراضياً وتظهر عند الضغط على زر الجرس فقط -->
   <div id="notificationPanel" class="notification-panel" aria-hidden="true">
@@ -2951,6 +2955,7 @@
     function closeSidebar() {
       document.getElementById('mainHeader')?.classList.remove('open');
       document.getElementById('sidebarOverlay')?.classList.remove('open');
+      document.getElementById('sidebarOverlay')?.style.removeProperty('display');
     }
     function syncNavigationTitle(tabName) {
       let title = sidebarTitles[tabName] || 'جزارة حمكشة';
@@ -5202,10 +5207,10 @@
     .notification-shell{position:relative}
     .notification-bell{position:relative;display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:13px;background:rgba(255,255,255,.10);color:#fff;border:1px solid rgba(255,255,255,.08);cursor:pointer;transition:.18s}
     .notification-bell:hover{background:rgba(255,255,255,.16);transform:translateY(-1px)}
-    .notification-badge{position:absolute;top:-4px;left:-4px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#ef4444;color:#fff;border:2px solid var(--sidebar-bg,#24100f);font-size:9px;font-weight:900;display:none;align-items:center;justify-content:center;line-height:1}
+    .sidebar-notification-btn{flex:0 0 auto;box-shadow:0 8px 18px rgba(0,0,0,.12)}
+    .notification-badge{position:absolute;top:-4px;left:-4px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#ef4444;color:#fff;border:2px solid var(--sidebar-color,#111827);font-size:9px;font-weight:900;display:none;align-items:center;justify-content:center;line-height:1}
     .notification-badge.show{display:flex}
-    .desktop-notification-fab{position:fixed;z-index:130;top:18px;right:calc(var(--sidebar-width,270px) + 18px);box-shadow:0 10px 28px rgba(15,23,42,.18)}
-    .notification-panel{position:fixed;z-index:140;top:72px;right:calc(var(--sidebar-width,270px) + 18px);width:min(390px,calc(100vw - 28px));max-height:min(610px,calc(100vh - 36px));background:var(--surface-color,#fff);color:var(--text-color,#172033);border:1px solid var(--border-color,#e5e7eb);border-radius:22px;box-shadow:0 24px 60px rgba(15,23,42,.22);overflow:hidden;display:none}
+    .notification-panel{position:fixed;z-index:2000;top:78px;right:calc(var(--sidebar-width,280px) + 14px);width:min(390px,calc(100vw - var(--sidebar-width,280px) - 28px));max-height:min(610px,calc(100vh - 96px));background:var(--surface-color,#fff);color:var(--text-color,#172033);border:1px solid var(--border-color,#e5e7eb);border-radius:22px;box-shadow:0 24px 60px rgba(15,23,42,.22);overflow:hidden;display:none}
     .notification-panel.open{display:flex;flex-direction:column;animation:noticeIn .18s ease-out}
     @keyframes noticeIn{from{opacity:0;transform:translateY(-8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
     .notification-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 16px;border-bottom:1px solid var(--border-color,#e5e7eb);background:var(--surface-soft,#f8fafc)}
@@ -5213,14 +5218,14 @@
     .notification-actions{display:flex;gap:6px}.notification-mini-btn{border:1px solid var(--border-color,#e5e7eb);background:var(--surface-color,#fff);color:var(--muted-color,#64748b);border-radius:10px;padding:7px 9px;font-size:9px;font-weight:900;cursor:pointer}
     .notification-list{overflow:auto;padding:8px;display:grid;gap:7px}.notification-item{display:flex;gap:10px;padding:11px;border:1px solid var(--border-color,#e5e7eb);border-radius:15px;background:var(--surface-color,#fff);cursor:pointer;transition:.16s}.notification-item:hover{transform:translateY(-1px)}.notification-item.unread{background:var(--surface-soft,#f8fafc);border-color:var(--primary-color,#7f1d1d)}
     .notification-dot{width:10px;height:10px;border-radius:999px;margin-top:5px;flex:0 0 auto}.notification-content{min-width:0;flex:1}.notification-title{font-size:10px;font-weight:900;color:var(--text-color,#172033);line-height:1.6}.notification-text{font-size:9px;color:var(--muted-color,#64748b);line-height:1.7;margin-top:2px}.notification-time{font-size:8px;color:var(--muted-color,#94a3b8);margin-top:5px;font-weight:800}.notification-empty{padding:36px 18px;text-align:center;color:var(--muted-color,#64748b);font-size:10px;font-weight:800}
-    .notification-panel[aria-hidden="true"]{display:none!important;visibility:hidden;pointer-events:none}.notification-panel.open[aria-hidden="false"]{display:flex!important;visibility:visible;pointer-events:auto}
+    .notification-panel[aria-hidden="true"]{display:none!important;visibility:hidden;pointer-events:none}.notification-panel:not(.open){display:none!important;visibility:hidden;pointer-events:none}.notification-panel.open[aria-hidden="false"]{display:flex!important;visibility:visible;pointer-events:auto}
     .notification-shell{display:flex;justify-content:center}
     .notification-trigger{flex:0 0 auto}
     .mobile-notification-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:12px;background:rgba(255,255,255,.09);color:#fff;border:1px solid rgba(255,255,255,.08);position:relative;cursor:pointer}
-    @media(max-width:900px){.desktop-notification-fab{display:none!important}.notification-panel{top:72px;right:14px;width:min(390px,calc(100vw - 28px));max-height:70vh}.notification-shell.desktop-only{display:none!important}}
+    @media(max-width:900px){.notification-panel{top:68px;right:12px;width:calc(100vw - 24px);max-height:72vh}.notification-shell.desktop-only{display:none!important}.sidebar-notification-btn{display:flex!important;width:38px;height:38px;border-radius:11px}}
     @media(min-width:901px){.mobile-notification-btn{display:none!important}}
-    body.customer-public-mode .notification-shell, body.customer-public-mode .mobile-notification-btn, body.customer-public-mode .desktop-notification-fab, body.driver-private-mode .notification-shell, body.driver-private-mode .desktop-notification-fab{display:none!important}
-    body.staff-logged-out .desktop-notification-fab, body.staff-logged-out .mobile-notification-btn{display:none!important}
+    body.customer-public-mode .notification-shell, body.customer-public-mode .mobile-notification-btn, body.customer-public-mode .sidebar-notification-btn, body.driver-private-mode .notification-shell, body.driver-private-mode .sidebar-notification-btn{display:none!important}
+    body.staff-logged-out .sidebar-notification-btn, body.staff-logged-out .mobile-notification-btn{display:none!important}
 </style>
         </head>
         <body>
@@ -5293,7 +5298,31 @@
     function buildThermalReceipt(order,key){const settings=getAppSettings(),items=normalizeInvoiceItems(order?.items||[]),orderPrice=Number(order?.orderPrice||invoiceItemsTotal(items)),delivery=Number(order?.deliveryPrice||0),fee=Number(order?.paymentFee||0),total=Number(order?.totalCash||orderPrice+delivery+fee),currency=escapeHtml(settings.currency||'ج.م');const itemRows=items.length?items.map(it=>`<tr><td class="name">${escapeHtml(it.name)}</td><td>${Number(it.qty).toLocaleString('ar-EG')}</td><td>${Number(it.unitPrice).toLocaleString('ar-EG')}</td><td>${Number(it.total).toLocaleString('ar-EG')}</td></tr>`).join(''):`<tr><td colspan="4" class="center muted">الطلب مسجل بالإجمالي فقط</td></tr>`;return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>فاتورة #${escapeHtml(order?.orderId||key)}</title><style>@page{size:80mm auto;margin:0}*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:#111;font-family:Arial,"Tahoma",sans-serif}.receipt{width:72mm;margin:0 auto;padding:4mm 3.5mm;font-size:10px}.center{text-align:center}.brand{font-size:18px;font-weight:900;margin-bottom:2px}.tag{font-size:9px;color:#555}.title{font-size:14px;font-weight:900;margin:8px 0 4px}.meta{font-size:9px;line-height:1.7}.rule{border-top:1px dashed #222;margin:7px 0}.customer{background:#f7f7f7;padding:7px;border-radius:5px;line-height:1.7}.items{width:100%;border-collapse:collapse;margin-top:7px}.items th{font-size:8px;border-bottom:1px solid #111;padding:4px 2px}.items td{padding:5px 2px;border-bottom:1px dotted #bbb;font-size:8.5px;vertical-align:top}.items .name{max-width:30mm;word-break:break-word}.totals{margin-top:7px;border-top:1px solid #111;padding-top:5px}.totals div{display:flex;justify-content:space-between;padding:2px 0}.grand{font-size:13px;font-weight:900;margin-top:4px;border-top:1px dashed #111;padding-top:5px}.footer{margin-top:10px;text-align:center;font-size:8px;color:#555;line-height:1.7}.muted{color:#777}
 
 
-  </style></head><body><div class="receipt"><div class="center"><div class="brand">🥩 ${escapeHtml(settings.storeName||'جزارة حمكشة')}</div><div class="tag">${escapeHtml(settings.storeTagline||'نظام إدارة الطلبات والتوصيل')}</div><div class="title">فاتورة بيع</div><div class="meta">رقم الطلب: <b>#${escapeHtml(order?.orderId||key)}</b><br>التاريخ: ${escapeHtml(formatDateDMY(order?.date||''))} ${escapeHtml(order?.time||'')}</div></div><div class="rule"></div><div class="customer"><b>العميل:</b> ${escapeHtml(order?.customerName||order?.name||'غير محدد')}<br><b>الهاتف:</b> ${escapeHtml(order?.phone||'—')}<br><b>العنوان:</b> ${escapeHtml(order?.address||'—')}</div><table class="items"><thead><tr><th>الصنف</th><th>كمية</th><th>سعر</th><th>إجمالي</th></tr></thead><tbody>${itemRows}</tbody></table><div class="totals"><div><span>إجمالي الأصناف</span><b>${orderPrice.toLocaleString('ar-EG')} ${currency}</b></div><div><span>التوصيل</span><b>${delivery.toLocaleString('ar-EG')} ${currency}</b></div><div><span>عمولة الدفع</span><b>${fee.toLocaleString('ar-EG')} ${currency}</b></div><div><span>الدفع</span><b>${escapeHtml(getPaymentText(order?.paymentMethod||'cash').replace(/^[^\p{L}\p{N}]+/u,''))}</b></div><div><span>المدفوع</span><b>${Number(order?.paidAmount??(order?.paymentMethod==='cash'?total:total)).toLocaleString('ar-EG')} ${currency}</b></div><div><span>المتبقي</span><b>${Number(order?.remainingDue??Math.max(0,total-Number(order?.paidAmount||0))).toLocaleString('ar-EG')} ${currency}</b></div><div><span>الباقي للعميل</span><b>${Number(order?.changeDue??Math.max(0,Number(order?.paidAmount||0)-total)).toLocaleString('ar-EG')} ${currency}</b></div><div class="grand"><span>الإجمالي النهائي</span><b>${total.toLocaleString('ar-EG')} ${currency}</b></div></div><div class="rule"></div><div class="footer">${settings.storePhone?`واتساب: ${escapeHtml(settings.storePhone)}<br>`:''}${settings.storeLocation?`الموقع: ${escapeHtml(settings.storeLocation)}<br>`:''}شكرًا لثقتكم في جزارة حمكشة 🥩<br>نتمنى لكم وجبة طيبة</div></div><script>window.onload=function(){setTimeout(function(){window.print()},120)};<\/script></body></html>`;}
+  
+    /* ===== STEP 38 / SIDEBAR STABILITY FOR CASHIER ===== */
+    body.cashier-mode .app-sidebar {
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      pointer-events: auto !important;
+    }
+    body.cashier-mode .app-sidebar .sidebar-scroll {
+      overflow: visible !important;
+      min-height: auto !important;
+      flex: none !important;
+    }
+    body.cashier-mode .sidebar-overlay {
+      pointer-events: none !important;
+    }
+    body.cashier-mode main.app-main {
+      margin-right: var(--sidebar-width) !important;
+    }
+    @media(max-width:767px){
+      body.cashier-mode .app-sidebar .sidebar-scroll { overflow: visible !important; }
+      body.cashier-mode .app-sidebar { overflow-y: auto !important; }
+      body.cashier-mode .app-sidebar.open { pointer-events: auto !important; }
+      body.cashier-mode .sidebar-overlay.open { pointer-events: auto !important; }
+    }
+</style></head><body><div class="receipt"><div class="center"><div class="brand">🥩 ${escapeHtml(settings.storeName||'جزارة حمكشة')}</div><div class="tag">${escapeHtml(settings.storeTagline||'نظام إدارة الطلبات والتوصيل')}</div><div class="title">فاتورة بيع</div><div class="meta">رقم الطلب: <b>#${escapeHtml(order?.orderId||key)}</b><br>التاريخ: ${escapeHtml(formatDateDMY(order?.date||''))} ${escapeHtml(order?.time||'')}</div></div><div class="rule"></div><div class="customer"><b>العميل:</b> ${escapeHtml(order?.customerName||order?.name||'غير محدد')}<br><b>الهاتف:</b> ${escapeHtml(order?.phone||'—')}<br><b>العنوان:</b> ${escapeHtml(order?.address||'—')}</div><table class="items"><thead><tr><th>الصنف</th><th>كمية</th><th>سعر</th><th>إجمالي</th></tr></thead><tbody>${itemRows}</tbody></table><div class="totals"><div><span>إجمالي الأصناف</span><b>${orderPrice.toLocaleString('ar-EG')} ${currency}</b></div><div><span>التوصيل</span><b>${delivery.toLocaleString('ar-EG')} ${currency}</b></div><div><span>عمولة الدفع</span><b>${fee.toLocaleString('ar-EG')} ${currency}</b></div><div><span>الدفع</span><b>${escapeHtml(getPaymentText(order?.paymentMethod||'cash').replace(/^[^\p{L}\p{N}]+/u,''))}</b></div><div><span>المدفوع</span><b>${Number(order?.paidAmount??(order?.paymentMethod==='cash'?total:total)).toLocaleString('ar-EG')} ${currency}</b></div><div><span>المتبقي</span><b>${Number(order?.remainingDue??Math.max(0,total-Number(order?.paidAmount||0))).toLocaleString('ar-EG')} ${currency}</b></div><div><span>الباقي للعميل</span><b>${Number(order?.changeDue??Math.max(0,Number(order?.paidAmount||0)-total)).toLocaleString('ar-EG')} ${currency}</b></div><div class="grand"><span>الإجمالي النهائي</span><b>${total.toLocaleString('ar-EG')} ${currency}</b></div></div><div class="rule"></div><div class="footer">${settings.storePhone?`واتساب: ${escapeHtml(settings.storePhone)}<br>`:''}${settings.storeLocation?`الموقع: ${escapeHtml(settings.storeLocation)}<br>`:''}شكرًا لثقتكم في جزارة حمكشة 🥩<br>نتمنى لكم وجبة طيبة</div></div><script>window.onload=function(){setTimeout(function(){window.print()},120)};<\/script></body></html>`;}
     function printThermalInvoice(key,orderOverride=null){if(APP_MODE!=='staff'&&!orderOverride)return;const order=orderOverride||allOrdersCache[key];if(!order)return alert('تعذر العثور على بيانات الفاتورة.');const win=window.open('','_blank','width=420,height=760');if(!win)return alert('اسمح بفتح النوافذ المنبثقة لطباعة الفاتورة.');win.document.open();win.document.write(buildThermalReceipt(order,key));win.document.close();}
     function printLastCreatedInvoice(){if(!lastCreatedOrderSnapshot)return alert('لا توجد فاتورة جديدة جاهزة للطباعة.');printThermalInvoice(lastCreatedOrderKey,lastCreatedOrderSnapshot);}
 
