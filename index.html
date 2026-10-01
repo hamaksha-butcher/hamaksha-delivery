@@ -386,6 +386,14 @@
 
 
 
+
+    /* Step 48: cashier quantity shortcuts (new delivery invoice + store booking only) */
+    .cashier-qty-tools{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px}
+    .cashier-qty-tools .qty-step-btn{border:1px solid #cbd5e1;background:#f8fafc;color:#0f172a;border-radius:9px;padding:5px 8px;font-size:10px;font-weight:900;cursor:pointer;line-height:1;transition:.12s ease}
+    .cashier-qty-tools .qty-step-btn:hover{background:#e2e8f0;transform:translateY(-1px)}
+    .cashier-qty-tools .qty-step-btn:active{transform:translateY(0)}
+    .cashier-qty-tools .qty-step-label{font-size:9px;color:#64748b;font-weight:800;margin-inline-end:2px}
+    .cashier-qty-tools .qty-step-btn.active{border-color:#0f766e;background:#ccfbf1;color:#115e59}
     /* --- Modern Order Form --- */
     .order-form-card { overflow:hidden; }
     .order-form-hero { background:linear-gradient(135deg, var(--primary-color) 0%, var(--sidebar-color) 100%); box-shadow:0 12px 28px var(--shadow-color); }
@@ -1611,7 +1619,20 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
     <div class="pos-add-bar">
       <div class="pos-selected-product"><small>الصنف المختار</small><b id="selectedInvoiceProductLabel">لم يتم اختيار صنف</b></div>
-      <div><label class="order-label">الكمية</label><input type="number" id="invoiceItemQty" class="invoice-field pos-qty-field" min="0.01" step="0.01" value="1" inputmode="decimal"></div>
+      <div>
+        <label class="order-label">الكمية</label>
+        <input type="number" id="invoiceItemQty" class="invoice-field pos-qty-field" min="0.01" step="0.01" value="1" inputmode="decimal">
+        <div class="cashier-qty-tools" aria-label="كميات سريعة">
+          <span class="qty-step-label">سريع:</span>
+          <button type="button" class="qty-step-btn" onclick="setCashierQty('invoice',0.25)">¼</button>
+          <button type="button" class="qty-step-btn" onclick="setCashierQty('invoice',0.5)">½</button>
+          <button type="button" class="qty-step-btn" onclick="setCashierQty('invoice',0.75)">¾</button>
+          <button type="button" class="qty-step-btn active" onclick="setCashierQty('invoice',1)">1</button>
+          <button type="button" class="qty-step-btn" onclick="setCashierQty('invoice',1.25)">1¼</button>
+          <button type="button" class="qty-step-btn" onclick="setCashierQty('invoice',1.5)">1½</button>
+          <button type="button" class="qty-step-btn" onclick="setCashierQty('invoice',2)">2</button>
+        </div>
+      </div>
       <div><label class="order-label">سعر الوحدة</label><input type="number" id="invoiceItemUnitPrice" class="invoice-field" min="0" step="0.01" value="0" inputmode="decimal"></div>
       <button type="button" class="invoice-add-btn pos-add-line-btn" onclick="addInvoiceItem('new')">＋ إضافة للفاتورة</button>
     </div>
@@ -1823,7 +1844,20 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
             <div class="store-selected-row">
               <div class="store-selected-name"><small>الصنف المختار</small><b id="storeBookingSelectedLabel">لم يتم اختيار صنف</b></div>
-              <div><label class="store-booking-label">الكمية</label><input id="storeBookingItemQty" type="number" min="0.01" step="0.01" value="1" class="store-booking-input text-center" inputmode="decimal"></div>
+              <div>
+        <label class="store-booking-label">الكمية</label>
+        <input id="storeBookingItemQty" type="number" min="0.01" step="0.01" value="1" class="store-booking-input text-center" inputmode="decimal">
+        <div class="cashier-qty-tools" aria-label="كميات سريعة">
+          <span class="qty-step-label">سريع:</span>
+          <button type="button" class="qty-step-btn" onclick="setCashierQty('store',0.25)">¼</button>
+          <button type="button" class="qty-step-btn" onclick="setCashierQty('store',0.5)">½</button>
+          <button type="button" class="qty-step-btn" onclick="setCashierQty('store',0.75)">¾</button>
+          <button type="button" class="qty-step-btn active" onclick="setCashierQty('store',1)">1</button>
+          <button type="button" class="qty-step-btn" onclick="setCashierQty('store',1.25)">1¼</button>
+          <button type="button" class="qty-step-btn" onclick="setCashierQty('store',1.5)">1½</button>
+          <button type="button" class="qty-step-btn" onclick="setCashierQty('store',2)">2</button>
+        </div>
+      </div>
               <div><label class="store-booking-label">سعر الوحدة</label><input id="storeBookingItemUnitPrice" type="number" min="0" step="0.01" value="0" class="store-booking-input text-center" inputmode="decimal"></div>
               <button type="button" class="store-add-btn" onclick="addStoreBookingItem()">＋ إضافة للفاتورة</button>
             </div>
@@ -3707,6 +3741,26 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     }
 
     document.addEventListener('keydown',e=>{if(e.key==='Enter' && document.activeElement?.id==='invoiceItemQty' && document.getElementById('invoiceItemProduct')?.value){e.preventDefault();addInvoiceItem('new');}});
+    document.addEventListener('keydown',e=>{if(e.key==='Enter' && document.activeElement?.id==='storeBookingItemQty' && storeBookingSelectedProductKey){e.preventDefault();addStoreBookingItem();}});
+    function setCashierQty(target, value){
+      const id=target==='store'?'storeBookingItemQty':'invoiceItemQty';
+      const el=document.getElementById(id);
+      if(!el)return;
+      const n=Number(value);
+      if(!Number.isFinite(n)||n<=0)return;
+      el.value=String(n);
+      el.dispatchEvent(new Event('input',{bubbles:true}));
+      el.focus();
+      const wrap=el.parentElement?.querySelector('.cashier-qty-tools');
+      wrap?.querySelectorAll('.qty-step-btn').forEach(btn=>{
+        const txt=btn.textContent.trim();
+        const map={'¼':0.25,'½':0.5,'¾':0.75,'1':1,'1¼':1.25,'1½':1.5,'2':2};
+        btn.classList.toggle('active',Math.abs(Number(map[txt])-n)<0.001);
+      });
+    }
+
+    function addCashierQtyAndFocus(target,value){setCashierQty(target,value);}
+
     function addInvoiceItem(mode){const isEdit=mode==='edit',select=document.getElementById(isEdit?'editInvoiceItemProduct':'invoiceItemProduct'),qtyEl=document.getElementById(isEdit?'editInvoiceItemQty':'invoiceItemQty'),priceEl=document.getElementById(isEdit?'editInvoiceItemUnitPrice':'invoiceItemUnitPrice'),nameEl=document.getElementById(isEdit?'editInvoiceItemName':'invoiceItemName'),unitEl=document.getElementById(isEdit?'editInvoiceItemUnit':'invoiceItemUnit'),product=select?.value||'',qty=Number(qtyEl?.value)||0,unitPrice=Number(priceEl?.value)||0,name=(product==='__custom__'?(nameEl?.value||'').trim():(select?.selectedOptions?.[0]?.dataset?.name||nameEl?.value||'').trim()),unit=(unitEl?.value||select?.selectedOptions?.[0]?.dataset?.unit||'كيلو').trim()||'كيلو';if(!name)return alert('اكتب اسم الصنف أو اختر صنفًا من القائمة.');if(qty<=0)return alert('أدخل كمية صحيحة.');if(unitPrice<=0)return alert('أدخل سعر وحدة صحيحًا قبل إضافة الصنف.');const items=getInvoiceItemsState(mode);const priceKey=product&&product!=='__custom__'?product:null;const existing=items.find(it=>it.priceKey===priceKey&&it.name===name&&Number(it.unitPrice)===unitPrice&&it.unit===unit);if(existing){existing.qty=Number(existing.qty||0)+qty;existing.total=existing.qty*existing.unitPrice;}else{items.push({name,qty,unitPrice,unit,total:qty*unitPrice,priceKey});}setInvoiceItemsState(mode,items);if(isEdit)editInvoiceItemsTouched=true;renderInvoiceItems(mode);syncOrderPriceFromInvoice(mode);if(select)select.value='';if(qtyEl)qtyEl.value='1';if(priceEl){priceEl.value='0';priceEl.placeholder='0';}if(nameEl)nameEl.value='';if(unitEl)unitEl.value='كيلو';document.getElementById(isEdit?'editInvoiceCustomNameWrap':'invoiceCustomNameWrap')?.classList.remove('show');}
     function updateInvoiceItem(mode,index,field,value){const items=getInvoiceItemsState(mode);if(!items[index])return;items[index][field]=(field==='qty'||field==='unitPrice')?Number(value)||0:String(value);items[index].total=(Number(items[index].qty)||0)*(Number(items[index].unitPrice)||0);if(mode==='edit')editInvoiceItemsTouched=true;renderInvoiceItems(mode);syncOrderPriceFromInvoice(mode);}
     function changeInvoiceItemQty(mode,index,delta){const items=getInvoiceItemsState(mode);if(!items[index])return;const current=Number(items[index].qty)||0;const next=Math.max(0,current+Number(delta||0));if(next<=0){removeInvoiceItem(mode,index);return;}items[index].qty=Number(next.toFixed(2));items[index].total=items[index].qty*(Number(items[index].unitPrice)||0);if(mode==='edit')editInvoiceItemsTouched=true;renderInvoiceItems(mode);syncOrderPriceFromInvoice(mode);}
