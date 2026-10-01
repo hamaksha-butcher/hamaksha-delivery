@@ -691,6 +691,24 @@
     @media(max-width:640px){.profile-page-hero{padding:20px}.profile-avatar{width:64px;height:64px;border-radius:20px;font-size:29px}.profile-info-grid,.profile-perms{grid-template-columns:1fr}.profile-page-hero h2{font-size:22px}}
 
   
+
+    /* ===== STEP 35 - Customer 360 ===== */
+    .customer360-profile{display:grid;grid-template-columns:minmax(0,1.35fr) repeat(3,minmax(110px,.75fr));gap:8px;margin-bottom:10px}
+    .customer360-profile-main,.customer360-profile-stat{padding:11px 12px;border:1px solid var(--border-color,#e5e7eb);border-radius:15px;background:var(--surface-soft,#f8fafc)}
+    .customer360-profile-main{display:flex;align-items:center;gap:10px}
+    .customer360-avatar{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:var(--primary-color,#7f1d1d);color:#fff;font-weight:1000;font-size:17px;flex:0 0 auto}
+    .customer360-profile-main b{display:block;font-size:12px;color:var(--text-color,#172033);font-weight:1000}
+    .customer360-profile-main span{display:block;font-size:8px;color:var(--muted-color,#64748b);margin-top:3px}
+    .customer360-profile-stat span{display:block;font-size:7px;color:var(--muted-color,#64748b);font-weight:800}
+    .customer360-profile-stat b{display:block;font-size:12px;color:var(--text-color,#172033);font-weight:1000;margin-top:3px}
+    .customer360-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px;padding:5px;background:var(--surface-soft,#f8fafc);border:1px solid var(--border-color,#e5e7eb);border-radius:14px}
+    .customer360-tab{border:1px solid transparent;background:transparent;color:var(--muted-color,#64748b);border-radius:10px;padding:7px 10px;font-size:8px;font-weight:1000;cursor:pointer}
+    .customer360-tab.active{background:var(--surface-color,#fff);color:var(--primary-color,#7f1d1d);border-color:var(--border-color,#e5e7eb);box-shadow:0 5px 12px var(--shadow-color,rgba(15,23,42,.06))}
+    .customer-full-row[data-kind="payments"]{background:linear-gradient(90deg,rgba(16,185,129,.07),var(--surface-soft,#f8fafc))}
+    .customer360-address{margin-top:8px;padding:8px 10px;border-radius:12px;background:var(--surface-soft,#f8fafc);border:1px dashed var(--border-color,#e5e7eb);font-size:8px;color:var(--muted-color,#64748b)}
+    @media(max-width:760px){.customer360-profile{grid-template-columns:1fr 1fr}.customer360-profile-main{grid-column:1/-1}}
+    @media(max-width:520px){.customer360-profile{grid-template-columns:1fr}.customer360-profile-main{grid-column:auto}}
+
     /* STEP 18 - Modern Order Details */
     .order-details-modal { font-family: 'Cairo', sans-serif; }
     .order-details-hero { background: linear-gradient(135deg, var(--primary-color, #8f1239), #111827); }
@@ -2532,15 +2550,26 @@
   </div>
 
 
-  <!-- STEP 33: نافذة كل طلبات العميل -->
+  <!-- STEP 35: ملف العميل 360° -->
   <div id="customerHistoryModal" class="customer-history-modal" aria-hidden="true">
     <div class="customer-history-dialog">
       <div class="customer-history-dialog-head">
-        <div><span class="pos-kicker">CUSTOMER HISTORY</span><h3 id="customerHistoryModalTitle">📜 سجل العميل</h3><p id="customerHistoryModalSub">كل طلبات التوصيل وحجوزات المحل.</p></div>
+        <div>
+          <span class="pos-kicker">CUSTOMER 360</span>
+          <h3 id="customerHistoryModalTitle">👤 ملف العميل</h3>
+          <p id="customerHistoryModalSub">البيانات + الطلبات + الحجوزات + المدفوعات.</p>
+        </div>
         <button type="button" onclick="closeCustomerFullHistory()" class="store-action-btn">✕</button>
       </div>
       <div class="customer-history-dialog-body">
+        <div id="customer360Profile" class="customer360-profile"></div>
         <div id="customerFullSummary" class="customer-full-summary"></div>
+        <div id="customer360Tabs" class="customer360-tabs">
+          <button type="button" class="customer360-tab active" data-tab="all" onclick="filterCustomerHistoryTab('all')">الكل</button>
+          <button type="button" class="customer360-tab" data-tab="delivery" onclick="filterCustomerHistoryTab('delivery')">🛵 الدليفري</button>
+          <button type="button" class="customer360-tab" data-tab="store" onclick="filterCustomerHistoryTab('store')">🏪 حجوزات المحل</button>
+          <button type="button" class="customer360-tab" data-tab="payments" onclick="filterCustomerHistoryTab('payments')">💳 المدفوعات</button>
+        </div>
         <div id="customerFullHistoryList" class="customer-full-list"><div class="customer-history-empty">جاري تحميل سجل العميل...</div></div>
       </div>
     </div>
@@ -3726,7 +3755,7 @@
           <div class="customer-record-meta"><span>📍 ${escapeHtml(c.address||'العنوان غير محفوظ')}</span></div>
           <div class="flex flex-wrap gap-1.5 pt-1">
             <button type="button" onclick="useCustomerForNewOrder('${c.key}')" class="customer-action primary">📦 طلب</button>
-            <button type="button" onclick="openCustomerFullHistory('${c.key}')" class="customer-action">📜 كل الطلبات</button>
+            <button type="button" onclick="openCustomerFullHistory('${c.key}')" class="customer-action">👤 ملف العميل</button>
             <button type="button" onclick="editManagedCustomer('${c.key}')" class="customer-action edit">✏️ تعديل</button>
             ${isSuperUser()?`<button type="button" onclick="deleteManagedCustomer('${c.key}')" class="customer-action delete">🗑️ حذف</button>`:''}
           </div>
@@ -4003,8 +4032,8 @@
       Object.keys(all).forEach(key=>{const b=all[key]||{},status=String(b.status||'');if(status==='ملغي ❌'||status==='تم الاستلام ✅'||status==='تم التحويل للدليفري 🔄')return;const state=storeBookingReminderState[key]||{};const created=Number(b.createdAt||0);if(created&&now>=created+60*60*1000&&!state.hour){storeBookingReminderState[key]={...state,hour:true};addNotification('booking-hour','مرّت ساعة على حجز المحل',`الحجز #${b.bookingNumber||key} للعميل ${b.customerName||'عميل'} ما زال في المتابعة.`,key);changed=true;}const pickup=storeBookingPickupTimestamp(b);if(pickup&&now>=pickup-30*60*1000&&now<pickup&&!state.before30){storeBookingReminderState[key]={...(storeBookingReminderState[key]||state),before30:true};addNotification('booking-soon','موعد الاستلام بعد 30 دقيقة',`الحجز #${b.bookingNumber||key} للعميل ${b.customerName||'عميل'} — موعد الاستلام ${b.pickupTime||''}.`,key);changed=true;}});if(changed)saveStoreBookingReminderState();}
     function startStoreBookingReminderTimer(){if(storeReminderTimer)clearInterval(storeReminderTimer);storeReminderTimer=setInterval(checkStoreBookingReminders,30000);checkStoreBookingReminders();}
     function findStoreBookingTimeConflicts(pickupDate,pickupTime,excludeKey=null){const target=storeBookingPickupTimestamp({pickupDate,pickupTime});if(!target)return [];const all=window.storeBookingsCache||{},out=[];Object.keys(all).forEach(key=>{if(key===excludeKey)return;const b=all[key]||{},st=String(b.status||'');if(['ملغي ❌','تم الاستلام ✅','تم التحويل للدليفري 🔄'].includes(st))return;if(b.pickupDate!==pickupDate)return;const t=storeBookingPickupTimestamp(b);if(!t)return;const diff=Math.abs(t-target)/60000;if(diff===0)out.push({...b,key,kind:'exact',diff});else if(diff<STORE_BOOKING_CONFLICT_MINUTES)out.push({...b,key,kind:'near',diff});});return out.sort((a,b)=>a.diff-b.diff);}
-    function showStoreBookingConflictForCurrentForm(){const date=document.getElementById('storeBookingPickupDate')?.value,time=document.getElementById('storeBookingPickupTime')?.value,box=document.getElementById('storeBookingConflictBox');if(!box)return true;if(!date||!time){box.className='store-conflict-box';box.innerHTML='';return true;}const conflicts=findStoreBookingTimeConflicts(date,time);if(!conflicts.length){box.className='store-conflict-box';box.innerHTML='';return true;}box.className='store-conflict-box show';box.innerHTML=`<strong>⚠️ يوجد حجز آخر في نفس اليوم أو قريب من الموعد</strong>${conflicts.slice(0,4).map(x=>`#${escapeHtml(x.bookingNumber||x.key)} — ${escapeHtml(x.customerName||'عميل')} — ${escapeHtml(x.pickupTime||'—')} ${x.kind==='exact'?'(نفس الموعد)':'(قريب)'}`).join('<br>')}<div style="margin-top:6px;font-size:8px">الحجز بنفس الوقت سيتم منعه، والحجز خلال أقل من ${STORE_BOOKING_CONFLICT_MINUTES} دقيقة سيظهر كتحذير.</div>`;return conflicts.every(x=>x.kind!=='exact');}
-    function validateStoreBookingConflict(date,time){const conflicts=findStoreBookingTimeConflicts(date,time),exact=conflicts.find(x=>x.kind==='exact');if(exact){showStoreBookingConflictForCurrentForm();alert(`لا يمكن تسجيل الحجز: يوجد حجز آخر في نفس الموعد #${exact.bookingNumber||exact.key} للعميل ${exact.customerName||'عميل'}.`);return false;}if(conflicts.length){showStoreBookingConflictForCurrentForm();if(!confirm(`يوجد ${conflicts.length} حجز قريب من هذا الموعد. هل تريد المتابعة؟`))return false;}return true;}
+    function showStoreBookingConflictForCurrentForm(){const date=document.getElementById('storeBookingPickupDate')?.value,time=document.getElementById('storeBookingPickupTime')?.value,box=document.getElementById('storeBookingConflictBox');if(!box)return true;if(!date||!time){box.className='store-conflict-box';box.innerHTML='';return true;}const conflicts=findStoreBookingTimeConflicts(date,time);if(!conflicts.length){box.className='store-conflict-box';box.innerHTML='';return true;}const exactCount=conflicts.filter(x=>x.kind==='exact').length;const nearCount=conflicts.filter(x=>x.kind==='near').length;box.className='store-conflict-box show';box.innerHTML=`<strong>⚠️ تنبيه مواعيد</strong>${exactCount?`<div>🟠 يوجد ${exactCount} حجز بنفس الموعد — يمكن تسجيل حجز آخر عاديًا.</div>`:''}${nearCount?`<div>🟡 يوجد ${nearCount} حجز قريب من الموعد (أقل من ${STORE_BOOKING_CONFLICT_MINUTES} دقيقة).</div>`:''}<div style="margin-top:6px;font-size:8px">${conflicts.slice(0,4).map(x=>`#${escapeHtml(x.bookingNumber||x.key)} — ${escapeHtml(x.customerName||'عميل')} — ${escapeHtml(x.pickupTime||'—')} ${x.kind==='exact'?'(نفس الموعد)':'(قريب)'}`).join('<br>')}</div>`;return true;}
+    function validateStoreBookingConflict(date,time){const conflicts=findStoreBookingTimeConflicts(date,time);if(!conflicts.length)return true;showStoreBookingConflictForCurrentForm();const exactCount=conflicts.filter(x=>x.kind==='exact').length,nearCount=conflicts.filter(x=>x.kind==='near').length;let msg=`تنبيه فقط:\n`;if(exactCount)msg+=`يوجد ${exactCount} حجز في نفس الموعد.\n`;if(nearCount)msg+=`يوجد ${nearCount} حجز قريب من الموعد.\n`;msg+='سيتم تسجيل الحجز بشكل طبيعي. هل تريد المتابعة؟';return confirm(msg);}
 
     async function submitStoreBooking(e){
       e.preventDefault();if(APP_MODE!=='staff'||!currentUser||(currentUser.role!=='admin'&&!canUser('storeBookings')))return alert('حجز المحل غير متاح لهذا الحساب.');
@@ -5280,16 +5309,61 @@
     }
 
 
+    let customer360Rows = [];
+    function filterCustomerHistoryTab(tab){
+      document.querySelectorAll('#customer360Tabs .customer360-tab').forEach(btn=>btn.classList.toggle('active',btn.dataset.tab===tab));
+      const listEl=document.getElementById('customerFullHistoryList'); if(!listEl)return;
+      const rows=tab==='all'?customer360Rows:customer360Rows.filter(x=>x.kind===tab || (tab==='payments'&&x.paid>0));
+      if(!rows.length){listEl.innerHTML='<div class="customer-history-empty">📭 لا توجد بيانات ضمن هذا القسم.</div>';return;}
+      listEl.innerHTML=rows.map(x=>{
+        const type=x.kind==='store'
+          ? '<span class="type" style="background:#fef3c7;color:#92400e">🏪 حجز محل</span>'
+          : x.kind==='delivery'
+          ? '<span class="type" style="background:#dbeafe;color:#1d4ed8">🛵 دليفري</span>'
+          : '<span class="type" style="background:#dcfce7;color:#166534">💳 دفعة</span>';
+        const openAction=x.kind==='store'
+          ? `switchTab('store-booking');setTimeout(()=>openStoreBookingByKey(${htmlJsArg(x.key)}),120)`
+          : x.kind==='delivery'
+          ? `switchTab('admin');setTimeout(()=>{const q=document.getElementById('searchFilter');if(q){q.value=${htmlJsArg(x.id)};applyFilters();}},120)`
+          : `void(0)`;
+        return `<div class="customer-full-row" data-kind="${x.kind}">
+          <div><div class="id">#${escapeHtml(x.id)}</div>${type}</div>
+          <div class="meta">📅 ${escapeHtml(formatDateDMY(x.date||'-'))}<br>⏰ ${escapeHtml(x.time||'--')}</div>
+          <div class="meta">${escapeHtml(x.status||'غير محدد')}<br>💳 ${x.kind==='payments'?'المبلغ المسدد':'مدفوع: '+x.paid.toLocaleString('ar-EG')} ج.م</div>
+          <div class="amount">${Number(x.amount||0).toLocaleString('ar-EG')} ج.م</div>
+          ${x.kind==='payments'?'<span></span>':`<button type="button" onclick="${openAction}">فتح</button>`}
+        </div>`;
+      }).join('');
+    }
+
     async function openCustomerFullHistory(customerKey){
       const c=customersCache[customerKey]||{};const phone=String(c.phone||'');if(!phone&&!c.customerId)return alert('هذا العميل لا يملك رقم هاتف محفوظًا يمكن البحث به.');
-      document.getElementById('customerHistoryModal')?.classList.add('open');document.getElementById('customerHistoryModal')?.setAttribute('aria-hidden','false');document.getElementById('customerHistoryModalTitle').innerText=`📜 سجل العميل — ${c.name||'عميل'}`;document.getElementById('customerHistoryModalSub').innerText=`${phone||'بدون هاتف'} · كل طلبات التوصيل وحجوزات المحل`;
-      const listEl=document.getElementById('customerFullHistoryList'),summary=document.getElementById('customerFullSummary');listEl.innerHTML='<div class="customer-history-empty">⏳ جاري تحميل كل الطلبات...</div>';summary.innerHTML='';
+      document.getElementById('customerHistoryModal')?.classList.add('open');
+      document.getElementById('customerHistoryModal')?.setAttribute('aria-hidden','false');
+      document.getElementById('customerHistoryModalTitle').innerText=`👤 ملف العميل — ${c.name||'عميل'}`;
+      document.getElementById('customerHistoryModalSub').innerText=`${phone||'بدون هاتف'} · ملف العميل الكامل`;
+      const profile=document.getElementById('customer360Profile'),listEl=document.getElementById('customerFullHistoryList'),summary=document.getElementById('customerFullSummary');
+      if(profile)profile.innerHTML=`<div class="customer360-profile-main"><div class="customer360-avatar">${escapeHtml(String(c.name||'عميل').trim().slice(0,1)||'ع')}</div><div><b>${escapeHtml(c.name||'عميل بدون اسم')}</b><span dir="ltr">${escapeHtml(phone||'بدون رقم')}</span><div class="customer360-address">📍 ${escapeHtml(c.address||'العنوان غير محفوظ')}</div></div></div><div class="customer360-profile-stat"><span>العملاء منذ</span><b>${c.createdAt?escapeHtml(formatDateDMY(new Date(c.createdAt).toISOString().slice(0,10))):'غير محدد'}</b></div><div class="customer360-profile-stat"><span>عدد الطلبات المحفوظ</span><b>${Number(c.orderCount||0).toLocaleString('ar-EG')}</b></div><div class="customer360-profile-stat"><span>آخر تحديث</span><b>${c.updatedAt?escapeHtml(new Date(Number(c.updatedAt)).toLocaleDateString('ar-EG')):'غير محدد'}</b></div>`;
+      listEl.innerHTML='<div class="customer-history-empty">⏳ جاري تحميل الملف الكامل...</div>';summary.innerHTML='';customer360Rows=[];
+      document.querySelectorAll('#customer360Tabs .customer360-tab').forEach(btn=>btn.classList.toggle('active',btn.dataset.tab==='all'));
       try{
-        const pn=normalizePhone(phone);const ordersSnap=await (pn?db.ref('orders').orderByChild('phoneNormalized').equalTo(pn).once('value'):db.ref('orders').once('value'));let bookingsSnap=await (pn?db.ref('storeBookings').orderByChild('customerPhoneNormalized').equalTo(pn).once('value').catch(()=>({val:()=>({})})):db.ref('storeBookings').once('value'));let os=ordersSnap.val()||{},bs=bookingsSnap.val()||{};if(pn&&!Object.keys(bs).length){const fallback=await db.ref('storeBookings').once('value');const raw=fallback.val()||{};bs=Object.fromEntries(Object.entries(raw).filter(([k,v])=>normalizePhone(v?.customerPhone||'')===pn||String(v?.customerId||'')===String(customerKey)));}const rows=[];Object.keys(os).forEach(k=>{const o=os[k]||{};if(!pn||normalizePhone(o.phone||'')===pn||String(o.customerId||'')===String(customerKey))rows.push({kind:'delivery',key:k,id:o.orderId||k,date:o.date,time:o.time,status:o.status||'',amount:Number(o.totalCash||0),paid:Number(o.paidAmount||0),raw:o});});Object.keys(bs).forEach(k=>{const b=bs[k]||{};if(!pn||normalizePhone(b.customerPhone||'')===pn||String(b.customerId||'')===String(customerKey))rows.push({kind:'store',key:k,id:b.bookingNumber||k,date:b.pickupDate,time:b.pickupTime,status:b.status||'',amount:Number(b.total||0),paid:Number(b.paidAmount||0),raw:b});});rows.sort((a,b)=>{const ta=new Date(`${a.date||''}T${a.time||'00:00'}`).getTime()||0,tb=new Date(`${b.date||''}T${b.time||'00:00'}`).getTime()||0;return tb-ta;});
-        const totalSpend=rows.reduce((s,x)=>s+x.amount,0),delCount=rows.filter(x=>x.kind==='delivery').length,storeCount=rows.filter(x=>x.kind==='store').length,paid=rows.reduce((s,x)=>s+x.paid,0);summary.innerHTML=`<div class="customer-full-summary-card"><span>إجمالي العمليات</span><b>${rows.length.toLocaleString('ar-EG')}</b></div><div class="customer-full-summary-card"><span>طلبات التوصيل</span><b>${delCount.toLocaleString('ar-EG')}</b></div><div class="customer-full-summary-card"><span>حجوزات المحل</span><b>${storeCount.toLocaleString('ar-EG')}</b></div><div class="customer-full-summary-card"><span>إجمالي المدفوع</span><b>${paid.toLocaleString('ar-EG')} ج.م</b></div>`;
-        if(!rows.length){listEl.innerHTML='<div class="customer-history-empty">📭 لا توجد طلبات أو حجوزات محفوظة لهذا العميل.</div>';return;}
-        listEl.innerHTML=rows.map(x=>{const type=x.kind==='store'?'<span class="type" style="background:#fef3c7;color:#92400e">🏪 حجز محل</span>':'<span class="type" style="background:#dbeafe;color:#1d4ed8">🛵 دليفري</span>';return `<div class="customer-full-row"><div><div class="id">#${escapeHtml(x.id)}</div>${type}</div><div class="meta">📅 ${escapeHtml(formatDateDMY(x.date||'-'))}<br>⏰ ${escapeHtml(x.time||'--')}</div><div class="meta">${escapeHtml(x.status||'غير محدد')}<br>💳 مدفوع: ${x.paid.toLocaleString('ar-EG')} ج.م</div><div class="amount">${x.amount.toLocaleString('ar-EG')} ج.م</div><button type="button" onclick="${x.kind==='store'?`switchTab('store-booking');setTimeout(()=>openStoreBookingByKey(${htmlJsArg(x.key)}),120)`:`switchTab('admin');setTimeout(()=>{const q=document.getElementById('searchFilter');if(q){q.value=${htmlJsArg(x.id)};applyFilters();}},120)`}">فتح</button></div>`;}).join('');
-      }catch(e){console.error(e);listEl.innerHTML='<div class="customer-history-empty">❌ تعذر تحميل سجل العميل حاليًا.</div>';}
+        const pn=normalizePhone(phone);
+        const ordersSnap=await (pn?db.ref('orders').orderByChild('phoneNormalized').equalTo(pn).once('value'):db.ref('orders').once('value'));
+        let bookingsSnap=await (pn?db.ref('storeBookings').orderByChild('customerPhoneNormalized').equalTo(pn).once('value').catch(()=>({val:()=>({})})):db.ref('storeBookings').once('value'));
+        let os=ordersSnap.val()||{},bs=bookingsSnap.val()||{};
+        if(pn&&!Object.keys(bs).length){
+          const fallback=await db.ref('storeBookings').once('value');const raw=fallback.val()||{};
+          bs=Object.fromEntries(Object.entries(raw).filter(([k,v])=>normalizePhone(v?.customerPhone||'')===pn||String(v?.customerId||'')===String(customerKey)));
+        }
+        const rows=[];
+        Object.keys(os).forEach(k=>{const o=os[k]||{};if(!pn||normalizePhone(o.phone||'')===pn||String(o.customerId||'')===String(customerKey))rows.push({kind:'delivery',key:k,id:o.orderId||k,date:o.date,time:o.time,status:o.status||'',amount:Number(o.totalCash||0),paid:Number(o.paidAmount||0),raw:o});});
+        Object.keys(bs).forEach(k=>{const b=bs[k]||{};if(!pn||normalizePhone(b.customerPhone||'')===pn||String(b.customerId||'')===String(customerKey))rows.push({kind:'store',key:k,id:b.bookingNumber||k,date:b.pickupDate,time:b.pickupTime,status:b.status||'',amount:Number(b.total||0),paid:Number(b.paidAmount||0),raw:b});});
+        const paymentRows=rows.filter(x=>x.paid>0).map((x,i)=>({kind:'payments',key:`payment_${x.key}`,id:`${x.id}-PAY`,date:x.date,time:x.time,status:x.kind==='store'?'دفع حجز محل':'دفع فاتورة دليفري',amount:x.paid,paid:x.paid,raw:x.raw}));
+        customer360Rows=[...rows,...paymentRows].sort((a,b)=>{const ta=new Date(`${a.date||''}T${a.time||'00:00'}`).getTime()||0,tb=new Date(`${b.date||''}T${b.time||'00:00'}`).getTime()||0;return tb-ta;});
+        const totalSpend=rows.reduce((s,x)=>s+x.amount,0),paidTotal=rows.reduce((s,x)=>s+x.paid,0),dueTotal=Math.max(0,totalSpend-paidTotal),delCount=rows.filter(x=>x.kind==='delivery').length,storeCount=rows.filter(x=>x.kind==='store').length;
+        summary.innerHTML=`<div class="customer-full-summary-card"><span>إجمالي العمليات</span><b>${rows.length.toLocaleString('ar-EG')}</b></div><div class="customer-full-summary-card"><span>طلبات الدليفري</span><b>${delCount.toLocaleString('ar-EG')}</b></div><div class="customer-full-summary-card"><span>حجوزات المحل</span><b>${storeCount.toLocaleString('ar-EG')}</b></div><div class="customer-full-summary-card"><span>إجمالي المشتريات</span><b>${totalSpend.toLocaleString('ar-EG')} ج.م</b></div><div class="customer-full-summary-card"><span>إجمالي المدفوع</span><b>${paidTotal.toLocaleString('ar-EG')} ج.م</b></div><div class="customer-full-summary-card"><span>إجمالي المتبقي</span><b>${dueTotal.toLocaleString('ar-EG')} ج.م</b></div>`;
+        filterCustomerHistoryTab('all');
+      }catch(e){console.error(e);listEl.innerHTML='<div class="customer-history-empty">❌ تعذر تحميل ملف العميل حاليًا.</div>';}
     }
     function closeCustomerFullHistory(){document.getElementById('customerHistoryModal')?.classList.remove('open');document.getElementById('customerHistoryModal')?.setAttribute('aria-hidden','true');}
     document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeCustomerFullHistory();closeConversionModal();}});
