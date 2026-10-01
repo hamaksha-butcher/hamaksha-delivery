@@ -1454,34 +1454,18 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
     <div class="sidebar-scroll flex-1 px-3 pb-3">
       <div class="sidebar-nav-label">القائمة الرئيسية</div>
-      <nav aria-label="التنقل الرئيسي">
-        <button type="button" onclick="switchTab('dashboard'); closeSidebar();" data-nav-tab="dashboard" id="tab-dashboard" class="tab-btn">📊 <span>الرئيسية</span></button>
-        <button type="button" onclick="switchTab('cashier-home'); closeSidebar();" data-nav-tab="cashier-home" id="tab-cashier-home" class="tab-btn cashier-only">🧾 <span>نقطة البيع</span></button>
-        <button type="button" onclick="switchTab('admin'); closeSidebar();" data-nav-tab="admin" id="tab-admin" class="tab-btn active">📦 <span>الطلبات والإدارة</span></button>
-        <button type="button" onclick="switchTab('store-booking'); closeSidebar();" data-nav-tab="store-booking" id="tab-store-booking" class="tab-btn">🏪 <span>حجز المحل</span></button>
-        <button type="button" onclick="switchTab('analytics'); closeSidebar();" data-nav-tab="analytics" id="tab-analytics" class="tab-btn perm-analytics hidden">💰 <span>التقارير والتحصيل</span></button>
-        <button type="button" onclick="switchTab('prices'); closeSidebar();" data-nav-tab="prices" id="tab-prices" class="tab-btn perm-prices hidden">🏷️ <span>أسعار اللحوم</span></button>
-        <button type="button" onclick="switchTab('customers'); closeSidebar();" data-nav-tab="customers" id="tab-customers" class="tab-btn perm-customers hidden">👥 <span>العملاء</span></button>
-        <button type="button" onclick="switchTab('users'); closeSidebar();" data-nav-tab="users" id="tab-users" class="tab-btn perm-users hidden">👤 <span>المستخدمون والصلاحيات</span></button>
-        <button type="button" onclick="switchTab('activity'); closeSidebar();" data-nav-tab="activity" id="tab-activity" class="tab-btn activity-only hidden">📜 <span>سجل النشاط</span></button>
-        <button type="button" onclick="switchTab('settings'); closeSidebar();" data-nav-tab="settings" id="tab-settings" class="tab-btn admin-only-settings hidden">⚙️ <span>الإعدادات</span></button>
-        <button type="button" onclick="switchTab('profile'); closeSidebar();" data-nav-tab="profile" id="tab-profile" class="tab-btn">👤 <span>حسابي</span></button>
-        <button type="button" onclick="switchTab('driver'); closeSidebar();" data-nav-tab="driver" id="tab-driver" class="tab-btn cashier-hide">🛵 <span>واجهة المندوب</span></button>
-        <button type="button" onclick="switchTab('track'); closeSidebar();" data-nav-tab="track" id="tab-track" class="tab-btn cashier-hide">📍 <span>تتبع العملاء</span></button>
-      </nav>
+      <!-- تغيير: القائمة الأساسية تُنشأ من تعريف مركزي واحد لمنع تكرار التبويبات. -->
+      <nav id="primaryNavigation" aria-label="التنقل الرئيسي"></nav>
 
       <div class="sidebar-nav-label cashier-hide">الوصول السريع</div>
       <div class="space-y-2 cashier-hide">
         <button type="button" onclick="switchTab('admin'); closeSidebar(); setTimeout(() => document.getElementById('custName')?.focus(), 100)" class="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold transition">➕ <span>إضافة طلب جديد</span></button>
         <button type="button" onclick="switchTab('admin'); closeSidebar(); setTimeout(() => document.getElementById('searchFilter')?.focus(), 100)" class="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-black/10 hover:bg-black/15 text-white text-xs font-bold transition">🔎 <span>بحث في الطلبات</span></button>
-        <button type="button" onclick="switchTab('users'); closeSidebar()" class="perm-users hidden w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-black/10 hover:bg-black/15 text-white text-xs font-bold transition">⚙️ <span>إدارة المستخدمين</span></button>
       </div>
       <div class="cashier-only-block">
         <div class="sidebar-nav-label mt-4">عمليات الكاشير</div>
         <div class="space-y-2">
           <button type="button" onclick="switchTab('admin'); closeSidebar(); setTimeout(() => document.getElementById('custName')?.focus(), 100)" class="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold transition">🧾 <span>فاتورة توصيل جديدة</span></button>
-          <button type="button" onclick="switchTab('store-booking'); closeSidebar();" class="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold transition">🏪 <span>حجز محل جديد</span></button>
-          <button type="button" onclick="switchTab('customers'); closeSidebar();" class="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-black/10 hover:bg-black/15 text-white text-xs font-bold transition">👥 <span>البحث عن عميل</span></button>
         </div>
       </div>
     </div>
@@ -3471,7 +3455,11 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
       // Always update the visible page first.
       document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      // تغيير: مزامنة حالة التبويب النشط بصريًا ومع قارئات الشاشة في كل انتقال.
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-current', 'false');
+      });
       const target = document.getElementById(`sec-${tabName}`);
       const button = document.getElementById(`tab-${tabName}`);
       if(target) {
@@ -3557,8 +3545,69 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       }
     }
 
-    // ===== STEP 42: direct sidebar button wiring =====
-    function installDirectSidebarButtons(){ return; }
+    // ===== تغيير: مصدر موحد لعناصر التنقل الأساسية =====
+    // إضافة تبويب جديد هنا فقط؛ يمنع المفتاح المكرر إنشاء أكثر من عنصر للوجهة نفسها.
+    const PRIMARY_NAV_ITEMS = Object.freeze([
+      { id:'dashboard', icon:'📊', label:'الرئيسية', className:'tab-btn' },
+      { id:'cashier-home', icon:'🧾', label:'نقطة البيع', className:'tab-btn cashier-only' },
+      { id:'admin', icon:'📦', label:'الطلبات والإدارة', className:'tab-btn' },
+      { id:'store-booking', icon:'🏪', label:'حجز المحل', className:'tab-btn' },
+      { id:'analytics', icon:'💰', label:'التقارير والتحصيل', className:'tab-btn perm-analytics hidden' },
+      { id:'prices', icon:'🏷️', label:'أسعار اللحوم', className:'tab-btn perm-prices hidden' },
+      { id:'customers', icon:'👥', label:'العملاء', className:'tab-btn perm-customers hidden' },
+      { id:'users', icon:'👤', label:'المستخدمون والصلاحيات', className:'tab-btn perm-users hidden' },
+      { id:'activity', icon:'📜', label:'سجل النشاط', className:'tab-btn activity-only hidden' },
+      { id:'settings', icon:'⚙️', label:'الإعدادات', className:'tab-btn admin-only-settings hidden' },
+      { id:'profile', icon:'👤', label:'حسابي', className:'tab-btn' },
+      { id:'driver', icon:'🛵', label:'واجهة المندوب', className:'tab-btn cashier-hide' },
+      { id:'track', icon:'📍', label:'تتبع العملاء', className:'tab-btn cashier-hide' }
+    ]);
+
+    function renderPrimaryNavigation() {
+      const nav = document.getElementById('primaryNavigation');
+      if (!nav) return;
+
+      const renderedTabs = new Set();
+      const fragment = document.createDocumentFragment();
+      const currentSection = document.querySelector('main > section:not(.hidden)')?.id;
+      const activeTab = currentSection?.startsWith('sec-')
+        ? currentSection.slice(4)
+        : 'admin';
+
+      PRIMARY_NAV_ITEMS.forEach(item => {
+        if (!item?.id || renderedTabs.has(item.id)) {
+          console.warn('تم تجاهل تبويب تنقل مكرر أو غير صالح:', item?.id);
+          return;
+        }
+        renderedTabs.add(item.id);
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.id = `tab-${item.id}`;
+        button.dataset.navTab = item.id;
+        button.className = item.className;
+        button.setAttribute('aria-controls', `sec-${item.id}`);
+        button.setAttribute('aria-current', item.id === activeTab ? 'page' : 'false');
+        if (item.id === activeTab) button.classList.add('active');
+
+        const icon = document.createElement('span');
+        icon.setAttribute('aria-hidden', 'true');
+        icon.textContent = `${item.icon} `;
+        const label = document.createElement('span');
+        label.textContent = item.label;
+        button.append(icon, label);
+        button.addEventListener('click', () => {
+          switchTab(item.id);
+          closeSidebar();
+        });
+        fragment.appendChild(button);
+      });
+
+      nav.replaceChildren(fragment);
+    }
+
+    // الاسم القديم مستخدم في مواضع تسجيل الدخول؛ نحتفظ به لتفادي كسر التدفق الحالي.
+    function installDirectSidebarButtons() { renderPrimaryNavigation(); }
 
     function loadRememberedLogin() {
       const rememberBox = document.getElementById('rememberMe');
