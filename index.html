@@ -944,6 +944,111 @@
     @media(max-width:980px){.activity-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.activity-toolbar{grid-template-columns:1fr 1fr 1fr}.activity-clear{grid-column:1/-1}}
     @media(max-width:620px){.activity-hero{align-items:flex-start;flex-direction:column;padding:19px}.activity-toolbar{grid-template-columns:1fr}.activity-row{grid-template-columns:36px minmax(0,1fr)}.activity-time{grid-column:2;text-align:right;margin-top:-4px}.activity-metric b{font-size:19px}}
 
+
+    /* ===== CASHIER MODE / نقطة بيع مبسطة ===== */
+    /* ===== CASHIER MODE / نقطة بيع مبسطة ===== */
+    .cashier-only{display:none !important}
+    .cashier-only-block{display:none !important}
+    body.cashier-mode .cashier-only{display:flex !important}
+    body.cashier-mode .cashier-only-block{display:block !important}
+    body.cashier-mode .cashier-hide{display:none !important}
+    body.cashier-mode .theme-selector,
+    body.cashier-mode .admin-only-settings,
+    body.cashier-mode .activity-only,
+    body.cashier-mode .perm-users,
+    body.cashier-mode .perm-analytics,
+    body.cashier-mode .perm-prices,
+    body.cashier-mode #tab-dashboard,
+    body.cashier-mode #tab-driver,
+    body.cashier-mode #tab-track{display:none !important}
+    body.cashier-mode main{padding-top:18px}
+    .cashier-home-page{max-width:1100px;margin:0 auto}
+    .cashier-home-hero{position:relative;overflow:hidden;border-radius:30px;padding:28px;color:#fff;background:linear-gradient(135deg,var(--sidebar-color,#111827),var(--primary-color,#7f1d1d) 58%,var(--accent-color,#b87333));box-shadow:0 20px 55px var(--shadow-color,rgba(15,23,42,.12))}
+    .cashier-home-hero:after{content:'';position:absolute;width:210px;height:210px;border-radius:50%;left:-70px;bottom:-120px;background:rgba(255,255,255,.07)}
+    .cashier-kicker{font-size:8px;font-weight:1000;letter-spacing:.18em;opacity:.7}
+    .cashier-home-hero h2{font-size:28px;font-weight:1000;margin-top:5px}
+    .cashier-home-hero p{font-size:10px;font-weight:700;color:rgba(255,255,255,.76);margin-top:6px;max-width:640px;line-height:1.9}
+    .cashier-home-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-top:16px}
+    .cashier-action-card{display:block;width:100%;text-align:right;padding:22px;border-radius:25px;border:1px solid var(--border-color,#e5e7eb);background:var(--surface-color,#fff);box-shadow:0 14px 34px var(--shadow-color,rgba(15,23,42,.08));transition:transform .18s ease,box-shadow .18s ease}
+    .cashier-action-card:hover{transform:translateY(-2px);box-shadow:0 20px 42px var(--shadow-color,rgba(15,23,42,.12))}
+    .cashier-action-icon{width:60px;height:60px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:28px;background:var(--surface-soft,#f8fafc);border:1px solid var(--border-color,#e5e7eb);margin-bottom:14px}
+    .cashier-action-card h3{font-size:18px;font-weight:1000;color:var(--text-color,#172033)}
+    .cashier-action-card p{font-size:9px;font-weight:700;color:var(--muted-color,#64748b);margin-top:5px;line-height:1.8}
+    .cashier-action-card .go{display:flex;align-items:center;justify-content:space-between;margin-top:15px;font-size:10px;font-weight:1000;color:var(--primary-color,#7f1d1d)}
+    .cashier-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:15px}
+    .cashier-metric{background:var(--surface-color,#fff);border:1px solid var(--border-color,#e5e7eb);border-radius:20px;padding:14px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 25px var(--shadow-color,rgba(15,23,42,.06))}
+    .cashier-metric .icon{font-size:21px}.cashier-metric b{display:block;font-size:20px;font-weight:1000;color:var(--text-color,#172033)}.cashier-metric span{display:block;font-size:8px;font-weight:800;color:var(--muted-color,#64748b);margin-top:2px}
+    .cashier-home-panels{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:15px}
+    .cashier-home-panel{background:var(--surface-color,#fff);border:1px solid var(--border-color,#e5e7eb);border-radius:24px;padding:16px;box-shadow:0 12px 30px var(--shadow-color,rgba(15,23,42,.06))}
+    .cashier-home-panel h3{font-size:11px;font-weight:1000;color:var(--text-color,#172033)}
+    .cashier-mini-list{margin-top:10px;display:grid;gap:7px;max-height:270px;overflow:auto}
+    .cashier-mini-item{padding:10px 11px;border-radius:13px;background:var(--surface-soft,#f8fafc);border:1px solid var(--border-color,#e5e7eb);display:flex;justify-content:space-between;gap:8px;font-size:8px;font-weight:800;color:var(--text-color,#172033)}
+    .users-role-cashier{background:#dcfce7;color:#166534}
+    .profile-badge.cashier{background:#dcfce7;color:#166534}
+    @media(max-width:900px){.cashier-home-grid,.cashier-home-panels{grid-template-columns:1fr}.cashier-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+    /* ===== STAFF LOGIN GATE / لا تعرض أي بيانات قبل تسجيل الدخول ===== */
+    #staffLoginGate { display:none; }
+    body.staff-logged-out #mainHeader,
+    body.staff-logged-out #mobileTopbar,
+    body.staff-logged-out #sidebarOverlay,
+    body.staff-logged-out #notificationPanel,
+    body.staff-logged-out #userBadgeBar,
+    body.staff-logged-out main.app-main {
+      display:none !important;
+    }
+    body.staff-logged-out #staffLoginGate {
+      display:flex !important;
+    }
+    #staffLoginGate {
+      position:fixed; inset:0; z-index:10000;
+      align-items:center; justify-content:center;
+      padding:24px;
+      background:
+        radial-gradient(circle at 18% 15%, rgba(127,29,29,.16), transparent 30%),
+        radial-gradient(circle at 82% 85%, rgba(245,158,11,.10), transparent 28%),
+        var(--bg-color,#f6f7fb);
+    }
+    .staff-login-gate-card {
+      width:min(430px,100%);
+      border:1px solid var(--border-color,#e5e7eb);
+      background:var(--surface-color,#fff);
+      border-radius:30px;
+      padding:30px;
+      text-align:center;
+      box-shadow:0 28px 80px var(--shadow-color,rgba(15,23,42,.16));
+    }
+    .staff-login-gate-logo {
+      width:76px;height:76px;margin:0 auto 15px;border-radius:24px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:38px;color:#fff;
+      background:linear-gradient(135deg,var(--sidebar-color,#111827),var(--primary-color,#7f1d1d));
+      box-shadow:0 15px 35px rgba(15,23,42,.18);
+    }
+    .staff-login-gate-kicker{font-size:8px;font-weight:1000;letter-spacing:.16em;color:var(--muted-color,#64748b)}
+    .staff-login-gate-title{margin-top:5px;font-size:25px;font-weight:1000;color:var(--text-color,#172033)}
+    .staff-login-gate-text{margin-top:7px;font-size:11px;font-weight:700;line-height:1.8;color:var(--muted-color,#64748b)}
+    .staff-login-gate-btn{width:100%;margin-top:18px;border:0;border-radius:16px;padding:13px 16px;background:var(--primary-color,#7f1d1d);color:#fff;font-size:12px;font-weight:1000;cursor:pointer;box-shadow:0 10px 24px var(--shadow-color,rgba(15,23,42,.12))}
+    .staff-login-gate-hint{margin-top:10px;font-size:9px;color:var(--muted-color,#64748b);font-weight:800}
+
+
+    /* Gate is intentionally stronger than component display rules: nothing staff-facing is visible before login. */
+    body.staff-logged-out > #mainHeader,
+    body.staff-logged-out > #mobileTopbar,
+    body.staff-logged-out > #sidebarOverlay,
+    body.staff-logged-out > #notificationPanel,
+    body.staff-logged-out > #userBadgeBar,
+    body.staff-logged-out > main.app-main {
+      display:none !important;
+      visibility:hidden !important;
+      pointer-events:none !important;
+    }
+    body.staff-logged-out > #staffLoginGate {
+      display:flex !important;
+      visibility:visible !important;
+      pointer-events:auto !important;
+    }
 </style>
 </head>
 <body id="appBody" class="bg-amber-50/40 min-h-screen text-gray-800">
@@ -5087,7 +5192,7 @@
       document.getElementById('mainHeader')?.style.setProperty('display','none','important');
       document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');switchTab('driver');
     }
-    window.addEventListener('DOMContentLoaded',()=>{applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();if(APP_MODE!=='staff'){startPublicCommentsListener();applyCustomerPublicMode();return;}document.body.classList.add('staff-logged-out');document.body.classList.remove('customer-public-mode','driver-private-mode','cashier-mode');loadRememberedLogin();startPublicCommentsListener();checkSavedSession();if(currentUser){document.body.classList.remove('staff-logged-out');}updateUIByPermissions();});
+    window.addEventListener('DOMContentLoaded',()=>{if(APP_MODE==='staff'){document.body.classList.add('staff-logged-out');document.body.classList.remove('customer-public-mode','driver-private-mode','cashier-mode');}applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();if(APP_MODE!=='staff'){startPublicCommentsListener();applyCustomerPublicMode();return;}loadRememberedLogin();startPublicCommentsListener();checkSavedSession();if(currentUser){document.body.classList.remove('staff-logged-out');}updateUIByPermissions();});
 </script>
 </body>
 </html>
