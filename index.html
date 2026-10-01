@@ -1517,7 +1517,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 .daily-session-card{margin:10px 0;padding:9px 11px;border:1px solid rgba(148,163,184,.25);border-radius:13px;background:linear-gradient(135deg,rgba(15,76,92,.16),rgba(15,23,42,.18));color:#fff}
 .daily-session-row{display:flex;align-items:center;justify-content:space-between;gap:8px}.daily-session-main{min-width:0}.daily-session-kicker{font-size:8px;font-weight:1000;letter-spacing:.08em;opacity:.65}.daily-session-title{font-size:11px;font-weight:1000;margin-top:2px}.daily-session-meta{font-size:8px;font-weight:800;color:rgba(255,255,255,.62);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .daily-session-dot{width:9px;height:9px;border-radius:999px;background:#ef4444;display:inline-block;box-shadow:0 0 0 4px rgba(239,68,68,.12);flex:0 0 auto}.daily-session-card.is-open .daily-session-dot{background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.12)}
-.daily-session-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap}.daily-session-btn{border:0;border-radius:9px;padding:7px 9px;font-size:8px;font-weight:1000;cursor:pointer}.daily-session-btn.primary{background:#fbbf24;color:#3f1d0b}.daily-session-btn.danger{background:#ef4444;color:#fff}.daily-session-btn.secondary{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.14)}.daily-session-btn:disabled{opacity:.5;cursor:not-allowed}
+.daily-session-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap}.daily-session-btn{border:0;border-radius:9px;padding:7px 9px;font-size:8px;font-weight:1000;cursor:pointer}.daily-session-btn.primary{background:#fbbf24;color:#3f1d0b}.daily-session-btn.danger{background:#ef4444;color:#fff}.daily-session-btn.secondary{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.14)}.daily-session-btn:disabled{opacity:.55;cursor:wait}.daily-session-btn.is-busy{filter:saturate(.7)}
 .daily-session-admin-card{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 12px;border:1px solid #dbe7ef;border-radius:16px;background:linear-gradient(135deg,#f8fafc,#ffffff);box-shadow:0 8px 24px rgba(15,23,42,.05)}
 .daily-session-admin-card .status-line{display:flex;align-items:center;gap:8px}.daily-session-admin-card .status-badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 9px;font-size:9px;font-weight:1000;background:#fee2e2;color:#991b1b}.daily-session-admin-card.is-open .status-badge{background:#dcfce7;color:#166534}.daily-session-admin-card .daily-session-copy b{display:block;font-size:11px;color:#0f172a}.daily-session-admin-card .daily-session-copy span{display:block;font-size:8px;color:#64748b;margin-top:2px}
 .daily-operational-lock{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(248,250,252,.88);backdrop-filter:blur(5px);border-radius:inherit;padding:20px}.daily-operational-lock.hidden{display:none}.daily-operational-lock-card{width:min(430px,92%);background:#fff;border:1px solid #fecaca;border-radius:20px;padding:22px;text-align:center;box-shadow:0 18px 50px rgba(15,23,42,.16)}.daily-operational-lock-icon{width:48px;height:48px;border-radius:14px;background:#fee2e2;color:#b91c1c;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:23px}.daily-operational-lock-card h3{font-size:14px;font-weight:1000;color:#111827;margin:0}.daily-operational-lock-card p{font-size:9px;line-height:1.8;color:#64748b;margin:7px 0 0}.daily-operational-lock-card b{color:#991b1b}.daily-operational-lock-card .daily-lock-btn{margin-top:12px;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:10px;background:#7f1d1d;color:#fff;padding:9px 13px;font-size:9px;font-weight:1000;cursor:pointer}
@@ -1665,8 +1665,8 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
             </div>
           </div>
           <div class="daily-session-actions">
-            <button type="button" id="dailySessionOpenBtn" class="daily-session-btn primary hidden" onclick="openDailySession()">فتح</button>
-            <button type="button" id="dailySessionCloseBtn" class="daily-session-btn danger hidden" onclick="closeDailySession()">إغلاق</button>
+            <button type="button" id="dailySessionOpenBtn" class="daily-session-btn primary hidden" data-daily-action="open" aria-label="فتح اليومية">فتح</button>
+            <button type="button" id="dailySessionCloseBtn" class="daily-session-btn danger hidden" data-daily-action="close" aria-label="إغلاق اليومية">إغلاق</button>
           </div>
         </div>
       </div>
@@ -1903,11 +1903,11 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
                   <span class="text-[9px] font-bold text-slate-400" id="dailySessionAdminDate">—</span>
                 </div>
                 <b>🔐 التحكم في اليومية</b>
-                <span id="dailySessionAdminMeta">افتح يومية اليوم لبدء تسجيل الطلبات والحجوزات وتشغيل عمليات العمل.</span>
+                <span id="dailySessionAdminMeta">افتح يومية اليوم لبدء تسجيل الطلبات والحجوزات وتشغيل عمليات العمل.</span><span id="dailySecurityStatus" style="display:block;font-size:8px;color:#b45309;margin-top:4px">🔐 وضع الأمان الحالي: تهيئة الترحيل. سيتم فرض Firebase Authentication + Rules بعد تجهيز الحسابات.</span>
               </div>
               <div class="daily-session-actions">
-                <button type="button" id="dailySessionAdminOpenBtn" class="daily-session-btn primary" onclick="openDailySession()">فتح يومية جديدة</button>
-                <button type="button" id="dailySessionAdminCloseBtn" class="daily-session-btn danger hidden" onclick="closeDailySession()">إغلاق اليومية</button>
+                <button type="button" id="dailySessionAdminOpenBtn" class="daily-session-btn primary" data-daily-action="open" aria-label="فتح يومية جديدة">فتح يومية جديدة</button>
+                <button type="button" id="dailySessionAdminCloseBtn" class="daily-session-btn danger hidden" data-daily-action="close" aria-label="إغلاق اليومية">إغلاق اليومية</button>
               </div>
             </div>
 
@@ -3319,6 +3319,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
   <!-- Firebase JavaScript SDK v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
   <script>
     const firebaseConfig = {
@@ -3332,6 +3333,17 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     }
 
     const db = firebase.database();
+    // ===== SECURITY HARDENING / AUTH PREPARATION =====
+    // Legacy username/password login remains temporarily compatible.
+    // Set SECURITY_AUTH_ENFORCED=true only after Firebase Auth accounts + role claims/profiles
+    // have been migrated and the secure Rules file is deployed.
+    const SECURITY_AUTH_ENFORCED = false;
+    let firebaseAuthUser = null;
+    try {
+      if (firebase.auth) {
+        firebase.auth().onAuthStateChanged(user => { firebaseAuthUser = user || null; });
+      }
+    } catch (e) { console.warn('Firebase Auth initialization skipped:', e); }
 
     const APP_MODE = new URLSearchParams(window.location.search).get('mode') === 'staff' ? 'staff' : 'customer';
     let allOrdersCache = {};
@@ -3559,13 +3571,11 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       return dateStr;
     }
 
-    // إنشاء الحساب الرئيسي asma فقط في وضع الموظفين.
+    // SECURITY: لا يتم إنشاء حساب المالك تلقائيًا من جهة العميل.
+    // إنشاء حسابات الإدارة يجب أن يتم من Firebase Authentication / لوحة الإدارة المؤمنة.
     function ensureSuperUserExists() {
-      if(APP_MODE !== 'staff') return;
-      return db.ref('users').orderByChild('username').equalTo('asma').once('value').then((snapshot) => {
-        if(snapshot.exists()) return;
-        return db.ref('users').push({ username:'asma', pass:'asma123', role:'admin', isSuperAdmin:true, perms:{edit:true,delete:true,print:true,analytics:true,prices:true,users:true,viewAllDrivers:true} });
-      });
+      if(APP_MODE !== 'staff') return Promise.resolve();
+      return Promise.resolve();
     }
 
     function isSuperUser() {
@@ -3706,6 +3716,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
 
     // ===== STEP 53: DAILY OPERATING SESSION =====
+    let dailyActionBusy = false;
     function isOwnerOrAdmin(){ return !!currentUser && (currentUser.role==='admin' || isSuperUser()); }
     function dailyToday(){ return getLocalDateInputValue(new Date()); }
     function dailySessionIsOpen(){ return !!(currentDailySession && currentDailySession.status==='open' && currentDailySession.businessDate===dailyToday()); }
@@ -3731,42 +3742,85 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       const adminCard=document.getElementById('dailySessionAdminCard'),badge=document.getElementById('dailySessionAdminBadge'),date=document.getElementById('dailySessionAdminDate'),meta=document.getElementById('dailySessionAdminMeta'),openBtn=document.getElementById('dailySessionAdminOpenBtn'),closeBtn=document.getElementById('dailySessionAdminCloseBtn');
       if(adminCard){adminCard.classList.toggle('is-open',open); if(badge)badge.innerText=open?'🟢 اليومية مفتوحة':'🔴 اليومية مغلقة'; if(date)date.innerText=currentDailySession?.businessDate||dailyToday(); if(meta)meta.innerText=open?`جلسة اليوم مفتوحة بواسطة ${currentDailySession.openedBy||'—'} منذ ${currentDailySession.openedAt?new Date(currentDailySession.openedAt).toLocaleString('ar-EG',{dateStyle:'short',timeStyle:'short'}):'—'}`:'افتح يومية اليوم لبدء تسجيل الطلبات والحجوزات وتشغيل عمليات العمل.'; if(openBtn)openBtn.classList.toggle('hidden',!owner||open); if(closeBtn)closeBtn.classList.toggle('hidden',!owner||!open);}
       const lockIds=['dailyOrderLock','dailyStoreBookingLock','dailyDriverLock']; lockIds.forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('hidden',open);});
+      document.querySelectorAll('[data-daily-action]').forEach(btn=>{btn.disabled=dailyActionBusy;btn.classList.toggle('is-busy',dailyActionBusy);});
+    }
+    function withDailyTimeout(promise, ms=10000){
+      let timer;
+      return Promise.race([promise, new Promise((_,reject)=>timer=setTimeout(()=>reject(new Error('DAILY_OPERATION_TIMEOUT')),ms))]).finally(()=>clearTimeout(timer));
     }
     function startDailySessionListener(){
       if(APP_MODE!=='staff'||!currentUser)return;
       try{dailySessionRef?.off();}catch(e){}
       dailySessionLoaded=false; currentDailySession=null; renderDailySessionUI();
       dailySessionRef=db.ref('dailySessions/current');
-      dailySessionRef.on('value',snap=>{currentDailySession=snap.val()||null;dailySessionLoaded=true;renderDailySessionUI();});
+      dailySessionRef.on('value',snap=>{currentDailySession=snap.val()||null;dailySessionLoaded=true;renderDailySessionUI();}, err=>{console.error(err);dailySessionLoaded=true;currentDailySession=null;renderDailySessionUI();});
     }
     async function openDailySession(){
+      if(dailyActionBusy)return;
       if(!isOwnerOrAdmin())return alert('فتح اليومية متاح للإدارة فقط.');
-      const today=dailyToday();
+      dailyActionBusy=true; renderDailySessionUI();
       try{
-        const freshSnap=await db.ref('dailySessions/current').once('value');
+        const today=dailyToday();
+        const freshSnap=await withDailyTimeout(db.ref('dailySessions/current').once('value'),10000);
         currentDailySession=freshSnap.val()||null; dailySessionLoaded=true; renderDailySessionUI();
-      }catch(e){console.error(e);return alert('تعذر قراءة حالة اليومية الحالية.');}
-      if(dailySessionIsOpen())return alert('اليومية الحالية مفتوحة بالفعل.');
-      if(currentDailySession?.status==='open'&&currentDailySession.businessDate!==today){
-        const oldDate=currentDailySession.businessDate||'اليوم السابق';
-        if(!confirm(`هناك يومية مفتوحة بتاريخ ${oldDate}. سيتم إغلاقها ثم فتح يومية اليوم ${today}. هل تريد المتابعة؟`))return;
-        await closeDailySession(true);
-      }
-      const sessionRef=db.ref('dailySessions').push(), sessionId=sessionRef.key, now=Date.now();
-      const payload={sessionId,businessDate:today,status:'open',openedAt:now,openedBy:currentUser.username,createdAt:now};
-      try{
-        await sessionRef.set(payload);await db.ref('dailySessions/current').set(payload);currentDailySession=payload;dailySessionLoaded=true;await logActivity('create','system',`فتح يومية جديدة بتاريخ ${today}`,sessionId,{businessDate:today});renderDailySessionUI();alert(`تم فتح يومية ${today} بنجاح ✅`);
-      }catch(e){console.error(e);alert('تعذر فتح اليومية. تحقق من Firebase Rules.');}
+        if(dailySessionIsOpen())return alert('اليومية الحالية مفتوحة بالفعل.');
+        if(currentDailySession?.status==='open'&&currentDailySession.businessDate!==today){
+          const oldDate=currentDailySession.businessDate||'اليوم السابق';
+          if(!confirm(`هناك يومية مفتوحة بتاريخ ${oldDate}. سيتم إغلاقها ثم فتح يومية اليوم ${today}. هل تريد المتابعة؟`))return;
+          await closeDailySession(true);
+        }
+        const sessionRef=db.ref('dailySessions').push(), sessionId=sessionRef.key, now=Date.now();
+        const payload={sessionId,businessDate:today,status:'open',openedAt:now,openedBy:currentUser.username,openedByUid:firebaseAuthUser?.uid||null,createdAt:now};
+        // Create the archived session first, then atomically claim the single "current" slot.
+        await withDailyTimeout(sessionRef.set(payload),10000);
+        const tx=await withDailyTimeout(db.ref('dailySessions/current').transaction(current=>{
+          if(current && current.status==='open' && current.businessDate===today)return;
+          return payload;
+        }),10000);
+        if(!tx.committed){
+          await sessionRef.remove().catch(()=>{});
+          currentDailySession=tx.snapshot?.val?.()||null;
+          return alert('تعذر فتح اليومية لأن يومية أخرى تم فتحها في نفس اللحظة. حدّث الصفحة وحاول مرة أخرى.');
+        }
+        currentDailySession=payload; dailySessionLoaded=true; await logActivity('create','system',`فتح يومية جديدة بتاريخ ${today}`,sessionId,{businessDate:today}); renderDailySessionUI(); alert(`تم فتح يومية ${today} بنجاح ✅`);
+      }catch(e){
+        console.error('openDailySession failed:',e);
+        alert(e?.message==='DAILY_OPERATION_TIMEOUT'?'انتهت مهلة الاتصال بقاعدة البيانات. تأكد من اتصال الإنترنت وFirebase Rules ثم حاول مرة أخرى.':'تعذر فتح اليومية. تحقق من Firebase Authentication وFirebase Rules.');
+      }finally{dailyActionBusy=false;renderDailySessionUI();}
     }
     async function closeDailySession(silent=false){
+      if(dailyActionBusy && !silent)return;
       if(!isOwnerOrAdmin())return alert('إغلاق اليومية متاح للإدارة فقط.');
-      try{const freshSnap=await db.ref('dailySessions/current').once('value');currentDailySession=freshSnap.val()||null;dailySessionLoaded=true;}catch(e){console.error(e);if(!silent)alert('تعذر قراءة حالة اليومية الحالية.');return;}
-      const session=currentDailySession;if(!session||session.status!=='open')return silent?null:alert('لا توجد يومية مفتوحة حاليًا.');
-      if(!silent&&!confirm(`هل تريد إغلاق اليومية الحالية بتاريخ ${session.businessDate||'—'}؟ بعد الإغلاق لن يستطيع الكاشير أو المندوب تنفيذ عمليات حتى فتح يومية جديدة.`))return;
-      const now=Date.now(), update={status:'closed',closedAt:now,closedBy:currentUser.username};
-      try{await db.ref(`dailySessions/${session.sessionId}`).update(update);await db.ref('dailySessions/current').update(update);currentDailySession={...session,...update};dailySessionLoaded=true;await logActivity('update','system',`إغلاق اليومية بتاريخ ${session.businessDate||'—'}`,session.sessionId,{businessDate:session.businessDate});renderDailySessionUI();if(!silent)alert('تم إغلاق اليومية بنجاح ✅');}
-      catch(e){console.error(e);if(!silent)alert('تعذر إغلاق اليومية. تحقق من Firebase Rules.');}
+      if(!silent){dailyActionBusy=true;renderDailySessionUI();}
+      try{
+        const freshSnap=await withDailyTimeout(db.ref('dailySessions/current').once('value'),10000); currentDailySession=freshSnap.val()||null; dailySessionLoaded=true;
+        const session=currentDailySession; if(!session||session.status!=='open')return silent?null:alert('لا توجد يومية مفتوحة حاليًا.');
+        if(!silent&&!confirm(`هل تريد إغلاق اليومية الحالية بتاريخ ${session.businessDate||'—'}؟ بعد الإغلاق لن يستطيع الكاشير أو المندوب تنفيذ عمليات حتى فتح يومية جديدة.`))return;
+        const now=Date.now(), update={status:'closed',closedAt:now,closedBy:currentUser.username,closedByUid:firebaseAuthUser?.uid||null};
+        // Atomic guard: only close if the same session is still current.
+        const tx=await withDailyTimeout(db.ref('dailySessions/current').transaction(current=>{
+          if(!current || current.status!=='open' || current.sessionId!==session.sessionId)return;
+          return {...current,...update};
+        }),10000);
+        if(!tx.committed)return silent?null:alert('تعذر إغلاق اليومية لأن حالتها تغيّرت. حدّث الصفحة وحاول مرة أخرى.');
+        await withDailyTimeout(db.ref(`dailySessions/${session.sessionId}`).update(update),10000);
+        currentDailySession={...session,...update}; dailySessionLoaded=true; await logActivity('update','system',`إغلاق اليومية بتاريخ ${session.businessDate||'—'}`,session.sessionId,{businessDate:session.businessDate}); renderDailySessionUI(); if(!silent)alert('تم إغلاق اليومية بنجاح ✅');
+      }catch(e){console.error('closeDailySession failed:',e);if(!silent)alert(e?.message==='DAILY_OPERATION_TIMEOUT'?'انتهت مهلة الاتصال بقاعدة البيانات.':'تعذر إغلاق اليومية. تحقق من Firebase Authentication وFirebase Rules.');}
+      finally{if(!silent){dailyActionBusy=false;renderDailySessionUI();}}
     }
+    function bindDailyActionButtons(){
+      if(window.__dailyActionButtonsBound)return; window.__dailyActionButtonsBound=true;
+      document.addEventListener('click',event=>{
+        const btn=event.target.closest?.('[data-daily-action]'); if(!btn)return;
+        event.preventDefault(); event.stopPropagation();
+        const action=btn.dataset.dailyAction;
+        if(action==='open') openDailySession(); else if(action==='close') closeDailySession();
+      },true);
+    }
+
+    // Bind immediately: daily control must remain clickable even if a later optional UI initializer fails.
+    bindDailyActionButtons();
+
     function toggleStoreCalendar(){
       const wrap=document.getElementById('storeCalendarCollapsible'),btn=document.getElementById('storeCalendarToggle');if(!wrap||!btn)return;const open=wrap.classList.contains('is-open');wrap.classList.toggle('is-open',!open);wrap.classList.toggle('is-collapsed',open);btn.classList.toggle('open',!open);btn.setAttribute('aria-expanded',String(!open));try{localStorage.setItem('hamaksha_store_calendar_open',!open?'1':'0');}catch(e){}
     }
@@ -3882,25 +3936,14 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     // ===== STEP 42: direct sidebar button wiring =====
     function installDirectSidebarButtons(){ return; }
 
-    function loadRememberedLogin() {
-      const rememberBox = document.getElementById('rememberMe');
-      const loginUser = document.getElementById('loginUser');
-      const loginPass = document.getElementById('loginPass');
-      if(!rememberBox || !loginUser || !loginPass) return;
-
-      try {
-        const saved = localStorage.getItem('hamaksha_remembered_login');
-        if(saved) {
-          const data = JSON.parse(saved);
-          loginUser.value = data.username || '';
-          loginPass.value = data.pass || '';
-          rememberBox.checked = true;
-        } else {
-          rememberBox.checked = false;
-        }
-      } catch(e) {
-        rememberBox.checked = false;
-      }
+    function loadRememberedLogin(){
+      const raw=localStorage.getItem('hamaksha_remembered_login');
+      if(!raw)return;
+      try{
+        const data=JSON.parse(raw)||{};
+        if(data.username)document.getElementById('loginUser').value=data.username;
+        const remember=document.getElementById('rememberMe'); if(remember)remember.checked=!!data.username;
+      }catch(e){localStorage.removeItem('hamaksha_remembered_login');}
     }
 
     function updateLoginContext() {
@@ -3966,7 +4009,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
           return alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
         }
         const remember = document.getElementById('rememberMe')?.checked;
-        if(remember) localStorage.setItem('hamaksha_remembered_login', JSON.stringify({username, pass})); else localStorage.removeItem('hamaksha_remembered_login');
+        if(remember) localStorage.setItem('hamaksha_remembered_login', JSON.stringify({username})); else localStorage.removeItem('hamaksha_remembered_login');
         loginSuccess(found);
       }).catch(err => { console.error(err); if(submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<span>دخول آمن</span><span>🔓</span>'; } alert('تعذر الاتصال ببيانات المستخدمين حالياً.'); });
     }
@@ -4150,7 +4193,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
     function loginSuccess(user) {
       if(APP_MODE!=='staff') return;
-      stopScopedListeners(); currentUser=user; localStorage.setItem('hamaksha_user',JSON.stringify(user));
+      stopScopedListeners(); currentUser={...user}; delete currentUser.pass; localStorage.setItem('hamaksha_user',JSON.stringify(currentUser));
       loadNotificationStore();
       const roleTitle=isSuperUser()?'المالك الرئيسي (asma)':(user.role==='admin'?'أدمن فرعي':user.role==='cashier'?'كاشير':'مندوب توصيل');
       document.getElementById('authBtn').innerText=`${user.username} (خروج)`;
@@ -4191,8 +4234,17 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
     function checkSavedSession() {
       if(APP_MODE!=='staff') return;
+      // SECURITY: امسح أي كلمة مرور قديمة تم تخزينها محليًا في الإصدارات السابقة.
+      try {
+        const legacyRemembered=JSON.parse(localStorage.getItem('hamaksha_remembered_login')||'null');
+        if(legacyRemembered && legacyRemembered.pass) localStorage.setItem('hamaksha_remembered_login',JSON.stringify({username:legacyRemembered.username||''}));
+      } catch(e) { localStorage.removeItem('hamaksha_remembered_login'); }
       const saved=localStorage.getItem('hamaksha_user'); if(!saved) return;
-      try { const data=JSON.parse(saved); if(!data?.username) return; db.ref('users').orderByChild('username').equalTo(data.username).once('value').then(snap=>{ const users=snap.val()||{}; let found=null; Object.keys(users).forEach(id=>found={...users[id],key:id}); if(found) loginSuccess(found); else localStorage.removeItem('hamaksha_user'); }); } catch(e) { localStorage.removeItem('hamaksha_user'); }
+      try {
+        const data=JSON.parse(saved); if(!data?.username) return;
+        if(data.pass) { delete data.pass; localStorage.setItem('hamaksha_user',JSON.stringify(data)); }
+        db.ref('users').orderByChild('username').equalTo(data.username).once('value').then(snap=>{ const users=snap.val()||{}; let found=null; Object.keys(users).forEach(id=>found={...users[id],key:id}); if(found) loginSuccess(found); else localStorage.removeItem('hamaksha_user'); });
+      } catch(e) { localStorage.removeItem('hamaksha_user'); }
     }
 
 
@@ -5119,7 +5171,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       const name=document.getElementById('storeBookingCustomerName').value.trim(),phone=document.getElementById('storeBookingCustomerPhone').value.trim(),pickupDate=document.getElementById('storeBookingPickupDate').value,pickupTime=document.getElementById('storeBookingPickupTime').value,notes=document.getElementById('storeBookingNotes').value.trim(),status=document.getElementById('storeBookingStatus').value,total=getStoreBookingItemsTotal();
       if(!validateStoreBookingConflict(pickupDate,pickupTime))return;
       const bookingNumber=document.getElementById('storeBookingNumberPreview').value||generateStoreBookingNumber();let paidAmount=0;if(storeBookingPaymentMode==='paid')paidAmount=total;else if(storeBookingPaymentMode==='deposit')paidAmount=Math.min(total,Math.max(0,Number(document.getElementById('storeBookingDeposit').value)||0));const remainingDue=Math.max(0,total-paidAmount);const selectedCustomerKey=document.getElementById('storeBookingCustomerKey').value||null;let customerId=selectedCustomerKey;let customerAddress='';try{const existing=selectedCustomerKey?customersCache[selectedCustomerKey]:findCustomerByPhone(phone);customerAddress=existing?.address||'';customerId=await upsertCustomerRecord(name,phone,customerAddress,selectedCustomerKey,true);}catch(err){console.error('Store booking customer save:',err);}
-      const key=bookingNumber;const payload={bookingNumber,bookingType:'store',customerName:name,customerPhone:phone,customerPhoneNormalized:normalizePhone(phone),customerId:customerId||null,pickupDate,pickupTime,notes,items:storeBookingItems.map(it=>({...it})),total,paidAmount,remainingDue,paymentStatus:storeBookingPaymentMode,status,createdBy:currentUser.username,createdAt:Date.now(),updatedAt:Date.now(),businessDate:currentDailySession?.businessDate||dailyToday(),dailySessionId:currentDailySession?.sessionId||null};
+      const key=bookingNumber;const payload={bookingNumber,bookingType:'store',customerName:name,customerPhone:phone,customerPhoneNormalized:normalizePhone(phone),customerId:customerId||null,pickupDate,pickupTime,notes,items:storeBookingItems.map(it=>({...it})),total,paidAmount,remainingDue,paymentStatus:storeBookingPaymentMode,status,createdBy:currentUser.username,createdByUid:firebaseAuthUser?.uid||null,createdAt:Date.now(),updatedAt:Date.now(),businessDate:currentDailySession?.businessDate||dailyToday(),dailySessionId:currentDailySession?.sessionId||null};
       try{await db.ref('storeBookings/'+key).set(payload);await logActivity('create','storeBooking',`إنشاء حجز محل #${bookingNumber} للعميل ${name}`,key,{total,paidAmount,remainingDue});window.storeBookingsCache=window.storeBookingsCache||{};window.storeBookingsCache[key]=payload;renderStoreBookingToday();renderCashierHome();
         const result=document.getElementById('storeBookingResult');if(result){result.classList.remove('hidden');result.innerHTML=`<div class="font-black text-xs">✅ تم حفظ الحجز <span class="font-mono">#${escapeHtml(bookingNumber)}</span> بنجاح.</div><div class="text-[9px] mt-1">المدفوع: ${paidAmount.toLocaleString('ar-EG')} ج.م · المتبقي: ${remainingDue.toLocaleString('ar-EG')} ج.م</div><div class="flex gap-2 mt-2"><button type="button" class="store-action-btn primary" onclick="printStoreBooking(${htmlJsArg(key)})">🧾 طباعة فاتورة 80mm</button><button type="button" class="store-action-btn" onclick="resetStoreBookingForm()">＋ حجز جديد</button></div>`;}
         addNotification('new','حجز محل جديد',`تم إنشاء الحجز #${bookingNumber} للعميل ${name} — الاستلام ${pickupDate} ${pickupTime}`,key);
@@ -5136,7 +5188,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       const items=invoiceItems.map(item=>({...item}));if(!items.length)return alert('أضف صنفًا واحدًا على الأقل إلى الفاتورة قبل تسجيل الطلب.');
       const customId=document.getElementById('custOrderId').value.trim(),orderId=customId||('HAMKASHA-'+Math.floor(10000+Math.random()*90000));const name=document.getElementById('custName').value.trim(),phone=document.getElementById('custPhone').value.trim(),address=document.getElementById('custAddress').value.trim();
       const orderPrice=invoiceItemsTotal(items),deliveryPrice=Number(document.getElementById('deliveryPrice').value)||0,paymentMethod=document.getElementById('paymentMethod').value,paymentFee=Number(document.getElementById('paymentFee').value)||0,totalCash=orderPrice+deliveryPrice+paymentFee,driver=document.getElementById('driverSelect').value,now=new Date();const paidInput=Number(document.getElementById('paymentPaidAmount')?.value)||0;const paidAmount=paymentMethod==='cash'?paidInput:totalCash;const remainingDue=paymentMethod==='cash'?Math.max(0,totalCash-paidAmount):0;const changeDue=paymentMethod==='cash'?Math.max(0,paidAmount-totalCash):0;const selectedKey=document.getElementById('selectedCustomerKey').value||null;let customerId=selectedKey;try{customerId=await upsertCustomerRecord(name,phone,address,selectedKey,true,true);}catch(err){console.error('Customer auto-save error:',err);}const trackingToken=createTrackingToken();
-      const orderPayload={orderId,customerName:name,phone,address,items,orderPrice,deliveryPrice,paymentMethod,paymentFee,totalCash,paidAmount,remainingDue,changeDue,isPaid:remainingDue<=0,driver,status:'جاري تحضير اللحوم 🥩',rating:null,comment:null,isPublished:false,date:now.toISOString().split('T')[0],time:now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),lat:null,lng:null,custLat:null,custLng:null,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name),createdBy:currentUser.username,createdAt:Date.now(),businessDate:currentDailySession?.businessDate||dailyToday(),dailySessionId:currentDailySession?.sessionId||null,trackingToken};
+      const selectedDriverUser=Object.values(allUsersCache||{}).find(u=>u?.username===driver&&u?.role==='driver');const orderPayload={orderId,customerName:name,phone,address,items,orderPrice,deliveryPrice,paymentMethod,paymentFee,totalCash,paidAmount,remainingDue,changeDue,isPaid:remainingDue<=0,driver,driverUid:selectedDriverUser?.uid||null,status:'جاري تحضير اللحوم 🥩',rating:null,comment:null,isPublished:false,date:now.toISOString().split('T')[0],time:now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),lat:null,lng:null,custLat:null,custLng:null,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name),createdBy:currentUser.username,createdByUid:firebaseAuthUser?.uid||null,createdAt:Date.now(),businessDate:currentDailySession?.businessDate||dailyToday(),dailySessionId:currentDailySession?.sessionId||null,trackingToken};
       db.ref('orders/'+orderId).set(orderPayload).then(()=>{
         logActivity('create','order',`إنشاء طلب جديد #${orderId} للعميل ${name}`,orderId,{total:totalCash,driver});
         saveLastInvoiceForRepeat(orderPayload);
@@ -6476,9 +6528,9 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       if(!requireDailyOpen('تنفيذ التحويل'))return;
       try{
         if(sourceType==='store'){
-          const b=(window.storeBookingsCache||{})[sourceKey];if(!b)return;const driver=document.getElementById('conversionDriverSelect').value||'غير محدد',deliveryPrice=Number(document.getElementById('conversionDeliveryPrice').value)||0;const orderId='HAMKASHA-'+Date.now().toString().slice(-8)+Math.floor(10+Math.random()*90);const items=normalizeInvoiceItems(b.items||[]),orderPrice=Number(b.total||invoiceItemsTotal(items)||0),totalCash=orderPrice+deliveryPrice;const paidAmount=Math.min(totalCash,Number(b.paidAmount||0)),remainingDue=Math.max(0,totalCash-paidAmount),now=new Date(),trackingToken=createTrackingToken();const payload={orderId,orderType:'delivery',customerName:b.customerName||'',phone:b.customerPhone||'',phoneNormalized:normalizePhone(b.customerPhone||''),address:customersCache[b.customerId]?.address||'',items,orderPrice,deliveryPrice,paymentMethod:remainingDue>0?'cash':'cash',paymentFee:0,totalCash,paidAmount,remainingDue,changeDue:0,isPaid:remainingDue<=0,driver,status:driver==='غير محدد'?'جاري تحضير اللحوم 🥩':'جاهز للتوصيل 📦',rating:null,comment:null,isPublished:false,date:now.toISOString().split('T')[0],time:now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),lat:null,lng:null,custLat:null,custLng:null,customerId:b.customerId||null,customerNameNormalized:normalizeName(b.customerName||''),createdBy:currentUser.username,createdAt:Date.now(),trackingToken,convertedFrom:'storeBooking',convertedFromKey:sourceKey,businessDate:currentDailySession?.businessDate||dailyToday(),dailySessionId:currentDailySession?.sessionId||b.dailySessionId||null,convertedAt:Date.now(),convertedBy:currentUser.username};await db.ref('orders/'+orderId).set(payload);await db.ref('storeBookings/'+sourceKey).update({convertedTo:orderId,conversionType:'delivery',convertedAt:Date.now(),convertedBy:currentUser.username,status:'تم التحويل للدليفري 🔄'});await logActivity('update','storeBooking',`تحويل حجز المحل #${sourceKey} إلى طلب دليفري #${orderId}`,sourceKey,{orderId});await logActivity('create','order',`إنشاء طلب دليفري من حجز المحل #${sourceKey}`,orderId,{sourceKey});addNotification('delivery','تم تحويل الحجز إلى دليفري',`#${sourceKey} → #${orderId} — ${driver}`,orderId);closeConversionModal();alert('تم تحويل الحجز إلى دليفري بنجاح ✅');
+          const b=(window.storeBookingsCache||{})[sourceKey];if(!b)return;const driver=document.getElementById('conversionDriverSelect').value||'غير محدد',selectedDriverUser=Object.values(allUsersCache||{}).find(u=>u?.username===driver&&u?.role==='driver'),deliveryPrice=Number(document.getElementById('conversionDeliveryPrice').value)||0;const orderId='HAMKASHA-'+Date.now().toString().slice(-8)+Math.floor(10+Math.random()*90);const items=normalizeInvoiceItems(b.items||[]),orderPrice=Number(b.total||invoiceItemsTotal(items)||0),totalCash=orderPrice+deliveryPrice;const paidAmount=Math.min(totalCash,Number(b.paidAmount||0)),remainingDue=Math.max(0,totalCash-paidAmount),now=new Date(),trackingToken=createTrackingToken();const payload={orderId,orderType:'delivery',customerName:b.customerName||'',phone:b.customerPhone||'',phoneNormalized:normalizePhone(b.customerPhone||''),address:customersCache[b.customerId]?.address||'',items,orderPrice,deliveryPrice,paymentMethod:remainingDue>0?'cash':'cash',paymentFee:0,totalCash,paidAmount,remainingDue,changeDue:0,isPaid:remainingDue<=0,driver,driverUid:selectedDriverUser?.uid||null,status:driver==='غير محدد'?'جاري تحضير اللحوم 🥩':'جاهز للتوصيل 📦',rating:null,comment:null,isPublished:false,date:now.toISOString().split('T')[0],time:now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),lat:null,lng:null,custLat:null,custLng:null,customerId:b.customerId||null,customerNameNormalized:normalizeName(b.customerName||''),createdBy:currentUser.username,createdByUid:firebaseAuthUser?.uid||null,createdAt:Date.now(),trackingToken,convertedFrom:'storeBooking',convertedFromKey:sourceKey,businessDate:currentDailySession?.businessDate||dailyToday(),dailySessionId:currentDailySession?.sessionId||b.dailySessionId||null,convertedAt:Date.now(),convertedBy:currentUser.username};await db.ref('orders/'+orderId).set(payload);await db.ref('storeBookings/'+sourceKey).update({convertedTo:orderId,conversionType:'delivery',convertedAt:Date.now(),convertedBy:currentUser.username,status:'تم التحويل للدليفري 🔄'});await logActivity('update','storeBooking',`تحويل حجز المحل #${sourceKey} إلى طلب دليفري #${orderId}`,sourceKey,{orderId});await logActivity('create','order',`إنشاء طلب دليفري من حجز المحل #${sourceKey}`,orderId,{sourceKey});addNotification('delivery','تم تحويل الحجز إلى دليفري',`#${sourceKey} → #${orderId} — ${driver}`,orderId);closeConversionModal();alert('تم تحويل الحجز إلى دليفري بنجاح ✅');
         }else{
-          const o=allOrdersCache[sourceKey];if(!o)return;const pickupDate=document.getElementById('conversionPickupDate').value,pickupTime=document.getElementById('conversionPickupTime').value;if(!pickupDate||!pickupTime)return alert('اختر تاريخ ووقت الاستلام.');const bookingNumber=generateStoreBookingNumber();const items=normalizeInvoiceItems(o.items||[]),orderPrice=Number(o.orderPrice||invoiceItemsTotal(items)||0),total=orderPrice+Number(o.paymentFee||0),paidAmount=Math.min(total,Number(o.paidAmount||0)),remainingDue=Math.max(total-paidAmount,0),paymentStatus=paidAmount>=total?'paid':paidAmount>0?'deposit':'unpaid';const payload={bookingNumber,bookingType:'store',customerName:o.customerName||'',customerPhone:o.phone||'',customerPhoneNormalized:normalizePhone(o.phone||''),customerId:o.customerId||null,pickupDate,pickupTime,notes:`تحويل من طلب دليفري #${o.orderId||sourceKey}${o.address?` — العنوان السابق: ${o.address}`:''}`,items, total,paidAmount,remainingDue,paymentStatus,status:'محجوز 🟡',createdBy:currentUser.username,createdAt:Date.now(),updatedAt:Date.now(),convertedFrom:'delivery',convertedFromKey:sourceKey,businessDate:currentDailySession?.businessDate||dailyToday(),dailySessionId:currentDailySession?.sessionId||o.dailySessionId||null,convertedAt:Date.now(),convertedBy:currentUser.username};await db.ref('storeBookings/'+bookingNumber).set(payload);await db.ref('orders/'+sourceKey).update({convertedTo:bookingNumber,conversionType:'storeBooking',convertedAt:Date.now(),convertedBy:currentUser.username,status:'تم التحويل لحجز المحل 🔄'});await logActivity('update','order',`تحويل الطلب #${sourceKey} إلى حجز محل #${bookingNumber}`,sourceKey,{bookingNumber});await logActivity('create','storeBooking',`إنشاء حجز محل من الطلب #${sourceKey}`,bookingNumber,{sourceKey});addNotification('status','تم تحويل الطلب إلى حجز محل',`#${sourceKey} → حجز #${bookingNumber} — استلام ${pickupDate} ${pickupTime}`,bookingNumber);closeConversionModal();alert('تم تحويل الطلب إلى حجز محل بنجاح ✅');
+          const o=allOrdersCache[sourceKey];if(!o)return;const pickupDate=document.getElementById('conversionPickupDate').value,pickupTime=document.getElementById('conversionPickupTime').value;if(!pickupDate||!pickupTime)return alert('اختر تاريخ ووقت الاستلام.');const bookingNumber=generateStoreBookingNumber();const items=normalizeInvoiceItems(o.items||[]),orderPrice=Number(o.orderPrice||invoiceItemsTotal(items)||0),total=orderPrice+Number(o.paymentFee||0),paidAmount=Math.min(total,Number(o.paidAmount||0)),remainingDue=Math.max(total-paidAmount,0),paymentStatus=paidAmount>=total?'paid':paidAmount>0?'deposit':'unpaid';const payload={bookingNumber,bookingType:'store',customerName:o.customerName||'',customerPhone:o.phone||'',customerPhoneNormalized:normalizePhone(o.phone||''),customerId:o.customerId||null,pickupDate,pickupTime,notes:`تحويل من طلب دليفري #${o.orderId||sourceKey}${o.address?` — العنوان السابق: ${o.address}`:''}`,items, total,paidAmount,remainingDue,paymentStatus,status:'محجوز 🟡',createdBy:currentUser.username,createdByUid:firebaseAuthUser?.uid||null,createdAt:Date.now(),updatedAt:Date.now(),convertedFrom:'delivery',convertedFromKey:sourceKey,businessDate:currentDailySession?.businessDate||dailyToday(),dailySessionId:currentDailySession?.sessionId||o.dailySessionId||null,convertedAt:Date.now(),convertedBy:currentUser.username};await db.ref('storeBookings/'+bookingNumber).set(payload);await db.ref('orders/'+sourceKey).update({convertedTo:bookingNumber,conversionType:'storeBooking',convertedAt:Date.now(),convertedBy:currentUser.username,status:'تم التحويل لحجز المحل 🔄'});await logActivity('update','order',`تحويل الطلب #${sourceKey} إلى حجز محل #${bookingNumber}`,sourceKey,{bookingNumber});await logActivity('create','storeBooking',`إنشاء حجز محل من الطلب #${sourceKey}`,bookingNumber,{sourceKey});addNotification('status','تم تحويل الطلب إلى حجز محل',`#${sourceKey} → حجز #${bookingNumber} — استلام ${pickupDate} ${pickupTime}`,bookingNumber);closeConversionModal();alert('تم تحويل الطلب إلى حجز محل بنجاح ✅');
         }
       }catch(e){console.error(e);alert('تعذر تنفيذ التحويل حاليًا. تحقق من Firebase Rules ثم أعد المحاولة.');}
     }
@@ -6594,7 +6646,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       document.getElementById('appSidebar')?.style.setProperty('display','none','important');
       document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');switchTab('driver');
     }
-    window.addEventListener('DOMContentLoaded',()=>{installDirectSidebarButtons();if(APP_MODE==='staff'){document.body.classList.add('staff-logged-out');document.body.classList.remove('customer-public-mode','driver-private-mode','cashier-mode','auth-modal-open');}applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();if(APP_MODE!=='staff'){startPublicCommentsListener();applyCustomerPublicMode();return;}loadRememberedLogin();startPublicCommentsListener();renderInvoiceProductOptions();checkSavedSession();if(currentUser){document.body.classList.remove('staff-logged-out');}updateUIByPermissions();});
+    window.addEventListener('DOMContentLoaded',()=>{installDirectSidebarButtons();if(APP_MODE==='staff'){document.body.classList.add('staff-logged-out');document.body.classList.remove('customer-public-mode','driver-private-mode','cashier-mode','auth-modal-open');}applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();if(APP_MODE!=='staff'){startPublicCommentsListener();applyCustomerPublicMode();return;}loadRememberedLogin();startPublicCommentsListener();renderInvoiceProductOptions();bindDailyActionButtons();checkSavedSession();if(currentUser){document.body.classList.remove('staff-logged-out');}updateUIByPermissions();renderDailySessionUI();});
 </script>
 
 </body>
