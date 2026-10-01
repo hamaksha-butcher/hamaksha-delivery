@@ -703,6 +703,61 @@
     body.dark-theme .order-details-section, body.dark-theme .order-details-stat { background:#18181b; border-color:#3f3f46; }
     body.dark-theme .order-details-value, body.dark-theme .order-detail-step .step-title { color:#f4f4f5; }
 
+
+    /* ===== POS Order Workspace inspired by the supplied reference layout ===== */
+    .pos-order-form{display:grid;grid-template-columns:minmax(310px,.86fr) minmax(0,1.38fr);gap:14px;align-items:start;padding:4px;}
+    .pos-panel{border:1px solid var(--border-color);background:var(--surface-color);border-radius:18px;box-shadow:0 10px 28px rgba(15,23,42,.06);padding:13px;min-width:0;}
+    .pos-customer-panel{grid-column:1;grid-row:1;}
+    .pos-catalog-panel{grid-column:2;grid-row:1 / span 3;min-height:560px;}
+    .pos-cart-panel{grid-column:1;grid-row:2;}
+    .pos-payment-panel{grid-column:1;grid-row:3;}
+    .pos-driver-panel{grid-column:1;grid-row:4;}
+    .pos-submit-btn{grid-column:1;grid-row:5;}
+    .pos-panel-head,.pos-catalog-head{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--border-color);padding-bottom:10px;margin-bottom:10px;}
+    .pos-panel-head.compact{margin-bottom:8px;}
+    .pos-kicker{display:block;color:var(--muted-color);font-size:8px;font-weight:1000;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;}
+    .pos-panel-head h3,.pos-catalog-head h3{font-size:13px;font-weight:1000;color:var(--text-color);}
+    .pos-panel-head p,.pos-catalog-head p{font-size:9px;color:var(--muted-color);margin-top:2px;font-weight:700;}
+    .pos-small-btn{border:1px solid color-mix(in srgb,var(--primary-color) 18%,var(--border-color));background:color-mix(in srgb,var(--primary-color) 7%,var(--surface-color));color:var(--primary-color);padding:7px 9px;border-radius:10px;font-size:9px;font-weight:1000;}
+    .pos-mini-badge,.pos-cart-count{font-size:8px;font-weight:1000;color:var(--primary-color);background:color-mix(in srgb,var(--primary-color) 7%,var(--surface-color));border:1px solid color-mix(in srgb,var(--primary-color) 14%,var(--border-color));padding:6px 8px;border-radius:999px;white-space:nowrap;}
+    .pos-tabs{display:flex;gap:2px;background:var(--surface-soft);padding:3px;border-radius:12px;width:max-content;margin-bottom:10px;border:1px solid var(--border-color);}
+    .pos-tab,.pos-tab-muted{border:0;background:transparent;padding:7px 14px;border-radius:9px;font-size:10px;font-weight:1000;color:var(--muted-color);}
+    .pos-tab.active{background:var(--surface-color);color:var(--text-color);box-shadow:0 4px 10px rgba(15,23,42,.08);position:relative;}
+    .pos-tab.active:after{content:'';position:absolute;left:15%;right:15%;bottom:0;height:2px;background:var(--primary-color);border-radius:999px;}
+    .pos-tab-muted{opacity:.6;}
+    .pos-catalog-search{width:100%;border:1px solid var(--border-color);background:var(--surface-color);color:var(--text-color);border-radius:12px;padding:10px 34px 10px 10px;font-size:10px;outline:none;}
+    .pos-catalog-search:focus{border-color:var(--primary-color);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary-color) 9%,transparent);}
+    .pos-search-icon{position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--muted-color);font-size:18px;line-height:1;}
+    .pos-category-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px;}
+    .pos-category-card{min-height:92px;border:1px solid var(--border-color);background:linear-gradient(180deg,var(--surface-color),var(--surface-soft));border-radius:14px;padding:10px 7px 7px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--text-color);transition:.16s ease;cursor:pointer;}
+    .pos-category-card:hover,.pos-category-card.active{border-color:color-mix(in srgb,var(--primary-color) 42%,var(--border-color));box-shadow:0 10px 18px rgba(15,23,42,.08);transform:translateY(-1px);}
+    .pos-category-card.active{background:linear-gradient(180deg,color-mix(in srgb,var(--primary-color) 9%,var(--surface-color)),var(--surface-color));}
+    .pos-category-icon{width:33px;height:33px;border-radius:10px;display:grid;place-items:center;background:color-mix(in srgb,var(--primary-color) 10%,var(--surface-color));font-size:17px;}
+    .pos-category-card b{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+    .pos-category-card small{font-size:7px;color:var(--muted-color);font-weight:800;}
+    .pos-products-title{display:flex;align-items:center;justify-content:space-between;margin:12px 2px 6px;color:var(--text-color);font-size:10px;font-weight:1000;}
+    .pos-products-title>span:first-child{font-size:11px;}
+    .pos-subgroup{margin-top:8px;}
+    .pos-subtitle{display:flex;align-items:center;gap:6px;font-size:8px;font-weight:1000;color:var(--primary-color);margin-bottom:6px;padding-right:2px;}
+    .pos-subtitle:before{content:'';width:20px;height:2px;background:var(--primary-color);border-radius:999px;}
+    .pos-items-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;}
+    .pos-product-card{min-height:74px;border:1px solid var(--border-color);border-radius:12px;background:var(--surface-color);padding:9px 7px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:5px;color:var(--text-color);text-align:right;cursor:pointer;transition:.15s ease;}
+    .pos-product-card:hover,.pos-product-card.selected{border-color:var(--primary-color);box-shadow:0 9px 18px color-mix(in srgb,var(--primary-color) 12%,transparent);background:color-mix(in srgb,var(--primary-color) 5%,var(--surface-color));}
+    .pos-product-name{font-size:9px;font-weight:1000;line-height:1.5;}
+    .pos-product-price{font-size:8px;color:var(--primary-color);font-weight:1000;background:color-mix(in srgb,var(--primary-color) 6%,var(--surface-color));padding:3px 5px;border-radius:7px;}
+    .pos-add-bar{display:grid;grid-template-columns:minmax(0,1.45fr) .55fr .75fr auto;gap:7px;align-items:end;margin-top:12px;padding:10px;border:1px solid var(--border-color);background:var(--surface-soft);border-radius:13px;position:sticky;bottom:6px;z-index:2;}
+    .pos-selected-product{min-width:0;display:flex;flex-direction:column;gap:2px;}
+    .pos-selected-product small{font-size:7px;color:var(--muted-color);font-weight:800;}
+    .pos-selected-product b{font-size:9px;color:var(--text-color);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .pos-qty-field{text-align:center;font-weight:1000;}
+    .pos-add-line-btn{height:35px;white-space:nowrap;}
+    .pos-cart-table-wrap{max-height:260px;overflow:auto;}
+    .pos-cart-total{margin-top:9px;background:color-mix(in srgb,var(--primary-color) 6%,var(--surface-color));}
+    .pos-empty{border:1px dashed var(--border-color);background:var(--surface-soft);border-radius:14px;padding:22px;text-align:center;color:var(--muted-color);font-size:9px;font-weight:800;}
+    .pos-submit-btn{width:100%;margin-top:0;}
+    @media (max-width: 1100px){.pos-order-form{grid-template-columns:minmax(285px,.8fr) minmax(0,1.2fr)}.pos-category-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.pos-items-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
+    @media (max-width: 860px){.pos-order-form{display:flex;flex-direction:column}.pos-catalog-panel,.pos-customer-panel,.pos-cart-panel,.pos-payment-panel,.pos-driver-panel,.pos-submit-btn{width:100%}.pos-catalog-panel{min-height:0}.pos-category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pos-items-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pos-add-bar{position:static;grid-template-columns:1fr 90px 110px auto;}}
+    @media (max-width: 560px){.pos-panel{padding:10px;border-radius:15px}.pos-add-bar{grid-template-columns:1fr 1fr;}.pos-selected-product{grid-column:1/-1}.pos-add-line-btn{grid-column:1/-1}.pos-category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pos-items-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.pos-customer-panel .grid{grid-template-columns:1fr;}.pos-mini-badge{display:none;}}
 </style>
 </head>
 <body id="appBody" class="bg-amber-50/40 min-h-screen text-gray-800">
@@ -923,8 +978,8 @@
       </div>
 
       <div id="adminContent" class="hidden space-y-6">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="space-y-6 lg:col-span-1">
+        <div class="space-y-6">
+          <div class="space-y-6">
             
             <!-- نموذج إضافة طلب — Modern Order Form -->
             <div class="order-form-card bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-4">
@@ -944,104 +999,112 @@
                 </div>
               </div>
 
-              <form id="orderForm" class="space-y-4">
-                <section class="order-form-section">
-                  <div class="order-section-title"><span class="order-section-icon">👤</span><div><h3>بيانات العميل</h3><p>العميل الحالي أو عميل جديد</p></div></div>
-                  <div class="space-y-3">
-                    <div>
-                      <label class="order-label">رقم الطلب <span class="optional-badge">اختياري</span></label>
-                      <div class="relative">
-                        <span class="order-field-icon">#</span>
-                        <input type="text" id="custOrderId" placeholder="HAMKASHA-1001" class="order-input pl-9 font-mono" autocomplete="off">
-                      </div>
-                    </div>
-                    <div>
-                      <label class="order-label">اسم العميل <span class="required-dot">*</span></label>
-                      <div class="relative">
-                        <span class="order-field-icon">👤</span>
-                        <input type="text" id="custName" required placeholder="مثال: الحاج أحمد" class="order-input pl-9" autocomplete="name">
-                      </div>
-                    </div>
-                    <div>
-                      <label class="order-label">رقم الهاتف / واتساب <span class="required-dot">*</span></label>
-                      <div class="relative">
-                        <span class="order-field-icon">📱</span>
-                        <input type="text" id="custPhone" required placeholder="01273091807" class="order-input pl-9 text-left" dir="ltr" inputmode="tel" autocomplete="tel" oninput="smartLookupCustomer(this.value)" onblur="smartLookupCustomer(this.value)">
-                      </div>
-                      <input type="hidden" id="selectedCustomerKey" value="">
-                      <div class="flex flex-wrap items-center gap-2 mt-2">
-                        <button type="button" onclick="openCustomerPickerModal()" class="order-secondary-btn">👥 اختيار من القاعدة</button>
-                        <button type="button" onclick="clearSelectedCustomer()" class="order-ghost-btn">➕ عميل جديد</button>
-                      </div>
-                      <span id="customerLookupStatus" class="block text-[10px] font-bold text-gray-400 mt-1.5"></span>
-                    </div>
-                    <div>
-                      <label class="order-label">العنوان والطلبات التفصيلية <span class="required-dot">*</span></label>
-                      <textarea id="custAddress" rows="3" required placeholder="مثال: شارع التحرير، أمام مسجد النور، الدور الثاني" class="order-input resize-none"></textarea>
-                    </div>
-                  </div>
-                </section>
+              <form id="orderForm" class="pos-order-form">
+  <!-- بيانات العميل / يسار -->
+  <section class="pos-panel pos-customer-panel">
+    <div class="pos-panel-head">
+      <div><span class="pos-kicker">CUSTOMER</span><h3>👤 بيانات العميل</h3><p>ابحث أو اختر عميلًا محفوظًا</p></div>
+      <button type="button" onclick="openCustomerPickerModal()" class="pos-small-btn">👥 قاعدة العملاء</button>
+    </div>
+    <div class="pos-customer-search">
+      <label class="order-label">اسم العميل</label>
+      <div class="relative"><span class="order-field-icon">👤</span><input type="text" id="custName" required placeholder="اسم العميل..." class="order-input pl-9" autocomplete="name"></div>
+    </div>
+    <div class="grid grid-cols-2 gap-2.5">
+      <div>
+        <label class="order-label">رقم الهاتف / واتساب <span class="required-dot">*</span></label>
+        <div class="relative"><span class="order-field-icon">📱</span><input type="text" id="custPhone" required placeholder="01273091807" class="order-input pl-9 text-left" dir="ltr" inputmode="tel" autocomplete="tel" oninput="smartLookupCustomer(this.value)" onblur="smartLookupCustomer(this.value)"></div>
+      </div>
+      <div>
+        <label class="order-label">رقم الطلب <span class="optional-badge">اختياري</span></label>
+        <div class="relative"><span class="order-field-icon">#</span><input type="text" id="custOrderId" placeholder="HAMKASHA-1001" class="order-input pl-9 font-mono" autocomplete="off"></div>
+      </div>
+    </div>
+    <input type="hidden" id="selectedCustomerKey" value="">
+    <div class="flex flex-wrap gap-2 mt-2">
+      <button type="button" onclick="clearSelectedCustomer()" class="order-ghost-btn">➕ عميل جديد</button>
+      <span id="customerLookupStatus" class="text-[10px] font-bold text-gray-400 self-center"></span>
+    </div>
+    <div class="mt-2.5">
+      <label class="order-label">العنوان / ملاحظات التوصيل <span class="required-dot">*</span></label>
+      <textarea id="custAddress" rows="3" required placeholder="الحي، الشارع، رقم المنزل، أي ملاحظات مهمة..." class="order-input resize-none"></textarea>
+    </div>
+  </section>
 
-                <section class="invoice-items-shell">
-                  <div class="invoice-items-head">
-                    <div class="invoice-items-title"><span class="icon">🧾</span><div><h3>أصناف الفاتورة</h3><p>اختيار من المنيو الرسمي حسب القسم الرئيسي والفرعي، أو إضافة صنف مخصص.</p></div></div>
-                    <span class="optional-badge">الإجمالي تلقائي</span>
-                  </div>
-                  <div class="invoice-add-grid">
-                    <div class="invoice-product-wrap"><label class="order-label">اختيار الصنف</label><select id="invoiceItemProduct" class="invoice-field" onchange="handleInvoiceProductChange('new')"><option value="">اختر من قائمة الأسعار...</option><option value="__custom__">✍️ صنف مخصص</option></select></div>
-                    <div><label class="order-label">الكمية</label><input type="number" id="invoiceItemQty" class="invoice-field" min="0.01" step="0.01" value="1" inputmode="decimal"></div>
-                    <div><label class="order-label">سعر الوحدة</label><input type="number" id="invoiceItemUnitPrice" class="invoice-field" min="0" step="0.01" value="0" inputmode="decimal"></div>
-                    <button type="button" class="invoice-add-btn" onclick="addInvoiceItem('new')">＋ إضافة</button>
-                  </div>
-                  <div id="invoiceCustomNameWrap" class="invoice-custom-name"><label class="order-label">اسم الصنف المخصص</label><div class="grid grid-cols-2 gap-2"><input type="text" id="invoiceItemName" class="invoice-field" placeholder="مثال: لحم مفروم"><input type="text" id="invoiceItemUnit" class="invoice-field" value="كيلو" placeholder="الوحدة"></div></div>
-                  <div class="invoice-items-table-wrap"><table class="invoice-items-table"><thead><tr><th>الصنف</th><th>الوحدة</th><th class="text-center">الكمية</th><th class="text-center">سعر الوحدة</th><th class="text-center">الإجمالي</th><th class="text-center">إزالة</th></tr></thead><tbody id="invoiceItemsBodyNew"><tr><td colspan="6" class="invoice-items-empty">لم تتم إضافة أصناف بعد. اختر صنفًا وأضفه للفاتورة.</td></tr></tbody></table></div>
-                  <div class="invoice-items-total"><span>إجمالي الأصناف</span><span id="invoiceItemsTotalNew">0 ج.م</span></div>
-                </section>
+  <!-- كتالوج المنتجات / يمين -->
+  <section class="pos-panel pos-catalog-panel">
+    <div class="pos-tabs">
+      <button type="button" class="pos-tab active" id="posProductsTab">المنتجات</button>
+      <span class="pos-tab-muted">🔥 عروض</span>
+    </div>
+    <div class="pos-catalog-head">
+      <div>
+        <span class="pos-kicker">MENU</span>
+        <h3>🧾 اختار الصنف</h3>
+        <p>ابدأ بالقسم الرئيسي ثم اختر الصنف والسعر والكمية.</p>
+      </div>
+      <span class="pos-mini-badge">الأسعار من المنيو</span>
+    </div>
+    <div class="relative mt-3">
+      <span class="pos-search-icon">⌕</span>
+      <input type="search" id="invoiceCatalogSearch" oninput="filterNewOrderCatalog(this.value)" placeholder="ابحث باسم الصنف أو القسم..." class="pos-catalog-search">
+    </div>
+    <div id="invoiceCategoryGrid" class="pos-category-grid"></div>
+    <div class="pos-products-title"><span>الأصناف</span><span id="invoiceCatalogHint" class="text-[10px] text-slate-500">اختر قسمًا</span></div>
+    <div id="invoiceProductGrid" class="pos-product-grid"></div>
 
-                <section class="order-form-section order-billing-section">
-                  <div class="order-section-title"><span class="order-section-icon">💰</span><div><h3>الفاتورة والدفع</h3><p>المبلغ قبل التوصيل + طريقة التحصيل</p></div></div>
-                  <div class="grid grid-cols-2 gap-2.5">
-                    <div>
-                      <label class="order-label">سعر الطلب</label>
-                      <div class="relative"><input type="number" id="orderPrice" oninput="calculateTotalBill()" required readonly placeholder="0" class="order-input font-black text-center pr-12 bg-gray-50" min="0" step="0.01" inputmode="decimal"><span class="order-unit">ج.م</span></div>
-                    </div>
-                    <div>
-                      <label class="order-label">التوصيل</label>
-                      <div class="relative"><input type="number" id="deliveryPrice" oninput="calculateTotalBill()" value="20" required class="order-input font-black text-center pr-12" min="0" step="0.01" inputmode="decimal"><span class="order-unit">ج.م</span></div>
-                    </div>
-                  </div>
+    <div class="pos-add-bar">
+      <div class="pos-selected-product"><small>الصنف المختار</small><b id="selectedInvoiceProductLabel">لم يتم اختيار صنف</b></div>
+      <div><label class="order-label">الكمية</label><input type="number" id="invoiceItemQty" class="invoice-field pos-qty-field" min="0.01" step="0.01" value="1" inputmode="decimal"></div>
+      <div><label class="order-label">سعر الوحدة</label><input type="number" id="invoiceItemUnitPrice" class="invoice-field" min="0" step="0.01" value="0" inputmode="decimal"></div>
+      <button type="button" class="invoice-add-btn pos-add-line-btn" onclick="addInvoiceItem('new')">＋ إضافة للفاتورة</button>
+    </div>
 
-                  <div class="grid grid-cols-2 gap-2.5 mt-2.5">
-                    <div>
-                      <label class="order-label">طريقة الدفع</label>
-                      <select id="paymentMethod" onchange="calculateTotalBill()" class="order-input font-bold bg-white">
-                        <option value="cash">💵 كاش مع المندوب</option>
-                        <option value="vodafone">📱 فودافون كاش</option>
-                        <option value="instapay">⚡ إنستا باي</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label class="order-label">عمولة الدفع</label>
-                      <div class="relative"><input type="number" id="paymentFee" oninput="calculateTotalBill(true)" value="0" class="order-input font-black text-center pr-12 bg-white" min="0" step="0.01" inputmode="decimal"><span class="order-unit">ج.م</span></div>
-                    </div>
-                  </div>
+    <!-- IDs لازمة للوظائف الحالية: مخفية بصريًا ويقودها كتالوج POS -->
+    <select id="invoiceItemProduct" class="sr-only" onchange="handleInvoiceProductChange('new')"><option value="">اختر صنفًا...</option></select>
+    <div id="invoiceCustomNameWrap" class="invoice-custom-name">
+      <label class="order-label">اسم الصنف المخصص</label>
+      <div class="grid grid-cols-2 gap-2"><input type="text" id="invoiceItemName" class="invoice-field" placeholder="مثال: لحم مفروم"><input type="text" id="invoiceItemUnit" class="invoice-field" value="كيلو" placeholder="الوحدة"></div>
+    </div>
+  </section>
 
-                  <div class="order-total-card mt-3">
-                    <div><span class="text-[10px] font-bold opacity-80">الإجمالي النهائي</span><p class="text-[9px] opacity-60 mt-0.5">يشمل التوصيل والعمولة</p></div>
-                    <span id="displayGrandTotal" class="font-mono text-xl font-black">0 ج.م</span>
-                  </div>
-                </section>
+  <!-- السلة / يسار -->
+  <section class="pos-panel pos-cart-panel">
+    <div class="pos-panel-head">
+      <div><span class="pos-kicker">CART</span><h3>🛒 طلب العميل</h3><p>راجع الأصناف والكميات قبل الحفظ</p></div>
+      <span id="invoiceCartCount" class="pos-cart-count">0 أصناف</span>
+    </div>
+    <div class="invoice-items-table-wrap pos-cart-table-wrap">
+      <table class="invoice-items-table"><thead><tr><th>الصنف</th><th>الوحدة</th><th class="text-center">الكمية</th><th class="text-center">سعر الوحدة</th><th class="text-center">الإجمالي</th><th class="text-center">إزالة</th></tr></thead><tbody id="invoiceItemsBodyNew"><tr><td colspan="6" class="invoice-items-empty">السلة فارغة — اختر صنفًا من المنيو لإضافته.</td></tr></tbody></table>
+    </div>
+    <div class="invoice-items-total pos-cart-total"><span>إجمالي الأصناف</span><span id="invoiceItemsTotalNew">0 ج.م</span></div>
+  </section>
 
-                <section class="order-form-section">
-                  <div class="order-section-title"><span class="order-section-icon">🛵</span><div><h3>التوصيل</h3><p>تحديد المندوب المسؤول عن الطلب</p></div></div>
-                  <label class="order-label">المندوب المكلف</label>
-                  <select id="driverSelect" class="order-input font-bold bg-white driver-dropdown">
-                    <option value="غير محدد">حدد المندوب...</option>
-                  </select>
-                </section>
+  <!-- الدفع / يسار -->
+  <section class="pos-panel pos-payment-panel order-billing-section">
+    <div class="pos-panel-head compact">
+      <div><span class="pos-kicker">PAYMENT</span><h3>💰 الدفع والإجمالي</h3></div>
+    </div>
+    <div class="grid grid-cols-2 gap-2.5">
+      <div><label class="order-label">سعر الأصناف</label><div class="relative"><input type="number" id="orderPrice" oninput="calculateTotalBill()" required readonly value="0" class="order-input font-black text-center pr-12 bg-gray-50"><span class="order-unit">ج.م</span></div></div>
+      <div><label class="order-label">التوصيل</label><div class="relative"><input type="number" id="deliveryPrice" oninput="calculateTotalBill()" value="20" required class="order-input font-black text-center pr-12"><span class="order-unit">ج.م</span></div></div>
+    </div>
+    <div class="grid grid-cols-2 gap-2.5 mt-2.5">
+      <div><label class="order-label">طريقة الدفع</label><select id="paymentMethod" onchange="calculateTotalBill()" class="order-input font-bold bg-white"><option value="cash">💵 كاش مع المندوب</option><option value="vodafone">📱 فودافون كاش</option><option value="instapay">⚡ إنستا باي</option></select></div>
+      <div><label class="order-label">عمولة الدفع</label><div class="relative"><input type="number" id="paymentFee" oninput="calculateTotalBill(true)" value="0" class="order-input font-black text-center pr-12 bg-white"><span class="order-unit">ج.م</span></div></div>
+    </div>
+    <div class="order-total-card mt-3"><div><span class="text-[10px] font-bold opacity-80">الإجمالي النهائي</span><p class="text-[9px] opacity-60 mt-0.5">يشمل الأصناف + التوصيل + العمولة</p></div><span id="displayGrandTotal" class="font-mono text-xl font-black">0 ج.م</span></div>
+  </section>
 
-                <button type="submit" class="order-submit-btn"><span>🚀 تسجيل الطلب</span><small>وحفظ الحسابات تلقائيًا</small></button>
-              </form>
+  <!-- التوصيل / يسار -->
+  <section class="pos-panel pos-driver-panel">
+    <div class="pos-panel-head compact"><div><span class="pos-kicker">DELIVERY</span><h3>🛵 المندوب</h3></div><button type="button" onclick="autoAssignSmartDriver()" class="order-smart-btn">🤖 توزيع ذكي</button></div>
+    <label class="order-label">المندوب المكلف</label>
+    <select id="driverSelect" class="order-input font-bold bg-white driver-dropdown"><option value="غير محدد">حدد المندوب...</option></select>
+  </section>
+
+  <button type="submit" class="order-submit-btn pos-submit-btn"><span>🚀 تسجيل الطلب والفاتورة</span><small>حفظ الأصناف والحسابات والتوصيل تلقائيًا</small></button>
+</form>
 
               <div id="result" class="mt-2 hidden rounded-2xl border border-emerald-200 bg-emerald-50 p-3 space-y-2">
                 <div class="text-[10px] font-black text-emerald-800">✅ تم إنشاء الطلب بنجاح</div>
@@ -1057,7 +1120,7 @@
           </div>
 
           <!-- إدارة الطلبات — واجهة حديثة -->
-          <div class="bg-white rounded-3xl shadow-xl orders-shell lg:col-span-2 space-y-5 print-area overflow-hidden">
+          <div class="bg-white rounded-3xl shadow-xl orders-shell space-y-5 print-area overflow-hidden">
             <div class="orders-toolbar p-5 sm:p-6">
               <div class="flex flex-wrap items-center justify-between gap-4">
                 <div>
@@ -2533,15 +2596,55 @@
           group.items.forEach(({key,item})=>{
             const display=menuPriceText(item);
             const numeric=Number(item.price||0);
-            options.push(`<option value="${escapeHtml(key)}" data-name="${escapeHtml(item.name||'')}" data-price="${numeric}" data-price-display="${escapeHtml(display)}" data-unit="${escapeHtml(item.unit||'كيلو')}">${escapeHtml(item.name||'صنف')} — ${escapeHtml(display)} ج.م/${escapeHtml(item.unit||'كيلو')}</option>`);
+            options.push(`<option value="${escapeHtml(key)}" data-name="${escapeHtml(item.name||'')}" data-main="${escapeHtml(group.main)}" data-sub="${escapeHtml(group.sub)}" data-price="${numeric}" data-price-display="${escapeHtml(display)}" data-unit="${escapeHtml(item.unit||'كيلو')}">${escapeHtml(item.name||'صنف')} — ${escapeHtml(display)} ج.م/${escapeHtml(item.unit||'كيلو')}</option>`);
           });
           options.push('</optgroup>');
         });
         select.innerHTML=options.join('');
         if(current&&Array.from(select.options).some(o=>o.value===current))select.value=current;
       });
+      renderNewOrderCatalog();
     }
 
+    let newOrderCatalogMain = '';
+    let newOrderCatalogSearch = '';
+    function getNewOrderCatalogData(){
+      const select=document.getElementById('invoiceItemProduct');
+      if(!select) return [];
+      const rows=[];
+      Array.from(select.options||[]).forEach(opt=>{
+        if(!opt.value || opt.value==='__custom__') return;
+        rows.push({key:opt.value,name:opt.dataset.name||opt.textContent||'',main:opt.dataset.main||'أصناف أخرى',sub:opt.dataset.sub||'غير مصنف',price:opt.dataset.price||'0',priceDisplay:opt.dataset.priceDisplay||opt.dataset.price||'0',unit:opt.dataset.unit||'كيلو'});
+      });
+      return rows;
+    }
+    function renderNewOrderCatalog(){
+      const catEl=document.getElementById('invoiceCategoryGrid'),prodEl=document.getElementById('invoiceProductGrid');
+      if(!catEl||!prodEl) return;
+      const rows=getNewOrderCatalogData();
+      const search=String(newOrderCatalogSearch||'').trim().toLowerCase();
+      const filtered=search?rows.filter(r=>`${r.name} ${r.main} ${r.sub}`.toLowerCase().includes(search)):rows;
+      const mains=[];filtered.forEach(r=>{if(!mains.includes(r.main))mains.push(r.main);});
+      if(!newOrderCatalogMain || !mains.includes(newOrderCatalogMain)) newOrderCatalogMain=mains[0]||'';
+      catEl.innerHTML=mains.map(main=>`<button type="button" class="pos-category-card ${main===newOrderCatalogMain?'active':''}" onclick="selectNewOrderCategory(${JSON.stringify(main)})"><span class="pos-category-icon">🥩</span><b>${escapeHtml(main)}</b><small>عرض الأصناف</small></button>`).join('');
+      const mainRows=filtered.filter(r=>r.main===newOrderCatalogMain);
+      const subGroups={};mainRows.forEach(r=>{(subGroups[r.sub] ||= []).push(r);});
+      if(!newOrderCatalogMain){prodEl.innerHTML='<div class="pos-empty">لا توجد أصناف في المنيو حاليًا.</div>';return;}
+      document.getElementById('invoiceCatalogHint')?.replaceChildren(document.createTextNode(`${mainRows.length} صنف`));
+      prodEl.innerHTML=Object.entries(subGroups).map(([sub,items])=>`<div class="pos-subgroup"><div class="pos-subtitle">${escapeHtml(sub||'أصناف')}</div><div class="pos-items-grid">${items.map(r=>`<button type="button" class="pos-product-card" data-key="${escapeHtml(r.key)}" onclick="chooseNewInvoiceProduct(${JSON.stringify(r.key)})"><span class="pos-product-name">${escapeHtml(r.name)}</span><span class="pos-product-price">${escapeHtml(r.priceDisplay)} ج.م/${escapeHtml(r.unit)}</span></button>`).join('')}</div></div>`).join('') || '<div class="pos-empty">لا توجد أصناف مطابقة للبحث.</div>';
+      const selected=document.getElementById('invoiceItemProduct')?.value||'';
+      document.querySelectorAll('#invoiceProductGrid .pos-product-card').forEach(b=>b.classList.toggle('selected',b.dataset.key===selected));
+    }
+    function selectNewOrderCategory(main){newOrderCatalogMain=main;renderNewOrderCatalog();}
+    function filterNewOrderCatalog(value){newOrderCatalogSearch=value||'';newOrderCatalogMain='';renderNewOrderCatalog();}
+    function chooseNewInvoiceProduct(key){
+      const select=document.getElementById('invoiceItemProduct');if(!select)return;
+      select.value=key;handleInvoiceProductChange('new');
+      const label=document.getElementById('selectedInvoiceProductLabel');const opt=select.selectedOptions?.[0];
+      if(label)label.innerText=opt?.dataset?.name||'الصنف المختار';
+      document.querySelectorAll('#invoiceProductGrid .pos-product-card').forEach(b=>b.classList.toggle('selected',b.dataset.key===key));
+      document.getElementById('invoiceItemQty')?.focus();
+    }
     function handleInvoiceProductChange(mode){
       const isEdit=mode==='edit',select=document.getElementById(isEdit?'editInvoiceItemProduct':'invoiceItemProduct'),qty=document.getElementById(isEdit?'editInvoiceItemQty':'invoiceItemQty'),price=document.getElementById(isEdit?'editInvoiceItemUnitPrice':'invoiceItemUnitPrice'),wrap=document.getElementById(isEdit?'editInvoiceCustomNameWrap':'invoiceCustomNameWrap'),name=document.getElementById(isEdit?'editInvoiceItemName':'invoiceItemName'),unit=document.getElementById(isEdit?'editInvoiceItemUnit':'invoiceItemUnit'),opt=select?.selectedOptions?.[0],display=opt?.dataset?.priceDisplay||opt?.dataset?.price||'0';
       if(select?.value==='__custom__'){
@@ -2558,10 +2661,11 @@
       if(qty&&!qty.value)qty.value='1';
     }
 
+    document.addEventListener('keydown',e=>{if(e.key==='Enter' && document.activeElement?.id==='invoiceItemQty' && document.getElementById('invoiceItemProduct')?.value){e.preventDefault();addInvoiceItem('new');}});
     function addInvoiceItem(mode){const isEdit=mode==='edit',select=document.getElementById(isEdit?'editInvoiceItemProduct':'invoiceItemProduct'),qtyEl=document.getElementById(isEdit?'editInvoiceItemQty':'invoiceItemQty'),priceEl=document.getElementById(isEdit?'editInvoiceItemUnitPrice':'invoiceItemUnitPrice'),nameEl=document.getElementById(isEdit?'editInvoiceItemName':'invoiceItemName'),unitEl=document.getElementById(isEdit?'editInvoiceItemUnit':'invoiceItemUnit'),product=select?.value||'',qty=Number(qtyEl?.value)||0,unitPrice=Number(priceEl?.value)||0,name=(product==='__custom__'?(nameEl?.value||'').trim():(select?.selectedOptions?.[0]?.dataset?.name||nameEl?.value||'').trim()),unit=(unitEl?.value||select?.selectedOptions?.[0]?.dataset?.unit||'كيلو').trim()||'كيلو';if(!name)return alert('اكتب اسم الصنف أو اختر صنفًا من القائمة.');if(qty<=0)return alert('أدخل كمية صحيحة.');if(unitPrice<=0)return alert('أدخل سعر وحدة صحيحًا قبل إضافة الصنف.');const items=getInvoiceItemsState(mode);items.push({name,qty,unitPrice,unit,total:qty*unitPrice,priceKey:product&&product!=='__custom__'?product:null});setInvoiceItemsState(mode,items);if(isEdit)editInvoiceItemsTouched=true;renderInvoiceItems(mode);syncOrderPriceFromInvoice(mode);if(select)select.value='';if(qtyEl)qtyEl.value='1';if(priceEl){priceEl.value='0';priceEl.placeholder='0';}if(nameEl)nameEl.value='';if(unitEl)unitEl.value='كيلو';document.getElementById(isEdit?'editInvoiceCustomNameWrap':'invoiceCustomNameWrap')?.classList.remove('show');}
     function updateInvoiceItem(mode,index,field,value){const items=getInvoiceItemsState(mode);if(!items[index])return;items[index][field]=(field==='qty'||field==='unitPrice')?Number(value)||0:String(value);items[index].total=(Number(items[index].qty)||0)*(Number(items[index].unitPrice)||0);if(mode==='edit')editInvoiceItemsTouched=true;renderInvoiceItems(mode);syncOrderPriceFromInvoice(mode);}
     function removeInvoiceItem(mode,index){const items=getInvoiceItemsState(mode);items.splice(index,1);setInvoiceItemsState(mode,items);if(mode==='edit')editInvoiceItemsTouched=true;renderInvoiceItems(mode);syncOrderPriceFromInvoice(mode);}
-    function renderInvoiceItems(mode){const body=document.getElementById(mode==='edit'?'invoiceItemsBodyEdit':'invoiceItemsBodyNew');if(!body)return;const items=getInvoiceItemsState(mode)||[],empty=mode==='edit'?'لا توجد أصناف مفصلة لهذا الطلب.':'لم تتم إضافة أصناف بعد. اختر صنفًا وأضفه للفاتورة.';if(!items.length){body.innerHTML=`<tr><td colspan="6" class="invoice-items-empty">${empty}</td></tr>`;const totalEl=document.getElementById(mode==='edit'?'invoiceItemsTotalEdit':'invoiceItemsTotalNew');if(totalEl)totalEl.innerText='0 ج.م';return;}body.innerHTML=items.map((it,i)=>`<tr><td class="font-bold">${escapeHtml(it.name||'صنف')}</td><td>${escapeHtml(it.unit||'كيلو')}</td><td class="text-center"><input class="invoice-line-input" type="number" min="0.01" step="0.01" value="${Number(it.qty||0)}" onchange="updateInvoiceItem('${mode}',${i},'qty',this.value)"></td><td class="text-center"><input class="invoice-line-input" type="number" min="0" step="0.01" value="${Number(it.unitPrice||0)}" onchange="updateInvoiceItem('${mode}',${i},'unitPrice',this.value)"></td><td class="text-center font-black">${Number(it.total||0).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2})} ج.م</td><td class="text-center"><button type="button" class="invoice-remove-btn" onclick="removeInvoiceItem('${mode}',${i})" title="حذف الصنف">✕</button></td></tr>`).join('');const totalEl=document.getElementById(mode==='edit'?'invoiceItemsTotalEdit':'invoiceItemsTotalNew');if(totalEl)totalEl.innerText=invoiceItemsTotal(items).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2})+' ج.م';}
+    function renderInvoiceItems(mode){const body=document.getElementById(mode==='edit'?'invoiceItemsBodyEdit':'invoiceItemsBodyNew');if(!body)return;const items=getInvoiceItemsState(mode)||[],empty=mode==='edit'?'لا توجد أصناف مفصلة لهذا الطلب.':'لم تتم إضافة أصناف بعد. اختر صنفًا وأضفه للفاتورة.';if(!items.length){body.innerHTML=`<tr><td colspan="6" class="invoice-items-empty">${empty}</td></tr>`;const totalEl=document.getElementById(mode==='edit'?'invoiceItemsTotalEdit':'invoiceItemsTotalNew');if(totalEl)totalEl.innerText='0 ج.م';const cartCount=document.getElementById('invoiceCartCount');if(mode==='new'&&cartCount)cartCount.innerText='0 أصناف';const selectedLabel=document.getElementById('selectedInvoiceProductLabel');if(mode==='new'&&selectedLabel)selectedLabel.innerText='لم يتم اختيار صنف';return;}body.innerHTML=items.map((it,i)=>`<tr><td class="font-bold">${escapeHtml(it.name||'صنف')}</td><td>${escapeHtml(it.unit||'كيلو')}</td><td class="text-center"><input class="invoice-line-input" type="number" min="0.01" step="0.01" value="${Number(it.qty||0)}" onchange="updateInvoiceItem('${mode}',${i},'qty',this.value)"></td><td class="text-center"><input class="invoice-line-input" type="number" min="0" step="0.01" value="${Number(it.unitPrice||0)}" onchange="updateInvoiceItem('${mode}',${i},'unitPrice',this.value)"></td><td class="text-center font-black">${Number(it.total||0).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2})} ج.م</td><td class="text-center"><button type="button" class="invoice-remove-btn" onclick="removeInvoiceItem('${mode}',${i})" title="حذف الصنف">✕</button></td></tr>`).join('');const totalEl=document.getElementById(mode==='edit'?'invoiceItemsTotalEdit':'invoiceItemsTotalNew');if(totalEl)totalEl.innerText=invoiceItemsTotal(items).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2})+' ج.م';const cartCount=document.getElementById('invoiceCartCount');if(mode==='new'&&cartCount)cartCount.innerText=`${items.length} أصناف`;const selectedLabel=document.getElementById('selectedInvoiceProductLabel');if(mode==='new'&&selectedLabel&&!items.length)selectedLabel.innerText='لم يتم اختيار صنف';}
     function hydrateInvoiceItems(mode,raw){const items=normalizeInvoiceItems(raw);setInvoiceItemsState(mode,items);if(mode==='edit')editInvoiceItemsTouched=false;renderInvoiceItems(mode);if(items.length)syncOrderPriceFromInvoice(mode);}
     function attachInvoicePriceListener(){if(invoicePriceListenerAttached)return;invoicePriceListenerAttached=true;db.ref('prices').on('value',snap=>{pricesCache=snap.val()||{};renderInvoiceProductOptions();});}
 
