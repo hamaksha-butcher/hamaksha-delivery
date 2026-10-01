@@ -1421,13 +1421,15 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
     /* تغيير: عمود إنشاء الطلب يعرض بطاقاته كاملة دون تمرير داخلي على الشاشات الكبيرة. */
     @media (min-width: 951px){
-      #sec-admin .order-form-card{height:auto!important;min-height:0!important;overflow:visible!important;}
-      #sec-admin #orderForm.pos-order-form{height:auto!important;min-height:0!important;overflow:visible!important;grid-template-rows:auto!important;align-items:start!important;}
+      /* تغيير: تثبيت عرض النموذج وتمديد لوحة المنتجات بمحاذاة عمود بيانات الطلب. */
+      #sec-admin .order-form-card{width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;overflow:visible!important;}
+      #sec-admin #orderForm.pos-order-form{width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;overflow:visible!important;grid-template-rows:auto!important;align-items:stretch!important;}
       #sec-admin #orderForm .pos-customer-panel,
       #sec-admin #orderForm .pos-cart-panel,
       #sec-admin #orderForm .pos-payment-panel,
       #sec-admin #orderForm .pos-driver-panel{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;align-self:start!important;}
       #sec-admin #orderForm .pos-cart-table-wrap{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;}
+      #sec-admin #orderForm .pos-catalog-panel{width:100%!important;min-width:0!important;min-height:0!important;height:auto!important;align-self:stretch!important;}
 
       /* تغيير: حقول حجز المحل على اليسار تأخذ ارتفاعها الطبيعي بدل القص والتمرير الداخلي. */
       #storeBookingForm{height:auto!important;min-height:0!important;overflow:visible!important;grid-template-rows:auto!important;align-items:start!important;}
