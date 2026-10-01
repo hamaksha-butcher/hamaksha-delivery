@@ -1355,6 +1355,70 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       #sec-admin #invoiceProductGrid .pos-items-grid,#sec-admin #invoiceCategoryGrid,#storeBookingForm .store-products-grid,#storeBookingForm .store-main-grid,#storeBookingForm .store-sub-grid,#storeBookingEditModal .store-sub-grid,#storeBookingEditModal .store-products-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
     }
 
+
+
+    /* ===== STEP 52.1: POS INDEPENDENT SCROLL =====
+       Keep the POS inside the viewport on desktop. Customer/cart stay in a compact
+       left workspace while catalog/product browsing scrolls independently on the right. */
+    @media (min-width: 951px){
+      body.cashier-mode #sec-admin .order-form-card,
+      #sec-admin .order-form-card{height:calc(100dvh - 108px)!important;min-height:0!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;}
+      body.cashier-mode #sec-admin .order-form-hero,
+      #sec-admin .order-form-hero{flex:0 0 auto!important;}
+      #sec-admin #orderForm.pos-order-form{height:calc(100dvh - 228px)!important;min-height:0!important;overflow:hidden!important;grid-template-rows:48px 205px 135px 145px 78px 44px!important;}
+      #sec-admin #orderForm .pos-customer-panel{min-height:0!important;overflow:auto!important;}
+      #sec-admin #orderForm .pos-cart-panel{min-height:0!important;overflow:hidden!important;}
+      #sec-admin #orderForm .pos-payment-panel{min-height:0!important;overflow:auto!important;}
+      #sec-admin #orderForm .pos-driver-panel{min-height:0!important;overflow:auto!important;}
+      #sec-admin #orderForm .pos-catalog-panel{min-height:0!important;height:auto!important;overflow:hidden!important;}
+      #sec-admin #orderForm .pos-catalog-panel .pos-catalog-head,
+      #sec-admin #orderForm .pos-catalog-panel .pos-tabs,
+      #sec-admin #orderForm .pos-catalog-panel .relative,
+      #sec-admin #orderForm .pos-catalog-panel .pos-products-title{flex:0 0 auto!important;}
+      #sec-admin #orderForm #invoiceCategoryGrid,
+      #sec-admin #orderForm #invoiceProductGrid{min-height:0!important;overscroll-behavior:contain!important;scrollbar-gutter:stable!important;}
+      #sec-admin #orderForm #invoiceNewAddBar{flex:0 0 auto!important;position:sticky!important;bottom:0!important;z-index:5!important;margin-top:8px!important;box-shadow:0 -8px 18px rgba(15,23,42,.08)!important;}
+      #sec-admin #orderForm .pos-cart-table-wrap{max-height:none!important;height:100%!important;min-height:0!important;overflow:auto!important;}
+
+      #storeBookingForm{height:calc(100dvh - 235px)!important;min-height:0!important;overflow:hidden!important;grid-template-rows:auto minmax(0,1fr) auto minmax(90px,.55fr) minmax(120px,.85fr) auto auto auto auto!important;}
+      #storeBookingForm .store-pos-customer{min-height:0!important;overflow:auto!important;}
+      #storeBookingForm .store-pos-catalog{min-height:0!important;height:auto!important;overflow:hidden!important;}
+      #storeBookingForm #storeBookingCatalogContent{min-height:0!important;overflow:auto!important;overscroll-behavior:contain!important;scrollbar-gutter:stable!important;}
+      #storeBookingForm #storeBookingMainGrid{flex:0 0 auto!important;}
+      #storeBookingForm .store-pos-cart-table{min-height:0!important;height:100%!important;max-height:none!important;overflow:auto!important;}
+      #storeBookingForm .store-pos-cart-head{min-height:0!important;}
+
+      #editOrderModal>.bg-white{overflow:hidden!important;}
+      #editOrderModal>.bg-white>.space-y-3{height:calc(100dvh - 155px)!important;min-height:0!important;overflow:hidden!important;}
+      #editInvoiceItemsShell{min-height:0!important;height:100%!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;}
+      #editInvoiceItemsShell .pos-hierarchy-editor{min-height:0!important;flex:1 1 auto!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;}
+      #editInvoiceItemsShell #editInvoiceCategoryGrid,
+      #editInvoiceItemsShell #editInvoiceProductGrid{min-height:0!important;overflow:auto!important;overscroll-behavior:contain!important;scrollbar-gutter:stable!important;}
+      #editInvoiceItemsShell .invoice-add-grid,
+      #editInvoiceItemsShell .invoice-custom-name,
+      #editInvoiceItemsShell .invoice-items-table-wrap,
+      #editInvoiceItemsShell .invoice-items-total{flex:0 0 auto!important;}
+
+      #storeBookingEditModal .store-booking-edit-dialog{overflow:hidden!important;}
+      #storeBookingEditModal .store-booking-edit-items-section{min-height:0!important;height:100%!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;}
+      #storeBookingEditModal .store-booking-edit-items-section .pos-hierarchy-editor{min-height:0!important;flex:1 1 auto!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;}
+      #storeBookingEditModal .store-booking-edit-items-section .pos-category-grid,
+      #storeBookingEditModal .store-booking-edit-items-section .pos-product-grid{min-height:0!important;overflow:auto!important;overscroll-behavior:contain!important;scrollbar-gutter:stable!important;}
+      #storeBookingEditModal .store-booking-edit-items-section .store-booking-edit-add-grid,
+      #storeBookingEditModal .store-booking-edit-items-section .store-booking-edit-custom,
+      #storeBookingEditModal .store-booking-edit-items-section .store-booking-edit-items,
+      #storeBookingEditModal .store-booking-edit-items-section .store-booking-edit-total{flex:0 0 auto!important;}
+    }
+
+    @media (max-width: 950px){
+      #sec-admin .order-form-card{height:auto!important;min-height:0!important;overflow:visible!important;}
+      #sec-admin #orderForm.pos-order-form{height:auto!important;overflow:visible!important;}
+      #storeBookingForm{height:auto!important;overflow:visible!important;}
+      #editOrderModal>.bg-white>.space-y-3{height:auto!important;overflow:visible!important;}
+      #editInvoiceItemsShell{height:auto!important;overflow:visible!important;}
+      #storeBookingEditModal .store-booking-edit-dialog{overflow:auto!important;}
+    }
+
 </style>
 
 </head>
