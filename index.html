@@ -107,8 +107,8 @@
       padding-left: 18px;
     }
 
-    body.customer-public-mode #mainHeader,
-    body.driver-private-mode #mainHeader {
+    body.customer-public-mode #appSidebar,
+    body.driver-private-mode #appSidebar {
       display: none !important;
     }
     body.customer-public-mode .mobile-topbar,
@@ -488,7 +488,7 @@
     }
 
     @media print {
-      #mainHeader, #mobileTopbar, #sidebarOverlay, #userBadgeBar, .no-print, #adminAuthLock, .theme-selector, #orderForm, #usersList, form, button, select, input {
+      #appSidebar, #mobileTopbar, #sidebarOverlay, #userBadgeBar, .no-print, #adminAuthLock, .theme-selector, #orderForm, #usersList, form, button, select, input {
         display: none !important;
       }
       body { background: white !important; color: black !important; }
@@ -1014,7 +1014,7 @@
 
     /* ===== STAFF LOGIN GATE / لا تعرض أي بيانات قبل تسجيل الدخول ===== */
     #staffLoginGate { display:none; }
-    body.staff-logged-out #mainHeader,
+    body.staff-logged-out #appSidebar,
     body.staff-logged-out #mobileTopbar,
     body.staff-logged-out #sidebarOverlay,
     body.staff-logged-out #notificationPanel,
@@ -1058,7 +1058,7 @@
 
 
     /* Gate is intentionally stronger than component display rules: nothing staff-facing is visible before login. */
-    body.staff-logged-out > #mainHeader,
+    body.staff-logged-out > #appSidebar,
     body.staff-logged-out > #mobileTopbar,
     body.staff-logged-out > #sidebarOverlay,
     body.staff-logged-out > #notificationPanel,
@@ -1227,7 +1227,7 @@ body.staff-logged-out .notification-panel,body.staff-logged-out .sidebar-notific
 
 
   <!-- Sidebar / واجهة البرنامج الجديدة -->
-  <aside id="mainHeader" class="app-sidebar">
+  <aside id="appSidebar" class="app-sidebar">
     <div class="sidebar-brand">
       <div class="flex items-center gap-3">
         <span class="sidebar-brand-mark">🥩</span>
@@ -1244,19 +1244,19 @@ body.staff-logged-out .notification-panel,body.staff-logged-out .sidebar-notific
     <div class="sidebar-scroll flex-1 px-3 pb-3">
       <div class="sidebar-nav-label">القائمة الرئيسية</div>
       <nav aria-label="التنقل الرئيسي">
-        <button type="button" data-nav-tab="dashboard" id="tab-dashboard" class="tab-btn">📊 <span>الرئيسية</span></button>
-        <button type="button" data-nav-tab="cashier-home" id="tab-cashier-home" class="tab-btn cashier-only">🧾 <span>نقطة البيع</span></button>
-        <button type="button" data-nav-tab="admin" id="tab-admin" class="tab-btn active">📦 <span>الطلبات والإدارة</span></button>
-        <button type="button" data-nav-tab="store-booking" id="tab-store-booking" class="tab-btn">🏪 <span>حجز المحل</span></button>
-        <button type="button" data-nav-tab="analytics" id="tab-analytics" class="tab-btn perm-analytics hidden">💰 <span>التقارير والتحصيل</span></button>
-        <button type="button" data-nav-tab="prices" id="tab-prices" class="tab-btn perm-prices hidden">🏷️ <span>أسعار اللحوم</span></button>
-        <button type="button" data-nav-tab="customers" id="tab-customers" class="tab-btn perm-customers hidden">👥 <span>العملاء</span></button>
-        <button type="button" data-nav-tab="users" id="tab-users" class="tab-btn perm-users hidden">👤 <span>المستخدمون والصلاحيات</span></button>
-        <button type="button" data-nav-tab="activity" id="tab-activity" class="tab-btn activity-only hidden">📜 <span>سجل النشاط</span></button>
-        <button type="button" data-nav-tab="settings" id="tab-settings" class="tab-btn admin-only-settings hidden">⚙️ <span>الإعدادات</span></button>
-        <button type="button" data-nav-tab="profile" id="tab-profile" class="tab-btn">👤 <span>حسابي</span></button>
-        <button type="button" data-nav-tab="driver" id="tab-driver" class="tab-btn cashier-hide">🛵 <span>واجهة المندوب</span></button>
-        <button type="button" data-nav-tab="track" id="tab-track" class="tab-btn cashier-hide">📍 <span>تتبع العملاء</span></button>
+        <button type="button" onclick="switchTab('dashboard'); closeSidebar();" data-nav-tab="dashboard" id="tab-dashboard" class="tab-btn">📊 <span>الرئيسية</span></button>
+        <button type="button" onclick="switchTab('cashier-home'); closeSidebar();" data-nav-tab="cashier-home" id="tab-cashier-home" class="tab-btn cashier-only">🧾 <span>نقطة البيع</span></button>
+        <button type="button" onclick="switchTab('admin'); closeSidebar();" data-nav-tab="admin" id="tab-admin" class="tab-btn active">📦 <span>الطلبات والإدارة</span></button>
+        <button type="button" onclick="switchTab('store-booking'); closeSidebar();" data-nav-tab="store-booking" id="tab-store-booking" class="tab-btn">🏪 <span>حجز المحل</span></button>
+        <button type="button" onclick="switchTab('analytics'); closeSidebar();" data-nav-tab="analytics" id="tab-analytics" class="tab-btn perm-analytics hidden">💰 <span>التقارير والتحصيل</span></button>
+        <button type="button" onclick="switchTab('prices'); closeSidebar();" data-nav-tab="prices" id="tab-prices" class="tab-btn perm-prices hidden">🏷️ <span>أسعار اللحوم</span></button>
+        <button type="button" onclick="switchTab('customers'); closeSidebar();" data-nav-tab="customers" id="tab-customers" class="tab-btn perm-customers hidden">👥 <span>العملاء</span></button>
+        <button type="button" onclick="switchTab('users'); closeSidebar();" data-nav-tab="users" id="tab-users" class="tab-btn perm-users hidden">👤 <span>المستخدمون والصلاحيات</span></button>
+        <button type="button" onclick="switchTab('activity'); closeSidebar();" data-nav-tab="activity" id="tab-activity" class="tab-btn activity-only hidden">📜 <span>سجل النشاط</span></button>
+        <button type="button" onclick="switchTab('settings'); closeSidebar();" data-nav-tab="settings" id="tab-settings" class="tab-btn admin-only-settings hidden">⚙️ <span>الإعدادات</span></button>
+        <button type="button" onclick="switchTab('profile'); closeSidebar();" data-nav-tab="profile" id="tab-profile" class="tab-btn">👤 <span>حسابي</span></button>
+        <button type="button" onclick="switchTab('driver'); closeSidebar();" data-nav-tab="driver" id="tab-driver" class="tab-btn cashier-hide">🛵 <span>واجهة المندوب</span></button>
+        <button type="button" onclick="switchTab('track'); closeSidebar();" data-nav-tab="track" id="tab-track" class="tab-btn cashier-hide">📍 <span>تتبع العملاء</span></button>
       </nav>
 
       <div class="sidebar-nav-label cashier-hide">الوصول السريع</div>
@@ -3029,11 +3029,11 @@ body.staff-logged-out .notification-panel,body.staff-logged-out .sidebar-notific
     };
 
     function toggleSidebar() {
-      document.getElementById('mainHeader')?.classList.toggle('open');
+      document.getElementById('appSidebar')?.classList.toggle('open');
       document.getElementById('sidebarOverlay')?.classList.toggle('open');
     }
     function closeSidebar() {
-      document.getElementById('mainHeader')?.classList.remove('open');
+      document.getElementById('appSidebar')?.classList.remove('open');
       document.getElementById('sidebarOverlay')?.classList.remove('open');
       document.getElementById('sidebarOverlay')?.style.removeProperty('display');
     }
@@ -3048,6 +3048,8 @@ body.staff-logged-out .notification-panel,body.staff-logged-out .sidebar-notific
     function switchTab(tabName) {
       if(APP_MODE !== 'staff') tabName = 'track';
       if(APP_MODE === 'staff' && currentUser?.role === 'driver' && tabName !== 'profile') tabName = 'driver';
+
+      // Permission guards
       if(tabName === 'cashier-home' && (!currentUser || currentUser.role !== 'cashier')) return alert('نقطة البيع مخصصة لحساب الكاشير فقط.');
       if(tabName === 'dashboard' && (!currentUser || currentUser.role !== 'admin')) return alert('لوحة التحكم الرئيسية مخصصة للإدارة فقط.');
       if(tabName === 'admin' && (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'cashier'))) return alert('الفواتير متاحة للإدارة والكاشير فقط.');
@@ -3057,31 +3059,99 @@ body.staff-logged-out .notification-panel,body.staff-logged-out .sidebar-notific
       if(tabName === 'users' && !canUser('users')) return alert('عذراً، لا تملك صلاحية إدارة المستخدمين والحسابات.');
       if(tabName === 'activity' && (!currentUser || currentUser.role !== 'admin' || !(isSuperUser() || canUser('users')))) return alert('عذراً، سجل النشاط مخصص للإدارة المخولة فقط.');
       if(tabName === 'settings' && (!currentUser || currentUser.role !== 'admin')) return alert('عذراً، الإعدادات مخصصة للإدارة فقط.');
-      if(tabName === 'store-booking' && (!currentUser || (currentUser.role!=='admin' && !canUser('storeBookings')))) return alert('حجز المحل غير متاح لهذا الحساب.');
+      if(tabName === 'store-booking' && (!currentUser || (currentUser.role !== 'admin' && !canUser('storeBookings')))) return alert('حجز المحل غير متاح لهذا الحساب.');
+
+      // Always update the visible page first.
       document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       const target = document.getElementById(`sec-${tabName}`);
-      if(target) target.classList.remove('hidden');
-      document.getElementById(`tab-${tabName}`)?.classList.add('active');
+      const button = document.getElementById(`tab-${tabName}`);
+      if(target) {
+        target.classList.remove('hidden');
+        target.setAttribute('aria-hidden','false');
+      }
+      if(button) {
+        button.classList.add('active');
+        button.setAttribute('aria-current','page');
+      }
       syncNavigationTitle(tabName);
-      if(tabName === 'dashboard') { document.getElementById('dashboardAuthLock')?.classList.add('hidden'); document.getElementById('dashboardContent')?.classList.remove('hidden'); renderDashboard(); }
-      if(tabName === 'analytics') { renderAnalytics(); renderCommentsList(); }
-      if(tabName === 'prices') renderPrices();
-      if(tabName === 'customers') { const allowed=!!currentUser && canManageCustomers(); document.getElementById('customerAuthLock')?.classList.toggle('hidden',allowed); document.getElementById('customerPageContent')?.classList.toggle('hidden',!allowed); renderCustomersList(); }
-      if(tabName === 'users') { document.getElementById('usersPageAuthLock')?.classList.add('hidden'); document.getElementById('usersPageContent')?.classList.remove('hidden'); renderUsersList(); syncNavigationTitle('users'); }
-      if(tabName === 'activity') { renderActivityMetrics(); renderActivityLog(); syncNavigationTitle('activity'); }
-      if(tabName === 'settings') { loadAppSettings(); syncNavigationTitle('settings'); }
-      if(tabName === 'profile') { renderMyProfile(); syncNavigationTitle('profile'); }
-      if(tabName === 'store-booking') { attachInvoicePriceListener(); initStoreBookingPage(); renderStoreBookingToday(); }
-      if(tabName === 'admin') { attachInvoicePriceListener(); }
-      if(tabName === 'cashier-home') { attachInvoicePriceListener(); renderCashierHome(); }
-      if(tabName === 'admin' && getAppSettings().autoFocusOrder) setTimeout(() => document.getElementById('custName')?.focus(), 120);
-      if(tabName === 'track') { renderPublicComments(); updateCustomerIdentityHint(); }
+
+      // Secondary actions are isolated so one non-critical renderer cannot break navigation.
+      try {
+        if(tabName === 'dashboard') {
+          document.getElementById('dashboardAuthLock')?.classList.add('hidden');
+          document.getElementById('dashboardContent')?.classList.remove('hidden');
+          renderDashboard();
+        }
+      } catch(err) { console.error('Dashboard render error:', err); }
+
+      try {
+        if(tabName === 'analytics') { renderAnalytics(); renderCommentsList(); }
+      } catch(err) { console.error('Analytics render error:', err); }
+
+      try {
+        if(tabName === 'prices') renderPrices();
+      } catch(err) { console.error('Prices render error:', err); }
+
+      try {
+        if(tabName === 'customers') {
+          const allowed = !!currentUser && canManageCustomers();
+          document.getElementById('customerAuthLock')?.classList.toggle('hidden', allowed);
+          document.getElementById('customerPageContent')?.classList.toggle('hidden', !allowed);
+          renderCustomersList();
+        }
+      } catch(err) { console.error('Customers render error:', err); }
+
+      try {
+        if(tabName === 'users') {
+          document.getElementById('usersPageAuthLock')?.classList.add('hidden');
+          document.getElementById('usersPageContent')?.classList.remove('hidden');
+          renderUsersList();
+        }
+      } catch(err) { console.error('Users render error:', err); }
+
+      try {
+        if(tabName === 'activity') { renderActivityMetrics(); renderActivityLog(); }
+      } catch(err) { console.error('Activity render error:', err); }
+
+      try {
+        if(tabName === 'settings') loadAppSettings();
+      } catch(err) { console.error('Settings render error:', err); }
+
+      try {
+        if(tabName === 'profile') renderMyProfile();
+      } catch(err) { console.error('Profile render error:', err); }
+
+      try {
+        if(tabName === 'store-booking') {
+          attachInvoicePriceListener();
+          initStoreBookingPage();
+          renderStoreBookingToday();
+        }
+      } catch(err) { console.error('Store booking render error:', err); }
+
+      try {
+        if(tabName === 'admin') attachInvoicePriceListener();
+      } catch(err) { console.error('Invoice render error:', err); }
+
+      try {
+        if(tabName === 'cashier-home') {
+          attachInvoicePriceListener();
+          renderCashierHome();
+        }
+      } catch(err) { console.error('Cashier home render error:', err); }
+
+      if(tabName === 'admin' && getAppSettings().autoFocusOrder) {
+        setTimeout(() => document.getElementById('custName')?.focus(), 120);
+      }
+      if(tabName === 'track') {
+        try { renderPublicComments(); updateCustomerIdentityHint(); } catch(err) { console.error('Track render error:', err); }
+      }
     }
 
     // ===== STEP 40: delegated sidebar navigation (prevents dead/overlapped tab clicks) =====
     function installSidebarNavigation(){
-      const sidebar=document.getElementById('mainHeader');
+      const sidebar=document.getElementById('appSidebar');
       if(!sidebar || sidebar.dataset.navInstalled==='1') return;
       sidebar.dataset.navInstalled='1';
       sidebar.addEventListener('click',function(event){
@@ -4057,7 +4127,7 @@ body.staff-logged-out .notification-panel,body.staff-logged-out .sidebar-notific
 
     /* ===== STAFF LOGIN GATE / لا تعرض أي بيانات قبل تسجيل الدخول ===== */
     #staffLoginGate { display:none; }
-    body.staff-logged-out #mainHeader,
+    body.staff-logged-out #appSidebar,
     body.staff-logged-out #mobileTopbar,
     body.staff-logged-out #sidebarOverlay,
     body.staff-logged-out #notificationPanel,
@@ -5605,7 +5675,7 @@ body.staff-logged-out .notification-panel,body.staff-logged-out .sidebar-notific
     // --- 👤 أوضاع التطبيق ---
     function applyCustomerPublicMode(){
       document.body.classList.remove('driver-private-mode');document.body.classList.add('customer-public-mode');
-      document.getElementById('mainHeader')?.style.setProperty('display','none','important');
+      document.getElementById('appSidebar')?.style.setProperty('display','none','important');
       document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');
       document.getElementById('authModal')?.classList.add('hidden');
       document.getElementById('trackResultCard')?.classList.add('hidden');
@@ -5613,10 +5683,10 @@ body.staff-logged-out .notification-panel,body.staff-logged-out .sidebar-notific
     }
     function applyDriverPrivateMode(){
       document.body.classList.remove('customer-public-mode');document.body.classList.add('driver-private-mode');
-      document.getElementById('mainHeader')?.style.setProperty('display','none','important');
+      document.getElementById('appSidebar')?.style.setProperty('display','none','important');
       document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');switchTab('driver');
     }
-    window.addEventListener('DOMContentLoaded',()=>{installSidebarNavigation();if(APP_MODE==='staff'){document.body.classList.add('staff-logged-out');document.body.classList.remove('customer-public-mode','driver-private-mode','cashier-mode','auth-modal-open');}applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();if(APP_MODE!=='staff'){startPublicCommentsListener();applyCustomerPublicMode();return;}loadRememberedLogin();startPublicCommentsListener();renderInvoiceProductOptions();checkSavedSession();if(currentUser){document.body.classList.remove('staff-logged-out');}updateUIByPermissions();});
+    window.addEventListener('DOMContentLoaded',()=>{if(APP_MODE==='staff'){document.body.classList.add('staff-logged-out');document.body.classList.remove('customer-public-mode','driver-private-mode','cashier-mode','auth-modal-open');}applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();if(APP_MODE!=='staff'){startPublicCommentsListener();applyCustomerPublicMode();return;}loadRememberedLogin();startPublicCommentsListener();renderInvoiceProductOptions();checkSavedSession();if(currentUser){document.body.classList.remove('staff-logged-out');}updateUIByPermissions();});
 </script>
 </body>
 </html>
