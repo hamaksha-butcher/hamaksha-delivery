@@ -1488,7 +1488,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       <span class="text-2xl">🥩</span>
       <div class="min-w-0">
         <div class="font-black text-sm truncate" data-store-name>جزارة حمكشة</div>
-        <div id="mobilePageTitle" class="text-[10px] text-amber-200 font-semibold truncate">الطلبات والإدارة</div>
+        <div id="mobilePageTitle" class="text-[10px] text-amber-200 font-semibold truncate">الطلبات والفواتير</div>
       </div>
     </div>
     <div class="flex items-center gap-1.5">
@@ -1863,42 +1863,8 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
           </div>
 
-          <!-- إدارة الطلبات — واجهة حديثة -->
+          <!-- تغيير: حُذف العنوان وملخص الحالات المكرر مع الرئيسية، مع الإبقاء على أدوات البحث والجدول. -->
           <div class="bg-white rounded-3xl shadow-xl orders-shell space-y-5 print-area overflow-hidden">
-            <div class="orders-toolbar p-5 sm:p-6">
-              <div class="flex flex-wrap items-center justify-between gap-4">
-                <div>
-                  <div class="flex items-center gap-2">
-                    <span class="text-2xl">📦</span>
-                    <h2 class="text-xl font-black">إدارة الطلبات</h2>
-                    <span id="ordersCount" class="bg-white/15 border border-white/20 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">0 طلبات</span>
-                  </div>
-                  <p class="text-[11px] text-white/75 font-semibold mt-1">متابعة الطلبات، الحالات، التحصيل وإجراءات كل طلب من مكان واحد</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="px-5 sm:px-6 pb-1">
-              <div class="grid orders-summary-grid grid-cols-2 lg:grid-cols-4 gap-3">
-                <div class="orders-summary-card rounded-2xl p-3">
-                  <div class="text-[10px] font-bold text-slate-500">إجمالي النتائج</div>
-                  <div id="orderSummaryTotal" class="text-xl font-black text-slate-900 mt-1">0</div>
-                </div>
-                <div class="orders-summary-card rounded-2xl p-3">
-                  <div class="text-[10px] font-bold text-amber-700">قيد التحضير</div>
-                  <div id="orderSummaryPreparing" class="text-xl font-black text-amber-900 mt-1">0</div>
-                </div>
-                <div class="orders-summary-card rounded-2xl p-3">
-                  <div class="text-[10px] font-bold text-blue-700">قيد التوصيل</div>
-                  <div id="orderSummaryDelivery" class="text-xl font-black text-blue-900 mt-1">0</div>
-                </div>
-                <div class="orders-summary-card rounded-2xl p-3">
-                  <div class="text-[10px] font-bold text-emerald-700">تم التسليم</div>
-                  <div id="orderSummaryDelivered" class="text-xl font-black text-emerald-900 mt-1">0</div>
-                </div>
-              </div>
-            </div>
-
             <div class="px-5 sm:px-6 no-print">
               <div class="orders-filter-shell rounded-2xl p-3 sm:p-4 space-y-3">
                 <div class="flex items-center justify-between gap-2">
@@ -3349,7 +3315,8 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
     const sidebarTitles = {
       dashboard: 'الرئيسية',
-      admin: 'الطلبات والإدارة',
+      // تغيير: الاسم يصف إنشاء الطلبات ومتابعتها والفواتير.
+      admin: 'الطلبات والفواتير',
       'store-booking': 'حجز المحل',
       analytics: 'التقارير والتحصيل',
       prices: 'أسعار اللحوم',
@@ -3550,7 +3517,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     const PRIMARY_NAV_ITEMS = Object.freeze([
       { id:'dashboard', icon:'📊', label:'الرئيسية', className:'tab-btn' },
       { id:'cashier-home', icon:'🧾', label:'نقطة البيع', className:'tab-btn cashier-only' },
-      { id:'admin', icon:'📦', label:'الطلبات والإدارة', className:'tab-btn' },
+      { id:'admin', icon:'📦', label:'الطلبات والفواتير', className:'tab-btn' },
       { id:'store-booking', icon:'🏪', label:'حجز المحل', className:'tab-btn' },
       { id:'analytics', icon:'💰', label:'التقارير والتحصيل', className:'tab-btn perm-analytics hidden' },
       { id:'prices', icon:'🏷️', label:'أسعار اللحوم', className:'tab-btn perm-prices hidden' },
@@ -3891,8 +3858,8 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       if(user.role==='admin' || user.role==='cashier') {
         document.getElementById('adminAuthLock').classList.add('hidden'); document.getElementById('adminContent').classList.remove('hidden'); startAdminOrdersListener(); startCustomerDataListener(); startDriverDirectoryListener(); if(user.role==='cashier') { resetStoreBookingForm(); initStoreBookingPage(); renderQuickInvoiceProducts(); renderInvoiceItems('new'); }
         if(user.role==='admin') startUserManagementListener();
-        if(user.role==='cashier') { document.querySelector('#tab-admin span')?.replaceChildren(document.createTextNode('فاتورة توصيل')); initStoreBookingPage(); switchTab('cashier-home'); }
-        else { document.querySelector('#tab-admin span')?.replaceChildren(document.createTextNode('الطلبات والإدارة')); switchTab('admin'); }
+        if(user.role==='cashier') { document.querySelector('#tab-admin span:last-child')?.replaceChildren(document.createTextNode('فاتورة توصيل')); initStoreBookingPage(); switchTab('cashier-home'); }
+        else { document.querySelector('#tab-admin span:last-child')?.replaceChildren(document.createTextNode('الطلبات والفواتير')); switchTab('admin'); }
       } else { document.getElementById('driverAuthLock').classList.add('hidden'); document.getElementById('driverContent').classList.remove('hidden'); applyDriverPrivateMode(); startDriverOrdersListener(); }
       applyFilters(); renderUsersList(); renderMyProfile(); if(user.role!=='cashier') startActivityLogListener(); logActivity('login','system',`تسجيل دخول المستخدم ${user.username}`); initPosDrafts(); syncNavigationTitle(user.role==='driver' ? 'driver' : user.role==='cashier' ? 'cashier-home' : 'admin');
     }
@@ -4926,7 +4893,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       tbody.innerHTML = '';
 
       filteredOrdersList = [];
-      let count = 0, preparing = 0, delivery = 0, delivered = 0;
+      let count = 0;
 
       Object.keys(allOrdersCache).forEach(key => {
         const item = allOrdersCache[key] || {};
@@ -4945,9 +4912,6 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
         if (matchSearch && matchDriver && matchStatus && matchDate && matchPayment) {
           count++;
-          if(item.status === 'تم التسليم بنجاح ✅') delivered++;
-          else if(item.status === 'خرج للتوصيل 🛵' || item.status === 'جاهز للتوصيل 📦') delivery++;
-          else if(item.status !== 'ملغي ❌') preparing++;
           filteredOrdersList.push({ key, ...item, displayId, displayName, displayPhone, displayDriver, totalCash });
 
           const canEdit = canUser('edit');
@@ -5007,12 +4971,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         tbody.innerHTML = '<tr><td colspan="6" class="orders-empty-state">📭 لا توجد طلبات مطابقة للفلاتر الحالية.</td></tr>';
       }
 
-      document.getElementById('ordersCount').innerText = `${count} طلبات`;
-      const setSummary = (id, value) => { const el=document.getElementById(id); if(el) el.innerText=value; };
-      setSummary('orderSummaryTotal', count);
-      setSummary('orderSummaryPreparing', preparing);
-      setSummary('orderSummaryDelivery', delivery);
-      setSummary('orderSummaryDelivered', delivered);
+      // تغيير: بطاقات الإحصاءات أزيلت من هذه الصفحة لأنها معروضة في الرئيسية.
     }
 
     // --- 📊 لوحة التحكم الرئيسية الجديدة ---
