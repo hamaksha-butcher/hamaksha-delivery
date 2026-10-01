@@ -1178,6 +1178,37 @@ body.staff-logged-out .notification-panel,body.staff-logged-out .sidebar-notific
 @media(max-width:767px){
   .notification-panel{top:66px!important;right:12px!important;width:calc(100vw - 24px)!important;max-height:72vh!important}
 }
+
+    /* ===== STEP 40: SIDEBAR INTERACTION HARDENING ===== */
+    .app-sidebar{
+      position:fixed!important;right:0!important;top:0!important;bottom:0!important;
+      z-index:9999!important;isolation:isolate!important;pointer-events:auto!important;
+      touch-action:pan-y!important;
+    }
+    .app-sidebar .sidebar-scroll{
+      position:relative!important;z-index:2!important;pointer-events:auto!important;
+      touch-action:pan-y!important;overscroll-behavior:contain!important;
+    }
+    .app-sidebar nav{position:relative!important;z-index:3!important;pointer-events:auto!important}
+    .app-sidebar .tab-btn{
+      position:relative!important;z-index:4!important;pointer-events:auto!important;
+      cursor:pointer!important;user-select:none!important;-webkit-user-select:none!important;
+      touch-action:manipulation!important;transform:none!important;
+    }
+    .app-sidebar .tab-btn:hover{transform:none!important}
+    .app-sidebar .sidebar-footer{position:relative!important;z-index:3!important;pointer-events:auto!important}
+    .app-sidebar .sidebar-footer button{position:relative!important;z-index:4!important;pointer-events:auto!important;cursor:pointer!important}
+    main.app-main{position:relative;z-index:1}
+    .sidebar-overlay{z-index:9998!important;pointer-events:none!important}
+    .sidebar-overlay.open{pointer-events:auto!important}
+    body.cashier-mode .app-sidebar{overflow:hidden!important}
+    body.cashier-mode .app-sidebar .sidebar-scroll{overflow-y:auto!important;overflow-x:hidden!important;min-height:0!important;flex:1 1 auto!important}
+    body.cashier-mode .sidebar-overlay{pointer-events:none!important}
+    @media(max-width:767px){
+      body.cashier-mode .app-sidebar{overflow:hidden!important}
+      body.cashier-mode .app-sidebar .sidebar-scroll{overflow-y:auto!important;overflow-x:hidden!important}
+      body.cashier-mode .sidebar-overlay.open{pointer-events:auto!important}
+    }
 </style>
 </head>
 <body id="appBody" class="bg-amber-50/40 min-h-screen text-gray-800">
@@ -1213,19 +1244,19 @@ body.staff-logged-out .notification-panel,body.staff-logged-out .sidebar-notific
     <div class="sidebar-scroll flex-1 px-3 pb-3">
       <div class="sidebar-nav-label">القائمة الرئيسية</div>
       <nav aria-label="التنقل الرئيسي">
-        <button onclick="switchTab('dashboard'); closeSidebar()" id="tab-dashboard" class="tab-btn">📊 <span>الرئيسية</span></button>
-        <button onclick="switchTab('cashier-home'); closeSidebar()" id="tab-cashier-home" class="tab-btn cashier-only">🧾 <span>نقطة البيع</span></button>
-        <button onclick="switchTab('admin'); closeSidebar()" id="tab-admin" class="tab-btn active">📦 <span>الطلبات والإدارة</span></button>
-        <button onclick="switchTab('store-booking'); closeSidebar()" id="tab-store-booking" class="tab-btn">🏪 <span>حجز المحل</span></button>
-        <button onclick="switchTab('analytics'); closeSidebar()" id="tab-analytics" class="tab-btn perm-analytics hidden">💰 <span>التقارير والتحصيل</span></button>
-        <button onclick="switchTab('prices'); closeSidebar()" id="tab-prices" class="tab-btn perm-prices hidden">🏷️ <span>أسعار اللحوم</span></button>
-        <button onclick="switchTab('customers'); closeSidebar()" id="tab-customers" class="tab-btn perm-customers hidden">👥 <span>العملاء</span></button>
-        <button onclick="switchTab('users'); closeSidebar()" id="tab-users" class="tab-btn perm-users hidden">👤 <span>المستخدمون والصلاحيات</span></button>
-        <button onclick="switchTab('activity'); closeSidebar()" id="tab-activity" class="tab-btn activity-only hidden">📜 <span>سجل النشاط</span></button>
-        <button onclick="switchTab('settings'); closeSidebar()" id="tab-settings" class="tab-btn admin-only-settings hidden">⚙️ <span>الإعدادات</span></button>
-        <button onclick="switchTab('profile'); closeSidebar()" id="tab-profile" class="tab-btn">👤 <span>حسابي</span></button>
-        <button onclick="switchTab('driver'); closeSidebar()" id="tab-driver" class="tab-btn cashier-hide">🛵 <span>واجهة المندوب</span></button>
-        <button onclick="switchTab('track'); closeSidebar()" id="tab-track" class="tab-btn cashier-hide">📍 <span>تتبع العملاء</span></button>
+        <button type="button" data-nav-tab="dashboard" id="tab-dashboard" class="tab-btn">📊 <span>الرئيسية</span></button>
+        <button type="button" data-nav-tab="cashier-home" id="tab-cashier-home" class="tab-btn cashier-only">🧾 <span>نقطة البيع</span></button>
+        <button type="button" data-nav-tab="admin" id="tab-admin" class="tab-btn active">📦 <span>الطلبات والإدارة</span></button>
+        <button type="button" data-nav-tab="store-booking" id="tab-store-booking" class="tab-btn">🏪 <span>حجز المحل</span></button>
+        <button type="button" data-nav-tab="analytics" id="tab-analytics" class="tab-btn perm-analytics hidden">💰 <span>التقارير والتحصيل</span></button>
+        <button type="button" data-nav-tab="prices" id="tab-prices" class="tab-btn perm-prices hidden">🏷️ <span>أسعار اللحوم</span></button>
+        <button type="button" data-nav-tab="customers" id="tab-customers" class="tab-btn perm-customers hidden">👥 <span>العملاء</span></button>
+        <button type="button" data-nav-tab="users" id="tab-users" class="tab-btn perm-users hidden">👤 <span>المستخدمون والصلاحيات</span></button>
+        <button type="button" data-nav-tab="activity" id="tab-activity" class="tab-btn activity-only hidden">📜 <span>سجل النشاط</span></button>
+        <button type="button" data-nav-tab="settings" id="tab-settings" class="tab-btn admin-only-settings hidden">⚙️ <span>الإعدادات</span></button>
+        <button type="button" data-nav-tab="profile" id="tab-profile" class="tab-btn">👤 <span>حسابي</span></button>
+        <button type="button" data-nav-tab="driver" id="tab-driver" class="tab-btn cashier-hide">🛵 <span>واجهة المندوب</span></button>
+        <button type="button" data-nav-tab="track" id="tab-track" class="tab-btn cashier-hide">📍 <span>تتبع العملاء</span></button>
       </nav>
 
       <div class="sidebar-nav-label cashier-hide">الوصول السريع</div>
@@ -3046,6 +3077,28 @@ body.staff-logged-out .notification-panel,body.staff-logged-out .sidebar-notific
       if(tabName === 'cashier-home') { attachInvoicePriceListener(); renderCashierHome(); }
       if(tabName === 'admin' && getAppSettings().autoFocusOrder) setTimeout(() => document.getElementById('custName')?.focus(), 120);
       if(tabName === 'track') { renderPublicComments(); updateCustomerIdentityHint(); }
+    }
+
+    // ===== STEP 40: delegated sidebar navigation (prevents dead/overlapped tab clicks) =====
+    function installSidebarNavigation(){
+      const sidebar=document.getElementById('mainHeader');
+      if(!sidebar || sidebar.dataset.navInstalled==='1') return;
+      sidebar.dataset.navInstalled='1';
+      sidebar.addEventListener('click',function(event){
+        const btn=event.target.closest('[data-nav-tab]');
+        if(!btn || !sidebar.contains(btn)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const tab=btn.getAttribute('data-nav-tab');
+        if(!tab) return;
+        try{
+          switchTab(tab);
+          closeSidebar();
+        }catch(err){
+          console.error('Sidebar navigation error:',err);
+          alert('تعذر فتح هذه الصفحة حالياً. حاول مرة أخرى.');
+        }
+      },true);
     }
 
     function loadRememberedLogin() {
@@ -5348,29 +5401,6 @@ body.staff-logged-out .notification-panel,body.staff-logged-out .sidebar-notific
 
 
   
-    /* ===== STEP 38 / SIDEBAR STABILITY FOR CASHIER ===== */
-    body.cashier-mode .app-sidebar {
-      overflow-y: auto !important;
-      overflow-x: hidden !important;
-      pointer-events: auto !important;
-    }
-    body.cashier-mode .app-sidebar .sidebar-scroll {
-      overflow: visible !important;
-      min-height: auto !important;
-      flex: none !important;
-    }
-    body.cashier-mode .sidebar-overlay {
-      pointer-events: none !important;
-    }
-    body.cashier-mode main.app-main {
-      margin-right: var(--sidebar-width) !important;
-    }
-    @media(max-width:767px){
-      body.cashier-mode .app-sidebar .sidebar-scroll { overflow: visible !important; }
-      body.cashier-mode .app-sidebar { overflow-y: auto !important; }
-      body.cashier-mode .app-sidebar.open { pointer-events: auto !important; }
-      body.cashier-mode .sidebar-overlay.open { pointer-events: auto !important; }
-    }
 </style></head><body><div class="receipt"><div class="center"><div class="brand">🥩 ${escapeHtml(settings.storeName||'جزارة حمكشة')}</div><div class="tag">${escapeHtml(settings.storeTagline||'نظام إدارة الطلبات والتوصيل')}</div><div class="title">فاتورة بيع</div><div class="meta">رقم الطلب: <b>#${escapeHtml(order?.orderId||key)}</b><br>التاريخ: ${escapeHtml(formatDateDMY(order?.date||''))} ${escapeHtml(order?.time||'')}</div></div><div class="rule"></div><div class="customer"><b>العميل:</b> ${escapeHtml(order?.customerName||order?.name||'غير محدد')}<br><b>الهاتف:</b> ${escapeHtml(order?.phone||'—')}<br><b>العنوان:</b> ${escapeHtml(order?.address||'—')}</div><table class="items"><thead><tr><th>الصنف</th><th>كمية</th><th>سعر</th><th>إجمالي</th></tr></thead><tbody>${itemRows}</tbody></table><div class="totals"><div><span>إجمالي الأصناف</span><b>${orderPrice.toLocaleString('ar-EG')} ${currency}</b></div><div><span>التوصيل</span><b>${delivery.toLocaleString('ar-EG')} ${currency}</b></div><div><span>عمولة الدفع</span><b>${fee.toLocaleString('ar-EG')} ${currency}</b></div><div><span>الدفع</span><b>${escapeHtml(getPaymentText(order?.paymentMethod||'cash').replace(/^[^\p{L}\p{N}]+/u,''))}</b></div><div><span>المدفوع</span><b>${Number(order?.paidAmount??(order?.paymentMethod==='cash'?total:total)).toLocaleString('ar-EG')} ${currency}</b></div><div><span>المتبقي</span><b>${Number(order?.remainingDue??Math.max(0,total-Number(order?.paidAmount||0))).toLocaleString('ar-EG')} ${currency}</b></div><div><span>الباقي للعميل</span><b>${Number(order?.changeDue??Math.max(0,Number(order?.paidAmount||0)-total)).toLocaleString('ar-EG')} ${currency}</b></div><div class="grand"><span>الإجمالي النهائي</span><b>${total.toLocaleString('ar-EG')} ${currency}</b></div></div><div class="rule"></div><div class="footer">${settings.storePhone?`واتساب: ${escapeHtml(settings.storePhone)}<br>`:''}${settings.storeLocation?`الموقع: ${escapeHtml(settings.storeLocation)}<br>`:''}شكرًا لثقتكم في جزارة حمكشة 🥩<br>نتمنى لكم وجبة طيبة</div></div><script>window.onload=function(){setTimeout(function(){window.print()},120)};<\/script></body></html>`;}
     function printThermalInvoice(key,orderOverride=null){if(APP_MODE!=='staff'&&!orderOverride)return;const order=orderOverride||allOrdersCache[key];if(!order)return alert('تعذر العثور على بيانات الفاتورة.');const win=window.open('','_blank','width=420,height=760');if(!win)return alert('اسمح بفتح النوافذ المنبثقة لطباعة الفاتورة.');win.document.open();win.document.write(buildThermalReceipt(order,key));win.document.close();}
     function printLastCreatedInvoice(){if(!lastCreatedOrderSnapshot)return alert('لا توجد فاتورة جديدة جاهزة للطباعة.');printThermalInvoice(lastCreatedOrderKey,lastCreatedOrderSnapshot);}
@@ -5586,7 +5616,7 @@ body.staff-logged-out .notification-panel,body.staff-logged-out .sidebar-notific
       document.getElementById('mainHeader')?.style.setProperty('display','none','important');
       document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');switchTab('driver');
     }
-    window.addEventListener('DOMContentLoaded',()=>{if(APP_MODE==='staff'){document.body.classList.add('staff-logged-out');document.body.classList.remove('customer-public-mode','driver-private-mode','cashier-mode','auth-modal-open');}applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();if(APP_MODE!=='staff'){startPublicCommentsListener();applyCustomerPublicMode();return;}loadRememberedLogin();startPublicCommentsListener();renderInvoiceProductOptions();checkSavedSession();if(currentUser){document.body.classList.remove('staff-logged-out');}updateUIByPermissions();});
+    window.addEventListener('DOMContentLoaded',()=>{installSidebarNavigation();if(APP_MODE==='staff'){document.body.classList.add('staff-logged-out');document.body.classList.remove('customer-public-mode','driver-private-mode','cashier-mode','auth-modal-open');}applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();if(APP_MODE!=='staff'){startPublicCommentsListener();applyCustomerPublicMode();return;}loadRememberedLogin();startPublicCommentsListener();renderInvoiceProductOptions();checkSavedSession();if(currentUser){document.body.classList.remove('staff-logged-out');}updateUIByPermissions();});
 </script>
 </body>
 </html>
