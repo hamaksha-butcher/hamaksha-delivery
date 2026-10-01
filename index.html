@@ -3189,19 +3189,7 @@ body.cashier-mode #tab-admin{display:flex!important;visibility:visible!important
     }
 
     // ===== STEP 42: direct sidebar button wiring =====
-    function installDirectSidebarButtons(){
-      const sidebar=document.getElementById('appSidebar');
-      if(!sidebar) return;
-      sidebar.querySelectorAll('[data-nav-tab]').forEach((btn)=>{
-        const tab=btn.getAttribute('data-nav-tab');
-        if(!tab) return;
-        btn.removeAttribute('onclick');
-        btn.onclick=function(event){
-          event.preventDefault();
-          try { switchTab(tab); } catch(err) { console.error('Sidebar navigation error:',err); }
-        };
-      });
-    }
+    function installDirectSidebarButtons(){ return; }
 
     function loadRememberedLogin() {
       const rememberBox = document.getElementById('rememberMe');
