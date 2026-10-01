@@ -1428,6 +1428,17 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       #sec-admin #orderForm .pos-payment-panel,
       #sec-admin #orderForm .pos-driver-panel{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;align-self:start!important;}
       #sec-admin #orderForm .pos-cart-table-wrap{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;}
+
+      /* تغيير: حقول حجز المحل على اليسار تأخذ ارتفاعها الطبيعي بدل القص والتمرير الداخلي. */
+      #storeBookingForm{height:auto!important;min-height:0!important;overflow:visible!important;grid-template-rows:auto!important;align-items:start!important;}
+      #storeBookingForm .store-pos-customer,
+      #storeBookingForm .store-pos-cart-head,
+      #storeBookingForm .store-pos-cart-table,
+      #storeBookingForm .store-pos-cart-total,
+      #storeBookingForm .store-pos-payment,
+      #storeBookingForm .store-pos-meta,
+      #storeBookingForm .store-pos-submit{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;align-self:start!important;}
+      #storeBookingForm .store-pos-cart-table{max-height:none!important;}
     }
 
 </style>
