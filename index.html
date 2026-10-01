@@ -1058,7 +1058,21 @@
     #authModal {
       z-index:11001 !important;
     }
-</style>
+
+    /* ===== CASHIER POS FINAL POLISH ===== */
+    .cashier-home-page{width:100%;max-width:1120px;margin:0 auto!important}
+    .cashier-home-hero{display:block!important;position:relative!important;overflow:hidden!important;padding:28px!important;border-radius:28px!important;background:linear-gradient(135deg,var(--sidebar-color,#0f172a),var(--primary-color,#7f1d1d) 58%,var(--accent-color,#b87333))!important;color:#fff!important;box-shadow:0 22px 55px var(--shadow-color,rgba(15,23,42,.12))!important}
+    .cashier-home-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:15px!important;margin-top:16px!important}
+    .cashier-action-card{display:block!important;width:100%!important;min-height:210px!important;text-align:right!important;padding:22px!important;border-radius:24px!important;border:1px solid var(--border-color,#e5e7eb)!important;background:var(--surface-color,#fff)!important;color:var(--text-color,#172033)!important;box-shadow:0 14px 34px var(--shadow-color,rgba(15,23,42,.08))!important}
+    .cashier-action-icon{display:flex!important;align-items:center!important;justify-content:center!important;width:60px!important;height:60px!important;border-radius:18px!important;background:var(--surface-soft,#f8fafc)!important;border:1px solid var(--border-color,#e5e7eb)!important;font-size:27px!important}
+    .cashier-catalog-ready{margin-top:15px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;padding:13px 15px!important;border:1px solid rgba(16,185,129,.2)!important;background:rgba(236,253,245,.92)!important;border-radius:18px!important;color:#065f46!important}
+    .cashier-catalog-ready>div{display:flex!important;align-items:center!important;gap:9px!important}
+    .catalog-ready-dot{width:9px!important;height:9px!important;border-radius:999px!important;background:#10b981!important;box-shadow:0 0 0 5px rgba(16,185,129,.12)!important}
+    .cashier-catalog-ready b{display:block!important;font-size:10px!important;font-weight:1000!important}
+    .cashier-catalog-ready span:not(.catalog-ready-dot){display:block!important;font-size:8px!important;color:#047857!important;margin-top:2px!important;font-weight:800!important}
+    .cashier-catalog-view-btn{background:#fff!important;border:1px solid rgba(5,150,105,.22)!important;color:#047857!important;border-radius:12px!important;padding:8px 11px!important;font-size:9px!important;font-weight:1000!important}
+    @media(max-width:900px){.cashier-home-grid{grid-template-columns:1fr!important}.cashier-catalog-ready{align-items:flex-start!important;flex-direction:column!important}.cashier-catalog-view-btn{width:100%!important}}
+  </style>
 </head>
 <body id="appBody" class="bg-amber-50/40 min-h-screen text-gray-800">
 
@@ -1206,6 +1220,7 @@
           <div class="cashier-metric"><div class="icon">⏳</div><div><b id="cashierMetricPending">0</b><span>توصيل قيد المتابعة</span></div></div>
           <div class="cashier-metric"><div class="icon">💰</div><div><b id="cashierMetricCollected">0 ج.م</b><span>المقبوض اليوم</span></div></div>
         </div>
+        <div class="cashier-catalog-ready"><div><span class="catalog-ready-dot"></span><div><b>المنيو جاهزة للبيع</b><span id="cashierCatalogReadyText">47 صنفًا جاهزًا للاختيار</span></div></div><button type="button" onclick="switchTab('admin');setTimeout(()=>document.getElementById('invoiceCatalogSearch')?.focus(),150)" class="cashier-catalog-view-btn">فتح المنيو ↗</button></div>
         <div class="cashier-home-panels">
           <div class="cashier-home-panel"><h3>آخر فواتير التوصيل</h3><div id="cashierRecentOrders" class="cashier-mini-list"><div class="cashier-mini-item">لا توجد بيانات بعد.</div></div></div>
           <div class="cashier-home-panel"><h3>حجوزات المحل اليوم</h3><div id="cashierRecentBookings" class="cashier-mini-list"><div class="cashier-mini-item">لا توجد حجوزات اليوم.</div></div></div>
@@ -2826,8 +2841,9 @@
       if(tabName === 'activity') { renderActivityMetrics(); renderActivityLog(); syncNavigationTitle('activity'); }
       if(tabName === 'settings') { loadAppSettings(); syncNavigationTitle('settings'); }
       if(tabName === 'profile') { renderMyProfile(); syncNavigationTitle('profile'); }
-      if(tabName === 'store-booking') { initStoreBookingPage(); renderStoreBookingToday(); }
-      if(tabName === 'cashier-home') { renderCashierHome(); }
+      if(tabName === 'store-booking') { attachInvoicePriceListener(); initStoreBookingPage(); renderStoreBookingToday(); }
+      if(tabName === 'admin') { attachInvoicePriceListener(); }
+      if(tabName === 'cashier-home') { attachInvoicePriceListener(); renderCashierHome(); }
       if(tabName === 'admin' && getAppSettings().autoFocusOrder) setTimeout(() => document.getElementById('custName')?.focus(), 120);
       if(tabName === 'track') { renderPublicComments(); updateCustomerIdentityHint(); }
     }
@@ -2922,9 +2938,10 @@
     }
 
     function stopScopedListeners() {
-      [staffOrdersRef,staffUsersRef,driverOrdersRef,driverDirectoryRef,customersRef,activityLogsRef].forEach(ref => { try { ref?.off(); } catch(e){} });
-      staffOrdersRef=staffUsersRef=driverOrdersRef=driverDirectoryRef=customersRef=activityLogsRef=null;
+      [staffOrdersRef,staffUsersRef,driverOrdersRef,driverDirectoryRef,customersRef,activityLogsRef,storeBookingsRef].forEach(ref => { try { ref?.off(); } catch(e){} });
+      staffOrdersRef=staffUsersRef=driverOrdersRef=driverDirectoryRef=customersRef=activityLogsRef=storeBookingsRef=null;
       allOrdersCache={}; driverOrdersCache={}; allUsersCache={}; driverDirectoryCache={}; customersCache={}; activityLogsCache={};
+      pricesListenerAttached=false;
       notificationInitialized=false; notificationOrderState={};
     }
 
@@ -3033,6 +3050,9 @@
     // --- 🧾 لوحة نقطة البيع للكاشير ---
     function renderCashierHome(){
       if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='cashier') return;
+      const catalogCount=getNewOrderCatalogData().length;
+      const readyEl=document.getElementById('cashierCatalogReadyText');
+      if(readyEl) readyEl.innerText=`${catalogCount.toLocaleString('ar-EG')} صنفًا جاهزًا للاختيار`;
       const today=new Date().toISOString().split('T')[0];
       const orders=Object.keys(allOrdersCache||{}).map(key=>({key,...(allOrdersCache[key]||{})}));
       const todayOrders=orders.filter(o=>o.date===today);
@@ -3101,7 +3121,7 @@
       document.getElementById('sidebarUserBadge').innerText=`${user.username} • ${roleTitle}`;
       document.getElementById('mobileUserBadge').innerText=user.username;
       document.body.classList.remove('customer-public-mode','staff-logged-out'); document.body.classList.toggle('driver-private-mode',user.role==='driver'); document.body.classList.toggle('cashier-mode',user.role==='cashier'); document.getElementById('staffLoginGate')?.classList.add('hidden');
-      document.getElementById('authModal').classList.add('hidden'); updateUIByPermissions(); startDriverDirectoryListener(); if(user.role!=='cashier') startActivityLogListener();
+      document.getElementById('authModal').classList.add('hidden'); updateUIByPermissions(); startDriverDirectoryListener(); if(user.role==='admin'||user.role==='cashier') attachInvoicePriceListener(); if(user.role!=='cashier') startActivityLogListener();
       const customerAllowed=user.role==='admin' || (user.role==='cashier' && canManageCustomers());
       document.getElementById('customerAuthLock')?.classList.toggle('hidden',!customerAllowed);
       document.getElementById('customerPageContent')?.classList.toggle('hidden',!customerAllowed);
@@ -3239,14 +3259,15 @@
     let newOrderCatalogSub = '';
     let newOrderCatalogSearch = '';
     function getNewOrderCatalogData(){
-      const select=document.getElementById('invoiceItemProduct');
-      if(!select) return [];
-      const rows=[];
-      Array.from(select.options||[]).forEach(opt=>{
-        if(!opt.value || opt.value==='__custom__') return;
-        rows.push({key:opt.value,name:opt.dataset.name||opt.textContent||'',main:opt.dataset.main||'أصناف أخرى',sub:opt.dataset.sub||'',price:opt.dataset.price||'0',priceDisplay:opt.dataset.priceDisplay||opt.dataset.price||'0',unit:opt.dataset.unit||'كيلو'});
-      });
-      return rows;
+      return getMergedMenuPriceEntries().map(({key,item})=>({
+        key,
+        name:item.name||'',
+        main:item.mainCategory||item.main||'أصناف أخرى',
+        sub:item.subCategory||item.sub||'',
+        price:Number(item.price||0),
+        priceDisplay:menuPriceText(item),
+        unit:item.unit||'كيلو'
+      }));
     }
     function getCatalogMatches(){
       const rows=getNewOrderCatalogData();
@@ -3629,10 +3650,14 @@
 
     // --- 🏪 حجز المحل ---
     function getStoreBookingCatalogRows(){
-      const select=document.getElementById('invoiceItemProduct');
-      if(!select)return [];
-      return Array.from(select.options||[]).filter(o=>o.value&&o.value!=='__custom__').map(o=>({
-        key:o.value,name:o.dataset.name||o.textContent||'',main:o.dataset.main||'أصناف أخرى',sub:o.dataset.sub||'',price:Number(o.dataset.price||0),priceDisplay:o.dataset.priceDisplay||o.dataset.price||'0',unit:o.dataset.unit||'كيلو'
+      return getMergedMenuPriceEntries().map(({key,item})=>({
+        key,
+        name:item.name||'',
+        main:item.mainCategory||item.main||'أصناف أخرى',
+        sub:item.subCategory||item.sub||'',
+        price:Number(item.price||0),
+        priceDisplay:menuPriceText(item),
+        unit:item.unit||'كيلو'
       }));
     }
     function renderStoreBookingCatalog(){
@@ -5205,7 +5230,7 @@
       document.getElementById('mainHeader')?.style.setProperty('display','none','important');
       document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');switchTab('driver');
     }
-    window.addEventListener('DOMContentLoaded',()=>{if(APP_MODE==='staff'){document.body.classList.add('staff-logged-out');document.body.classList.remove('customer-public-mode','driver-private-mode','cashier-mode','auth-modal-open');}applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();if(APP_MODE!=='staff'){startPublicCommentsListener();applyCustomerPublicMode();return;}loadRememberedLogin();startPublicCommentsListener();checkSavedSession();if(currentUser){document.body.classList.remove('staff-logged-out');}updateUIByPermissions();});
+    window.addEventListener('DOMContentLoaded',()=>{if(APP_MODE==='staff'){document.body.classList.add('staff-logged-out');document.body.classList.remove('customer-public-mode','driver-private-mode','cashier-mode','auth-modal-open');}applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();if(APP_MODE!=='staff'){startPublicCommentsListener();applyCustomerPublicMode();return;}loadRememberedLogin();startPublicCommentsListener();renderInvoiceProductOptions();checkSavedSession();if(currentUser){document.body.classList.remove('staff-logged-out');}updateUIByPermissions();});
 </script>
 </body>
 </html>
