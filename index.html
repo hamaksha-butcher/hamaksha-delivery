@@ -964,6 +964,7 @@
       <div class="sidebar-nav-label">القائمة الرئيسية</div>
       <nav aria-label="التنقل الرئيسي">
         <button onclick="switchTab('dashboard'); closeSidebar()" id="tab-dashboard" class="tab-btn">📊 <span>الرئيسية</span></button>
+        <button onclick="switchTab('cashier-home'); closeSidebar()" id="tab-cashier-home" class="tab-btn cashier-only">🧾 <span>نقطة البيع</span></button>
         <button onclick="switchTab('admin'); closeSidebar()" id="tab-admin" class="tab-btn active">📦 <span>الطلبات والإدارة</span></button>
         <button onclick="switchTab('store-booking'); closeSidebar()" id="tab-store-booking" class="tab-btn">🏪 <span>حجز المحل</span></button>
         <button onclick="switchTab('analytics'); closeSidebar()" id="tab-analytics" class="tab-btn perm-analytics hidden">💰 <span>التقارير والتحصيل</span></button>
@@ -973,15 +974,23 @@
         <button onclick="switchTab('activity'); closeSidebar()" id="tab-activity" class="tab-btn activity-only hidden">📜 <span>سجل النشاط</span></button>
         <button onclick="switchTab('settings'); closeSidebar()" id="tab-settings" class="tab-btn admin-only-settings hidden">⚙️ <span>الإعدادات</span></button>
         <button onclick="switchTab('profile'); closeSidebar()" id="tab-profile" class="tab-btn">👤 <span>حسابي</span></button>
-        <button onclick="switchTab('driver'); closeSidebar()" id="tab-driver" class="tab-btn">🛵 <span>واجهة المندوب</span></button>
-        <button onclick="switchTab('track'); closeSidebar()" id="tab-track" class="tab-btn">📍 <span>تتبع العملاء</span></button>
+        <button onclick="switchTab('driver'); closeSidebar()" id="tab-driver" class="tab-btn cashier-hide">🛵 <span>واجهة المندوب</span></button>
+        <button onclick="switchTab('track'); closeSidebar()" id="tab-track" class="tab-btn cashier-hide">📍 <span>تتبع العملاء</span></button>
       </nav>
 
-      <div class="sidebar-nav-label">الوصول السريع</div>
-      <div class="space-y-2">
+      <div class="sidebar-nav-label cashier-hide">الوصول السريع</div>
+      <div class="space-y-2 cashier-hide">
         <button type="button" onclick="switchTab('admin'); closeSidebar(); setTimeout(() => document.getElementById('custName')?.focus(), 100)" class="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold transition">➕ <span>إضافة طلب جديد</span></button>
         <button type="button" onclick="switchTab('admin'); closeSidebar(); setTimeout(() => document.getElementById('searchFilter')?.focus(), 100)" class="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-black/10 hover:bg-black/15 text-white text-xs font-bold transition">🔎 <span>بحث في الطلبات</span></button>
         <button type="button" onclick="switchTab('users'); closeSidebar()" class="perm-users hidden w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-black/10 hover:bg-black/15 text-white text-xs font-bold transition">⚙️ <span>إدارة المستخدمين</span></button>
+      </div>
+      <div class="cashier-only-block">
+        <div class="sidebar-nav-label mt-4">عمليات الكاشير</div>
+        <div class="space-y-2">
+          <button type="button" onclick="switchTab('admin'); closeSidebar(); setTimeout(() => document.getElementById('custName')?.focus(), 100)" class="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold transition">🧾 <span>فاتورة توصيل جديدة</span></button>
+          <button type="button" onclick="switchTab('store-booking'); closeSidebar();" class="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold transition">🏪 <span>حجز محل جديد</span></button>
+          <button type="button" onclick="switchTab('customers'); closeSidebar();" class="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-black/10 hover:bg-black/15 text-white text-xs font-bold transition">👥 <span>البحث عن عميل</span></button>
+        </div>
       </div>
     </div>
 
@@ -1043,6 +1052,39 @@
       </div>
       <div class="text-[11px] text-gray-400 font-semibold">🔒 نظام محمي ومقيد الصلاحيات</div>
     </div>
+
+    <!-- 🧾 نقطة البيع - الواجهة الأولى للكاشير -->
+    <section id="sec-cashier-home" class="hidden space-y-6 cashier-only-block">
+      <div class="cashier-home-page">
+        <div class="cashier-home-hero">
+          <div class="cashier-kicker">HAMKASHA POS · CASHIER</div>
+          <h2>نقطة البيع 🧾</h2>
+          <p>اختار العملية التي تريد تنفيذها. الفواتير والحجوزات والعملاء في متناولك بدون أدوات الإدارة.</p>
+        </div>
+        <div class="cashier-home-grid">
+          <button type="button" class="cashier-action-card" onclick="switchTab('admin'); setTimeout(() => document.getElementById('custName')?.focus(), 100)">
+            <div class="cashier-action-icon">🧾</div><h3>فاتورة توصيل</h3>
+            <p>اختيار العميل والأصناف وحساب الدفع وتحديد المندوب ثم الطباعة أو إرسال رابط التتبع.</p>
+            <div class="go"><span>ابدأ الفاتورة</span><span>←</span></div>
+          </button>
+          <button type="button" class="cashier-action-card" onclick="switchTab('store-booking')">
+            <div class="cashier-action-icon">🏪</div><h3>حجز المحل</h3>
+            <p>حجز استلام من المحل مع الموعد والعربون أو الدفع الكامل وفاتورة 80mm المميزة.</p>
+            <div class="go"><span>ابدأ الحجز</span><span>←</span></div>
+          </button>
+        </div>
+        <div class="cashier-metrics">
+          <div class="cashier-metric"><div class="icon">🧾</div><div><b id="cashierMetricDelivery">0</b><span>فواتير التوصيل اليوم</span></div></div>
+          <div class="cashier-metric"><div class="icon">🏪</div><div><b id="cashierMetricBookings">0</b><span>حجوزات المحل اليوم</span></div></div>
+          <div class="cashier-metric"><div class="icon">⏳</div><div><b id="cashierMetricPending">0</b><span>توصيل قيد المتابعة</span></div></div>
+          <div class="cashier-metric"><div class="icon">💰</div><div><b id="cashierMetricCollected">0 ج.م</b><span>المقبوض اليوم</span></div></div>
+        </div>
+        <div class="cashier-home-panels">
+          <div class="cashier-home-panel"><h3>آخر فواتير التوصيل</h3><div id="cashierRecentOrders" class="cashier-mini-list"><div class="cashier-mini-item">لا توجد بيانات بعد.</div></div></div>
+          <div class="cashier-home-panel"><h3>حجوزات المحل اليوم</h3><div id="cashierRecentBookings" class="cashier-mini-list"><div class="cashier-mini-item">لا توجد حجوزات اليوم.</div></div></div>
+        </div>
+      </div>
+    </section>
 
     <!-- 📊 لوحة التحكم الرئيسية — Premium Dashboard -->
     <section id="sec-dashboard" class="hidden space-y-6 dashboard-premium">
@@ -1602,7 +1644,7 @@
           <div class="bg-white rounded-3xl shadow-xl border border-amber-100 overflow-hidden">
             <div class="p-5 bg-gradient-to-br from-amber-50 to-white border-b border-amber-100">
               <div class="flex items-center gap-2"><span class="text-xl">➕</span><h3 class="font-black text-gray-900">إنشاء حساب جديد</h3></div>
-              <p class="text-[10px] text-gray-500 mt-1">أنشئ حساب أدمن فرعي أو مندوب توصيل.</p>
+              <p class="text-[10px] text-gray-500 mt-1">أنشئ حساب أدمن فرعي أو كاشير نقطة بيع أو مندوب توصيل.</p>
             </div>
             <div class="p-5 space-y-3">
               <label class="users-field-label">اسم المستخدم
@@ -1614,6 +1656,7 @@
               <label class="users-field-label">نوع الحساب
                 <select id="newUserRole" class="users-field bg-white">
                   <option value="admin">مسؤول إدارة (أدمن فرعي)</option>
+                  <option value="cashier">كاشير نقطة بيع</option>
                   <option value="driver">مندوب توصيل</option>
                 </select>
               </label>
@@ -1635,6 +1678,7 @@
                   <select id="usersRoleFilter" onchange="renderUsersList()" class="users-search-input bg-white">
                     <option value="ALL">كل أنواع الحسابات</option>
                     <option value="admin">الأدمن</option>
+                    <option value="cashier">الكاشير</option>
                     <option value="driver">المناديب</option>
                   </select>
                 </div>
@@ -2576,7 +2620,7 @@
         }
       }
 
-      if (u && u.role === 'admin') {
+      if (u && (u.role === 'admin' || u.role === 'cashier')) {
         const p = u.perms || {};
         return !!p[action];
       }
@@ -2584,7 +2628,7 @@
     }
 
     function canViewAllDrivers() { return isSuperUser() || canUser('viewAllDrivers'); }
-    function canManageCustomers() { return isSuperUser() || canUser('users'); }
+    function canManageCustomers() { return isSuperUser() || canUser('customers') || canUser('users'); }
     function normalizePhone(value) {
       let p = String(value || '').replace(/[^0-9]/g,'');
       if(p.startsWith('0020')) p = '20' + p.slice(4);
@@ -2621,7 +2665,9 @@
       document.getElementById('sidebarOverlay')?.classList.remove('open');
     }
     function syncNavigationTitle(tabName) {
-      const title = sidebarTitles[tabName] || 'جزارة حمكشة';
+      let title = sidebarTitles[tabName] || 'جزارة حمكشة';
+      if(currentUser?.role==='cashier' && tabName==='admin') title='فاتورة توصيل';
+      if(currentUser?.role==='cashier' && tabName==='cashier-home') title='نقطة البيع';
       const mobileTitle = document.getElementById('mobilePageTitle');
       if(mobileTitle) mobileTitle.innerText = title;
     }
@@ -2629,14 +2675,16 @@
     function switchTab(tabName) {
       if(APP_MODE !== 'staff') tabName = 'track';
       if(APP_MODE === 'staff' && currentUser?.role === 'driver' && tabName !== 'profile') tabName = 'driver';
+      if(tabName === 'cashier-home' && (!currentUser || currentUser.role !== 'cashier')) return alert('نقطة البيع مخصصة لحساب الكاشير فقط.');
       if(tabName === 'dashboard' && (!currentUser || currentUser.role !== 'admin')) return alert('لوحة التحكم الرئيسية مخصصة للإدارة فقط.');
+      if(tabName === 'admin' && (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'cashier'))) return alert('الفواتير متاحة للإدارة والكاشير فقط.');
       if(tabName === 'analytics' && !canUser('analytics')) return alert('عذراً، لا تملك صلاحية الاطلاع على التقارير والداشبورد.');
       if(tabName === 'prices' && !canUser('prices')) return alert('عذراً، لا تملك صلاحية الاطلاع على قائمة الأسعار.');
       if(tabName === 'customers' && !canManageCustomers()) return alert('عذراً، لا تملك صلاحية إدارة قاعدة العملاء.');
       if(tabName === 'users' && !canUser('users')) return alert('عذراً، لا تملك صلاحية إدارة المستخدمين والحسابات.');
       if(tabName === 'activity' && (!currentUser || currentUser.role !== 'admin' || !(isSuperUser() || canUser('users')))) return alert('عذراً، سجل النشاط مخصص للإدارة المخولة فقط.');
       if(tabName === 'settings' && (!currentUser || currentUser.role !== 'admin')) return alert('عذراً، الإعدادات مخصصة للإدارة فقط.');
-      if(tabName === 'store-booking' && (!currentUser || currentUser.role !== 'admin')) return alert('عذراً، حجز المحل مخصص للإدارة فقط.');
+      if(tabName === 'store-booking' && (!currentUser || (currentUser.role!=='admin' && !canUser('storeBookings')))) return alert('حجز المحل غير متاح لهذا الحساب.');
       document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       const target = document.getElementById(`sec-${tabName}`);
@@ -2646,12 +2694,13 @@
       if(tabName === 'dashboard') { document.getElementById('dashboardAuthLock')?.classList.add('hidden'); document.getElementById('dashboardContent')?.classList.remove('hidden'); renderDashboard(); }
       if(tabName === 'analytics') { renderAnalytics(); renderCommentsList(); }
       if(tabName === 'prices') renderPrices();
-      if(tabName === 'customers') { document.getElementById('customerAuthLock')?.classList.toggle('hidden',!!currentUser && currentUser.role==='admin'); document.getElementById('customerPageContent')?.classList.toggle('hidden',!(currentUser && currentUser.role==='admin')); renderCustomersList(); }
+      if(tabName === 'customers') { const allowed=!!currentUser && canManageCustomers(); document.getElementById('customerAuthLock')?.classList.toggle('hidden',allowed); document.getElementById('customerPageContent')?.classList.toggle('hidden',!allowed); renderCustomersList(); }
       if(tabName === 'users') { document.getElementById('usersPageAuthLock')?.classList.add('hidden'); document.getElementById('usersPageContent')?.classList.remove('hidden'); renderUsersList(); syncNavigationTitle('users'); }
       if(tabName === 'activity') { renderActivityMetrics(); renderActivityLog(); syncNavigationTitle('activity'); }
       if(tabName === 'settings') { loadAppSettings(); syncNavigationTitle('settings'); }
       if(tabName === 'profile') { renderMyProfile(); syncNavigationTitle('profile'); }
       if(tabName === 'store-booking') { initStoreBookingPage(); renderStoreBookingToday(); }
+      if(tabName === 'cashier-home') { renderCashierHome(); }
       if(tabName === 'admin' && getAppSettings().autoFocusOrder) setTimeout(() => document.getElementById('custName')?.focus(), 120);
       if(tabName === 'track') { renderPublicComments(); updateCustomerIdentityHint(); }
     }
@@ -2682,9 +2731,13 @@
       const subtitle = document.getElementById('loginModalSubtitle');
       if(!title || !subtitle) return;
       const driverMode = APP_MODE === 'staff' && document.getElementById('tab-driver')?.classList.contains('active');
+      const cashierMode = APP_MODE === 'staff' && document.getElementById('tab-cashier-home')?.classList.contains('active');
       if(driverMode) {
         title.innerText = 'دخول المندوب';
         subtitle.innerText = 'سجّل الدخول لعرض طلباتك وتحديث الحالات وتشغيل اللوكيشن الحي.';
+      } else if(cashierMode) {
+        title.innerText = 'دخول الكاشير';
+        subtitle.innerText = 'سجّل الدخول للبدء في الفواتير وحجوزات المحل وخدمة العملاء.';
       } else {
         title.innerText = 'دخول الإدارة';
         subtitle.innerText = 'سجّل الدخول للوصول إلى الطلبات والتقارير والعملاء وباقي أدوات النظام.';
@@ -2763,18 +2816,18 @@
     }
 
     function startCustomerDataListener() {
-      if(APP_MODE!=='staff' || !currentUser || currentUser.role!=='admin' || !canManageCustomers()) return;
+      if(APP_MODE!=='staff' || !currentUser || (currentUser.role!=='admin' && currentUser.role!=='cashier') || !canManageCustomers()) return;
       try { customersRef?.off(); } catch(e){}
       customersRef=db.ref('customers');
       customersRef.on('value',snap=>{ const remote=snap.val()||{}; let local={}; try{local=JSON.parse(localStorage.getItem('hamaksha_local_customers')||'{}');}catch(e){} customersCache={...local,...remote}; renderCustomersList(); });
     }
 
     function startAdminOrdersListener() {
-      if(APP_MODE!=='staff' || !currentUser || currentUser.role!=='admin') return;
+      if(APP_MODE!=='staff' || !currentUser || (currentUser.role!=='admin' && currentUser.role!=='cashier')) return;
       try { staffOrdersRef?.off(); } catch(e){}
       staffOrdersRef = canViewAllDrivers() ? db.ref('orders') : db.ref('orders').orderByChild('createdBy').equalTo(currentUser.username);
       staffOrdersRef.on('value',snap=>{
-        allOrdersCache=snap.val()||{}; processOrderNotifications(allOrdersCache); applyFilters(); renderQuickInvoiceProducts();
+        allOrdersCache=snap.val()||{}; processOrderNotifications(allOrdersCache); applyFilters(); renderQuickInvoiceProducts(); renderCashierHome();
         if(!document.getElementById('sec-dashboard').classList.contains('hidden')) renderDashboard();
         if(!document.getElementById('sec-analytics').classList.contains('hidden')) { renderAnalytics(); renderCommentsList(); }
         renderDashboardMap();
@@ -2817,10 +2870,10 @@
       }
       guest?.classList.add('hidden'); content?.classList.remove('hidden');
       const isOwner=isSuperUser();
-      const role=currentUser.role==='driver'?'مندوب توصيل':'أدمن';
+      const role=currentUser.role==='driver'?'مندوب توصيل':currentUser.role==='cashier'?'كاشير':'أدمن';
       const roleText=isOwner?'المالك الرئيسي (asma)':role;
-      const avatar=isOwner?'👑':currentUser.role==='driver'?'🛵':'🛡️';
-      const roleClass=isOwner?'owner':currentUser.role==='driver'?'driver':'admin';
+      const avatar=isOwner?'👑':currentUser.role==='driver'?'🛵':currentUser.role==='cashier'?'🧾':'🛡️';
+      const roleClass=isOwner?'owner':currentUser.role==='driver'?'driver':currentUser.role==='cashier'?'cashier':'admin';
       document.getElementById('profileAvatar').innerText=avatar;
       document.getElementById('profileDisplayName').innerText=currentUser.username||'المستخدم';
       document.getElementById('profileRoleLine').innerText=`${roleText} • جلسة نشطة حالياً`;
@@ -2829,19 +2882,43 @@
       document.getElementById('profileUsername').innerText=currentUser.username||'—';
       document.getElementById('profileRole').innerText=roleText;
       document.getElementById('profileAccountState').innerText='نشط ومتصل';
-      document.getElementById('profileAccessScope').innerText=isOwner?'وصول كامل للنظام':currentUser.role==='driver'?'طلباتك وحالتها والتتبع':'صلاحيات الإدارة الممنوحة لك';
+      document.getElementById('profileAccessScope').innerText=isOwner?'وصول كامل للنظام':currentUser.role==='driver'?'طلباتك وحالتها والتتبع':currentUser.role==='cashier'?'الفواتير وحجوزات المحل والعملاء':'صلاحيات الإدارة الممنوحة لك';
 
       const permissionDefs=isOwner?[['edit','تعديل الطلبات'],['delete','حذف الطلبات'],['print','التصدير والطباعة'],['analytics','التقارير والتحصيل'],['prices','أسعار اللحوم'],['users','إدارة المستخدمين'],['viewAllDrivers','عرض جميع المناديب والطلبات']]:currentUser.role==='driver'?[]:[['edit','تعديل الطلبات'],['delete','حذف الطلبات'],['print','التصدير والطباعة'],['analytics','التقارير والتحصيل'],['prices','أسعار اللحوم'],['users','إدارة المستخدمين'],['viewAllDrivers','عرض جميع المناديب والطلبات']];
       const perms=currentUser.perms||{};
       const pc=document.getElementById('profilePermissions');
       if(currentUser.role==='driver'){
         pc.innerHTML=[['driver_orders','طلباتك المسندة','on'],['driver_status','تحديث حالة الطلب','on'],['driver_gps','بث الموقع الحي','on']].map(([k,label,state])=>`<div class="profile-perm"><span class="label">${label}</span><span class="state ${state}">متاح</span></div>`).join('');
+      }else if(currentUser.role==='cashier'){
+        const defs=[['sales','تسجيل الفواتير'],['storeBookings','حجوزات المحل'],['customers','إدارة العملاء'],['edit','تعديل الفواتير'],['print','الطباعة']];
+        pc.innerHTML=defs.map(([key,label])=>{const on=!!perms[key];return `<div class="profile-perm"><span class="label">${label}</span><span class="state ${on?'on':'off'}">${on?'ممنوحة':'غير ممنوحة'}</span></div>`;}).join('');
       }else{
         pc.innerHTML=permissionDefs.map(([key,label])=>{const on=isOwner||!!perms[key];return `<div class="profile-perm"><span class="label">${label}</span><span class="state ${on?'on':'off'}">${on?'ممنوحة':'غير ممنوحة'}</span></div>`;}).join('');
       }
-      document.getElementById('profileSecurityNote').innerText=isOwner?'👑 أنت المستخدم الرئيسي، وتملك جميع الصلاحيات. إدارة الحسابات والتفويضات متاحة من مركز المستخدمين والصلاحيات.':currentUser.role==='driver'?'🛵 هذه الواجهة مخصصة لأعمال المندوب وطلباتك المسندة إليك.':'🔒 الصلاحيات المعروضة هنا للقراءة فقط، ويمكن تعديلها من مركز المستخدمين والصلاحيات حسب الصلاحية المتاحة.';
+      document.getElementById('profileSecurityNote').innerText=isOwner?'👑 أنت المستخدم الرئيسي، وتملك جميع الصلاحيات. إدارة الحسابات والتفويضات متاحة من مركز المستخدمين والصلاحيات.':currentUser.role==='driver'?'🛵 هذه الواجهة مخصصة لأعمال المندوب وطلباتك المسندة إليك.':currentUser.role==='cashier'?'🧾 هذه الواجهة مخصصة للفواتير وحجوزات المحل وخدمة العملاء.':'🔒 الصلاحيات المعروضة هنا للقراءة فقط، ويمكن تعديلها من مركز المستخدمين والصلاحيات حسب الصلاحية المتاحة.';
     }
 
+
+    // --- 🧾 لوحة نقطة البيع للكاشير ---
+    function renderCashierHome(){
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='cashier') return;
+      const today=new Date().toISOString().split('T')[0];
+      const orders=Object.keys(allOrdersCache||{}).map(key=>({key,...(allOrdersCache[key]||{})}));
+      const todayOrders=orders.filter(o=>o.date===today);
+      const pending=todayOrders.filter(o=>!['تم التسليم بنجاح ✅','ملغي ❌'].includes(String(o.status||''))).length;
+      const collected=todayOrders.reduce((sum,o)=>sum+Number(o.paidAmount||0),0);
+      const set=(id,v)=>{const el=document.getElementById(id);if(el)el.innerText=v;};
+      set('cashierMetricDelivery',todayOrders.length.toLocaleString('ar-EG'));
+      set('cashierMetricPending',pending.toLocaleString('ar-EG'));
+      set('cashierMetricCollected',collected.toLocaleString('ar-EG')+' ج.م');
+      const bookingAll=window.storeBookingsCache||{};
+      const todayBookings=Object.keys(bookingAll).map(key=>({key,...(bookingAll[key]||{})})).filter(x=>x.pickupDate===today).sort((a,b)=>String(a.pickupTime||'').localeCompare(String(b.pickupTime||'')));
+      set('cashierMetricBookings',todayBookings.length.toLocaleString('ar-EG'));
+      const recentOrders=document.getElementById('cashierRecentOrders');
+      if(recentOrders){recentOrders.innerHTML=todayOrders.slice().sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0)).slice(0,8).map(o=>`<button type="button" class="cashier-mini-item" onclick="switchTab('admin');setTimeout(()=>openOrderDetails(${htmlJsArg(o.key)}),80)"><span>#${escapeHtml(o.orderId||o.key)} · ${escapeHtml(o.customerName||'عميل')}</span><b>${Number(o.totalCash||0).toLocaleString('ar-EG')} ج.م</b></button>`).join('')||'<div class="cashier-mini-item">لا توجد فواتير توصيل اليوم.</div>';}
+      const recentBookings=document.getElementById('cashierRecentBookings');
+      if(recentBookings){recentBookings.innerHTML=todayBookings.slice(0,8).map(b=>`<button type="button" class="cashier-mini-item" onclick="switchTab('store-booking')"><span>#${escapeHtml(b.bookingNumber||b.key)} · ${escapeHtml(b.customerName||'عميل')}</span><b>${escapeHtml(b.pickupTime||'—')}</b></button>`).join('')||'<div class="cashier-mini-item">لا توجد حجوزات اليوم.</div>';}
+    }
 
     // --- 📜 سجل نشاط النظام ---
     function activityMeta(action){
@@ -2887,24 +2964,32 @@
       if(APP_MODE!=='staff') return;
       stopScopedListeners(); currentUser=user; localStorage.setItem('hamaksha_user',JSON.stringify(user));
       loadNotificationStore();
-      const roleTitle=isSuperUser()?'المالك الرئيسي (asma)':(user.role==='admin'?'أدمن فرعي':'مندوب توصيل');
+      const roleTitle=isSuperUser()?'المالك الرئيسي (asma)':(user.role==='admin'?'أدمن فرعي':user.role==='cashier'?'كاشير':'مندوب توصيل');
       document.getElementById('authBtn').innerText=`${user.username} (خروج)`;
       document.getElementById('activeUserBadge').innerText=`${user.username} (${roleTitle})`;
       document.getElementById('sidebarUserBadge').innerText=`${user.username} • ${roleTitle}`;
       document.getElementById('mobileUserBadge').innerText=user.username;
-      document.body.classList.remove('customer-public-mode'); document.body.classList.toggle('driver-private-mode',user.role==='driver');
-      document.getElementById('authModal').classList.add('hidden'); updateUIByPermissions(); startDriverDirectoryListener(); startActivityLogListener();
-      document.getElementById('customerAuthLock')?.classList.toggle('hidden',!(user.role==='admin' && canManageCustomers()));
-      document.getElementById('customerPageContent')?.classList.toggle('hidden',!(user.role==='admin' && canManageCustomers()));
-      if(user.role==='admin') { document.getElementById('adminAuthLock').classList.add('hidden'); document.getElementById('adminContent').classList.remove('hidden'); startAdminOrdersListener(); startUserManagementListener(); startCustomerDataListener(); switchTab('admin'); }
-      else { document.getElementById('driverAuthLock').classList.add('hidden'); document.getElementById('driverContent').classList.remove('hidden'); applyDriverPrivateMode(); startDriverOrdersListener(); }
-      applyFilters(); renderUsersList(); renderMyProfile(); logActivity('login','system',`تسجيل دخول المستخدم ${user.username}`); syncNavigationTitle(user.role==='driver' ? 'driver' : 'admin');
+      document.body.classList.remove('customer-public-mode'); document.body.classList.toggle('driver-private-mode',user.role==='driver'); document.body.classList.toggle('cashier-mode',user.role==='cashier');
+      document.getElementById('authModal').classList.add('hidden'); updateUIByPermissions(); startDriverDirectoryListener(); if(user.role!=='cashier') startActivityLogListener();
+      const customerAllowed=user.role==='admin' || (user.role==='cashier' && canManageCustomers());
+      document.getElementById('customerAuthLock')?.classList.toggle('hidden',!customerAllowed);
+      document.getElementById('customerPageContent')?.classList.toggle('hidden',!customerAllowed);
+      if(user.role==='admin' || user.role==='cashier') {
+        document.getElementById('adminAuthLock').classList.add('hidden'); document.getElementById('adminContent').classList.remove('hidden'); startAdminOrdersListener(); startCustomerDataListener(); startDriverDirectoryListener();
+        if(user.role==='admin') startUserManagementListener();
+        if(user.role==='cashier') { document.querySelector('#tab-admin span')?.replaceChildren(document.createTextNode('فاتورة توصيل')); initStoreBookingPage(); switchTab('cashier-home'); }
+        else { document.querySelector('#tab-admin span')?.replaceChildren(document.createTextNode('الطلبات والإدارة')); switchTab('admin'); }
+      } else { document.getElementById('driverAuthLock').classList.add('hidden'); document.getElementById('driverContent').classList.remove('hidden'); applyDriverPrivateMode(); startDriverOrdersListener(); }
+      applyFilters(); renderUsersList(); renderMyProfile(); if(user.role!=='cashier') startActivityLogListener(); logActivity('login','system',`تسجيل دخول المستخدم ${user.username}`); syncNavigationTitle(user.role==='driver' ? 'driver' : user.role==='cashier' ? 'cashier-home' : 'admin');
     }
 
     function updateUIByPermissions() {
       document.querySelector('.perm-analytics')?.classList.toggle('hidden',!canUser('analytics'));
       document.querySelector('.perm-prices')?.classList.toggle('hidden',!canUser('prices'));
       document.getElementById('tab-dashboard')?.classList.toggle('hidden',!(currentUser&&currentUser.role==='admin'));
+      document.getElementById('tab-cashier-home')?.classList.toggle('hidden',!(currentUser&&currentUser.role==='cashier'));
+      document.getElementById('tab-store-booking')?.classList.toggle('hidden',!(currentUser && (currentUser.role==='admin' || canUser('storeBookings'))));
+      document.getElementById('tab-admin')?.classList.toggle('hidden',!(currentUser && (currentUser.role==='admin'||currentUser.role==='cashier')));
       document.getElementById('addPriceBtn')?.classList.toggle('hidden',!canUser('prices'));
       document.querySelectorAll('.perm-users').forEach(el=>el.classList.toggle('hidden',!canUser('users')));
       document.querySelectorAll('.activity-only').forEach(el=>el.classList.toggle('hidden',!(currentUser && currentUser.role==='admin' && (isSuperUser() || canUser('users')))));
@@ -3207,7 +3292,8 @@
       if (!username || !pass) return alert('يرجى ملء جميع البيانات');
       if (username.toLowerCase() === 'asma') return alert('اسم المستخدم asma محجوز للحساب الرئيسي.');
 
-      db.ref('users').push({ username, pass, role, perms: { edit: false, delete: false, print: false, analytics: false, prices: false, users: false, viewAllDrivers: false } })
+      const perms = role==='cashier' ? { edit:true, delete:false, print:true, analytics:false, prices:false, users:false, viewAllDrivers:false, sales:true, storeBookings:true, customers:true } : { edit:false, delete:false, print:false, analytics:false, prices:false, users:false, viewAllDrivers:false };
+      db.ref('users').push({ username, pass, role, perms })
         .then(async () => { await logActivity('create','user',`إضافة حساب مستخدم ${username} (${role})`,username,{role}); clearNewUserForm(); alert('تمت إضافة المستخدم بنجاح ✅'); renderUsersList(); })
         .catch(err => { console.error(err); alert('تعذر إضافة الحساب حالياً.'); });
     }
@@ -3268,6 +3354,7 @@
       const total=allEntries.length;
       const drivers=allEntries.filter(x=>x.u.role==='driver').length;
       const admins=allEntries.filter(x=>x.u.role==='admin').length;
+      const cashiers=allEntries.filter(x=>x.u.role==='cashier').length;
       const delegated=allEntries.reduce((sum,x)=>{ if(x.u.username==='asma') return sum; const p=x.u.perms||{}; return sum+['edit','delete','print','analytics','prices','users','viewAllDrivers'].filter(k=>!!p[k]).length; },0);
       document.getElementById('usersMetricTotal')?.replaceChildren(document.createTextNode(total.toLocaleString('ar-EG')));
       document.getElementById('usersMetricDrivers')?.replaceChildren(document.createTextNode(drivers.toLocaleString('ar-EG')));
@@ -3287,12 +3374,12 @@
       list.innerHTML=entries.map(({id,u})=>{
         const perms=u.perms||{};
         const isAsma=u.username==='asma';
-        const roleTitle=isAsma?'المالك الرئيسي':(u.role==='admin'?'أدمن فرعي':'مندوب');
-        const roleClass=isAsma?'users-role-owner':(u.role==='admin'?'users-role-admin':'users-role-driver');
+        const roleTitle=isAsma?'المالك الرئيسي':(u.role==='admin'?'أدمن فرعي':u.role==='cashier'?'كاشير':'مندوب');
+        const roleClass=isAsma?'users-role-owner':(u.role==='admin'?'users-role-admin':u.role==='cashier'?'users-role-cashier':'users-role-driver');
         const granted=['edit','delete','print','analytics','prices','users','viewAllDrivers'].filter(k=>!!perms[k]).length;
         const actions=!isAsma?`<div class="flex items-center gap-1.5 shrink-0"><button onclick="openEditUserModal('${id}')" class="users-action edit">✏️ تعديل</button><button onclick="deleteUser('${id}')" class="users-action delete">🗑️ حذف</button></div>`:'';
-        const permissionBlock=(u.role==='admin'&&!isAsma&&isSuperUser())?`<div class="users-permissions-box"><div class="flex items-center justify-between gap-2 border-b border-amber-200 pb-2"><p class="font-black text-amber-900">🔐 صلاحيات الأدمن الفرعي</p><span class="users-permission-count">${granted}/7</span></div><div class="users-permissions-grid"><label><input type="checkbox" ${perms.edit?'checked':''} onchange="toggleAdminPermission('${id}','edit',this.checked)"> تعديل الطلبات ✏️</label><label><input type="checkbox" ${perms.delete?'checked':''} onchange="toggleAdminPermission('${id}','delete',this.checked)"> حذف الطلبات 🗑️</label><label><input type="checkbox" ${perms.print?'checked':''} onchange="toggleAdminPermission('${id}','print',this.checked)"> طباعة وتصدير 🖨️</label><label><input type="checkbox" ${perms.analytics?'checked':''} onchange="toggleAdminPermission('${id}','analytics',this.checked)"> التقارير 📊</label><label><input type="checkbox" ${perms.prices?'checked':''} onchange="toggleAdminPermission('${id}','prices',this.checked)"> الأسعار 🏷️</label><label><input type="checkbox" ${perms.users?'checked':''} onchange="toggleAdminPermission('${id}','users',this.checked)"> المستخدمون 👥</label><label class="col-span-2"><input type="checkbox" ${perms.viewAllDrivers?'checked':''} onchange="toggleAdminPermission('${id}','viewAllDrivers',this.checked)"> عرض جميع المناديب والأوردرات 🧭</label></div></div>`:'';
-        return `<div class="users-card"><div class="users-card-top"><div class="flex items-center gap-3 min-w-0"><div class="users-avatar">${isAsma?'👑':(u.role==='admin'?'🛡️':'🛵')}</div><div class="min-w-0"><div class="flex flex-wrap items-center gap-1.5"><b class="users-name">${escapeHtml(u.username||'')}</b><span class="users-role ${roleClass}">${roleTitle}</span></div><div class="users-meta">${isAsma?'حساب رئيسي محمي':'حساب تشغيل للنظام'} ${u.role==='admin'&&!isAsma?`• ${granted} صلاحيات ممنوحة`:''}</div></div></div>${actions}</div>${permissionBlock}</div>`;
+        const permissionBlock=(isSuperUser()&&!isAsma&&u.role==='cashier')?`<div class="users-permissions-box"><div class="flex items-center justify-between gap-2 border-b border-amber-200 pb-2"><p class="font-black text-amber-900">🔐 صلاحيات الكاشير</p><span class="users-permission-count">${['sales','storeBookings','customers','edit','print'].filter(k=>!!perms[k]).length}/5</span></div><div class="users-permissions-grid"><label><input type="checkbox" ${perms.sales?'checked':''} onchange="toggleAdminPermission('${id}','sales',this.checked)"> تسجيل الفواتير 🧾</label><label><input type="checkbox" ${perms.storeBookings?'checked':''} onchange="toggleAdminPermission('${id}','storeBookings',this.checked)"> حجز المحل 🏪</label><label><input type="checkbox" ${perms.customers?'checked':''} onchange="toggleAdminPermission('${id}','customers',this.checked)"> العملاء 👥</label><label><input type="checkbox" ${perms.edit?'checked':''} onchange="toggleAdminPermission('${id}','edit',this.checked)"> تعديل الفواتير ✏️</label><label><input type="checkbox" ${perms.print?'checked':''} onchange="toggleAdminPermission('${id}','print',this.checked)"> الطباعة 🖨️</label></div></div>`:(u.role==='admin'&&!isAsma&&isSuperUser())?`<div class="users-permissions-box"><div class="flex items-center justify-between gap-2 border-b border-amber-200 pb-2"><p class="font-black text-amber-900">🔐 صلاحيات الأدمن الفرعي</p><span class="users-permission-count">${granted}/7</span></div><div class="users-permissions-grid"><label><input type="checkbox" ${perms.edit?'checked':''} onchange="toggleAdminPermission('${id}','edit',this.checked)"> تعديل الطلبات ✏️</label><label><input type="checkbox" ${perms.delete?'checked':''} onchange="toggleAdminPermission('${id}','delete',this.checked)"> حذف الطلبات 🗑️</label><label><input type="checkbox" ${perms.print?'checked':''} onchange="toggleAdminPermission('${id}','print',this.checked)"> طباعة وتصدير 🖨️</label><label><input type="checkbox" ${perms.analytics?'checked':''} onchange="toggleAdminPermission('${id}','analytics',this.checked)"> التقارير 📊</label><label><input type="checkbox" ${perms.prices?'checked':''} onchange="toggleAdminPermission('${id}','prices',this.checked)"> الأسعار 🏷️</label><label><input type="checkbox" ${perms.users?'checked':''} onchange="toggleAdminPermission('${id}','users',this.checked)"> المستخدمون 👥</label><label class="col-span-2"><input type="checkbox" ${perms.viewAllDrivers?'checked':''} onchange="toggleAdminPermission('${id}','viewAllDrivers',this.checked)"> عرض جميع المناديب والأوردرات 🧭</label></div></div>`:'';
+        return `<div class="users-card"><div class="users-card-top"><div class="flex items-center gap-3 min-w-0"><div class="users-avatar">${isAsma?'👑':(u.role==='admin'?'🛡️':u.role==='cashier'?'🧾':'🛵')}</div><div class="min-w-0"><div class="flex flex-wrap items-center gap-1.5"><b class="users-name">${escapeHtml(u.username||'')}</b><span class="users-role ${roleClass}">${roleTitle}</span></div><div class="users-meta">${isAsma?'حساب رئيسي محمي':'حساب تشغيل للنظام'} ${u.role==='admin'&&!isAsma?`• ${granted} صلاحيات ممنوحة`:''}</div></div></div>${actions}</div>${permissionBlock}</div>`;
       }).join('');
     }
 
@@ -3302,7 +3389,7 @@
     // --- 👥 قاعدة بيانات العملاء + إدارة الطلبات ---
     function findCustomerByPhone(phone) { const n=normalizePhone(phone); if(!n)return null; for(const key of Object.keys(customersCache||{})){ const c=customersCache[key]||{}; if(c.phoneNormalized===n||normalizePhone(c.phone)===n)return {key,...c}; } return null; }
     function canAutoSaveCustomerFromOrder(){
-      return APP_MODE==='staff' && !!currentUser && currentUser.role==='admin';
+      return APP_MODE==='staff' && !!currentUser && (currentUser.role==='admin' || (currentUser.role==='cashier' && canUser('sales')));
     }
     function upsertCustomerRecord(name,phone,address,preferredKey=null,incrementOrderCount=false,allowOrderAutoSave=false){
       if(!canManageCustomers() && !(allowOrderAutoSave && canAutoSaveCustomerFromOrder())) return Promise.resolve(preferredKey||null);
@@ -3335,7 +3422,7 @@
       if(matching.length>3)list.innerHTML+=`<div class="customer-history-action">+ ${matching.length-3} طلبات أخرى محفوظة للعميل</div>`;
     }
 
-    function smartLookupCustomer(phone){ if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin')return; const status=document.getElementById('customerLookupStatus'); const c=findCustomerByPhone(phone); if(c&&canManageCustomers()){document.getElementById('selectedCustomerKey').value=c.key;document.getElementById('custName').value=c.name||'';document.getElementById('custAddress').value=c.address||'';status.innerText='✅ تم العثور على العميل وربط بياناته تلقائياً';status.className='text-[10px] font-bold text-emerald-700';} else {document.getElementById('selectedCustomerKey').value=''; if(String(phone||'').trim()){status.innerText='عميل جديد — سيتم حفظه تلقائياً عند تسجيل الطلب';status.className='text-[10px] font-bold text-blue-700';} else status.innerText='';} renderCustomerOrderHistory(phone);}
+    function smartLookupCustomer(phone){ if(APP_MODE!=='staff'||!currentUser||(currentUser.role!=='admin'&&currentUser.role!=='cashier'))return; const status=document.getElementById('customerLookupStatus'); const c=findCustomerByPhone(phone); if(c&&canManageCustomers()){document.getElementById('selectedCustomerKey').value=c.key;document.getElementById('custName').value=c.name||'';document.getElementById('custAddress').value=c.address||'';status.innerText='✅ تم العثور على العميل وربط بياناته تلقائياً';status.className='text-[10px] font-bold text-emerald-700';} else {document.getElementById('selectedCustomerKey').value=''; if(String(phone||'').trim()){status.innerText='عميل جديد — سيتم حفظه تلقائياً عند تسجيل الطلب';status.className='text-[10px] font-bold text-blue-700';} else status.innerText='';} renderCustomerOrderHistory(phone);}
     function clearSelectedCustomer(){document.getElementById('selectedCustomerKey').value='';document.getElementById('customerLookupStatus').innerText='وضع عميل جديد';document.getElementById('customerLookupStatus').className='text-[10px] font-bold text-gray-500';renderCustomerOrderHistory(document.getElementById('custPhone')?.value||'');}
     function openCustomerPickerModal(){if(!canManageCustomers())return alert('لا تملك صلاحية استخدام قاعدة العملاء.');document.getElementById('customerPickerModal').classList.remove('hidden');document.getElementById('customerPickerSearch').value='';renderCustomerPickerList();}
     function closeCustomerPickerModal(){document.getElementById('customerPickerModal').classList.add('hidden');}
@@ -3497,7 +3584,7 @@
       if(timeEl&&!timeEl.value)timeEl.value='18:00';
       if(numEl&&!numEl.value)numEl.value=generateStoreBookingNumber();
       renderStoreBookingCatalog();renderStoreBookingItems();
-      if(!storeBookingsRef){storeBookingsRef=db.ref('storeBookings');storeBookingsRef.on('value',snap=>{window.storeBookingsCache=snap.val()||{};renderStoreBookingToday();},err=>console.error('Store bookings listener:',err));}
+      if(!storeBookingsRef){storeBookingsRef=db.ref('storeBookings');storeBookingsRef.on('value',snap=>{window.storeBookingsCache=snap.val()||{};renderStoreBookingToday();renderCashierHome();},err=>console.error('Store bookings listener:',err));}
       renderStoreBookingPaymentSummary();
     }
     function getStoreBookingItemsTotal(){return storeBookingItems.reduce((s,it)=>s+Number(it.total||0),0)}
@@ -3518,14 +3605,14 @@
       if(!list.length){container.innerHTML='<div class="store-empty">لا توجد حجوزات استلام اليوم.</div>';return;}
       container.innerHTML=list.map(b=>{const m=storeBookingStatusMeta(b.status);const total=Number(b.total||0),remaining=Number(b.remainingDue||0);return `<article class="store-booking-card"><div class="store-booking-card-head"><span class="store-booking-id">#${escapeHtml(b.bookingNumber||b.key)}</span><span class="store-booking-status ${m.cls}">${m.label}</span></div><div class="store-booking-meta"><div>👤 العميل<b>${escapeHtml(b.customerName||'غير محدد')}</b></div><div>⏰ الاستلام<b>${escapeHtml(b.pickupTime||'—')}</b></div><div>💰 الإجمالي<b>${total.toLocaleString('ar-EG')} ج.م</b></div><div>💳 المتبقي<b>${remaining.toLocaleString('ar-EG')} ج.م</b></div></div><div class="store-booking-actions"><button type="button" class="store-action-btn primary" onclick="printStoreBooking(${htmlJsArg(b.key)})">🧾 طباعة 80mm</button><button type="button" class="store-action-btn" onclick="editStoreBookingStatus(${htmlJsArg(b.key)},'جاهز للاستلام 📦')">📦 جاهز</button><button type="button" class="store-action-btn" onclick="editStoreBookingStatus(${htmlJsArg(b.key)},'تم الاستلام ✅')">✅ استلم</button><button type="button" class="store-action-btn danger" onclick="editStoreBookingStatus(${htmlJsArg(b.key)},'ملغي ❌')">✕ إلغاء</button></div></article>`;}).join('');
     }
-    async function editStoreBookingStatus(key,status){if(!currentUser||currentUser.role!=='admin')return;try{await db.ref('storeBookings/'+key).update({status,updatedAt:Date.now(),updatedBy:currentUser.username});await logActivity('update','storeBooking',`تحديث حالة حجز المحل #${key} إلى ${status}`,key,{status});}catch(e){console.error(e);alert('تعذر تحديث حالة الحجز حالياً.');}}
+    async function editStoreBookingStatus(key,status){if(!currentUser||(currentUser.role!=='admin'&&!canUser('storeBookings')))return;try{await db.ref('storeBookings/'+key).update({status,updatedAt:Date.now(),updatedBy:currentUser.username});await logActivity('update','storeBooking',`تحديث حالة حجز المحل #${key} إلى ${status}`,key,{status});}catch(e){console.error(e);alert('تعذر تحديث حالة الحجز حالياً.');}}
     async function submitStoreBooking(e){
-      e.preventDefault();if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin')return alert('حجز المحل مخصص للإدارة فقط.');
+      e.preventDefault();if(APP_MODE!=='staff'||!currentUser||(currentUser.role!=='admin'&&!canUser('storeBookings')))return alert('حجز المحل غير متاح لهذا الحساب.');
       if(!storeBookingItems.length)return alert('أضف صنفًا واحدًا على الأقل للحجز.');
       const name=document.getElementById('storeBookingCustomerName').value.trim(),phone=document.getElementById('storeBookingCustomerPhone').value.trim(),pickupDate=document.getElementById('storeBookingPickupDate').value,pickupTime=document.getElementById('storeBookingPickupTime').value,notes=document.getElementById('storeBookingNotes').value.trim(),status=document.getElementById('storeBookingStatus').value,total=getStoreBookingItemsTotal();
       const bookingNumber=document.getElementById('storeBookingNumberPreview').value||generateStoreBookingNumber();let paidAmount=0;if(storeBookingPaymentMode==='paid')paidAmount=total;else if(storeBookingPaymentMode==='deposit')paidAmount=Math.min(total,Math.max(0,Number(document.getElementById('storeBookingDeposit').value)||0));const remainingDue=Math.max(0,total-paidAmount);let customerId=null;try{customerId=await upsertCustomerRecord(name,phone,'',null,true,true);}catch(err){console.error('Store booking customer save:',err);}
       const key=bookingNumber;const payload={bookingNumber,bookingType:'store',customerName:name,customerPhone:phone,customerId:customerId||null,pickupDate,pickupTime,notes,items:storeBookingItems.map(it=>({...it})),total,paidAmount,remainingDue,paymentStatus:storeBookingPaymentMode,status,createdBy:currentUser.username,createdAt:Date.now(),updatedAt:Date.now()};
-      try{await db.ref('storeBookings/'+key).set(payload);await logActivity('create','storeBooking',`إنشاء حجز محل #${bookingNumber} للعميل ${name}`,key,{total,paidAmount,remainingDue});window.storeBookingsCache=window.storeBookingsCache||{};window.storeBookingsCache[key]=payload;renderStoreBookingToday();
+      try{await db.ref('storeBookings/'+key).set(payload);await logActivity('create','storeBooking',`إنشاء حجز محل #${bookingNumber} للعميل ${name}`,key,{total,paidAmount,remainingDue});window.storeBookingsCache=window.storeBookingsCache||{};window.storeBookingsCache[key]=payload;renderStoreBookingToday();renderCashierHome();
         const result=document.getElementById('storeBookingResult');if(result){result.classList.remove('hidden');result.innerHTML=`<div class="font-black text-xs">✅ تم حفظ الحجز <span class="font-mono">#${escapeHtml(bookingNumber)}</span> بنجاح.</div><div class="text-[9px] mt-1">المدفوع: ${paidAmount.toLocaleString('ar-EG')} ج.م · المتبقي: ${remainingDue.toLocaleString('ar-EG')} ج.م</div><div class="flex gap-2 mt-2"><button type="button" class="store-action-btn primary" onclick="printStoreBooking(${htmlJsArg(key)})">🧾 طباعة فاتورة 80mm</button><button type="button" class="store-action-btn" onclick="resetStoreBookingForm()">＋ حجز جديد</button></div>`;}
         resetStoreBookingForm();
       }catch(err){console.error(err);alert('تعذر حفظ حجز المحل. إذا كانت القاعدة تمنع المسار storeBookings فسنحتاج إضافة صلاحية الكتابة له في Firebase Rules.');}
@@ -3533,7 +3620,7 @@
 
     // --- إدارة الطلبات ---
     document.getElementById('orderForm').addEventListener('submit', async (e) => {
-      e.preventDefault();if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin')return alert('هذه العملية متاحة للإدارة فقط.');
+      e.preventDefault();if(APP_MODE!=='staff'||!currentUser||(currentUser.role!=='admin'&&(currentUser.role!=='cashier'||!canUser('sales'))))return alert('تسجيل الفواتير متاح للكاشير والإدارة فقط.');
       const items=invoiceItems.map(item=>({...item}));if(!items.length)return alert('أضف صنفًا واحدًا على الأقل إلى الفاتورة قبل تسجيل الطلب.');
       const customId=document.getElementById('custOrderId').value.trim(),orderId=customId||('HAMKASHA-'+Math.floor(10000+Math.random()*90000));const name=document.getElementById('custName').value.trim(),phone=document.getElementById('custPhone').value.trim(),address=document.getElementById('custAddress').value.trim();
       const orderPrice=invoiceItemsTotal(items),deliveryPrice=Number(document.getElementById('deliveryPrice').value)||0,paymentMethod=document.getElementById('paymentMethod').value,paymentFee=Number(document.getElementById('paymentFee').value)||0,totalCash=orderPrice+deliveryPrice+paymentFee,driver=document.getElementById('driverSelect').value,now=new Date();const paidInput=Number(document.getElementById('paymentPaidAmount')?.value)||0;const paidAmount=paymentMethod==='cash'?paidInput:totalCash;const remainingDue=paymentMethod==='cash'?Math.max(0,totalCash-paidAmount):0;const changeDue=paymentMethod==='cash'?Math.max(0,paidAmount-totalCash):0;const selectedKey=document.getElementById('selectedCustomerKey').value||null;let customerId=selectedKey;try{customerId=await upsertCustomerRecord(name,phone,address,selectedKey,true,true);}catch(err){console.error('Customer auto-save error:',err);}const trackingToken=createTrackingToken();
@@ -3546,7 +3633,7 @@
       }).catch(err=>{console.error(err);alert('تعذر تسجيل الطلب حالياً.');});
     });
 
-    function updateOrderStatus(orderKey, newStatus) { if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!allOrdersCache[orderKey]) return; db.ref('orders/'+orderKey).update({status:newStatus}).then(()=>logActivity('update','order',`تحديث حالة الطلب #${allOrdersCache[orderKey].orderId||orderKey} إلى ${newStatus}`,orderKey,{status:newStatus})); }
+    function updateOrderStatus(orderKey, newStatus) { if(APP_MODE!=='staff'||!currentUser||(currentUser.role!=='admin'&&currentUser.role!=='cashier')||(currentUser.role==='cashier'&&!canUser('edit'))||!allOrdersCache[orderKey]) return; db.ref('orders/'+orderKey).update({status:newStatus}).then(()=>logActivity('update','order',`تحديث حالة الطلب #${allOrdersCache[orderKey].orderId||orderKey} إلى ${newStatus}`,orderKey,{status:newStatus})); }
 
     function getPaymentText(method) {
       if(method === 'vodafone') return '📱 فودافون كاش';
@@ -3593,7 +3680,7 @@
     }
 
     function applyFilters() {
-      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin') return;
+      if(APP_MODE!=='staff'||!currentUser||(currentUser.role!=='admin'&&currentUser.role!=='cashier')) return;
       const search = (document.getElementById('searchFilter')?.value||'').trim().toLowerCase();
       const driver = document.getElementById('driverFilter') ? document.getElementById('driverFilter').value : 'ALL';
       const status = document.getElementById('statusFilter').value;
@@ -4764,7 +4851,49 @@
       printWindow.document.close();
     }
 
-    function buildThermalReceipt(order,key){const settings=getAppSettings(),items=normalizeInvoiceItems(order?.items||[]),orderPrice=Number(order?.orderPrice||invoiceItemsTotal(items)),delivery=Number(order?.deliveryPrice||0),fee=Number(order?.paymentFee||0),total=Number(order?.totalCash||orderPrice+delivery+fee),currency=escapeHtml(settings.currency||'ج.م');const itemRows=items.length?items.map(it=>`<tr><td class="name">${escapeHtml(it.name)}</td><td>${Number(it.qty).toLocaleString('ar-EG')}</td><td>${Number(it.unitPrice).toLocaleString('ar-EG')}</td><td>${Number(it.total).toLocaleString('ar-EG')}</td></tr>`).join(''):`<tr><td colspan="4" class="center muted">الطلب مسجل بالإجمالي فقط</td></tr>`;return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>فاتورة #${escapeHtml(order?.orderId||key)}</title><style>@page{size:80mm auto;margin:0}*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:#111;font-family:Arial,"Tahoma",sans-serif}.receipt{width:72mm;margin:0 auto;padding:4mm 3.5mm;font-size:10px}.center{text-align:center}.brand{font-size:18px;font-weight:900;margin-bottom:2px}.tag{font-size:9px;color:#555}.title{font-size:14px;font-weight:900;margin:8px 0 4px}.meta{font-size:9px;line-height:1.7}.rule{border-top:1px dashed #222;margin:7px 0}.customer{background:#f7f7f7;padding:7px;border-radius:5px;line-height:1.7}.items{width:100%;border-collapse:collapse;margin-top:7px}.items th{font-size:8px;border-bottom:1px solid #111;padding:4px 2px}.items td{padding:5px 2px;border-bottom:1px dotted #bbb;font-size:8.5px;vertical-align:top}.items .name{max-width:30mm;word-break:break-word}.totals{margin-top:7px;border-top:1px solid #111;padding-top:5px}.totals div{display:flex;justify-content:space-between;padding:2px 0}.grand{font-size:13px;font-weight:900;margin-top:4px;border-top:1px dashed #111;padding-top:5px}.footer{margin-top:10px;text-align:center;font-size:8px;color:#555;line-height:1.7}.muted{color:#777}</style></head><body><div class="receipt"><div class="center"><div class="brand">🥩 ${escapeHtml(settings.storeName||'جزارة حمكشة')}</div><div class="tag">${escapeHtml(settings.storeTagline||'نظام إدارة الطلبات والتوصيل')}</div><div class="title">فاتورة بيع</div><div class="meta">رقم الطلب: <b>#${escapeHtml(order?.orderId||key)}</b><br>التاريخ: ${escapeHtml(formatDateDMY(order?.date||''))} ${escapeHtml(order?.time||'')}</div></div><div class="rule"></div><div class="customer"><b>العميل:</b> ${escapeHtml(order?.customerName||order?.name||'غير محدد')}<br><b>الهاتف:</b> ${escapeHtml(order?.phone||'—')}<br><b>العنوان:</b> ${escapeHtml(order?.address||'—')}</div><table class="items"><thead><tr><th>الصنف</th><th>كمية</th><th>سعر</th><th>إجمالي</th></tr></thead><tbody>${itemRows}</tbody></table><div class="totals"><div><span>إجمالي الأصناف</span><b>${orderPrice.toLocaleString('ar-EG')} ${currency}</b></div><div><span>التوصيل</span><b>${delivery.toLocaleString('ar-EG')} ${currency}</b></div><div><span>عمولة الدفع</span><b>${fee.toLocaleString('ar-EG')} ${currency}</b></div><div><span>الدفع</span><b>${escapeHtml(getPaymentText(order?.paymentMethod||'cash').replace(/^[^\p{L}\p{N}]+/u,''))}</b></div><div><span>المدفوع</span><b>${Number(order?.paidAmount??(order?.paymentMethod==='cash'?total:total)).toLocaleString('ar-EG')} ${currency}</b></div><div><span>المتبقي</span><b>${Number(order?.remainingDue??Math.max(0,total-Number(order?.paidAmount||0))).toLocaleString('ar-EG')} ${currency}</b></div><div><span>الباقي للعميل</span><b>${Number(order?.changeDue??Math.max(0,Number(order?.paidAmount||0)-total)).toLocaleString('ar-EG')} ${currency}</b></div><div class="grand"><span>الإجمالي النهائي</span><b>${total.toLocaleString('ar-EG')} ${currency}</b></div></div><div class="rule"></div><div class="footer">${settings.storePhone?`واتساب: ${escapeHtml(settings.storePhone)}<br>`:''}${settings.storeLocation?`الموقع: ${escapeHtml(settings.storeLocation)}<br>`:''}شكرًا لثقتكم في جزارة حمكشة 🥩<br>نتمنى لكم وجبة طيبة</div></div><script>window.onload=function(){setTimeout(function(){window.print()},120)};<\/script></body></html>`;}
+    function buildThermalReceipt(order,key){const settings=getAppSettings(),items=normalizeInvoiceItems(order?.items||[]),orderPrice=Number(order?.orderPrice||invoiceItemsTotal(items)),delivery=Number(order?.deliveryPrice||0),fee=Number(order?.paymentFee||0),total=Number(order?.totalCash||orderPrice+delivery+fee),currency=escapeHtml(settings.currency||'ج.م');const itemRows=items.length?items.map(it=>`<tr><td class="name">${escapeHtml(it.name)}</td><td>${Number(it.qty).toLocaleString('ar-EG')}</td><td>${Number(it.unitPrice).toLocaleString('ar-EG')}</td><td>${Number(it.total).toLocaleString('ar-EG')}</td></tr>`).join(''):`<tr><td colspan="4" class="center muted">الطلب مسجل بالإجمالي فقط</td></tr>`;return `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>فاتورة #${escapeHtml(order?.orderId||key)}</title><style>@page{size:80mm auto;margin:0}*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:#111;font-family:Arial,"Tahoma",sans-serif}.receipt{width:72mm;margin:0 auto;padding:4mm 3.5mm;font-size:10px}.center{text-align:center}.brand{font-size:18px;font-weight:900;margin-bottom:2px}.tag{font-size:9px;color:#555}.title{font-size:14px;font-weight:900;margin:8px 0 4px}.meta{font-size:9px;line-height:1.7}.rule{border-top:1px dashed #222;margin:7px 0}.customer{background:#f7f7f7;padding:7px;border-radius:5px;line-height:1.7}.items{width:100%;border-collapse:collapse;margin-top:7px}.items th{font-size:8px;border-bottom:1px solid #111;padding:4px 2px}.items td{padding:5px 2px;border-bottom:1px dotted #bbb;font-size:8.5px;vertical-align:top}.items .name{max-width:30mm;word-break:break-word}.totals{margin-top:7px;border-top:1px solid #111;padding-top:5px}.totals div{display:flex;justify-content:space-between;padding:2px 0}.grand{font-size:13px;font-weight:900;margin-top:4px;border-top:1px dashed #111;padding-top:5px}.footer{margin-top:10px;text-align:center;font-size:8px;color:#555;line-height:1.7}.muted{color:#777}
+/* ===== CASHIER MODE / نقطة بيع مبسطة ===== */
+.cashier-only{display:none !important}
+.cashier-only-block{display:none !important}
+body.cashier-mode .cashier-only{display:flex !important}
+body.cashier-mode .cashier-only-block{display:block !important}
+body.cashier-mode .cashier-hide{display:none !important}
+body.cashier-mode .theme-selector,
+body.cashier-mode .admin-only-settings,
+body.cashier-mode .activity-only,
+body.cashier-mode .perm-users,
+body.cashier-mode .perm-analytics,
+body.cashier-mode .perm-prices,
+body.cashier-mode #tab-dashboard,
+body.cashier-mode #tab-driver,
+body.cashier-mode #tab-track{display:none !important}
+body.cashier-mode main{padding-top:18px}
+.cashier-home-page{max-width:1100px;margin:0 auto}
+.cashier-home-hero{position:relative;overflow:hidden;border-radius:30px;padding:28px;color:#fff;background:linear-gradient(135deg,var(--sidebar-color,#111827),var(--primary-color,#7f1d1d) 58%,var(--accent-color,#b87333));box-shadow:0 20px 55px var(--shadow-color,rgba(15,23,42,.12))}
+.cashier-home-hero:after{content:'';position:absolute;width:210px;height:210px;border-radius:50%;left:-70px;bottom:-120px;background:rgba(255,255,255,.07)}
+.cashier-kicker{font-size:8px;font-weight:1000;letter-spacing:.18em;opacity:.7}
+.cashier-home-hero h2{font-size:28px;font-weight:1000;margin-top:5px}
+.cashier-home-hero p{font-size:10px;font-weight:700;color:rgba(255,255,255,.76);margin-top:6px;max-width:640px;line-height:1.9}
+.cashier-home-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-top:16px}
+.cashier-action-card{display:block;width:100%;text-align:right;padding:22px;border-radius:25px;border:1px solid var(--border-color,#e5e7eb);background:var(--surface-color,#fff);box-shadow:0 14px 34px var(--shadow-color,rgba(15,23,42,.08));transition:transform .18s ease,box-shadow .18s ease}
+.cashier-action-card:hover{transform:translateY(-2px);box-shadow:0 20px 42px var(--shadow-color,rgba(15,23,42,.12))}
+.cashier-action-icon{width:60px;height:60px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:28px;background:var(--surface-soft,#f8fafc);border:1px solid var(--border-color,#e5e7eb);margin-bottom:14px}
+.cashier-action-card h3{font-size:18px;font-weight:1000;color:var(--text-color,#172033)}
+.cashier-action-card p{font-size:9px;font-weight:700;color:var(--muted-color,#64748b);margin-top:5px;line-height:1.8}
+.cashier-action-card .go{display:flex;align-items:center;justify-content:space-between;margin-top:15px;font-size:10px;font-weight:1000;color:var(--primary-color,#7f1d1d)}
+.cashier-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:15px}
+.cashier-metric{background:var(--surface-color,#fff);border:1px solid var(--border-color,#e5e7eb);border-radius:20px;padding:14px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 25px var(--shadow-color,rgba(15,23,42,.06))}
+.cashier-metric .icon{font-size:21px}.cashier-metric b{display:block;font-size:20px;font-weight:1000;color:var(--text-color,#172033)}.cashier-metric span{display:block;font-size:8px;font-weight:800;color:var(--muted-color,#64748b);margin-top:2px}
+.cashier-home-panels{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:15px}
+.cashier-home-panel{background:var(--surface-color,#fff);border:1px solid var(--border-color,#e5e7eb);border-radius:24px;padding:16px;box-shadow:0 12px 30px var(--shadow-color,rgba(15,23,42,.06))}
+.cashier-home-panel h3{font-size:11px;font-weight:1000;color:var(--text-color,#172033)}
+.cashier-mini-list{margin-top:10px;display:grid;gap:7px;max-height:270px;overflow:auto}
+.cashier-mini-item{padding:10px 11px;border-radius:13px;background:var(--surface-soft,#f8fafc);border:1px solid var(--border-color,#e5e7eb);display:flex;justify-content:space-between;gap:8px;font-size:8px;font-weight:800;color:var(--text-color,#172033)}
+.users-role-cashier{background:#dcfce7;color:#166534}
+.profile-badge.cashier{background:#dcfce7;color:#166534}
+@media(max-width:900px){.cashier-home-grid,.cashier-home-panels{grid-template-columns:1fr}.cashier-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+  </style></head><body><div class="receipt"><div class="center"><div class="brand">🥩 ${escapeHtml(settings.storeName||'جزارة حمكشة')}</div><div class="tag">${escapeHtml(settings.storeTagline||'نظام إدارة الطلبات والتوصيل')}</div><div class="title">فاتورة بيع</div><div class="meta">رقم الطلب: <b>#${escapeHtml(order?.orderId||key)}</b><br>التاريخ: ${escapeHtml(formatDateDMY(order?.date||''))} ${escapeHtml(order?.time||'')}</div></div><div class="rule"></div><div class="customer"><b>العميل:</b> ${escapeHtml(order?.customerName||order?.name||'غير محدد')}<br><b>الهاتف:</b> ${escapeHtml(order?.phone||'—')}<br><b>العنوان:</b> ${escapeHtml(order?.address||'—')}</div><table class="items"><thead><tr><th>الصنف</th><th>كمية</th><th>سعر</th><th>إجمالي</th></tr></thead><tbody>${itemRows}</tbody></table><div class="totals"><div><span>إجمالي الأصناف</span><b>${orderPrice.toLocaleString('ar-EG')} ${currency}</b></div><div><span>التوصيل</span><b>${delivery.toLocaleString('ar-EG')} ${currency}</b></div><div><span>عمولة الدفع</span><b>${fee.toLocaleString('ar-EG')} ${currency}</b></div><div><span>الدفع</span><b>${escapeHtml(getPaymentText(order?.paymentMethod||'cash').replace(/^[^\p{L}\p{N}]+/u,''))}</b></div><div><span>المدفوع</span><b>${Number(order?.paidAmount??(order?.paymentMethod==='cash'?total:total)).toLocaleString('ar-EG')} ${currency}</b></div><div><span>المتبقي</span><b>${Number(order?.remainingDue??Math.max(0,total-Number(order?.paidAmount||0))).toLocaleString('ar-EG')} ${currency}</b></div><div><span>الباقي للعميل</span><b>${Number(order?.changeDue??Math.max(0,Number(order?.paidAmount||0)-total)).toLocaleString('ar-EG')} ${currency}</b></div><div class="grand"><span>الإجمالي النهائي</span><b>${total.toLocaleString('ar-EG')} ${currency}</b></div></div><div class="rule"></div><div class="footer">${settings.storePhone?`واتساب: ${escapeHtml(settings.storePhone)}<br>`:''}${settings.storeLocation?`الموقع: ${escapeHtml(settings.storeLocation)}<br>`:''}شكرًا لثقتكم في جزارة حمكشة 🥩<br>نتمنى لكم وجبة طيبة</div></div><script>window.onload=function(){setTimeout(function(){window.print()},120)};<\/script></body></html>`;}
     function printThermalInvoice(key,orderOverride=null){if(APP_MODE!=='staff'&&!orderOverride)return;const order=orderOverride||allOrdersCache[key];if(!order)return alert('تعذر العثور على بيانات الفاتورة.');const win=window.open('','_blank','width=420,height=760');if(!win)return alert('اسمح بفتح النوافذ المنبثقة لطباعة الفاتورة.');win.document.open();win.document.write(buildThermalReceipt(order,key));win.document.close();}
     function printLastCreatedInvoice(){if(!lastCreatedOrderSnapshot)return alert('لا توجد فاتورة جديدة جاهزة للطباعة.');printThermalInvoice(lastCreatedOrderKey,lastCreatedOrderSnapshot);}
 
@@ -4803,11 +4932,11 @@
     document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOrderDetails();});
 
     function openEditModal(key){
-      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!allOrdersCache[key])return;if(!canUser('edit'))return alert('عذراً، ليس لديك صلاحية التعديل.');const order=allOrdersCache[key];document.getElementById('editKey').value=key;document.getElementById('editModalOrderId').innerText=`#${order.orderId||key}`;document.getElementById('editCustName').value=order.customerName||order.name||'';document.getElementById('editCustPhone').value=order.phone||'';document.getElementById('editCustAddress').value=order.address||'';document.getElementById('editOrderPrice').value=order.orderPrice||0;document.getElementById('editDeliveryPrice').value=order.deliveryPrice||getAppSettings().defaultDelivery;document.getElementById('editDriverSelect').value=order.driver||'غير محدد';const editPaymentState=getOrderPaymentState(order);const editPaidCheckbox=document.getElementById('editPaidCheckbox');if(editPaidCheckbox){editPaidCheckbox.checked=editPaymentState.isPaid;editPaidCheckbox.onchange=updateEditPaidUI;updateEditPaidUI();}hydrateInvoiceItems('edit',order.items||[]);document.getElementById('editInvoiceItemProduct').value='';document.getElementById('editInvoiceItemQty').value='1';document.getElementById('editInvoiceItemUnitPrice').value='0';document.getElementById('editInvoiceCustomNameWrap').classList.remove('show');document.getElementById('editOrderModal').classList.remove('hidden');
+      if(APP_MODE!=='staff'||!currentUser||!allOrdersCache[key]||(currentUser.role!=='admin'&&currentUser.role!=='cashier'))return;if(!canUser('edit'))return alert('عذراً، ليس لديك صلاحية التعديل.');const order=allOrdersCache[key];document.getElementById('editKey').value=key;document.getElementById('editModalOrderId').innerText=`#${order.orderId||key}`;document.getElementById('editCustName').value=order.customerName||order.name||'';document.getElementById('editCustPhone').value=order.phone||'';document.getElementById('editCustAddress').value=order.address||'';document.getElementById('editOrderPrice').value=order.orderPrice||0;document.getElementById('editDeliveryPrice').value=order.deliveryPrice||getAppSettings().defaultDelivery;document.getElementById('editDriverSelect').value=order.driver||'غير محدد';const editPaymentState=getOrderPaymentState(order);const editPaidCheckbox=document.getElementById('editPaidCheckbox');if(editPaidCheckbox){editPaidCheckbox.checked=editPaymentState.isPaid;editPaidCheckbox.onchange=updateEditPaidUI;updateEditPaidUI();}hydrateInvoiceItems('edit',order.items||[]);document.getElementById('editInvoiceItemProduct').value='';document.getElementById('editInvoiceItemQty').value='1';document.getElementById('editInvoiceItemUnitPrice').value='0';document.getElementById('editInvoiceCustomNameWrap').classList.remove('show');document.getElementById('editOrderModal').classList.remove('hidden');
     }
     function closeEditModal(){document.getElementById('editOrderModal').classList.add('hidden');}
     async function saveEditOrder(){
-      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin')return;if(!canUser('edit'))return alert('عذراً، ليس لديك صلاحية حفظ التعديلات.');const key=document.getElementById('editKey').value;if(!key||!allOrdersCache[key])return alert('لا تملك الوصول إلى هذا الطلب.');const current=allOrdersCache[key]||{};const name=document.getElementById('editCustName').value.trim(),phone=document.getElementById('editCustPhone').value.trim(),address=document.getElementById('editCustAddress').value.trim(),deliveryPrice=Number(document.getElementById('editDeliveryPrice').value)||0,driver=document.getElementById('editDriverSelect').value;let customerId=current.customerId||null;try{customerId=await upsertCustomerRecord(name,phone,address,customerId,false);}catch(e){}const update={customerName:name,phone,address,deliveryPrice,driver,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name)};let orderPrice,totalCash;if(editInvoiceItemsTouched){const items=editInvoiceItems.map(item=>({...item,total:(Number(item.qty)||0)*(Number(item.unitPrice)||0)}));orderPrice=invoiceItemsTotal(items);update.items=items;}else{orderPrice=Number(current.orderPrice||0);}totalCash=orderPrice+deliveryPrice+Number(current.paymentFee||0);update.orderPrice=orderPrice;update.totalCash=totalCash;const paidCheckbox=document.getElementById('editPaidCheckbox');const isPaid=!!paidCheckbox?.checked;update.isPaid=isPaid;update.paidAmount=isPaid?totalCash:0;update.remainingDue=isPaid?0:totalCash;update.changeDue=0;db.ref('orders/'+key).update(update).then(()=>{logActivity('update','order',`تعديل بيانات الطلب #${allOrdersCache[key]?.orderId||key}`,key,{total:totalCash,driver});alert('تم حفظ بيانات الطلب والفاتورة وحالة الدفع بنجاح ✅');closeEditModal();editInvoiceItemsTouched=false;});
+      if(APP_MODE!=='staff'||!currentUser||(currentUser.role!=='admin'&&currentUser.role!=='cashier'))return;if(!canUser('edit'))return alert('عذراً، ليس لديك صلاحية حفظ التعديلات.');const key=document.getElementById('editKey').value;if(!key||!allOrdersCache[key])return alert('لا تملك الوصول إلى هذا الطلب.');const current=allOrdersCache[key]||{};const name=document.getElementById('editCustName').value.trim(),phone=document.getElementById('editCustPhone').value.trim(),address=document.getElementById('editCustAddress').value.trim(),deliveryPrice=Number(document.getElementById('editDeliveryPrice').value)||0,driver=document.getElementById('editDriverSelect').value;let customerId=current.customerId||null;try{customerId=await upsertCustomerRecord(name,phone,address,customerId,false);}catch(e){}const update={customerName:name,phone,address,deliveryPrice,driver,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name)};let orderPrice,totalCash;if(editInvoiceItemsTouched){const items=editInvoiceItems.map(item=>({...item,total:(Number(item.qty)||0)*(Number(item.unitPrice)||0)}));orderPrice=invoiceItemsTotal(items);update.items=items;}else{orderPrice=Number(current.orderPrice||0);}totalCash=orderPrice+deliveryPrice+Number(current.paymentFee||0);update.orderPrice=orderPrice;update.totalCash=totalCash;const paidCheckbox=document.getElementById('editPaidCheckbox');const isPaid=!!paidCheckbox?.checked;update.isPaid=isPaid;update.paidAmount=isPaid?totalCash:0;update.remainingDue=isPaid?0:totalCash;update.changeDue=0;db.ref('orders/'+key).update(update).then(()=>{logActivity('update','order',`تعديل بيانات الطلب #${allOrdersCache[key]?.orderId||key}`,key,{total:totalCash,driver});alert('تم حفظ بيانات الطلب والفاتورة وحالة الدفع بنجاح ✅');closeEditModal();editInvoiceItemsTouched=false;});
     }
 
     function deleteOrder(id) {
