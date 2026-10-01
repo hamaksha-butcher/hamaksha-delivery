@@ -1419,6 +1419,98 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       #storeBookingEditModal .store-booking-edit-dialog{overflow:auto!important;}
     }
 
+    /* ===== STEP 52.2: MAIN USER STORE BOOKING LAYOUT FIX =====
+       The main owner/admin screen keeps the booking desk below the POS, while
+       the POS itself uses one fixed viewport workspace: left controls + cart,
+       right hierarchical catalog. No functional/DB behavior is changed. */
+    @media (min-width: 951px){
+      #sec-store-booking > .store-booking-hero{margin-bottom:0!important;}
+      #sec-store-booking > .store-booking-page{display:block!important;margin-top:12px!important;}
+      #sec-store-booking > .store-booking-page > .store-booking-panel:first-child{width:100%!important;max-width:none!important;}
+      #sec-store-booking #storeBookingForm{
+        display:grid!important;
+        grid-template-columns:minmax(340px,380px) minmax(0,1fr)!important;
+        grid-template-rows:auto minmax(0,1fr)!important;
+        gap:12px!important;
+        height:calc(100dvh - 305px)!important;
+        min-height:520px!important;
+        max-height:calc(100dvh - 305px)!important;
+        overflow:hidden!important;
+        align-items:stretch!important;
+      }
+      #sec-store-booking #storeBookingDraftBar{grid-column:1/-1!important;grid-row:1!important;min-height:48px!important;}
+      #sec-store-booking .store-pos-left-workspace{
+        grid-column:1!important;
+        grid-row:2!important;
+        min-width:0!important;
+        min-height:0!important;
+        overflow:hidden!important;
+        display:flex!important;
+        flex-direction:column!important;
+        gap:8px!important;
+      }
+      #sec-store-booking .store-pos-customer{
+        min-height:148px!important;
+        max-height:148px!important;
+        overflow:auto!important;
+        display:grid!important;
+        grid-template-columns:1fr 1fr!important;
+        gap:8px!important;
+        align-content:start!important;
+        padding:10px!important;
+        border:1px solid var(--border-color,#e5e7eb)!important;
+        border-radius:16px!important;
+        background:var(--surface-color,#fff)!important;
+      }
+      #sec-store-booking .store-pos-customer .store-booking-field:nth-child(1),
+      #sec-store-booking .store-pos-customer .store-booking-field:nth-child(2),
+      #sec-store-booking .store-pos-customer .store-booking-field:last-child{grid-column:1/-1!important;}
+      #sec-store-booking .store-pos-customer .store-booking-field:nth-child(3),
+      #sec-store-booking .store-pos-customer .store-booking-field:nth-child(4){grid-column:auto!important;}
+      #sec-store-booking .store-pos-catalog{
+        grid-column:2!important;
+        grid-row:2!important;
+        min-width:0!important;
+        min-height:0!important;
+        height:100%!important;
+        margin:0!important;
+        overflow:hidden!important;
+        display:flex!important;
+        flex-direction:column!important;
+      }
+      #sec-store-booking #storeBookingCatalogContent{
+        min-height:0!important;
+        flex:1 1 auto!important;
+        overflow:auto!important;
+        overscroll-behavior:contain!important;
+      }
+      #sec-store-booking .store-pos-cart-head{min-height:38px!important;max-height:38px!important;margin:0!important;flex:0 0 38px!important;}
+      #sec-store-booking .store-pos-cart-table{
+        min-height:0!important;
+        height:auto!important;
+        max-height:none!important;
+        flex:1 1 auto!important;
+        overflow:auto!important;
+      }
+      #sec-store-booking .store-pos-cart-total{min-height:42px!important;max-height:42px!important;flex:0 0 42px!important;margin:0!important;}
+      #sec-store-booking .store-pos-payment{
+        min-height:130px!important;
+        max-height:130px!important;
+        overflow:auto!important;
+        flex:0 0 130px!important;
+        margin:0!important;
+      }
+      #sec-store-booking .store-pos-meta{min-height:52px!important;max-height:52px!important;flex:0 0 52px!important;margin:0!important;}
+      #sec-store-booking .store-pos-submit{min-height:44px!important;max-height:44px!important;flex:0 0 44px!important;margin:0!important;}
+      /* Hide the separate booking desk only during the active POS viewport; it remains
+         immediately below the form and available by normal page scroll. */
+      #sec-store-booking > .store-booking-page > .store-booking-panel:last-child{margin-top:14px!important;}
+    }
+
+    @media (max-width: 950px){
+      #sec-store-booking .store-pos-left-workspace{display:contents!important;}
+    }
+
 </style>
 
 </head>
@@ -2006,6 +2098,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
   <span id="storeBookingDraftClock" class="pos-draft-status"></span>
 </div>
 
+            <div class="store-pos-left-workspace">
             <div class="store-booking-form-grid store-pos-customer">
               <div class="store-booking-field"><label class="store-booking-label">اسم العميل</label><input id="storeBookingCustomerName" class="store-booking-input" required placeholder="اسم العميل"></div>
               <div class="store-booking-field"><label class="store-booking-label">رقم الهاتف</label><input id="storeBookingCustomerPhone" class="store-booking-input" dir="ltr" required placeholder="01xxxxxxxxx" oninput="lookupStoreBookingCustomer(this.value)"><input type="hidden" id="storeBookingCustomerKey" value=""><div class="store-booking-customer-tools"><span id="storeBookingCustomerStatus" class="store-booking-customer-status">عميل جديد — سيتم حفظه تلقائيًا</span><button type="button" class="store-action-btn" onclick="openCustomerPickerModal('store')">👥 قاعدة العملاء</button></div><div id="storeBookingCustomerHistory" class="store-booking-mini-history"><div class="store-booking-mini-history-head">📜 آخر عمليات العميل</div><div id="storeBookingCustomerHistoryList" class="store-booking-mini-history-list"><div class="text-[7px] text-slate-400">اكتب رقم العميل لعرض تاريخه.</div></div></div></div>
@@ -2014,14 +2107,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
               <div class="store-booking-field" style="grid-column:1/-1"><label class="store-booking-label">ملاحظات الحجز</label><textarea id="storeBookingNotes" class="store-booking-textarea" placeholder="مثال: تقطيع وسط — الاستلام بعد 6 مساءً"></textarea></div>
             </div>
 
-            <div class="store-booking-catalog store-pos-catalog">
-              <div class="store-booking-catalog-toolbar">
-                <div><span class="pos-kicker">PRODUCT CATALOG</span><div class="store-booking-catalog-title">🥩 اختر الأصناف من الرئيسية ثم الفرعية</div></div>
-                <input id="storeBookingSearch" class="store-booking-input store-booking-search" placeholder="🔎 بحث عن صنف" oninput="filterStoreBookingCatalog(this.value)">
-              </div>
-              <div id="storeBookingMainGrid" class="store-main-grid"></div>
-              <div id="storeBookingCatalogContent"></div>
-            </div>
+
 
             <div class="store-selected-row store-pos-selected">
               <div class="store-selected-name"><small>الصنف المختار</small><b id="storeBookingSelectedLabel">لم يتم اختيار صنف</b></div>
@@ -2064,6 +2150,15 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
             </div>
 
             <button type="submit" class="store-submit-btn store-pos-submit">🏪 حفظ الحجز وإنشاء الفاتورة</button>
+            </div>
+            <div class="store-booking-catalog store-pos-catalog">
+              <div class="store-booking-catalog-toolbar">
+                <div><span class="pos-kicker">PRODUCT CATALOG</span><div class="store-booking-catalog-title">🥩 اختر الأصناف من الرئيسية ثم الفرعية</div></div>
+                <input id="storeBookingSearch" class="store-booking-input store-booking-search" placeholder="🔎 بحث عن صنف" oninput="filterStoreBookingCatalog(this.value)">
+              </div>
+              <div id="storeBookingMainGrid" class="store-main-grid"></div>
+              <div id="storeBookingCatalogContent"></div>
+            </div>
           </form>
           <div id="storeBookingResult" class="store-booking-result hidden"></div>
         </div>
@@ -6048,6 +6143,8 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
 
   
+
+
 </style></head><body><div class="receipt"><div class="center"><div class="brand">🥩 ${escapeHtml(settings.storeName||'جزارة حمكشة')}</div><div class="tag">${escapeHtml(settings.storeTagline||'نظام إدارة الطلبات والتوصيل')}</div><div class="title">فاتورة بيع</div><div class="meta">رقم الطلب: <b>#${escapeHtml(order?.orderId||key)}</b><br>التاريخ: ${escapeHtml(formatDateDMY(order?.date||''))} ${escapeHtml(order?.time||'')}</div></div><div class="rule"></div><div class="customer"><b>العميل:</b> ${escapeHtml(order?.customerName||order?.name||'غير محدد')}<br><b>الهاتف:</b> ${escapeHtml(order?.phone||'—')}<br><b>العنوان:</b> ${escapeHtml(order?.address||'—')}</div><table class="items"><thead><tr><th>الصنف</th><th>كمية</th><th>سعر</th><th>إجمالي</th></tr></thead><tbody>${itemRows}</tbody></table><div class="totals"><div><span>إجمالي الأصناف</span><b>${orderPrice.toLocaleString('ar-EG')} ${currency}</b></div><div><span>التوصيل</span><b>${delivery.toLocaleString('ar-EG')} ${currency}</b></div><div><span>عمولة الدفع</span><b>${fee.toLocaleString('ar-EG')} ${currency}</b></div><div><span>الدفع</span><b>${escapeHtml(getPaymentText(order?.paymentMethod||'cash').replace(/^[^\p{L}\p{N}]+/u,''))}</b></div><div><span>المدفوع</span><b>${Number(order?.paidAmount??(order?.paymentMethod==='cash'?total:total)).toLocaleString('ar-EG')} ${currency}</b></div><div><span>المتبقي</span><b>${Number(order?.remainingDue??Math.max(0,total-Number(order?.paidAmount||0))).toLocaleString('ar-EG')} ${currency}</b></div><div><span>الباقي للعميل</span><b>${Number(order?.changeDue??Math.max(0,Number(order?.paidAmount||0)-total)).toLocaleString('ar-EG')} ${currency}</b></div><div class="grand"><span>الإجمالي النهائي</span><b>${total.toLocaleString('ar-EG')} ${currency}</b></div></div><div class="rule"></div><div class="footer">${settings.storePhone?`واتساب: ${escapeHtml(settings.storePhone)}<br>`:''}${settings.storeLocation?`الموقع: ${escapeHtml(settings.storeLocation)}<br>`:''}شكرًا لثقتكم في جزارة حمكشة 🥩<br>نتمنى لكم وجبة طيبة</div></div><script>window.onload=function(){setTimeout(function(){window.print()},120)};<\/script></body></html>`;}
     function printThermalInvoice(key,orderOverride=null){if(APP_MODE!=='staff'&&!orderOverride)return;const order=orderOverride||allOrdersCache[key];if(!order)return alert('تعذر العثور على بيانات الفاتورة.');const win=window.open('','_blank','width=420,height=760');if(!win)return alert('اسمح بفتح النوافذ المنبثقة لطباعة الفاتورة.');win.document.open();win.document.write(buildThermalReceipt(order,key));win.document.close();}
     function printLastCreatedInvoice(){if(!lastCreatedOrderSnapshot)return alert('لا توجد فاتورة جديدة جاهزة للطباعة.');printThermalInvoice(lastCreatedOrderKey,lastCreatedOrderSnapshot);}
