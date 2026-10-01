@@ -1247,6 +1247,11 @@ body.cashier-mode #sec-cashier-home{display:block!important;visibility:visible!i
 body.cashier-mode #tab-cashier-home,
 body.cashier-mode #tab-admin{display:flex!important;visibility:visible!important;pointer-events:auto!important;}
 
+
+/* STEP 47: cashier sidebar follows the same navigation visibility model as the main account.
+   The cashier home section must be allowed to hide when another sidebar page is selected. */
+body.cashier-mode #sec-cashier-home.hidden{display:none!important;}
+body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 </style>
 
 </head>
