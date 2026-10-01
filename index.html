@@ -1221,8 +1221,10 @@ main.app-main{position:relative!important;z-index:1!important;margin-right:var(-
 .sidebar-overlay{display:none!important;pointer-events:none!important;}
 .notification-panel{z-index:100500!important;}
 
-/* كاشير = نقطة بيع مباشرة ومختصرة */
-body.cashier-mode #sec-cashier-home{display:none!important;}
+/* STEP 43: restore cashier navigation targets without touching other modules */
+body.cashier-mode #sec-cashier-home{display:block!important;}
+body.cashier-mode #tab-cashier-home{display:flex!important;}
+body.cashier-mode #tab-admin{display:flex!important;}
 body.cashier-mode #sec-admin .orders-shell{display:none!important;}
 body.cashier-mode #sec-admin .customer-history-card{display:none!important;}
 body.cashier-mode #sec-admin .order-form-card{padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;}
@@ -1239,6 +1241,11 @@ body.cashier-mode #tab-cashier-home{display:flex!important;}
   .app-sidebar{width:min(86vw,300px)!important;}
   main.app-main{margin-right:0!important;}
 }
+
+/* Final cashier-only visibility: keep scope limited to the cashier navigation area. */
+body.cashier-mode #sec-cashier-home{display:block!important;visibility:visible!important;}
+body.cashier-mode #tab-cashier-home,
+body.cashier-mode #tab-admin{display:flex!important;visibility:visible!important;pointer-events:auto!important;}
 
 </style>
 </head>
