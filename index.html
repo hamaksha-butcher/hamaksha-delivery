@@ -1275,6 +1275,86 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     /* 📝 مسودات فواتير الكاشير */
     .pos-draft-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:linear-gradient(135deg,#f8fafc,#eef6f8);border:1px solid #cbd5e1;border-radius:14px;padding:9px 11px;margin-bottom:12px;box-shadow:0 3px 12px rgba(15,23,42,.04)}
     .pos-draft-info{display:flex;align-items:center;gap:8px;min-width:0}.pos-draft-icon{width:30px;height:30px;border-radius:10px;background:#0f4c5c;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;flex:0 0 auto}.pos-draft-copy{min-width:0}.pos-draft-copy b{display:block;font-size:10px;color:#0f172a}.pos-draft-copy span{display:block;font-size:9px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pos-draft-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.pos-draft-btn{border:1px solid #cbd5e1;background:#fff;color:#0f4c5c;border-radius:9px;padding:6px 9px;font-size:9px;font-weight:800;cursor:pointer;transition:.15s}.pos-draft-btn:hover{transform:translateY(-1px);box-shadow:0 3px 8px rgba(15,23,42,.08)}.pos-draft-btn.primary{background:#0f4c5c;color:#fff;border-color:#0f4c5c}.pos-draft-btn.danger{color:#b91c1c}.pos-draft-status{font-size:8px;font-weight:800;color:#64748b;margin-right:auto}.pos-draft-bar.has-draft{border-color:#93c5fd;background:linear-gradient(135deg,#eff6ff,#f8fafc)}
+
+    /* ===== POS FULL-WORKSPACE + STRICT HIERARCHICAL CATALOG ===== */
+    .pos-order-form{direction:ltr!important;grid-template-columns:minmax(300px,340px) minmax(0,1fr)!important;min-height:calc(100dvh - 190px)!important;align-items:stretch!important;gap:12px!important;padding:0!important;}
+    .pos-order-form>.pos-panel{direction:rtl!important;}
+    .pos-order-form #deliveryDraftBar{grid-column:1/-1!important;grid-row:1!important;}
+    .pos-order-form .pos-customer-panel{grid-column:1!important;grid-row:2!important;}
+    .pos-order-form .pos-catalog-panel{grid-column:2!important;grid-row:2 / span 5!important;min-height:calc(100dvh - 235px)!important;height:100%!important;display:flex!important;flex-direction:column!important;}
+    .pos-order-form .pos-cart-panel{grid-column:1!important;grid-row:3!important;min-height:220px!important;}
+    .pos-order-form .pos-payment-panel{grid-column:1!important;grid-row:4!important;}
+    .pos-order-form .pos-driver-panel{grid-column:1!important;grid-row:5!important;}
+    .pos-order-form .pos-submit-btn{grid-column:1!important;grid-row:6!important;}
+    #sec-admin .order-form-card{width:100%!important;max-width:none!important;margin:0!important;border-radius:20px!important;}
+    #sec-admin .order-form-hero{padding:10px 12px!important;margin-bottom:8px!important;}
+    #sec-admin .order-form-hero .grid{display:none!important;}
+    #sec-admin .quick-items-panel{display:none!important;}
+    #sec-admin #invoiceCategoryGrid{flex:1 1 auto;align-content:start;overflow:auto;grid-template-columns:repeat(4,minmax(0,1fr));}
+    #sec-admin #invoiceProductGrid{flex:1 1 auto;overflow:auto;}
+    #sec-admin #invoiceProductGrid .pos-items-grid{grid-template-columns:repeat(4,minmax(0,1fr));}
+    #sec-admin .pos-catalog-panel .pos-add-bar{margin-top:auto;}
+    #invoiceNewAddBar{display:none;}
+
+    /* Store booking registration mirrors delivery POS: customer/cart/payment left, catalog right. */
+    .store-booking-page{grid-template-columns:1fr!important;}
+    .store-booking-page>.store-booking-panel:first-child{grid-column:1!important;width:100%!important;}
+    #storeBookingForm{direction:ltr!important;display:grid!important;grid-template-columns:minmax(300px,340px) minmax(0,1fr)!important;gap:12px!important;align-items:start!important;}
+    #storeBookingForm>*{direction:rtl!important;}
+    #storeBookingDraftBar{grid-column:1/-1!important;}
+    #storeBookingForm .store-pos-customer{grid-column:1!important;grid-row:2 / span 2!important;display:grid!important;grid-template-columns:1fr!important;align-content:start!important;gap:10px!important;}
+    #storeBookingForm .store-pos-catalog{grid-column:2!important;grid-row:2 / span 5!important;margin-top:0!important;min-height:calc(100dvh - 230px)!important;display:flex!important;flex-direction:column!important;}
+    #storeBookingForm .store-pos-cart-head{grid-column:1!important;grid-row:4!important;}
+    #storeBookingForm .store-pos-cart-table{grid-column:1!important;grid-row:5!important;max-height:220px!important;margin-top:0!important;}
+    #storeBookingForm .store-pos-cart-total{grid-column:1!important;grid-row:6!important;}
+    #storeBookingForm .store-pos-payment{grid-column:1!important;grid-row:7!important;}
+    #storeBookingForm .store-pos-meta{grid-column:1!important;grid-row:8!important;margin-top:0!important;}
+    #storeBookingForm .store-pos-submit{grid-column:1!important;grid-row:9!important;width:100%!important;}
+    #storeBookingForm .store-pos-selected{grid-column:2!important;grid-row:7!important;display:none;}
+    #storeBookingForm #storeBookingCatalogContent{flex:1 1 auto;overflow:auto;}
+    #storeBookingForm .store-products-grid{grid-template-columns:repeat(4,minmax(0,1fr));}
+    #storeBookingForm .store-main-grid,#storeBookingForm .store-sub-grid{grid-template-columns:repeat(4,minmax(0,1fr));}
+
+    /* Edit delivery order: same left/right mental model as registration. */
+    #editOrderModal>.bg-white{width:min(1400px,calc(100vw - 24px))!important;max-width:none!important;max-height:calc(100dvh - 24px)!important;padding:14px!important;}
+    #editOrderModal>.bg-white>.space-y-3{display:grid!important;grid-template-columns:minmax(300px,340px) minmax(0,1fr)!important;gap:12px!important;align-items:start!important;direction:ltr!important;}
+    #editOrderModal>.bg-white>.space-y-3>*{direction:rtl!important;}
+    #editInvoiceItemsShell{grid-column:2!important;grid-row:1 / span 5!important;max-height:calc(100dvh - 110px)!important;overflow:auto!important;}
+    #editOrderModal>.bg-white>.space-y-3>.rounded-2xl.border.border-slate-200{grid-column:1!important;}
+    #editOrderModal>.bg-white>.space-y-3>.grid.grid-cols-2{grid-column:1!important;}
+    #editInvoiceProductGrid{max-height:none!important;}
+    #editInvoiceProductGrid .pos-items-grid{grid-template-columns:repeat(4,minmax(0,1fr));}
+
+    /* Edit store booking: data/payment left, hierarchical catalog right. */
+    #storeBookingEditModal{padding:12px!important;}
+    #storeBookingEditModal .store-booking-edit-dialog{width:min(1400px,calc(100vw - 24px))!important;max-width:none!important;max-height:calc(100dvh - 24px)!important;display:grid!important;grid-template-columns:minmax(300px,340px) minmax(0,1fr)!important;grid-template-rows:auto auto 1fr auto auto!important;gap:12px!important;direction:ltr!important;overflow:auto!important;}
+    #storeBookingEditModal .store-booking-edit-dialog>*{direction:rtl!important;}
+    #storeBookingEditModal .store-booking-edit-head,#storeBookingEditModal #storeBookingEditWarning,#storeBookingEditModal>.store-booking-edit-dialog>input[type="hidden"]{grid-column:1/-1!important;}
+    #storeBookingEditModal .store-booking-edit-grid{grid-column:1!important;grid-row:3!important;display:grid!important;grid-template-columns:1fr!important;align-content:start!important;}
+    #storeBookingEditModal .store-booking-edit-items-section{grid-column:2!important;grid-row:3 / span 2!important;min-width:0!important;}
+    #storeBookingEditModal .store-booking-edit-payment-section{grid-column:1!important;grid-row:4!important;}
+    #storeBookingEditModal .store-booking-edit-footer{grid-column:1/-1!important;}
+    #storeBookingEditModal .store-booking-edit-main-grid,#storeBookingEditModal .store-main-grid{grid-template-columns:repeat(4,minmax(0,1fr));}
+    #storeBookingEditModal .store-sub-grid,#storeBookingEditModal .store-products-grid{grid-template-columns:repeat(4,minmax(0,1fr));}
+
+    @media(max-width:950px){
+      .pos-order-form{grid-template-columns:1fr!important;min-height:0!important;}
+      .pos-order-form .pos-customer-panel,.pos-order-form .pos-cart-panel,.pos-order-form .pos-payment-panel,.pos-order-form .pos-driver-panel,.pos-order-form .pos-submit-btn,.pos-order-form .pos-catalog-panel{grid-column:1!important;grid-row:auto!important;min-height:0!important;height:auto!important;}
+      .pos-order-form .pos-catalog-panel{order:1!important;}.pos-order-form .pos-customer-panel{order:2!important;}.pos-order-form .pos-cart-panel{order:3!important;}.pos-order-form .pos-payment-panel{order:4!important;}.pos-order-form .pos-driver-panel{order:5!important;}.pos-order-form .pos-submit-btn{order:6!important;}
+      #sec-admin #invoiceProductGrid .pos-items-grid,#sec-admin #invoiceCategoryGrid{grid-template-columns:repeat(3,minmax(0,1fr));}
+      #storeBookingForm{grid-template-columns:1fr!important;}
+      #storeBookingForm>*{grid-column:1!important;grid-row:auto!important;}
+      #storeBookingForm .store-pos-catalog{min-height:0!important;}.store-booking-page>.store-booking-panel:last-child{grid-column:1!important;}
+      #storeBookingForm .store-pos-selected{display:none!important;}
+      #editOrderModal>.bg-white>.space-y-3{display:flex!important;flex-direction:column!important;}
+      #editInvoiceItemsShell{max-height:none!important;}
+      #storeBookingEditModal .store-booking-edit-dialog{display:flex!important;flex-direction:column!important;}
+      #storeBookingEditModal .store-booking-edit-grid,#storeBookingEditModal .store-booking-edit-items-section,#storeBookingEditModal .store-booking-edit-payment-section{width:100%!important;}
+    }
+    @media(max-width:640px){
+      #sec-admin #invoiceProductGrid .pos-items-grid,#sec-admin #invoiceCategoryGrid,#storeBookingForm .store-products-grid,#storeBookingForm .store-main-grid,#storeBookingForm .store-sub-grid,#storeBookingEditModal .store-sub-grid,#storeBookingEditModal .store-products-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    }
+
 </style>
 
 </head>
@@ -1643,7 +1723,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     <div class="pos-products-title"><span>الأصناف</span><span id="invoiceCatalogHint" class="text-[10px] text-slate-500">اختر قسمًا</span></div>
     <div id="invoiceProductGrid" class="pos-product-grid"></div>
 
-    <div class="pos-add-bar">
+    <div id="invoiceNewAddBar" class="pos-add-bar">
       <div class="pos-selected-product"><small>الصنف المختار</small><b id="selectedInvoiceProductLabel">لم يتم اختيار صنف</b></div>
       <div>
         <label class="order-label">الكمية</label>
@@ -1850,7 +1930,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
             <button type="button" class="store-action-btn" onclick="resetStoreBookingForm()">↺ فاتورة جديدة</button>
           </div>
 
-          <form id="storeBookingForm" onsubmit="submitStoreBooking(event)">
+          <form id="storeBookingForm" class="store-pos-form" onsubmit="submitStoreBooking(event)">
 
 <div id="storeBookingDraftBar" class="pos-draft-bar" data-draft-type="store">
   <div class="pos-draft-info"><div class="pos-draft-icon">📝</div><div class="pos-draft-copy"><b>مسودة الحجز</b><span id="storeBookingDraftStatus">الحفظ التلقائي غير نشط حتى تبدأ الحجز</span></div></div>
@@ -1862,7 +1942,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
   <span id="storeBookingDraftClock" class="pos-draft-status"></span>
 </div>
 
-            <div class="store-booking-form-grid">
+            <div class="store-booking-form-grid store-pos-customer">
               <div class="store-booking-field"><label class="store-booking-label">اسم العميل</label><input id="storeBookingCustomerName" class="store-booking-input" required placeholder="اسم العميل"></div>
               <div class="store-booking-field"><label class="store-booking-label">رقم الهاتف</label><input id="storeBookingCustomerPhone" class="store-booking-input" dir="ltr" required placeholder="01xxxxxxxxx" oninput="lookupStoreBookingCustomer(this.value)"><input type="hidden" id="storeBookingCustomerKey" value=""><div class="store-booking-customer-tools"><span id="storeBookingCustomerStatus" class="store-booking-customer-status">عميل جديد — سيتم حفظه تلقائيًا</span><button type="button" class="store-action-btn" onclick="openCustomerPickerModal('store')">👥 قاعدة العملاء</button></div><div id="storeBookingCustomerHistory" class="store-booking-mini-history"><div class="store-booking-mini-history-head">📜 آخر عمليات العميل</div><div id="storeBookingCustomerHistoryList" class="store-booking-mini-history-list"><div class="text-[7px] text-slate-400">اكتب رقم العميل لعرض تاريخه.</div></div></div></div>
               <div class="store-booking-field"><label class="store-booking-label">تاريخ الاستلام</label><input id="storeBookingPickupDate" type="date" class="store-booking-input" required dir="ltr"></div>
@@ -1870,7 +1950,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
               <div class="store-booking-field" style="grid-column:1/-1"><label class="store-booking-label">ملاحظات الحجز</label><textarea id="storeBookingNotes" class="store-booking-textarea" placeholder="مثال: تقطيع وسط — الاستلام بعد 6 مساءً"></textarea></div>
             </div>
 
-            <div class="store-booking-catalog">
+            <div class="store-booking-catalog store-pos-catalog">
               <div class="store-booking-catalog-toolbar">
                 <div><span class="pos-kicker">PRODUCT CATALOG</span><div class="store-booking-catalog-title">🥩 اختر الأصناف من الرئيسية ثم الفرعية</div></div>
                 <input id="storeBookingSearch" class="store-booking-input store-booking-search" placeholder="🔎 بحث عن صنف" oninput="filterStoreBookingCatalog(this.value)">
@@ -1879,7 +1959,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
               <div id="storeBookingCatalogContent"></div>
             </div>
 
-            <div class="store-selected-row">
+            <div class="store-selected-row store-pos-selected">
               <div class="store-selected-name"><small>الصنف المختار</small><b id="storeBookingSelectedLabel">لم يتم اختيار صنف</b></div>
               <div>
         <label class="store-booking-label">الكمية</label>
@@ -1899,11 +1979,11 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
               <button type="button" class="store-add-btn" onclick="addStoreBookingItem()">＋ إضافة للفاتورة</button>
             </div>
 
-            <div class="store-booking-panel-head" style="margin-top:12px;margin-bottom:0"><div><span class="pos-kicker">INVOICE</span><h3>🧾 أصناف الحجز</h3></div><span id="storeBookingCartCount" class="customer-history-summary">0 أصناف</span></div>
-            <div class="store-cart-table-wrap"><table class="store-cart-table"><thead><tr><th>الصنف</th><th>الوحدة</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th><th>حذف</th></tr></thead><tbody id="storeBookingItemsBody"><tr><td colspan="6" class="store-empty">السلة فارغة — اختر صنفًا من المنيو.</td></tr></tbody></table></div>
-            <div class="store-total-box"><span>إجمالي الأصناف</span><b id="storeBookingItemsTotal">0 ج.م</b></div>
+            <div class="store-booking-panel-head store-pos-cart-head" style="margin-top:12px;margin-bottom:0"><div><span class="pos-kicker">INVOICE</span><h3>🧾 أصناف الحجز</h3></div><span id="storeBookingCartCount" class="customer-history-summary">0 أصناف</span></div>
+            <div class="store-cart-table-wrap store-pos-cart-table"><table class="store-cart-table"><thead><tr><th>الصنف</th><th>الوحدة</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th><th>حذف</th></tr></thead><tbody id="storeBookingItemsBody"><tr><td colspan="6" class="store-empty">السلة فارغة — اختر صنفًا من المنيو.</td></tr></tbody></table></div>
+            <div class="store-total-box store-pos-cart-total"><span>إجمالي الأصناف</span><b id="storeBookingItemsTotal">0 ج.م</b></div>
 
-            <div class="store-payment-card">
+            <div class="store-payment-card store-pos-payment">
               <div class="store-booking-panel-head" style="margin-bottom:0;padding-bottom:8px"><div><span class="pos-kicker">SETTLEMENT</span><h3>💳 حالة الدفع</h3></div><span id="storeBookingPaymentBadge" class="store-booking-status">غير مدفوع</span></div>
               <div class="store-payment-status">
                 <button type="button" class="store-payment-option active" id="storePayUnpaid" onclick="setStoreBookingPayment('unpaid')">🔴 غير مدفوع</button>
@@ -1914,12 +1994,12 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
               <div class="grid grid-cols-2 gap-2 mt-2.5"><div class="payment-settlement-mini"><span>الإجمالي</span><b id="storeBookingGrandTotal">0 ج.م</b></div><div class="payment-settlement-mini"><span>المتبقي</span><b id="storeBookingRemaining">0 ج.م</b></div></div>
             </div>
 
-            <div class="store-booking-form-grid mt-3">
+            <div class="store-booking-form-grid store-pos-meta mt-3">
               <div class="store-booking-field"><label class="store-booking-label">حالة الحجز</label><select id="storeBookingStatus" class="store-booking-select"><option value="محجوز 🟡">محجوز 🟡</option><option value="جاهز للاستلام 📦">جاهز للاستلام 📦</option><option value="تم الاستلام ✅">تم الاستلام ✅</option><option value="ملغي ❌">ملغي ❌</option></select></div>
               <div class="store-booking-field"><label class="store-booking-label">رقم الحجز</label><input id="storeBookingNumberPreview" class="store-booking-input font-mono" readonly></div>
             </div>
 
-            <button type="submit" class="store-submit-btn">🏪 حفظ الحجز وإنشاء الفاتورة</button>
+            <button type="submit" class="store-submit-btn store-pos-submit">🏪 حفظ الحجز وإنشاء الفاتورة</button>
           </form>
           <div id="storeBookingResult" class="store-booking-result hidden"></div>
         </div>
@@ -2659,7 +2739,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
           <label class="block font-bold text-gray-700 mb-1">العنوان والطلبات التفصيلية:</label>
           <textarea id="editCustAddress" rows="3" class="w-full border p-2 rounded-xl"></textarea>
         </div>
-        <div class="invoice-items-shell mt-3">
+        <div id="editInvoiceItemsShell" class="invoice-items-shell mt-3">
           <div class="invoice-items-head"><div class="invoice-items-title"><span class="icon">🧾</span><div><h3>أصناف الفاتورة</h3><p>تعديل الأصناف والكمية وسعر الوحدة</p></div></div><span class="optional-badge">للطلبات القديمة اختياري</span></div>
           <div class="pos-hierarchy-editor">
             <div class="pos-hierarchy-editor-head">
@@ -2830,7 +2910,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         <div class="store-booking-edit-field store-booking-edit-span"><label>ملاحظات الحجز</label><textarea id="storeBookingEditNotes" placeholder="ملاحظات التقطيع أو الاستلام"></textarea></div>
       </div>
 
-      <div class="store-booking-edit-section">
+      <div class="store-booking-edit-section store-booking-edit-items-section">
         <div class="store-booking-edit-section-head"><b>🥩 أصناف الحجز</b><span id="storeBookingEditItemCount" class="customer-history-summary">0 أصناف</span></div>
         <div class="pos-hierarchy-editor pos-hierarchy-editor-store">
           <div class="pos-hierarchy-editor-head">
@@ -2859,7 +2939,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         <div class="store-booking-edit-total"><span>إجمالي الأصناف</span><b id="storeBookingEditItemsTotal">0 ج.م</b></div>
       </div>
 
-      <div class="store-booking-edit-section">
+      <div class="store-booking-edit-section store-booking-edit-payment-section">
         <div class="store-booking-edit-section-head"><b>💳 التحصيل</b><span class="text-[7px] font-bold text-slate-500">تعديل الأصناف لا يغيّر المدفوع تلقائيًا</span></div>
         <div class="store-booking-edit-payment">
           <div class="mini"><span>الإجمالي الجديد</span><b id="storeBookingEditGrandTotal">0 ج.م</b></div>
@@ -3858,30 +3938,37 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       const rows=getCatalogRowsForEditSearch();
       const mains=[...new Set(rows.map(r=>r.main))];
       if(!editOrderCatalogMain||!mains.includes(editOrderCatalogMain)){editOrderCatalogMain='';editOrderCatalogSub='';}
-      catEl.innerHTML=mains.map(main=>{
-        const mainRows=rows.filter(r=>r.main===main),subCount=new Set(mainRows.map(r=>r.sub||'')).size;
-        return `<button type="button" class="pos-category-card ${main===editOrderCatalogMain?'active':''}" onclick="selectEditOrderCategory(${htmlJsArg(main)})"><span class="pos-category-icon">🥩</span><b>${escapeHtml(main)}</b><small>${mainRows.length} صنف · ${subCount} قسم فرعي</small></button>`;
-      }).join('');
+      const addGrid=prodEl.closest('.pos-hierarchy-editor')?.parentElement?.querySelector('.invoice-add-grid');
+      const selectedKey=document.getElementById('editInvoiceItemProduct')?.value||'';
       if(!editOrderCatalogMain){
-        prodEl.innerHTML='<div class="pos-hierarchy-empty">👆 اختار قسمًا رئيسيًا لعرض الأقسام الفرعية والأصناف.</div>';
-        const hint=document.getElementById('editInvoiceCatalogHint');if(hint)hint.innerText=rows.length?`${rows.length} صنف في المنيو`:'المنيو فارغة';
+        catEl.style.display='grid';
+        catEl.innerHTML=mains.map(main=>{const rowsForMain=rows.filter(r=>r.main===main),subCount=new Set(rowsForMain.map(r=>r.sub||'')).size;return `<button type="button" class="pos-category-card" onclick="selectEditOrderCategory(${htmlJsArg(main)})"><span class="pos-category-icon">🥩</span><b>${escapeHtml(main)}</b><small>${subCount} قسم فرعي · ${rowsForMain.length} صنف</small></button>`;}).join('');
+        prodEl.innerHTML='';prodEl.style.display='none';
+        const hint=document.getElementById('editInvoiceCatalogHint');if(hint)hint.innerText=rows.length?`${mains.length} مجموعات رئيسية`:'المنيو فارغة';
+        if(addGrid&&!selectedKey)addGrid.style.display='none';
         return;
       }
-      const mainRows=rows.filter(r=>r.main===editOrderCatalogMain);
-      const subs=[...new Set(mainRows.map(r=>r.sub||''))];
-      if(!editOrderCatalogSub||!subs.includes(editOrderCatalogSub))editOrderCatalogSub=subs.length===1?subs[0]:'';
-      const subButtons=subs.map(sub=>{const count=mainRows.filter(r=>r.sub===sub).length,active=sub===editOrderCatalogSub;return `<button type="button" class="pos-subcategory-card ${active?'active':''}" onclick="selectEditOrderSubcategory(${htmlJsArg(sub)})"><span class="pos-subcategory-icon">▦</span><b>${escapeHtml(sub||'أصناف مباشرة')}</b><small>${count} صنف</small></button>`;}).join('');
-      const targetRows=editOrderCatalogSub?mainRows.filter(r=>r.sub===editOrderCatalogSub):(subs.length<=1?mainRows:[]);
-      const productHtml=targetRows.length?`<div class="pos-items-grid">${targetRows.map(r=>`<button type="button" class="pos-product-card" data-key="${escapeHtml(r.key)}" onclick="chooseEditOrderProduct(${htmlJsArg(r.key)})"><span class="pos-product-name">${escapeHtml(r.name)}</span><span class="pos-product-price">${escapeHtml(r.priceDisplay)} ج.م/${escapeHtml(r.unit)}</span></button>`).join('')}</div>`:'<div class="pos-hierarchy-empty">👆 اختار قسمًا فرعيًا لعرض الأصناف وإضافتها.</div>';
-      const crumb=`<div class="pos-breadcrumb"><div class="pos-breadcrumb-path"><span>القسم:</span><b>${escapeHtml(editOrderCatalogMain)}</b>${editOrderCatalogSub?`<span>←</span><b>${escapeHtml(editOrderCatalogSub)}</b>`:''}</div><div class="flex items-center gap-1.5">${editOrderCatalogSub?`<button type="button" class="pos-back-btn" onclick="selectEditOrderSubcategory('')">↩ الأقسام الفرعية</button>`:''}<button type="button" class="pos-back-btn" onclick="resetEditOrderCatalog()">↩ الأقسام الرئيسية</button></div></div>`;
-      prodEl.innerHTML=crumb+(subs.length>1?`<div class="pos-subcategory-grid">${subButtons}</div>`:'')+`<div class="mt-3">${productHtml}</div>`;
-      const hint=document.getElementById('editInvoiceCatalogHint');if(hint)hint.innerText=editOrderCatalogSub?`${targetRows.length} صنف داخل ${editOrderCatalogSub}`:`${mainRows.length} صنف داخل ${editOrderCatalogMain}`;
-      const selected=document.getElementById('editInvoiceItemProduct')?.value||'';
-      document.querySelectorAll('#editInvoiceProductGrid .pos-product-card').forEach(b=>b.classList.toggle('selected',b.dataset.key===selected));
+      catEl.style.display='none';prodEl.style.display='block';
+      const mainRows=rows.filter(r=>r.main===editOrderCatalogMain),subs=[...new Set(mainRows.map(r=>r.sub||''))];
+      if(!editOrderCatalogSub){
+        const breadcrumb=`<div class="pos-breadcrumb"><div class="pos-breadcrumb-path"><span>المجموعة الرئيسية:</span><b>${escapeHtml(editOrderCatalogMain)}</b></div><button type="button" class="pos-back-btn" onclick="resetEditOrderCatalog()">↩ الرئيسية</button></div>`;
+        const subButtons=subs.map(sub=>{const count=mainRows.filter(r=>r.sub===sub).length;return `<button type="button" class="pos-subcategory-card" onclick="selectEditOrderSubcategory(${htmlJsArg(sub)})"><span class="pos-subcategory-icon">▦</span><b>${escapeHtml(sub||'أصناف مباشرة')}</b><small>${count} صنف</small></button>`;}).join('');
+        prodEl.innerHTML=breadcrumb+(subs.length?`<div class="pos-subcategory-grid">${subButtons}</div>`:'<div class="pos-hierarchy-empty">لا توجد أقسام فرعية داخل هذه المجموعة.</div>');
+        const hint=document.getElementById('editInvoiceCatalogHint');if(hint)hint.innerText=`${subs.length} أقسام فرعية داخل ${editOrderCatalogMain}`;
+        if(addGrid&&!selectedKey)addGrid.style.display='none';
+        return;
+      }
+      const targetRows=mainRows.filter(r=>r.sub===editOrderCatalogSub);
+      const breadcrumb=`<div class="pos-breadcrumb"><div class="pos-breadcrumb-path"><span>${escapeHtml(editOrderCatalogMain)}</span><span>←</span><b>${escapeHtml(editOrderCatalogSub||'أصناف مباشرة')}</b></div><div class="flex items-center gap-1.5"><button type="button" class="pos-back-btn" onclick="selectEditOrderSubcategory('')">↩ الفروع</button><button type="button" class="pos-back-btn" onclick="resetEditOrderCatalog()">↩ الرئيسية</button></div></div>`;
+      const productHtml=targetRows.length?`<div class="pos-items-grid">${targetRows.map(r=>`<button type="button" class="pos-product-card" data-key="${escapeHtml(r.key)}" onclick="chooseEditInvoiceProduct(${htmlJsArg(r.key)})"><span class="pos-product-name">${escapeHtml(r.name)}</span><span class="pos-product-price">${escapeHtml(r.priceDisplay)} ج.م/${escapeHtml(r.unit)}</span></button>`).join('')}</div>`:'<div class="pos-hierarchy-empty">لا توجد أصناف داخل هذه الفئة الفرعية.</div>';
+      prodEl.innerHTML=breadcrumb+productHtml;
+      const hint=document.getElementById('editInvoiceCatalogHint');if(hint)hint.innerText=`${targetRows.length} أصناف داخل ${editOrderCatalogSub}`;
+      document.querySelectorAll('#editInvoiceProductGrid .pos-product-card').forEach(b=>b.classList.toggle('selected',b.dataset.key===selectedKey));
+      if(addGrid)addGrid.style.display=selectedKey?'grid':'none';
     }
-    function selectEditOrderCategory(main){editOrderCatalogMain=main;editOrderCatalogSub='';renderEditOrderCatalog();}
-    function selectEditOrderSubcategory(sub){editOrderCatalogSub=sub;renderEditOrderCatalog();}
-    function resetEditOrderCatalog(){editOrderCatalogMain='';editOrderCatalogSub='';renderEditOrderCatalog();}
+    function selectEditOrderCategory(main){editOrderCatalogMain=main;editOrderCatalogSub='';const sel=document.getElementById('editInvoiceItemProduct');if(sel)sel.value='';renderEditOrderCatalog();}
+    function selectEditOrderSubcategory(sub){editOrderCatalogSub=sub;const sel=document.getElementById('editInvoiceItemProduct');if(sel)sel.value='';renderEditOrderCatalog();}
+    function resetEditOrderCatalog(){editOrderCatalogMain='';editOrderCatalogSub='';const sel=document.getElementById('editInvoiceItemProduct');if(sel)sel.value='';renderEditOrderCatalog();}
     function filterEditOrderCatalog(value){editOrderCatalogSearch=value||'';editOrderCatalogMain='';editOrderCatalogSub='';renderEditOrderCatalog();}
     function chooseEditOrderProduct(key){
       const select=document.getElementById('editInvoiceItemProduct');if(!select)return;
@@ -3896,43 +3983,44 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
     function renderNewOrderCatalog(){
       const catEl=document.getElementById('invoiceCategoryGrid'),prodEl=document.getElementById('invoiceProductGrid');
-      if(!catEl||!prodEl) return;
+      if(!catEl||!prodEl)return;
       const rows=getCatalogMatches();
-      const mains=[];
-      rows.forEach(r=>{if(!mains.includes(r.main))mains.push(r.main);});
-      if(!newOrderCatalogMain || !mains.includes(newOrderCatalogMain)) {newOrderCatalogMain='';newOrderCatalogSub='';}
-      catEl.innerHTML=mains.map(main=>{
-        const mainRows=rows.filter(r=>r.main===main);
-        const subCount=new Set(mainRows.map(r=>r.sub||'')).size;
-        return `<button type="button" class="pos-category-card ${main===newOrderCatalogMain?'active':''}" onclick="selectNewOrderCategory(${htmlJsArg(main)})"><span class="pos-category-icon">🥩</span><b>${escapeHtml(main)}</b><small>${mainRows.length} صنف · ${subCount} قسم فرعي</small></button>`;
-      }).join('');
+      const mains=[...new Set(rows.map(r=>r.main))];
+      if(!newOrderCatalogMain||!mains.includes(newOrderCatalogMain)){newOrderCatalogMain='';newOrderCatalogSub='';}
+      const addBar=document.getElementById('invoiceNewAddBar');
+      const selectedKey=document.getElementById('invoiceItemProduct')?.value||'';
       if(!newOrderCatalogMain){
-        prodEl.innerHTML='<div class="pos-hierarchy-empty">👆 اختار قسمًا رئيسيًا لعرض الأقسام الفرعية والأصناف.</div>';
-        const hint=document.getElementById('invoiceCatalogHint'); if(hint)hint.innerText=rows.length?`${rows.length} صنف في المنيو`:'المنيو فارغة';
+        catEl.style.display='grid';
+        catEl.innerHTML=mains.map(main=>{const count=rows.filter(r=>r.main===main).length;const subCount=new Set(rows.filter(r=>r.main===main).map(r=>r.sub||'')).size;return `<button type="button" class="pos-category-card" onclick="selectNewOrderCategory(${htmlJsArg(main)})"><span class="pos-category-icon">🥩</span><b>${escapeHtml(main)}</b><small>${subCount} قسم فرعي · ${count} صنف</small></button>`;}).join('');
+        prodEl.innerHTML='';
+        prodEl.style.display='none';
+        const hint=document.getElementById('invoiceCatalogHint');if(hint)hint.innerText=rows.length?`${mains.length} مجموعات رئيسية`:'المنيو فارغة';
+        if(addBar)addBar.style.display='none';
         return;
       }
+      catEl.style.display='none';
+      prodEl.style.display='block';
       const mainRows=rows.filter(r=>r.main===newOrderCatalogMain);
-      const subs=[];
-      mainRows.forEach(r=>{const sub=r.sub||'';if(!subs.includes(sub))subs.push(sub);});
-      if(!newOrderCatalogSub || !subs.includes(newOrderCatalogSub)) newOrderCatalogSub=subs.length===1?subs[0]:'';
-      const breadcrumb=`<div class="pos-breadcrumb"><div class="pos-breadcrumb-path"><span>القسم:</span><b>${escapeHtml(newOrderCatalogMain)}</b>${newOrderCatalogSub?`<span>←</span><b>${escapeHtml(newOrderCatalogSub)}</b>`:''}</div><div class="flex items-center gap-1.5">${newOrderCatalogSub?`<button type="button" class="pos-back-btn" onclick="selectNewOrderSubcategory('')">↩ الأقسام الفرعية</button>`:''}<button type="button" class="pos-back-btn" onclick="resetNewOrderCategory()">↩ الأقسام الرئيسية</button></div></div>`;
-      const subButtons=subs.map(sub=>{
-        const count=mainRows.filter(r=>r.sub===sub).length;
-        const active=sub===newOrderCatalogSub;
-        return `<button type="button" class="pos-subcategory-card ${active?'active':''}" onclick="selectNewOrderSubcategory(${htmlJsArg(sub)})"><span class="pos-subcategory-icon">▦</span><b>${escapeHtml(sub||'أصناف مباشرة')}</b><small>${count} صنف</small></button>`;
-      }).join('');
-      const subWrap=subs.length>1?`<div class="pos-subcategory-grid">${subButtons}</div>`:'';
-      let targetRows=[];
-      if(newOrderCatalogSub) targetRows=mainRows.filter(r=>r.sub===newOrderCatalogSub); else if(subs.length<=1) targetRows=mainRows;
-      const productHtml=targetRows.length?`<div class="pos-items-grid">${targetRows.map(r=>`<button type="button" class="pos-product-card" data-key="${escapeHtml(r.key)}" onclick="chooseNewInvoiceProduct(${htmlJsArg(r.key)})"><span class="pos-product-name">${escapeHtml(r.name)}</span><span class="pos-product-price">${escapeHtml(r.priceDisplay)} ج.م/${escapeHtml(r.unit)}</span></button>`).join('')}</div>`:`<div class="pos-hierarchy-empty">👆 اختار قسمًا فرعيًا لعرض الأصناف المتاحة وإضافتها للفاتورة.</div>`;
-      prodEl.innerHTML=breadcrumb+subWrap+`<div class="mt-3">${productHtml}</div>`;
-      const hint=document.getElementById('invoiceCatalogHint'); if(hint)hint.innerText=newOrderCatalogSub?`${targetRows.length} صنف داخل ${newOrderCatalogSub}`:`${mainRows.length} صنف داخل ${newOrderCatalogMain}`;
-      const selected=document.getElementById('invoiceItemProduct')?.value||'';
-      document.querySelectorAll('#invoiceProductGrid .pos-product-card').forEach(b=>b.classList.toggle('selected',b.dataset.key===selected));
+      const subs=[...new Set(mainRows.map(r=>r.sub||''))];
+      if(!newOrderCatalogSub){
+        const breadcrumb=`<div class="pos-breadcrumb"><div class="pos-breadcrumb-path"><span>المجموعة الرئيسية:</span><b>${escapeHtml(newOrderCatalogMain)}</b></div><button type="button" class="pos-back-btn" onclick="resetNewOrderCategory()">↩ الرئيسية</button></div>`;
+        const subButtons=subs.map(sub=>{const count=mainRows.filter(r=>r.sub===sub).length;return `<button type="button" class="pos-subcategory-card" onclick="selectNewOrderSubcategory(${htmlJsArg(sub)})"><span class="pos-subcategory-icon">▦</span><b>${escapeHtml(sub||'أصناف مباشرة')}</b><small>${count} صنف</small></button>`;}).join('');
+        prodEl.innerHTML=breadcrumb+(subs.length?`<div class="pos-subcategory-grid">${subButtons}</div>`:'<div class="pos-hierarchy-empty">لا توجد أقسام فرعية داخل هذه المجموعة.</div>');
+        const hint=document.getElementById('invoiceCatalogHint');if(hint)hint.innerText=`${subs.length} أقسام فرعية داخل ${newOrderCatalogMain}`;
+        if(addBar)addBar.style.display='none';
+        return;
+      }
+      const targetRows=mainRows.filter(r=>r.sub===newOrderCatalogSub);
+      const breadcrumb=`<div class="pos-breadcrumb"><div class="pos-breadcrumb-path"><span>${escapeHtml(newOrderCatalogMain)}</span><span>←</span><b>${escapeHtml(newOrderCatalogSub||'أصناف مباشرة')}</b></div><div class="flex items-center gap-1.5"><button type="button" class="pos-back-btn" onclick="selectNewOrderSubcategory('')">↩ الفروع</button><button type="button" class="pos-back-btn" onclick="resetNewOrderCategory()">↩ الرئيسية</button></div></div>`;
+      const productHtml=targetRows.length?`<div class="pos-items-grid">${targetRows.map(r=>`<button type="button" class="pos-product-card" data-key="${escapeHtml(r.key)}" onclick="chooseNewInvoiceProduct(${htmlJsArg(r.key)})"><span class="pos-product-name">${escapeHtml(r.name)}</span><span class="pos-product-price">${escapeHtml(r.priceDisplay)} ج.م/${escapeHtml(r.unit)}</span></button>`).join('')}</div>`:'<div class="pos-hierarchy-empty">لا توجد أصناف داخل هذه الفئة الفرعية.</div>';
+      prodEl.innerHTML=breadcrumb+productHtml;
+      const hint=document.getElementById('invoiceCatalogHint');if(hint)hint.innerText=`${targetRows.length} أصناف داخل ${newOrderCatalogSub}`;
+      document.querySelectorAll('#invoiceProductGrid .pos-product-card').forEach(b=>b.classList.toggle('selected',b.dataset.key===selectedKey));
+      if(addBar)addBar.style.display=selectedKey?'grid':'none';
     }
-    function selectNewOrderCategory(main){newOrderCatalogMain=main;newOrderCatalogSub='';renderNewOrderCatalog();}
-    function resetNewOrderCategory(){newOrderCatalogMain='';newOrderCatalogSub='';renderNewOrderCatalog();}
-    function selectNewOrderSubcategory(sub){newOrderCatalogSub=sub;renderNewOrderCatalog();}
+    function selectNewOrderCategory(main){newOrderCatalogMain=main;newOrderCatalogSub='';const sel=document.getElementById('invoiceItemProduct');if(sel)sel.value='';document.getElementById('invoiceNewAddBar')&&(document.getElementById('invoiceNewAddBar').style.display='none');renderNewOrderCatalog();}
+    function resetNewOrderCategory(){newOrderCatalogMain='';newOrderCatalogSub='';const sel=document.getElementById('invoiceItemProduct');if(sel)sel.value='';document.getElementById('invoiceNewAddBar')&&(document.getElementById('invoiceNewAddBar').style.display='none');renderNewOrderCatalog();}
+    function selectNewOrderSubcategory(sub){newOrderCatalogSub=sub;const sel=document.getElementById('invoiceItemProduct');if(sel)sel.value='';document.getElementById('invoiceNewAddBar')&&(document.getElementById('invoiceNewAddBar').style.display='none');renderNewOrderCatalog();}
     function filterNewOrderCatalog(value){newOrderCatalogSearch=value||'';newOrderCatalogMain='';newOrderCatalogSub='';renderNewOrderCatalog();}
     function chooseNewInvoiceProduct(key){
       const select=document.getElementById('invoiceItemProduct');if(!select)return;
@@ -3940,6 +4028,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       const label=document.getElementById('selectedInvoiceProductLabel');const opt=select.selectedOptions?.[0];
       if(label)label.innerText=opt?.dataset?.name||'الصنف المختار';
       document.querySelectorAll('#invoiceProductGrid .pos-product-card').forEach(b=>b.classList.toggle('selected',b.dataset.key===key));
+      const addBar=document.getElementById('invoiceNewAddBar');if(addBar)addBar.style.display='grid';
       document.getElementById('invoiceItemQty')?.focus();
     }
     function handleInvoiceProductChange(mode){
@@ -4306,22 +4395,35 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       if(!mainEl||!contentEl)return;
       let rows=getStoreBookingCatalogRows();
       const q=String(storeBookingSearch||'').trim().toLowerCase();
-      if(q) rows=rows.filter(r=>`${r.name} ${r.main} ${r.sub}`.toLowerCase().includes(q));
+      if(q)rows=rows.filter(r=>`${r.name} ${r.main} ${r.sub}`.toLowerCase().includes(q));
       const mains=[...new Set(rows.map(r=>r.main))];
       if(!storeBookingMain||!mains.includes(storeBookingMain)){storeBookingMain='';storeBookingSub='';}
-      mainEl.innerHTML=mains.map(main=>{const count=rows.filter(r=>r.main===main).length;return `<button type="button" class="store-main-card ${main===storeBookingMain?'active':''}" onclick="selectStoreBookingMain(${htmlJsArg(main)})"><b>🥩 ${escapeHtml(main)}</b><small>${count} صنف</small></button>`;}).join('');
-      if(!storeBookingMain){contentEl.innerHTML='<div class="store-empty mt-2">👆 اختار قسمًا رئيسيًا لعرض الأقسام الفرعية.</div>';return;}
+      const selected=storeBookingSelectedProductKey;
+      if(!storeBookingMain){
+        mainEl.style.display='grid';
+        mainEl.innerHTML=mains.map(main=>{const mainRows=rows.filter(r=>r.main===main),subCount=new Set(mainRows.map(r=>r.sub||'')).size;return `<button type="button" class="store-main-card" onclick="selectStoreBookingMain(${htmlJsArg(main)})"><b>🥩 ${escapeHtml(main)}</b><small>${subCount} قسم فرعي · ${mainRows.length} صنف</small></button>`;}).join('');
+        contentEl.innerHTML='';contentEl.style.display='none';
+        if(!selected)document.querySelector('.store-pos-selected')?.style?.setProperty('display','none');
+        return;
+      }
+      mainEl.style.display='none';contentEl.style.display='block';
       const mainRows=rows.filter(r=>r.main===storeBookingMain),subs=[...new Set(mainRows.map(r=>r.sub||''))];
-      if(!storeBookingSub||!subs.includes(storeBookingSub)) storeBookingSub=subs.length===1?subs[0]:'';
-      const subButtons=subs.map(sub=>{const count=mainRows.filter(r=>r.sub===sub).length;return `<button type="button" class="store-sub-card ${sub===storeBookingSub?'active':''}" onclick="selectStoreBookingSub(${htmlJsArg(sub)})"><b>▦ ${escapeHtml(sub||'أصناف مباشرة')}</b><small>${count} صنف</small></button>`;}).join('');
-      const filteredRows=storeBookingSub?mainRows.filter(r=>r.sub===storeBookingSub):(subs.length===1?mainRows:[]);
-      const productHtml=filteredRows.length?`<div class="store-products-grid">${filteredRows.map(r=>`<button type="button" class="store-product-card ${storeBookingSelectedProductKey===r.key?'selected':''}" onclick="chooseStoreBookingProduct(${htmlJsArg(r.key)})"><b>${escapeHtml(r.name)}</b><span>${escapeHtml(r.priceDisplay)} ج.م/${escapeHtml(r.unit)}</span></button>`).join('')}</div>`:'<div class="store-empty mt-2">👆 اختار قسمًا فرعيًا لعرض الأصناف.</div>';
-      const crumb=`<div class="store-breadcrumb"><div class="store-breadcrumb-path"><span>القسم:</span><b>${escapeHtml(storeBookingMain)}</b>${storeBookingSub?`<span>←</span><b>${escapeHtml(storeBookingSub)}</b>`:''}</div><div class="flex gap-1.5">${storeBookingSub?`<button type="button" class="store-back-btn" onclick="selectStoreBookingSub('')">↩ الفروع</button>`:''}<button type="button" class="store-back-btn" onclick="resetStoreBookingCatalog()">↩ الرئيسية</button></div></div>`;
-      contentEl.innerHTML=crumb+(subs.length>1?`<div class="store-sub-grid">${subButtons}</div>`:'')+productHtml;
+      if(!storeBookingSub){
+        const crumb=`<div class="store-breadcrumb"><div class="store-breadcrumb-path"><span>المجموعة الرئيسية:</span><b>${escapeHtml(storeBookingMain)}</b></div><button type="button" class="store-back-btn" onclick="resetStoreBookingCatalog()">↩ الرئيسية</button></div>`;
+        const subButtons=subs.map(sub=>{const count=mainRows.filter(r=>r.sub===sub).length;return `<button type="button" class="store-sub-card" onclick="selectStoreBookingSub(${htmlJsArg(sub)})"><b>▦ ${escapeHtml(sub||'أصناف مباشرة')}</b><small>${count} صنف</small></button>`;}).join('');
+        contentEl.innerHTML=crumb+(subs.length?`<div class="store-sub-grid">${subButtons}</div>`:'<div class="store-empty mt-2">لا توجد أقسام فرعية داخل هذه المجموعة.</div>');
+        if(!selected)document.querySelector('.store-pos-selected')?.style?.setProperty('display','none');
+        return;
+      }
+      const targetRows=mainRows.filter(r=>r.sub===storeBookingSub);
+      const crumb=`<div class="store-breadcrumb"><div class="store-breadcrumb-path"><span>${escapeHtml(storeBookingMain)}</span><span>←</span><b>${escapeHtml(storeBookingSub||'أصناف مباشرة')}</b></div><div class="flex gap-1.5"><button type="button" class="store-back-btn" onclick="selectStoreBookingSub('')">↩ الفروع</button><button type="button" class="store-back-btn" onclick="resetStoreBookingCatalog()">↩ الرئيسية</button></div></div>`;
+      const products=targetRows.length?`<div class="store-products-grid">${targetRows.map(r=>`<button type="button" class="store-product-card ${selected===r.key?'selected':''}" onclick="chooseStoreBookingProduct(${htmlJsArg(r.key)})"><b>${escapeHtml(r.name)}</b><span>${escapeHtml(r.priceDisplay)} ج.م/${escapeHtml(r.unit)}</span></button>`).join('')}</div>`:'<div class="store-empty mt-2">لا توجد أصناف داخل هذه الفئة الفرعية.</div>';
+      contentEl.innerHTML=crumb+products;
+      if(selected)document.querySelector('.store-pos-selected')?.style?.setProperty('display','grid');
     }
-    function selectStoreBookingMain(main){storeBookingMain=main;storeBookingSub='';renderStoreBookingCatalog();}
-    function selectStoreBookingSub(sub){storeBookingSub=sub;renderStoreBookingCatalog();}
-    function resetStoreBookingCatalog(){storeBookingMain='';storeBookingSub='';renderStoreBookingCatalog();}
+    function selectStoreBookingMain(main){storeBookingMain=main;storeBookingSub='';storeBookingSelectedProductKey='';renderStoreBookingCatalog();}
+    function selectStoreBookingSub(sub){storeBookingSub=sub;storeBookingSelectedProductKey='';document.getElementById('storeBookingSelectedLabel')&&(document.getElementById('storeBookingSelectedLabel').innerText='لم يتم اختيار صنف');renderStoreBookingCatalog();}
+    function resetStoreBookingCatalog(){storeBookingMain='';storeBookingSub='';storeBookingSelectedProductKey='';document.getElementById('storeBookingSelectedLabel')&&(document.getElementById('storeBookingSelectedLabel').innerText='لم يتم اختيار صنف');renderStoreBookingCatalog();}
     function filterStoreBookingCatalog(value){storeBookingSearch=value||'';storeBookingMain='';storeBookingSub='';renderStoreBookingCatalog();}
     function chooseStoreBookingProduct(key){
       const row=getStoreBookingCatalogRows().find(r=>r.key===key);if(!row)return;
@@ -4516,16 +4618,25 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       const rows=q?allRows.filter(r=>`${r.name} ${r.main} ${r.sub}`.toLowerCase().includes(q)):allRows;
       const mains=[...new Set(rows.map(r=>r.main))];
       if(!storeBookingEditCatalogMain||!mains.includes(storeBookingEditCatalogMain)){storeBookingEditCatalogMain='';storeBookingEditCatalogSub='';}
-      mainEl.innerHTML=mains.map(main=>{const count=rows.filter(r=>r.main===main).length;return `<button type="button" class="store-main-card ${main===storeBookingEditCatalogMain?'active':''}" onclick="selectStoreBookingEditMain(${htmlJsArg(main)})"><b>🥩 ${escapeHtml(main)}</b><small>${count} صنف</small></button>`;}).join('');
-      if(!storeBookingEditCatalogMain){contentEl.innerHTML='<div class="store-empty mt-2">👆 اختار قسمًا رئيسيًا لعرض الأقسام الفرعية والأصناف.</div>';const hint=document.getElementById('storeBookingEditCatalogHint');if(hint)hint.innerText=rows.length?`${rows.length} صنف في المنيو`:'المنيو فارغة';return;}
+      const selected=document.getElementById('storeBookingEditProduct')?.value||'';
+      if(!storeBookingEditCatalogMain){
+        mainEl.style.display='grid';
+        mainEl.innerHTML=mains.map(main=>{const mainRows=rows.filter(r=>r.main===main),subCount=new Set(mainRows.map(r=>r.sub||'')).size;return `<button type="button" class="store-main-card" onclick="selectStoreBookingEditMain(${htmlJsArg(main)})"><b>🥩 ${escapeHtml(main)}</b><small>${subCount} قسم فرعي · ${mainRows.length} صنف</small></button>`;}).join('');
+        contentEl.innerHTML='';contentEl.style.display='none';
+        return;
+      }
+      mainEl.style.display='none';contentEl.style.display='block';
       const mainRows=rows.filter(r=>r.main===storeBookingEditCatalogMain),subs=[...new Set(mainRows.map(r=>r.sub||''))];
-      if(!storeBookingEditCatalogSub||!subs.includes(storeBookingEditCatalogSub))storeBookingEditCatalogSub=subs.length===1?subs[0]:'';
-      const subButtons=subs.map(sub=>{const count=mainRows.filter(r=>r.sub===sub).length;return `<button type="button" class="store-sub-card ${sub===storeBookingEditCatalogSub?'active':''}" onclick="selectStoreBookingEditSub(${htmlJsArg(sub)})"><b>▦ ${escapeHtml(sub||'أصناف مباشرة')}</b><small>${count} صنف</small></button>`;}).join('');
-      const filteredRows=storeBookingEditCatalogSub?mainRows.filter(r=>r.sub===storeBookingEditCatalogSub):(subs.length===1?mainRows:[]);
-      const productHtml=filteredRows.length?`<div class="store-products-grid">${filteredRows.map(r=>`<button type="button" class="store-product-card ${document.getElementById('storeBookingEditProduct')?.value===r.key?'selected':''}" onclick="chooseStoreBookingEditProduct(${htmlJsArg(r.key)})"><b>${escapeHtml(r.name)}</b><span>${escapeHtml(r.priceDisplay)} ج.م/${escapeHtml(r.unit)}</span></button>`).join('')}</div>`:'<div class="store-empty mt-2">👆 اختار قسمًا فرعيًا لعرض الأصناف.</div>';
-      const crumb=`<div class="store-breadcrumb"><div class="store-breadcrumb-path"><span>القسم:</span><b>${escapeHtml(storeBookingEditCatalogMain)}</b>${storeBookingEditCatalogSub?`<span>←</span><b>${escapeHtml(storeBookingEditCatalogSub)}</b>`:''}</div><div class="flex gap-1.5">${storeBookingEditCatalogSub?`<button type="button" class="store-back-btn" onclick="selectStoreBookingEditSub('')">↩ الفروع</button>`:''}<button type="button" class="store-back-btn" onclick="resetStoreBookingEditCatalog()">↩ الرئيسية</button></div></div>`;
-      contentEl.innerHTML=crumb+(subs.length>1?`<div class="store-sub-grid">${subButtons}</div>`:'')+productHtml;
-      const hint=document.getElementById('storeBookingEditCatalogHint');if(hint)hint.innerText=storeBookingEditCatalogSub?`${filteredRows.length} صنف داخل ${storeBookingEditCatalogSub}`:`${mainRows.length} صنف داخل ${storeBookingEditCatalogMain}`;
+      if(!storeBookingEditCatalogSub){
+        const crumb=`<div class="store-breadcrumb"><div class="store-breadcrumb-path"><span>المجموعة الرئيسية:</span><b>${escapeHtml(storeBookingEditCatalogMain)}</b></div><button type="button" class="store-back-btn" onclick="resetStoreBookingEditCatalog()">↩ الرئيسية</button></div>`;
+        const subButtons=subs.map(sub=>{const count=mainRows.filter(r=>r.sub===sub).length;return `<button type="button" class="store-sub-card" onclick="selectStoreBookingEditSub(${htmlJsArg(sub)})"><b>▦ ${escapeHtml(sub||'أصناف مباشرة')}</b><small>${count} صنف</small></button>`;}).join('');
+        contentEl.innerHTML=crumb+(subs.length?`<div class="store-sub-grid">${subButtons}</div>`:'<div class="store-empty mt-2">لا توجد أقسام فرعية داخل هذه المجموعة.</div>');
+        return;
+      }
+      const filteredRows=mainRows.filter(r=>r.sub===storeBookingEditCatalogSub);
+      const crumb=`<div class="store-breadcrumb"><div class="store-breadcrumb-path"><span>${escapeHtml(storeBookingEditCatalogMain)}</span><span>←</span><b>${escapeHtml(storeBookingEditCatalogSub||'أصناف مباشرة')}</b></div><div class="flex gap-1.5"><button type="button" class="store-back-btn" onclick="selectStoreBookingEditSub('')">↩ الفروع</button><button type="button" class="store-back-btn" onclick="resetStoreBookingEditCatalog()">↩ الرئيسية</button></div></div>`;
+      const productHtml=filteredRows.length?`<div class="store-products-grid">${filteredRows.map(r=>`<button type="button" class="store-product-card ${selected===r.key?'selected':''}" onclick="chooseStoreBookingEditProduct(${htmlJsArg(r.key)})"><b>${escapeHtml(r.name)}</b><span>${escapeHtml(r.priceDisplay)} ج.م/${escapeHtml(r.unit)}</span></button>`).join('')}</div>`:'<div class="store-empty mt-2">لا توجد أصناف داخل هذه الفئة الفرعية.</div>';
+      contentEl.innerHTML=crumb+productHtml;
     }
     function selectStoreBookingEditMain(main){storeBookingEditCatalogMain=main;storeBookingEditCatalogSub='';renderStoreBookingEditCatalog();}
     function selectStoreBookingEditSub(sub){storeBookingEditCatalogSub=sub;renderStoreBookingEditCatalog();}
