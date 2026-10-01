@@ -1209,6 +1209,37 @@ body.staff-logged-out .notification-panel,body.staff-logged-out .sidebar-notific
       body.cashier-mode .app-sidebar .sidebar-scroll{overflow-y:auto!important;overflow-x:hidden!important}
       body.cashier-mode .sidebar-overlay.open{pointer-events:auto!important}
     }
+
+/* ===== STEP 42: SIDEBAR FINAL HIT-TEST / NAVIGATION FIX ===== */
+html,body{min-height:100%;}
+.app-sidebar{position:fixed!important;top:0!important;right:0!important;bottom:0!important;width:var(--sidebar-width,280px)!important;height:100dvh!important;z-index:100000!important;pointer-events:auto!important;isolation:isolate!important;}
+.app-sidebar,.app-sidebar *{pointer-events:auto!important;}
+.app-sidebar .sidebar-scroll{overflow-y:auto!important;overflow-x:hidden!important;min-height:0!important;flex:1 1 auto!important;touch-action:pan-y!important;overscroll-behavior:contain!important;}
+.app-sidebar .tab-btn{pointer-events:auto!important;cursor:pointer!important;touch-action:manipulation!important;position:relative!important;z-index:100001!important;transform:none!important;}
+.app-sidebar .tab-btn:hover{transform:none!important;}
+main.app-main{position:relative!important;z-index:1!important;margin-right:var(--sidebar-width,280px)!important;}
+.sidebar-overlay{display:none!important;pointer-events:none!important;}
+.notification-panel{z-index:100500!important;}
+
+/* كاشير = نقطة بيع مباشرة ومختصرة */
+body.cashier-mode #sec-cashier-home{display:none!important;}
+body.cashier-mode #sec-admin .orders-shell{display:none!important;}
+body.cashier-mode #sec-admin .customer-history-card{display:none!important;}
+body.cashier-mode #sec-admin .order-form-card{padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;}
+body.cashier-mode #sec-admin .order-form-hero{padding:10px 12px!important;border-radius:18px!important;margin-bottom:10px!important;}
+body.cashier-mode #sec-admin .order-form-hero h2{font-size:15px!important;}
+body.cashier-mode #sec-admin .pos-order-form{gap:10px!important;}
+body.cashier-mode #sec-admin .pos-panel{padding:11px!important;border-radius:18px!important;}
+body.cashier-mode #sec-admin .pos-category-grid{max-height:300px!important;overflow-y:auto!important;}
+body.cashier-mode #sec-admin .pos-product-grid{max-height:300px!important;overflow-y:auto!important;}
+body.cashier-mode #tab-admin{display:none!important;}
+body.cashier-mode #tab-cashier-home{display:flex!important;}
+
+@media(max-width:767px){
+  .app-sidebar{width:min(86vw,300px)!important;}
+  main.app-main{margin-right:0!important;}
+}
+
 </style>
 </head>
 <body id="appBody" class="bg-amber-50/40 min-h-screen text-gray-800">
@@ -3149,26 +3180,19 @@ body.staff-logged-out .notification-panel,body.staff-logged-out .sidebar-notific
       }
     }
 
-    // ===== STEP 40: delegated sidebar navigation (prevents dead/overlapped tab clicks) =====
-    function installSidebarNavigation(){
+    // ===== STEP 42: direct sidebar button wiring =====
+    function installDirectSidebarButtons(){
       const sidebar=document.getElementById('appSidebar');
-      if(!sidebar || sidebar.dataset.navInstalled==='1') return;
-      sidebar.dataset.navInstalled='1';
-      sidebar.addEventListener('click',function(event){
-        const btn=event.target.closest('[data-nav-tab]');
-        if(!btn || !sidebar.contains(btn)) return;
-        event.preventDefault();
-        event.stopPropagation();
+      if(!sidebar) return;
+      sidebar.querySelectorAll('[data-nav-tab]').forEach((btn)=>{
         const tab=btn.getAttribute('data-nav-tab');
         if(!tab) return;
-        try{
-          switchTab(tab);
-          closeSidebar();
-        }catch(err){
-          console.error('Sidebar navigation error:',err);
-          alert('تعذر فتح هذه الصفحة حالياً. حاول مرة أخرى.');
-        }
-      },true);
+        btn.removeAttribute('onclick');
+        btn.onclick=function(event){
+          event.preventDefault();
+          try { switchTab(tab); } catch(err) { console.error('Sidebar navigation error:',err); }
+        };
+      });
     }
 
     function loadRememberedLogin() {
@@ -3446,7 +3470,7 @@ body.staff-logged-out .notification-panel,body.staff-logged-out .sidebar-notific
       document.getElementById('sidebarUserBadge').innerText=`${user.username} • ${roleTitle}`;
       document.getElementById('mobileUserBadge').innerText=user.username;
       document.body.classList.remove('customer-public-mode','staff-logged-out'); document.body.classList.toggle('driver-private-mode',user.role==='driver'); document.body.classList.toggle('cashier-mode',user.role==='cashier'); document.getElementById('staffLoginGate')?.classList.add('hidden');
-      document.getElementById('authModal').classList.add('hidden'); updateUIByPermissions(); startDriverDirectoryListener(); if(user.role==='admin'||user.role==='cashier') attachInvoicePriceListener(); if(user.role==='admin'||user.role==='cashier') initStoreBookingPage(); if(user.role!=='cashier') startActivityLogListener();
+      document.getElementById('authModal').classList.add('hidden'); installDirectSidebarButtons(); updateUIByPermissions(); startDriverDirectoryListener(); if(user.role==='admin'||user.role==='cashier') attachInvoicePriceListener(); if(user.role==='admin'||user.role==='cashier') initStoreBookingPage(); if(user.role!=='cashier') startActivityLogListener();
       const customerAllowed=user.role==='admin' || (user.role==='cashier' && canManageCustomers());
       document.getElementById('customerAuthLock')?.classList.toggle('hidden',!customerAllowed);
       document.getElementById('customerPageContent')?.classList.toggle('hidden',!customerAllowed);
@@ -5686,7 +5710,7 @@ body.staff-logged-out .notification-panel,body.staff-logged-out .sidebar-notific
       document.getElementById('appSidebar')?.style.setProperty('display','none','important');
       document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');switchTab('driver');
     }
-    window.addEventListener('DOMContentLoaded',()=>{if(APP_MODE==='staff'){document.body.classList.add('staff-logged-out');document.body.classList.remove('customer-public-mode','driver-private-mode','cashier-mode','auth-modal-open');}applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();if(APP_MODE!=='staff'){startPublicCommentsListener();applyCustomerPublicMode();return;}loadRememberedLogin();startPublicCommentsListener();renderInvoiceProductOptions();checkSavedSession();if(currentUser){document.body.classList.remove('staff-logged-out');}updateUIByPermissions();});
+    window.addEventListener('DOMContentLoaded',()=>{installDirectSidebarButtons();if(APP_MODE==='staff'){document.body.classList.add('staff-logged-out');document.body.classList.remove('customer-public-mode','driver-private-mode','cashier-mode','auth-modal-open');}applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();if(APP_MODE!=='staff'){startPublicCommentsListener();applyCustomerPublicMode();return;}loadRememberedLogin();startPublicCommentsListener();renderInvoiceProductOptions();checkSavedSession();if(currentUser){document.body.classList.remove('staff-logged-out');}updateUIByPermissions();});
 </script>
 </body>
 </html>
