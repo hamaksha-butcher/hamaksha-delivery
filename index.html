@@ -1244,7 +1244,7 @@ main.app-main{position:relative!important;z-index:1!important;margin-right:var(-
 body.cashier-mode #sec-cashier-home{display:block!important;}
 body.cashier-mode #tab-cashier-home{display:flex!important;}
 body.cashier-mode #tab-admin{display:flex!important;}
-body.cashier-mode #sec-admin .orders-shell{display:none!important;}
+body.cashier-mode #sec-order-history{display:none!important;}
 body.cashier-mode #sec-admin .customer-history-card{display:none!important;}
 body.cashier-mode #sec-admin .order-form-card{padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;}
 body.cashier-mode #sec-admin .order-form-hero{padding:10px 12px!important;border-radius:18px!important;margin-bottom:10px!important;}
@@ -1471,7 +1471,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       <div class="sidebar-nav-label cashier-hide">الوصول السريع</div>
       <div class="space-y-2 cashier-hide">
         <button type="button" onclick="switchTab('admin'); closeSidebar(); setTimeout(() => document.getElementById('custName')?.focus(), 100)" class="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold transition">➕ <span>إضافة طلب جديد</span></button>
-        <button type="button" onclick="switchTab('admin'); closeSidebar(); setTimeout(() => document.getElementById('searchFilter')?.focus(), 100)" class="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-black/10 hover:bg-black/15 text-white text-xs font-bold transition">🔎 <span>بحث في الطلبات</span></button>
+        <button type="button" onclick="switchTab('order-history'); closeSidebar(); setTimeout(() => document.getElementById('searchFilter')?.focus(), 100)" class="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-black/10 hover:bg-black/15 text-white text-xs font-bold transition">🔎 <span>بحث في الطلبات</span></button>
       </div>
       <div class="cashier-only-block">
         <div class="sidebar-nav-label mt-4">عمليات الكاشير</div>
@@ -1633,7 +1633,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
                 <h3 class="panel-title">⚠️ الطلبات النشطة</h3>
                 <p class="panel-subtitle">أحدث الطلبات التي تحتاج متابعة الآن</p>
               </div>
-              <button onclick="switchTab('admin')" class="panel-link">فتح سجل الطلبات ←</button>
+              <button onclick="switchTab('order-history')" class="panel-link">فتح سجل الطلبات ←</button>
             </div>
             <div id="dashboardActiveOrders" class="space-y-2.5 max-h-[350px] overflow-y-auto dashboard-scroll"></div>
           </div>
@@ -1874,8 +1874,20 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
           </div>
 
-          <!-- تغيير: حُذف العنوان وملخص الحالات المكرر مع الرئيسية، مع الإبقاء على أدوات البحث والجدول. -->
-          <div class="bg-white rounded-3xl shadow-xl orders-shell space-y-5 print-area overflow-hidden">
+          <!-- تغيير: نموذج إنشاء الطلب منفصل عن سجل الطلبات في الصفحة التالية. -->
+
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- تغيير: سجل الطلبات أصبح صفحة مستقلة عن نموذج إنشاء الطلب. -->
+    <section id="sec-order-history" class="hidden space-y-6 max-w-7xl mx-auto">
+      <div class="orders-toolbar p-5 sm:p-6 rounded-3xl shadow-lg">
+        <div><span class="text-[9px] font-black tracking-wider text-white/70">ORDER HISTORY</span><h2 class="text-xl font-black mt-1">📚 سجل الطلبات</h2><p class="text-[11px] text-white/75 font-semibold mt-1">ابحث عن الطلبات وراجع حالتها وبياناتها وإجراءاتها من صفحة مستقلة.</p></div>
+      </div>
+                <div class="bg-white rounded-3xl shadow-xl orders-shell space-y-5 print-area overflow-hidden">
             <div class="px-5 sm:px-6 no-print">
               <div class="orders-filter-shell rounded-2xl p-3 sm:p-4 space-y-3">
                 <div class="flex items-center justify-between gap-2">
@@ -1929,12 +1941,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
               </table>
             </div>
           </div>
-        </div>
-      </div>
     </section>
-
-
-
     <!-- 🏪 حجز المحل - مسار مستقل وفاتورة 80mm مميزة -->
     <section id="sec-store-booking" class="hidden space-y-6 max-w-7xl mx-auto">
       <div class="store-booking-hero">
@@ -3220,7 +3227,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       if(n.orderKey && APP_MODE==='staff'){
         if(String(n.orderKey).startsWith('STORE-')){ switchTab('store-booking'); setTimeout(()=>openStoreBookingByKey(n.orderKey),140); }
         else if(currentUser?.role==='driver') fetchDriverOrder(n.orderKey);
-        else if(currentUser?.role==='admin'||currentUser?.role==='cashier'){ switchTab('admin'); setTimeout(()=>{ const search=document.getElementById('searchFilter'); if(search){search.value=n.orderKey; applyFilters(); search.focus();} },120); }
+        else if(currentUser?.role==='admin'||currentUser?.role==='cashier'){ switchTab(currentUser.role==='admin'?'order-history':'admin'); setTimeout(()=>{ const search=document.getElementById('searchFilter'); if(search){search.value=n.orderKey; applyFilters(); search.focus();} },120); }
       }
     }
     document.addEventListener('click',(event)=>{
@@ -3327,7 +3334,8 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     const sidebarTitles = {
       dashboard: 'الرئيسية',
       // تغيير: الاسم يصف إنشاء الطلبات ومتابعتها والفواتير.
-      admin: 'الطلبات والفواتير',
+      admin: 'إنشاء طلب',
+      'order-history': 'سجل الطلبات',
       'store-booking': 'حجز المحل',
       analytics: 'التقارير والتحصيل',
       prices: 'أسعار اللحوم',
@@ -3423,6 +3431,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       if(tabName === 'cashier-home' && (!currentUser || currentUser.role !== 'cashier')) return alert('نقطة البيع مخصصة لحساب الكاشير فقط.');
       if(tabName === 'dashboard' && (!currentUser || currentUser.role !== 'admin')) return alert('لوحة التحكم الرئيسية مخصصة للإدارة فقط.');
       if(tabName === 'admin' && (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'cashier'))) return alert('الفواتير متاحة للإدارة والكاشير فقط.');
+      if(tabName === 'order-history' && (!currentUser || currentUser.role !== 'admin')) return alert('سجل الطلبات متاح لحسابات الإدارة فقط.');
       if(tabName === 'analytics' && !canUser('analytics')) return alert('عذراً، لا تملك صلاحية الاطلاع على التقارير والداشبورد.');
       if(tabName === 'prices' && !canUser('prices')) return alert('عذراً، لا تملك صلاحية الاطلاع على قائمة الأسعار.');
       if(tabName === 'customers' && !canManageCustomers()) return alert('عذراً، لا تملك صلاحية إدارة قاعدة العملاء.');
@@ -3489,6 +3498,10 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       } catch(err) { console.error('Activity render error:', err); }
 
       try {
+        if(tabName === 'order-history') applyFilters();
+      } catch(err) { console.error('Order history render error:', err); }
+
+      try {
         if(tabName === 'settings') loadAppSettings();
       } catch(err) { console.error('Settings render error:', err); }
 
@@ -3528,7 +3541,8 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     const PRIMARY_NAV_ITEMS = Object.freeze([
       { id:'dashboard', icon:'📊', label:'الرئيسية', className:'tab-btn' },
       { id:'cashier-home', icon:'🧾', label:'نقطة البيع', className:'tab-btn cashier-only' },
-      { id:'admin', icon:'📦', label:'الطلبات والفواتير', className:'tab-btn' },
+      { id:'admin', icon:'📝', label:'إنشاء طلب', className:'tab-btn' },
+      { id:'order-history', icon:'📚', label:'سجل الطلبات', className:'tab-btn admin-only-orders hidden' },
       { id:'store-booking', icon:'🏪', label:'حجز المحل', className:'tab-btn' },
       { id:'analytics', icon:'💰', label:'التقارير والتحصيل', className:'tab-btn perm-analytics hidden' },
       { id:'prices', icon:'🏷️', label:'أسعار اللحوم', className:'tab-btn perm-prices hidden' },
@@ -3870,7 +3884,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         document.getElementById('adminAuthLock').classList.add('hidden'); document.getElementById('adminContent').classList.remove('hidden'); startAdminOrdersListener(); startCustomerDataListener(); startDriverDirectoryListener(); if(user.role==='cashier') { resetStoreBookingForm(); initStoreBookingPage(); renderQuickInvoiceProducts(); renderInvoiceItems('new'); }
         if(user.role==='admin') startUserManagementListener();
         if(user.role==='cashier') { document.querySelector('#tab-admin span:last-child')?.replaceChildren(document.createTextNode('فاتورة توصيل')); initStoreBookingPage(); switchTab('cashier-home'); }
-        else { document.querySelector('#tab-admin span:last-child')?.replaceChildren(document.createTextNode('الطلبات والفواتير')); switchTab('admin'); }
+      else { document.querySelector('#tab-admin span:last-child')?.replaceChildren(document.createTextNode('إنشاء طلب')); switchTab('admin'); }
       } else { document.getElementById('driverAuthLock').classList.add('hidden'); document.getElementById('driverContent').classList.remove('hidden'); applyDriverPrivateMode(); startDriverOrdersListener(); }
       applyFilters(); renderUsersList(); renderMyProfile(); if(user.role!=='cashier') startActivityLogListener(); logActivity('login','system',`تسجيل دخول المستخدم ${user.username}`); initPosDrafts(); syncNavigationTitle(user.role==='driver' ? 'driver' : user.role==='cashier' ? 'cashier-home' : 'admin');
     }
@@ -3889,6 +3903,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       document.getElementById('usersPageAuthLock')?.classList.toggle('hidden',!!currentUser && canUser('users'));
       document.getElementById('usersPageContent')?.classList.toggle('hidden',!(currentUser && canUser('users')));
       document.querySelectorAll('.perm-customers').forEach(el=>el.classList.toggle('hidden',!canManageCustomers()));
+      document.querySelectorAll('.admin-only-orders').forEach(el=>el.classList.toggle('hidden',!(currentUser && currentUser.role==='admin')));
       document.getElementById('exportActionBtns')?.classList.toggle('hidden',!canUser('print'));
       const note=document.getElementById('dashboardScopeNote'); if(note) note.classList.toggle('hidden',canViewAllDrivers()); renderMyProfile();
     }
@@ -6104,7 +6119,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         const openAction=x.kind==='store'
           ? `switchTab('store-booking');setTimeout(()=>openStoreBookingByKey(${htmlJsArg(x.key)}),120)`
           : x.kind==='delivery'
-          ? `switchTab('admin');setTimeout(()=>{const q=document.getElementById('searchFilter');if(q){q.value=${htmlJsArg(x.id)};applyFilters();}},120)`
+          ? `switchTab(currentUser?.role==='admin'?'order-history':'admin');setTimeout(()=>{const q=document.getElementById('searchFilter');if(q){q.value=${htmlJsArg(x.id)};applyFilters();}},120)`
           : `void(0)`;
         return `<div class="customer-full-row" data-kind="${x.kind}">
           <div><div class="id">#${escapeHtml(x.id)}</div>${type}</div>
