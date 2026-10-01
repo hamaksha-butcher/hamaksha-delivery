@@ -455,7 +455,15 @@
     .orders-toolbar { background: linear-gradient(135deg, rgba(127,29,29,.96), rgba(88,28,135,.92)); color: #fff; }
     .orders-summary-card { background: rgba(255,255,255,.86); backdrop-filter: blur(8px); border: 1px solid rgba(148,163,184,.18); box-shadow: 0 10px 24px rgba(15,23,42,.06); }
     .orders-filter-shell { background: rgba(248,250,252,.78); border: 1px solid rgba(148,163,184,.18); }
-    .orders-filter-input { border: 1px solid #e2e8f0; transition: all .18s ease; }
+    
+    .order-unpaid-row { background: linear-gradient(90deg, rgba(254,242,242,.92), rgba(255,247,237,.75)); box-shadow: inset 4px 0 0 #ef4444; }
+    .payment-badge-paid, .payment-badge-unpaid { display:inline-flex; align-items:center; gap:.28rem; padding:.25rem .55rem; border-radius:999px; font-size:9px; font-weight:900; white-space:nowrap; }
+    .payment-badge-paid { background:#dcfce7; color:#166534; border:1px solid #bbf7d0; }
+    .payment-badge-unpaid { background:#fee2e2; color:#991b1b; border:1px solid #fecaca; }
+    .payment-quick-btn { border:1px solid rgba(148,163,184,.22); transition:all .16s ease; }
+    .payment-quick-btn:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(15,23,42,.08); }
+
+.orders-filter-input { border: 1px solid #e2e8f0; transition: all .18s ease; }
     .orders-filter-input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 12%, transparent); outline: none; }
     #reportsTable thead th { background: rgba(248,250,252,.96); color: #475569; font-size: 11px; letter-spacing: .01em; }
     #reportsTable tbody tr { transition: background-color .16s ease, transform .16s ease; }
@@ -1282,6 +1290,11 @@
                     <option value="ملغي ❌">❌ ملغي</option>
                   </select>
                   <input type="date" id="dateFilter" onchange="applyFilters()" dir="ltr" class="orders-filter-input border p-2.5 rounded-xl text-xs bg-white text-right">
+                  <select id="paymentStatusFilter" onchange="applyFilters()" class="orders-filter-input border p-2.5 rounded-xl text-xs bg-white">
+                    <option value="ALL">💳 كل حالات الدفع</option>
+                    <option value="PAID">✅ مدفوع</option>
+                    <option value="UNPAID">🔴 غير مدفوع</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -2010,6 +2023,19 @@
           <select id="editDriverSelect" class="w-full border p-2 rounded-xl bg-white driver-dropdown">
             <option value="غير محدد">حدد المندوب...</option>
           </select>
+        </div>
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+          <label class="flex items-center justify-between gap-3 cursor-pointer select-none">
+            <span>
+              <span class="block font-black text-slate-800">💳 حالة الدفع</span>
+              <span class="block text-[9px] text-slate-500 mt-0.5">حددها كمدفوع لتحويل المتبقي إلى صفر</span>
+            </span>
+            <span class="inline-flex items-center gap-2">
+              <input type="checkbox" id="editPaidCheckbox" class="sr-only peer">
+              <span class="relative w-12 h-7 rounded-full bg-slate-300 peer-checked:bg-emerald-500 transition-colors after:content-[''] after:absolute after:top-1 after:right-1 after:w-5 after:h-5 after:bg-white after:rounded-full after:shadow after:transition-transform peer-checked:after:-translate-x-5"></span>
+              <span id="editPaidLabel" class="text-[10px] font-black text-slate-500 min-w-[58px] text-center">غير مدفوع</span>
+            </span>
+          </label>
         </div>
       </div>
 
@@ -3118,7 +3144,7 @@
       const items=invoiceItems.map(item=>({...item}));if(!items.length)return alert('أضف صنفًا واحدًا على الأقل إلى الفاتورة قبل تسجيل الطلب.');
       const customId=document.getElementById('custOrderId').value.trim(),orderId=customId||('HAMKASHA-'+Math.floor(10000+Math.random()*90000));const name=document.getElementById('custName').value.trim(),phone=document.getElementById('custPhone').value.trim(),address=document.getElementById('custAddress').value.trim();
       const orderPrice=invoiceItemsTotal(items),deliveryPrice=Number(document.getElementById('deliveryPrice').value)||0,paymentMethod=document.getElementById('paymentMethod').value,paymentFee=Number(document.getElementById('paymentFee').value)||0,totalCash=orderPrice+deliveryPrice+paymentFee,driver=document.getElementById('driverSelect').value,now=new Date();const paidInput=Number(document.getElementById('paymentPaidAmount')?.value)||0;const paidAmount=paymentMethod==='cash'?paidInput:totalCash;const remainingDue=paymentMethod==='cash'?Math.max(0,totalCash-paidAmount):0;const changeDue=paymentMethod==='cash'?Math.max(0,paidAmount-totalCash):0;const selectedKey=document.getElementById('selectedCustomerKey').value||null;let customerId=selectedKey;try{customerId=await upsertCustomerRecord(name,phone,address,selectedKey,true,true);}catch(err){console.error('Customer auto-save error:',err);}const trackingToken=createTrackingToken();
-      const orderPayload={orderId,customerName:name,phone,address,items,orderPrice,deliveryPrice,paymentMethod,paymentFee,totalCash,paidAmount,remainingDue,changeDue,driver,status:'جاري تحضير اللحوم 🥩',rating:null,comment:null,isPublished:false,date:now.toISOString().split('T')[0],time:now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),lat:null,lng:null,custLat:null,custLng:null,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name),createdBy:currentUser.username,createdAt:Date.now(),trackingToken};
+      const orderPayload={orderId,customerName:name,phone,address,items,orderPrice,deliveryPrice,paymentMethod,paymentFee,totalCash,paidAmount,remainingDue,changeDue,isPaid:remainingDue<=0,driver,status:'جاري تحضير اللحوم 🥩',rating:null,comment:null,isPublished:false,date:now.toISOString().split('T')[0],time:now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),lat:null,lng:null,custLat:null,custLng:null,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name),createdBy:currentUser.username,createdAt:Date.now(),trackingToken};
       db.ref('orders/'+orderId).set(orderPayload).then(()=>{
         saveLastInvoiceForRepeat(orderPayload);
         const baseUrl=window.location.href.split('?')[0],trackUrl=`${baseUrl}?tab=track&id=${encodeURIComponent(orderId)}&token=${encodeURIComponent(trackingToken)}`;lastCreatedOrderKey=orderId;lastCreatedOrderSnapshot=orderPayload;document.getElementById('trackingLink').value=trackUrl;document.getElementById('waBtn').href=`https://wa.me/${phone}?text=${encodeURIComponent('أهلاً بك 🥩\nطلبك لدى جزارة حمكشة رقم: #'+orderId+'\nالإجمالي المطلوب شامل العمولة والتوصيل: '+totalCash+' ج.م\nرابط متابعة طلبك فقط لمتابعة الحالة وموقع المندوب والتقييم والتعليق:\n'+trackUrl)}`;document.getElementById('result').classList.remove('hidden');
@@ -3149,12 +3175,36 @@
       applyFilters();
     }
 
+    function getOrderPaymentState(item){
+      const total=Number(item?.totalCash ?? ((item?.orderPrice||0)+(item?.deliveryPrice||0)+(item?.paymentFee||0)))||0;
+      const hasPaymentFields=item && (Object.prototype.hasOwnProperty.call(item,'paidAmount') || Object.prototype.hasOwnProperty.call(item,'remainingDue') || Object.prototype.hasOwnProperty.call(item,'isPaid'));
+      const paid=hasPaymentFields ? Number(item.paidAmount||0) : total;
+      const remaining=hasPaymentFields ? Math.max(0,Number(item.remainingDue ?? (total-paid))) : 0;
+      const isPaid=item?.isPaid===true || remaining<=0;
+      return {total,paid,remaining,isPaid};
+    }
+    function updateEditPaidUI(){
+      const cb=document.getElementById('editPaidCheckbox'), label=document.getElementById('editPaidLabel');
+      if(!cb||!label)return;
+      label.innerText=cb.checked?'✅ مدفوع':'🔴 غير مدفوع';
+      label.className=`text-[10px] font-black ${cb.checked?'text-emerald-700':'text-red-700'} min-w-[58px] text-center`;
+    }
+    async function toggleOrderPayment(key){
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!allOrdersCache[key]||!canUser('edit'))return;
+      const item=allOrdersCache[key]||{};
+      const state=getOrderPaymentState(item), nextPaid=!state.isPaid;
+      const paidAmount=nextPaid?state.total:0, remainingDue=nextPaid?0:state.total, changeDue=0;
+      try{ await db.ref('orders/'+key).update({isPaid:nextPaid,paidAmount,remainingDue,changeDue}); }
+      catch(err){ console.error(err); alert('تعذر تحديث حالة الدفع حالياً.'); }
+    }
+
     function applyFilters() {
       if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin') return;
       const search = (document.getElementById('searchFilter')?.value||'').trim().toLowerCase();
       const driver = document.getElementById('driverFilter') ? document.getElementById('driverFilter').value : 'ALL';
       const status = document.getElementById('statusFilter').value;
       const date = document.getElementById('dateFilter').value;
+      const paymentStatus = document.getElementById('paymentStatusFilter')?.value || 'ALL';
       const tbody = document.getElementById('ordersTableBody');
       tbody.innerHTML = '';
 
@@ -3167,14 +3217,16 @@
         const displayName = item.customerName || item.name || 'غير محدد';
         const displayPhone = item.phone || '';
         const displayDriver = item.driver || 'غير محدد';
-        const totalCash = item.totalCash || ((item.orderPrice || 0) + (item.deliveryPrice || 0) + (item.paymentFee || 0));
+        const paymentState=getOrderPaymentState(item);
+        const totalCash=paymentState.total;
 
         const matchSearch = !search || String(displayName).toLowerCase().includes(search) || String(displayId).toLowerCase().includes(search) || String(displayPhone).toLowerCase().includes(search);
         const matchDriver = driver === 'ALL' || displayDriver === driver;
         const matchStatus = status === 'ALL' || item.status === status;
         const matchDate = !date || item.date === date;
+        const matchPayment = paymentStatus === 'ALL' || (paymentStatus === 'PAID' ? paymentState.isPaid : !paymentState.isPaid);
 
-        if (matchSearch && matchDriver && matchStatus && matchDate) {
+        if (matchSearch && matchDriver && matchStatus && matchDate && matchPayment) {
           count++;
           if(item.status === 'تم التسليم بنجاح ✅') delivered++;
           else if(item.status === 'خرج للتوصيل 🛵' || item.status === 'جاهز للتوصيل 📦') delivery++;
@@ -3186,7 +3238,7 @@
           const statusClass = getOrderStatusClass(item.status);
 
           const tr = document.createElement('tr');
-          tr.className = 'hover:bg-slate-50/80';
+          tr.className = paymentState.isPaid ? 'hover:bg-slate-50/80' : 'order-unpaid-row hover:bg-red-50/80';
           tr.innerHTML = `
             <td class="p-3 align-top">
               <div class="font-mono font-black text-red-700">#${displayId}</div>
@@ -3202,6 +3254,10 @@
             </td>
             <td class="p-3 align-top">
               <div class="font-black font-mono text-emerald-700">${Number(totalCash).toLocaleString('ar-EG')} ج.م</div>
+              <div class="mt-1 flex flex-wrap items-center gap-1.5">
+                <span class="${paymentState.isPaid ? 'payment-badge-paid' : 'payment-badge-unpaid'}">${paymentState.isPaid ? '✅ مدفوع' : '🔴 غير مدفوع'}</span>
+                ${!paymentState.isPaid ? `<span class="text-[9px] font-bold text-red-700">متبقي ${paymentState.remaining.toLocaleString('ar-EG')} ج.م</span>` : ''}
+              </div>
               ${item.paymentFee ? `<div class="text-[9px] text-slate-500 mt-1">عمولة ${item.paymentFee}ج</div>` : ''}
             </td>
             <td class="p-3 align-top">
@@ -3219,6 +3275,7 @@
                 <button onclick="openOrderDetails('${key}')" class="order-action-btn bg-slate-100 hover:bg-slate-200 text-slate-800" title="تفاصيل الطلب">👁️</button>
                 <button onclick="shareWhatsApp('${key}')" class="order-action-btn bg-emerald-100 hover:bg-emerald-200 text-emerald-800">💬</button>
                 <button onclick="printThermalInvoice('${key}')" class="order-action-btn bg-slate-200 hover:bg-slate-300 text-slate-800" title="طباعة فاتورة 80mm">🧾</button>
+                ${canEdit ? `<button onclick="toggleOrderPayment('${key}')" class="order-action-btn payment-quick-btn ${paymentState.isPaid ? 'bg-amber-100 hover:bg-amber-200 text-amber-800' : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800'}" title="${paymentState.isPaid ? 'تسجيل غير مدفوع' : 'تسجيل مدفوع'}">${paymentState.isPaid ? '↩️' : '💳'}</button>` : ''}
                 ${canEdit ? `<button onclick="openEditModal('${key}')" class="order-action-btn bg-blue-100 hover:bg-blue-200 text-blue-800">✏️</button>` : ''}
                 ${canDelete ? `<button onclick="deleteOrder('${key}')" class="order-action-btn bg-red-100 hover:bg-red-200 text-red-700">🗑️</button>` : ''}
               </div>
@@ -4336,7 +4393,7 @@
       const order=allOrdersCache[key]||{}; const total=Number(order.totalCash||((order.orderPrice||0)+(order.deliveryPrice||0)+(order.paymentFee||0)))||0; const status=order.status||'جاري تحضير اللحوم 🥩';
       const set=(id,val)=>{const el=document.getElementById(id);if(el)el.innerText=val;};
       const detailItems=normalizeInvoiceItems(order.items||[]);const detailsItemsEl=document.getElementById('detailsInvoiceItems');if(detailsItemsEl){if(detailItems.length){detailsItemsEl.innerHTML=`<table class="invoice-details-table"><thead><tr><th>الصنف</th><th>الوحدة</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead><tbody>${detailItems.map(it=>`<tr><td><b>${escapeHtml(it.name)}</b></td><td>${escapeHtml(it.unit)}</td><td>${Number(it.qty).toLocaleString('ar-EG')}</td><td>${Number(it.unitPrice).toLocaleString('ar-EG')} ج.م</td><td><b>${Number(it.total).toLocaleString('ar-EG')} ج.م</b></td></tr>`).join('')}</tbody></table>`;}else detailsItemsEl.innerHTML='<div class="text-[10px] text-slate-400 text-center py-3">لا توجد أصناف مفصلة لهذا الطلب (طلب قديم مسجل بالإجمالي فقط).</div>';}
-      set('detailsOrderTitle','#'+(order.orderId||key)); set('detailsOrderMeta',`${formatDateDMY(order.date||'-')} · ${order.time||'--'}`); set('detailsStatus',status); set('detailsTotal',total.toLocaleString('ar-EG')+' ج.م'); set('detailsPayment',getPaymentText(order.paymentMethod)); set('detailsDriver',order.driver||'غير محدد'); set('detailsCustomerName',order.customerName||order.name||'غير محدد'); set('detailsCustomerPhone',order.phone||'بدون هاتف'); set('detailsAddress',order.address||'لا يوجد عنوان مسجل'); set('detailsOrderPrice',Number(order.orderPrice||0).toLocaleString('ar-EG')+' ج.م'); set('detailsDeliveryPrice',Number(order.deliveryPrice||0).toLocaleString('ar-EG')+' ج.م'); set('detailsPaymentFee',Number(order.paymentFee||0).toLocaleString('ar-EG')+' ج.م'); set('detailsGrandTotal',total.toLocaleString('ar-EG')+' ج.م'); const dPaid=Number(order.paidAmount??(order.paymentMethod==='cash'?total:total)); const dRemaining=Number(order.remainingDue??Math.max(0,total-dPaid)); const dChange=Number(order.changeDue??Math.max(0,dPaid-total)); set('detailsPaidAmount',dPaid.toLocaleString('ar-EG')+' ج.م'); set('detailsRemainingDue',dRemaining.toLocaleString('ar-EG')+' ج.م'); set('detailsChangeDue',dChange.toLocaleString('ar-EG')+' ج.م');
+      set('detailsOrderTitle','#'+(order.orderId||key)); set('detailsOrderMeta',`${formatDateDMY(order.date||'-')} · ${order.time||'--'}`); set('detailsStatus',status); set('detailsTotal',total.toLocaleString('ar-EG')+' ج.م'); set('detailsPayment',getPaymentText(order.paymentMethod)); set('detailsDriver',order.driver||'غير محدد'); set('detailsCustomerName',order.customerName||order.name||'غير محدد'); set('detailsCustomerPhone',order.phone||'بدون هاتف'); set('detailsAddress',order.address||'لا يوجد عنوان مسجل'); set('detailsOrderPrice',Number(order.orderPrice||0).toLocaleString('ar-EG')+' ج.م'); set('detailsDeliveryPrice',Number(order.deliveryPrice||0).toLocaleString('ar-EG')+' ج.م'); set('detailsPaymentFee',Number(order.paymentFee||0).toLocaleString('ar-EG')+' ج.م'); set('detailsGrandTotal',total.toLocaleString('ar-EG')+' ج.م'); const dPaid=Number(order.paidAmount??(order.paymentMethod==='cash'?total:total)); const dRemaining=Number(order.remainingDue??Math.max(0,total-dPaid)); const dChange=Number(order.changeDue??Math.max(0,dPaid-total)); set('detailsPaidAmount',dPaid.toLocaleString('ar-EG')+' ج.م'); set('detailsRemainingDue',dRemaining.toLocaleString('ar-EG')+' ج.م'); set('detailsChangeDue',dChange.toLocaleString('ar-EG')+' ج.م'); const detailsPaymentState=getOrderPaymentState(order); set('detailsPayment',getPaymentText(order.paymentMethod)+' · '+(detailsPaymentState.isPaid?'✅ مدفوع':'🔴 غير مدفوع'));
       const timeline=document.getElementById('detailsTimeline'); timeline.innerHTML=getOrderDetailsSteps(status).map(step=>`<div class="order-detail-step ${step.done?'done ':''}${step.current?'current':''}"><span class="order-detail-dot"></span><div class="step-title">${step.title}</div><div class="step-meta">${step.meta}</div></div>`).join('');
       const state=document.getElementById('detailsTrackingState'), box=document.getElementById('detailsLocationBox');
       if(order.lat&&order.lng){ state.innerText='GPS متاح'; state.className='text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full'; const updated=order.locationUpdatedAt?new Date(order.locationUpdatedAt).toLocaleString('ar-EG'):'غير محدد'; box.innerHTML=`<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div><b class="text-emerald-700">📍 الموقع متاح</b><div class="text-[10px] mt-1 text-slate-400">آخر تحديث: ${escapeHtml(updated)}</div></div><a href="https://www.google.com/maps?q=${encodeURIComponent(order.lat+','+order.lng)}" target="_blank" rel="noopener" class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-xl">فتح الموقع في الخريطة ↗</a></div>`; } else { state.innerText='GPS غير متاح'; state.className='text-[10px] font-bold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full'; box.innerHTML='<span>لا يوجد موقع GPS مسجل لهذا الطلب حاليًا.</span>'; }
@@ -4349,11 +4406,11 @@
     document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOrderDetails();});
 
     function openEditModal(key){
-      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!allOrdersCache[key])return;if(!canUser('edit'))return alert('عذراً، ليس لديك صلاحية التعديل.');const order=allOrdersCache[key];document.getElementById('editKey').value=key;document.getElementById('editModalOrderId').innerText=`#${order.orderId||key}`;document.getElementById('editCustName').value=order.customerName||order.name||'';document.getElementById('editCustPhone').value=order.phone||'';document.getElementById('editCustAddress').value=order.address||'';document.getElementById('editOrderPrice').value=order.orderPrice||0;document.getElementById('editDeliveryPrice').value=order.deliveryPrice||getAppSettings().defaultDelivery;document.getElementById('editDriverSelect').value=order.driver||'غير محدد';hydrateInvoiceItems('edit',order.items||[]);document.getElementById('editInvoiceItemProduct').value='';document.getElementById('editInvoiceItemQty').value='1';document.getElementById('editInvoiceItemUnitPrice').value='0';document.getElementById('editInvoiceCustomNameWrap').classList.remove('show');document.getElementById('editOrderModal').classList.remove('hidden');
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin'||!allOrdersCache[key])return;if(!canUser('edit'))return alert('عذراً، ليس لديك صلاحية التعديل.');const order=allOrdersCache[key];document.getElementById('editKey').value=key;document.getElementById('editModalOrderId').innerText=`#${order.orderId||key}`;document.getElementById('editCustName').value=order.customerName||order.name||'';document.getElementById('editCustPhone').value=order.phone||'';document.getElementById('editCustAddress').value=order.address||'';document.getElementById('editOrderPrice').value=order.orderPrice||0;document.getElementById('editDeliveryPrice').value=order.deliveryPrice||getAppSettings().defaultDelivery;document.getElementById('editDriverSelect').value=order.driver||'غير محدد';const editPaymentState=getOrderPaymentState(order);const editPaidCheckbox=document.getElementById('editPaidCheckbox');if(editPaidCheckbox){editPaidCheckbox.checked=editPaymentState.isPaid;editPaidCheckbox.onchange=updateEditPaidUI;updateEditPaidUI();}hydrateInvoiceItems('edit',order.items||[]);document.getElementById('editInvoiceItemProduct').value='';document.getElementById('editInvoiceItemQty').value='1';document.getElementById('editInvoiceItemUnitPrice').value='0';document.getElementById('editInvoiceCustomNameWrap').classList.remove('show');document.getElementById('editOrderModal').classList.remove('hidden');
     }
     function closeEditModal(){document.getElementById('editOrderModal').classList.add('hidden');}
     async function saveEditOrder(){
-      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin')return;if(!canUser('edit'))return alert('عذراً، ليس لديك صلاحية حفظ التعديلات.');const key=document.getElementById('editKey').value;if(!key||!allOrdersCache[key])return alert('لا تملك الوصول إلى هذا الطلب.');const current=allOrdersCache[key]||{};const name=document.getElementById('editCustName').value.trim(),phone=document.getElementById('editCustPhone').value.trim(),address=document.getElementById('editCustAddress').value.trim(),deliveryPrice=Number(document.getElementById('editDeliveryPrice').value)||0,driver=document.getElementById('editDriverSelect').value;let customerId=current.customerId||null;try{customerId=await upsertCustomerRecord(name,phone,address,customerId,false);}catch(e){}const update={customerName:name,phone,address,deliveryPrice,driver,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name)};if(editInvoiceItemsTouched){const items=editInvoiceItems.map(item=>({...item,total:(Number(item.qty)||0)*(Number(item.unitPrice)||0)}));const orderPrice=invoiceItemsTotal(items);update.items=items;update.orderPrice=orderPrice;update.totalCash=orderPrice+deliveryPrice+Number(current.paymentFee||0);}else{const orderPrice=Number(current.orderPrice||0);update.orderPrice=orderPrice;update.totalCash=orderPrice+deliveryPrice+Number(current.paymentFee||0);}db.ref('orders/'+key).update(update).then(()=>{alert('تم حفظ بيانات الطلب والفاتورة بنجاح ✅');closeEditModal();editInvoiceItemsTouched=false;});
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin')return;if(!canUser('edit'))return alert('عذراً، ليس لديك صلاحية حفظ التعديلات.');const key=document.getElementById('editKey').value;if(!key||!allOrdersCache[key])return alert('لا تملك الوصول إلى هذا الطلب.');const current=allOrdersCache[key]||{};const name=document.getElementById('editCustName').value.trim(),phone=document.getElementById('editCustPhone').value.trim(),address=document.getElementById('editCustAddress').value.trim(),deliveryPrice=Number(document.getElementById('editDeliveryPrice').value)||0,driver=document.getElementById('editDriverSelect').value;let customerId=current.customerId||null;try{customerId=await upsertCustomerRecord(name,phone,address,customerId,false);}catch(e){}const update={customerName:name,phone,address,deliveryPrice,driver,customerId:customerId||null,phoneNormalized:normalizePhone(phone),customerNameNormalized:normalizeName(name)};let orderPrice,totalCash;if(editInvoiceItemsTouched){const items=editInvoiceItems.map(item=>({...item,total:(Number(item.qty)||0)*(Number(item.unitPrice)||0)}));orderPrice=invoiceItemsTotal(items);update.items=items;}else{orderPrice=Number(current.orderPrice||0);}totalCash=orderPrice+deliveryPrice+Number(current.paymentFee||0);update.orderPrice=orderPrice;update.totalCash=totalCash;const paidCheckbox=document.getElementById('editPaidCheckbox');const isPaid=!!paidCheckbox?.checked;update.isPaid=isPaid;update.paidAmount=isPaid?totalCash:0;update.remainingDue=isPaid?0:totalCash;update.changeDue=0;db.ref('orders/'+key).update(update).then(()=>{alert('تم حفظ بيانات الطلب والفاتورة وحالة الدفع بنجاح ✅');closeEditModal();editInvoiceItemsTouched=false;});
     }
 
     function deleteOrder(id) {
