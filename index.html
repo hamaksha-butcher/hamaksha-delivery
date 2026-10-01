@@ -1248,6 +1248,18 @@ body.cashier-mode #tab-cashier-home,
 body.cashier-mode #tab-admin{display:flex!important;visibility:visible!important;pointer-events:auto!important;}
 
 </style>
+
+<style id="sidebar-only-final-fix">
+/* STEP 44 — SIDEBAR ONLY. No business modules are changed. */
+#appSidebar{position:fixed!important;right:0!important;top:0!important;bottom:0!important;width:var(--sidebar-width,280px)!important;height:100dvh!important;z-index:2147483000!important;pointer-events:auto!important;isolation:isolate!important;}
+#appSidebar .sidebar-scroll{position:relative!important;z-index:2147483001!important;pointer-events:auto!important;overflow-y:auto!important;overflow-x:hidden!important;min-height:0!important;flex:1 1 auto!important;-webkit-overflow-scrolling:touch!important;}
+#appSidebar nav{position:relative!important;z-index:2147483002!important;pointer-events:auto!important;}
+#appSidebar nav [data-nav-tab]{position:relative!important;z-index:2147483003!important;pointer-events:auto!important;cursor:pointer!important;touch-action:manipulation!important;user-select:none!important;-webkit-user-select:none!important;transform:none!important;}
+#appSidebar nav [data-nav-tab]:hover,#appSidebar nav [data-nav-tab]:active{transform:none!important;}
+#sidebarOverlay{pointer-events:none!important;z-index:2147482000!important;}
+#sidebarOverlay.open{pointer-events:none!important;display:none!important;}
+</style>
+
 </head>
 <body id="appBody" class="bg-amber-50/40 min-h-screen text-gray-800">
 
@@ -5719,5 +5731,44 @@ body.cashier-mode #tab-admin{display:flex!important;visibility:visible!important
     }
     window.addEventListener('DOMContentLoaded',()=>{installDirectSidebarButtons();if(APP_MODE==='staff'){document.body.classList.add('staff-logged-out');document.body.classList.remove('customer-public-mode','driver-private-mode','cashier-mode','auth-modal-open');}applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();if(APP_MODE!=='staff'){startPublicCommentsListener();applyCustomerPublicMode();return;}loadRememberedLogin();startPublicCommentsListener();renderInvoiceProductOptions();checkSavedSession();if(currentUser){document.body.classList.remove('staff-logged-out');}updateUIByPermissions();});
 </script>
+
+<script id="sidebar-only-final-fix-script">
+/* STEP 44 — Sidebar-only navigation. Existing page functions are reused unchanged. */
+(function(){
+  function activateSidebarNavigation(){
+    const sidebar=document.getElementById('appSidebar');
+    if(!sidebar) return;
+    const buttons=sidebar.querySelectorAll('nav [data-nav-tab]');
+    buttons.forEach(btn=>{
+      const tab=btn.getAttribute('data-nav-tab');
+      if(!tab || btn.__step44Ready) return;
+      btn.__step44Ready=true;
+      btn.type='button';
+      btn.removeAttribute('onclick');
+      let lastPointerTime=0;
+      const navigate=(event)=>{
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        lastPointerTime=Date.now();
+        try{ window.switchTab(tab); }catch(err){ console.error('Sidebar nav error:',err); }
+      };
+      btn.addEventListener('pointerup',navigate,true);
+      btn.addEventListener('click',(event)=>{
+        if(Date.now()-lastPointerTime<400){ event.preventDefault(); event.stopImmediatePropagation(); return; }
+        navigate(event);
+      },true);
+      btn.addEventListener('keydown',(event)=>{
+        if(event.key==='Enter' || event.key===' '){ navigate(event); }
+      },true);
+    });
+  }
+  window.activateSidebarNavigation=activateSidebarNavigation;
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',activateSidebarNavigation,{once:true});
+  }else activateSidebarNavigation();
+  window.addEventListener('load',activateSidebarNavigation,{once:true});
+})();
+</script>
+
 </body>
 </html>
