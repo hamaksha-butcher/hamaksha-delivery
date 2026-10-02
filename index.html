@@ -1665,6 +1665,41 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       #sec-admin #orderForm #invoiceProductGrid .pos-subcategory-card,
       #sec-admin #orderForm #invoiceProductGrid .pos-product-card{height:auto!important;min-height:140px!important;}
     }
+    /* تغيير: إظهار كل الأصناف دون شريط تمرير داخلي، مع بقاء إضافة الكمية أسفلها في تدفق الصفحة. */
+    @media(min-width:861px){
+      #sec-admin #orderForm.pos-order-form{align-items:start!important;min-height:0!important;}
+      #sec-admin #orderForm .pos-catalog-panel{
+        align-self:start!important;
+        height:auto!important;
+        min-height:570px!important;
+        max-height:none!important;
+        overflow:visible!important;
+      }
+      #sec-admin #orderForm #invoiceCategoryGrid,
+      #sec-admin #orderForm .pos-catalog-panel #invoiceProductGrid{
+        flex:0 0 auto!important;
+        min-height:0!important;
+        max-height:none!important;
+        overflow:visible!important;
+        scrollbar-width:none!important;
+      }
+      #sec-admin #orderForm #invoiceCategoryGrid::-webkit-scrollbar,
+      #sec-admin #orderForm #invoiceProductGrid::-webkit-scrollbar{display:none!important;}
+      #sec-admin #orderForm #invoiceProductGrid .pos-items-grid{
+        grid-template-columns:repeat(4,minmax(0,1fr))!important;
+        grid-auto-rows:minmax(126px,auto)!important;
+        min-height:0!important;
+      }
+      #sec-admin #orderForm #invoiceProductGrid .pos-product-card{height:auto!important;min-height:126px!important;}
+      #sec-admin #orderForm #invoiceProductGrid .pos-subcategory-grid{
+        grid-auto-rows:minmax(148px,auto)!important;
+        min-height:0!important;
+      }
+      #sec-admin #orderForm #invoiceProductGrid .pos-subcategory-card{height:auto!important;min-height:148px!important;}
+    }
+    @media(min-width:861px) and (max-width:1150px){
+      #sec-admin #orderForm #invoiceProductGrid .pos-items-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+    }
 
 </style>
 
