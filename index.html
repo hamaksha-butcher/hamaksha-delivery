@@ -2401,6 +2401,10 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
                   <select id="driverFilter" onchange="applyFilters()" class="orders-filter-input border p-2.5 rounded-xl text-xs bg-white filter-driver-dropdown">
                     <option value="ALL">🛵 جميع المناديب</option>
                   </select>
+                  <!-- تغيير: فلتر لمنشئ الطلبات، مع خيار منفصل للطلبات القديمة غير المسجل منشئها. -->
+                  <select id="orderCreatorFilter" onchange="applyFilters()" class="orders-filter-input border p-2.5 rounded-xl text-xs bg-white">
+                    <option value="ALL">👤 جميع المستخدمين</option>
+                  </select>
                   <select id="statusFilter" onchange="applyFilters()" class="orders-filter-input border p-2.5 rounded-xl text-xs bg-white">
                     <option value="ALL">📦 كل الحالات</option>
                     <option value="جاري تحضير اللحوم 🥩">⏳ جاري التحضير</option>
@@ -5607,8 +5611,22 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     function resetOrderFilters() {
       ['searchFilter','dateFilter'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
       const driver = document.getElementById('driverFilter'); if(driver) driver.value='ALL';
+      const creator = document.getElementById('orderCreatorFilter'); if(creator) creator.value='ALL';
       const status = document.getElementById('statusFilter'); if(status) status.value='ALL';
+      const payment = document.getElementById('paymentStatusFilter'); if(payment) payment.value='ALL';
       applyFilters();
+    }
+
+    // تغيير: بناء خيارات فلتر المستخدمين تلقائيًا من منشئي الطلبات المحمّلة.
+    function refreshOrderCreatorFilter(){
+      const select=document.getElementById('orderCreatorFilter');if(!select)return;
+      const selected=select.value||'ALL';
+      const creators=[...new Set(Object.values(allOrdersCache||{}).map(order=>String(order?.createdBy||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ar'));
+      select.innerHTML='<option value="ALL">👤 جميع المستخدمين</option>'+
+        creators.map(username=>`<option value="USER:${encodeURIComponent(username)}">👤 ${escapeHtml(username)}</option>`).join('')+
+        '<option value="__UNREGISTERED__">❔ طلبات قديمة بلا اسم مسجل</option>';
+      const validValues=new Set(['ALL','__UNREGISTERED__',...creators.map(username=>`USER:${encodeURIComponent(username)}`)]);
+      select.value=validValues.has(selected)?selected:'ALL';
     }
 
     function getOrderPaymentState(item){
@@ -5636,8 +5654,10 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
     function applyFilters() {
       if(APP_MODE!=='staff'||!currentUser||(currentUser.role!=='admin'&&currentUser.role!=='cashier')) return;
+      refreshOrderCreatorFilter();
       const search = (document.getElementById('searchFilter')?.value||'').trim().toLowerCase();
       const driver = document.getElementById('driverFilter') ? document.getElementById('driverFilter').value : 'ALL';
+      const creator = document.getElementById('orderCreatorFilter')?.value || 'ALL';
       const status = document.getElementById('statusFilter').value;
       const date = document.getElementById('dateFilter').value;
       const paymentStatus = document.getElementById('paymentStatusFilter')?.value || 'ALL';
@@ -5661,8 +5681,10 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         const matchStatus = status === 'ALL' || item.status === status;
         const matchDate = !date || item.date === date;
         const matchPayment = paymentStatus === 'ALL' || (paymentStatus === 'PAID' ? paymentState.isPaid : !paymentState.isPaid);
+        const selectedCreator=creator.startsWith('USER:')?decodeURIComponent(creator.slice(5)):'';
+        const matchCreator = creator === 'ALL' || (creator === '__UNREGISTERED__' ? !String(item.createdBy||'').trim() : String(item.createdBy||'').trim() === selectedCreator);
 
-        if (matchSearch && matchDriver && matchStatus && matchDate && matchPayment) {
+        if (matchSearch && matchDriver && matchStatus && matchDate && matchPayment && matchCreator) {
           count++;
           filteredOrdersList.push({ key, ...item, displayId, displayName, displayPhone, displayDriver, totalCash });
 
