@@ -4019,6 +4019,23 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     }
     function initPosDrafts(){if(APP_MODE!=='staff'||!currentUser)return;installPosDraftAutoSave();['delivery','store'].forEach(type=>{let hidden=false;try{hidden=localStorage.getItem(posDraftNoticeHiddenKey(type))==='1';}catch(e){}setPosDraftNoticeVisibility(type,hidden,false);renderPosDraftStatus(type);});}
 
+    // تغيير: التحقق من صلاحية التبويب المحفوظ قبل استعادته بعد تحديث الصفحة.
+    function isTabAvailableForCurrentUser(tabName){
+      if(!currentUser)return false;
+      if(currentUser.role==='driver')return tabName==='driver'||tabName==='profile';
+      const allowed={
+        'cashier-home':currentUser.role==='cashier',dashboard:currentUser.role==='admin',
+        admin:currentUser.role==='admin'||currentUser.role==='cashier',
+        'order-history':canViewOrderHistory(),analytics:canUser('analytics'),prices:canUser('prices'),
+        customers:canManageCustomers(),users:canUser('users'),
+        activity:currentUser.role==='admin'&&(isSuperUser()||canUser('users')),
+        settings:currentUser.role==='admin',
+        'store-booking':currentUser.role==='admin'||canUser('storeBookings'),
+        'store-bookings':currentUser.role==='admin'||canUser('storeBookings'),profile:true
+      };
+      return !!allowed[tabName];
+    }
+
     function switchTab(tabName) {
       if(APP_MODE !== 'staff') tabName = 'track';
       if(APP_MODE === 'staff' && currentUser?.role === 'driver' && tabName !== 'profile') tabName = 'driver';
@@ -4036,6 +4053,9 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       if(tabName === 'settings' && (!currentUser || currentUser.role !== 'admin')) return alert('عذراً، الإعدادات مخصصة للإدارة فقط.');
       if(tabName === 'store-booking' && (!currentUser || (currentUser.role !== 'admin' && !canUser('storeBookings')))) return alert('حجز المحل غير متاح لهذا الحساب.');
       if(tabName === 'store-bookings' && (!currentUser || (currentUser.role !== 'admin' && !canUser('storeBookings')))) return alert('سجل حجوزات المحل غير متاح لهذا الحساب.');
+
+      // تغيير: حفظ آخر صفحة مفتوحة في الجلسة الحالية للرجوع إليها بعد تحديث المتصفح.
+      if(APP_MODE==='staff'&&currentUser&&tabName!=='track'){try{sessionStorage.setItem(`hamaksha_active_tab_${currentUser.username}`,tabName);}catch(e){}}
 
       // Always update the visible page first.
       document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
@@ -4468,6 +4488,8 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
     function loginSuccess(user) {
       if(APP_MODE!=='staff') return;
+      // تغيير: قراءة الصفحة السابقة قبل أن يختار تسجيل الدخول الصفحة الافتراضية.
+      let savedTab='';try{savedTab=sessionStorage.getItem(`hamaksha_active_tab_${user.username}`)||'';}catch(e){}
       stopScopedListeners(); currentUser=user; localStorage.setItem('hamaksha_user',JSON.stringify(user));
       loadNotificationStore();
       const roleTitle=isSuperUser()?'المالك الرئيسي (asma)':(user.role==='admin'?'أدمن فرعي':user.role==='cashier'?'كاشير':'مندوب توصيل');
@@ -4483,9 +4505,9 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       if(user.role==='admin' || user.role==='cashier') {
         document.getElementById('adminAuthLock').classList.add('hidden'); document.getElementById('adminContent').classList.remove('hidden'); startAdminOrdersListener(); startCustomerDataListener(); startDriverDirectoryListener(); if(user.role==='cashier') { resetStoreBookingForm(); initStoreBookingPage(); renderQuickInvoiceProducts(); renderInvoiceItems('new'); }
         if(user.role==='admin') startUserManagementListener();
-        if(user.role==='cashier') { document.querySelector('#tab-admin span:last-child')?.replaceChildren(document.createTextNode('فاتورة توصيل')); initStoreBookingPage(); switchTab('cashier-home'); }
-      else { document.querySelector('#tab-admin span:last-child')?.replaceChildren(document.createTextNode('إنشاء طلب')); switchTab('admin'); }
-      } else { document.getElementById('driverAuthLock').classList.add('hidden'); document.getElementById('driverContent').classList.remove('hidden'); applyDriverPrivateMode(); startDriverOrdersListener(); }
+        if(user.role==='cashier') { document.querySelector('#tab-admin span:last-child')?.replaceChildren(document.createTextNode('فاتورة توصيل')); initStoreBookingPage(); switchTab(isTabAvailableForCurrentUser(savedTab)?savedTab:'cashier-home'); }
+      else { document.querySelector('#tab-admin span:last-child')?.replaceChildren(document.createTextNode('إنشاء طلب')); switchTab(isTabAvailableForCurrentUser(savedTab)?savedTab:'admin'); }
+      } else { document.getElementById('driverAuthLock').classList.add('hidden'); document.getElementById('driverContent').classList.remove('hidden'); applyDriverPrivateMode();if(savedTab==='profile')switchTab('profile');startDriverOrdersListener(); }
       applyFilters(); renderUsersList(); renderMyProfile(); if(user.role!=='cashier') startActivityLogListener(); logActivity('login','system',`تسجيل دخول المستخدم ${user.username}`); initPosDrafts(); syncNavigationTitle(user.role==='driver' ? 'driver' : user.role==='cashier' ? 'cashier-home' : 'admin');
     }
 
