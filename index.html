@@ -2234,6 +2234,15 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       </div>
 
       <div id="dashboardContent" class="hidden space-y-6">
+        <div id="dashboardKpiScreen" class="hidden space-y-4 min-h-[60vh]">
+          <div class="dashboard-panel p-4 sm:p-6">
+            <div class="flex items-start justify-between gap-3 border-b pb-4">
+              <div><div id="dashboardKpiScreenValue" class="text-2xl sm:text-3xl font-black text-slate-900"></div><h2 id="dashboardKpiScreenTitle" class="text-base font-black mt-1"></h2><p id="dashboardKpiScreenSubtitle" class="text-xs text-slate-500 mt-1"></p></div>
+              <button type="button" onclick="returnToDashboardCards()" class="rounded-xl bg-slate-100 hover:bg-slate-200 px-4 py-2 text-xs font-black">← رجوع للبطاقات</button>
+            </div>
+            <div id="dashboardKpiScreenRows" class="mt-4 grid gap-2"></div>
+          </div>
+        </div>
         <!-- Hero -->
         <div class="dashboard-hero rounded-3xl shadow-xl overflow-hidden">
           <div class="dashboard-hero-overlay"></div>
@@ -2281,13 +2290,6 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
             <div class="kpi-top"><span class="kpi-icon">💰</span><span class="kpi-label">تحصيل اليوم</span></div>
             <div id="dashCash" class="kpi-value currency">0 ج.م</div>
             <div class="kpi-foot"><span>المبالغ المحصلة</span></div>
-          </div>
-        </div>
-
-        <div id="dashboardKpiModal" class="hidden fixed inset-0 z-[100050] bg-slate-950/60 backdrop-blur-sm p-3 sm:p-6 items-center justify-center" onclick="if(event.target===this)closeDashboardKpiModal()" role="dialog" aria-modal="true" aria-labelledby="dashboardKpiTitle">
-          <div class="w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-3xl bg-white shadow-2xl flex flex-col">
-            <div class="flex items-start justify-between gap-3 p-5 border-b bg-slate-50"><div><div id="dashboardKpiValue" class="text-2xl font-black text-slate-900"></div><h3 id="dashboardKpiTitle" class="text-sm font-black mt-1"></h3><p id="dashboardKpiSubtitle" class="text-[10px] text-slate-500 mt-1"></p></div><button type="button" onclick="closeDashboardKpiModal()" class="rounded-xl bg-white border px-3 py-2 font-black text-slate-600 hover:bg-slate-100" aria-label="إغلاق">✕</button></div>
-            <div id="dashboardKpiRows" class="p-4 overflow-y-auto space-y-2"></div>
           </div>
         </div>
 
@@ -6074,7 +6076,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     }
 
     // --- 📊 لوحة التحكم الرئيسية الجديدة ---
-    function closeDashboardKpiModal(){document.getElementById('dashboardKpiModal')?.classList.add('hidden');}
+    function returnToDashboardCards(){const content=document.getElementById('dashboardContent'),screen=document.getElementById('dashboardKpiScreen');if(!content||!screen)return;screen.classList.add('hidden');Array.from(content.children).forEach(child=>{if(child!==screen)child.classList.remove('hidden');});}
     function openDashboardKpi(type){
       if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin')return;
       const today=new Date().toISOString().split('T')[0],all=Object.entries(allOrdersCache||{}).map(([key,o])=>({key,...(o||{})})).filter(o=>o.date===today);
@@ -6086,10 +6088,10 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         cash:{title:'الطلبات التي تم تحصيلها اليوم',value:document.getElementById('dashCash')?.innerText||'0 ج.م',items:all.filter(o=>o.status==='تم التسليم بنجاح ✅')}
       };
       const info=definitions[type];if(!info)return;
-      const title=document.getElementById('dashboardKpiTitle'),value=document.getElementById('dashboardKpiValue'),subtitle=document.getElementById('dashboardKpiSubtitle'),rows=document.getElementById('dashboardKpiRows');
+      const title=document.getElementById('dashboardKpiScreenTitle'),value=document.getElementById('dashboardKpiScreenValue'),subtitle=document.getElementById('dashboardKpiScreenSubtitle'),rows=document.getElementById('dashboardKpiScreenRows'),content=document.getElementById('dashboardContent'),screen=document.getElementById('dashboardKpiScreen');
       if(title)title.innerText=info.title;if(value)value.innerText=info.value;if(subtitle)subtitle.innerText=`${info.items.length.toLocaleString('ar-EG')} سجل بتاريخ ${formatDateDMY(today)}`;
-      if(rows){const sorted=info.items.sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0));rows.innerHTML=sorted.map(o=>{const total=Number(o.totalCash||((o.orderPrice||0)+(o.deliveryPrice||0)+(o.paymentFee||0)))||0;return `<button type="button" class="w-full text-right rounded-2xl border bg-slate-50 hover:bg-slate-100 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2" onclick="closeDashboardKpiModal();openOrderDetails(${htmlJsArg(o.key)})"><span class="min-w-0"><b class="block text-xs text-slate-900">#${escapeHtml(o.orderId||o.key)} · ${escapeHtml(o.customerName||o.name||'عميل')}</b><span class="block mt-1 text-[10px] text-slate-500">${escapeHtml(o.status||'بدون حالة')} · المندوب: ${escapeHtml(o.driver||'غير محدد')}</span></span><b class="text-xs text-emerald-700">${total.toLocaleString('ar-EG')} ج.م</b></button>`;}).join('')||'<div class="rounded-2xl border border-dashed p-8 text-center text-xs text-slate-400">لا توجد سجلات ضمن هذا المؤشر اليوم.</div>';}
-      document.getElementById('dashboardKpiModal')?.classList.remove('hidden');
+      if(rows){const sorted=info.items.sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0));rows.innerHTML=sorted.map(o=>{const total=Number(o.totalCash||((o.orderPrice||0)+(o.deliveryPrice||0)+(o.paymentFee||0)))||0;return `<button type="button" class="w-full text-right rounded-2xl border bg-slate-50 hover:bg-slate-100 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2" onclick="openOrderDetails(${htmlJsArg(o.key)})"><span class="min-w-0"><b class="block text-xs text-slate-900">#${escapeHtml(o.orderId||o.key)} · ${escapeHtml(o.customerName||o.name||'عميل')}</b><span class="block mt-1 text-[10px] text-slate-500">${escapeHtml(o.status||'بدون حالة')} · المندوب: ${escapeHtml(o.driver||'غير محدد')}</span></span><b class="text-xs text-emerald-700">${total.toLocaleString('ar-EG')} ج.م</b></button>`;}).join('')||'<div class="rounded-2xl border border-dashed p-8 text-center text-xs text-slate-400">لا توجد سجلات ضمن هذا المؤشر اليوم.</div>';}
+      if(content&&screen){Array.from(content.children).forEach(child=>{if(child!==screen)child.classList.add('hidden');});screen.classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'});}
     }
 
     function renderDashboard() {
