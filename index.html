@@ -1599,6 +1599,55 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       #sec-admin #orderForm .pos-payment-panel .grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
     }
 
+    /* تغيير: توسيع مساحة الأصناف في الشاشات الكبيرة وملء الفراغ داخل لوحة الكتالوج. */
+    @media(min-width:861px){
+      #sec-admin #orderForm.pos-order-form{align-items:stretch!important;}
+      #sec-admin #orderForm .pos-catalog-panel{
+        align-self:stretch!important;
+        height:calc(100dvh - 150px)!important;
+        min-height:620px!important;
+        display:flex!important;
+        flex-direction:column!important;
+        overflow:hidden!important;
+      }
+      #sec-admin #orderForm #invoiceCategoryGrid{
+        flex:1 1 auto!important;
+        min-height:220px!important;
+        max-height:none!important;
+        grid-auto-rows:minmax(150px,1fr)!important;
+        align-content:stretch!important;
+      }
+      /* display:flex يتغلب على display:block الذي يضبطه عارض الأقسام عبر JavaScript. */
+      #sec-admin #orderForm .pos-catalog-panel #invoiceProductGrid{
+        display:flex!important;
+        flex:1 1 auto!important;
+        flex-direction:column!important;
+        min-height:0!important;
+        max-height:none!important;
+        overflow:auto!important;
+      }
+      #sec-admin #orderForm #invoiceProductGrid .pos-subcategory-grid,
+      #sec-admin #orderForm #invoiceProductGrid .pos-items-grid{
+        flex:1 0 auto!important;
+        min-height:100%!important;
+        align-content:stretch!important;
+        grid-auto-rows:minmax(180px,1fr)!important;
+      }
+      #sec-admin #orderForm #invoiceProductGrid .pos-subcategory-card,
+      #sec-admin #orderForm #invoiceProductGrid .pos-product-card{
+        min-height:180px!important;
+        height:100%!important;
+      }
+    }
+    /* تغيير: على الشاشات الصغيرة يظل المحتوى طبيعيًا دون فرض ارتفاع الشاشة. */
+    @media(max-width:860px){
+      #sec-admin #orderForm .pos-catalog-panel #invoiceProductGrid{display:block!important;}
+      #sec-admin #orderForm #invoiceProductGrid .pos-subcategory-grid,
+      #sec-admin #orderForm #invoiceProductGrid .pos-items-grid{min-height:0!important;grid-auto-rows:minmax(150px,auto)!important;}
+      #sec-admin #orderForm #invoiceProductGrid .pos-subcategory-card,
+      #sec-admin #orderForm #invoiceProductGrid .pos-product-card{height:auto!important;min-height:150px!important;}
+    }
+
 </style>
 
 </head>
