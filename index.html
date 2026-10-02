@@ -1274,6 +1274,13 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
     /* 📝 مسودات فواتير الكاشير */
     .pos-draft-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:linear-gradient(135deg,#f8fafc,#eef6f8);border:1px solid #cbd5e1;border-radius:14px;padding:9px 11px;margin-bottom:12px;box-shadow:0 3px 12px rgba(15,23,42,.04)}
+    /* تغيير: زر إغلاق شريط المسودة وإظهاره مرة أخرى دون تعطيل الحفظ التلقائي. */
+    .pos-draft-bar[hidden],.pos-draft-reopen[hidden]{display:none!important;}
+    .pos-draft-dismiss{width:28px;height:28px;display:inline-grid;place-items:center;flex:none;border:1px solid #d5e0e8;border-radius:9px;background:#fff;color:#64748b;font-size:18px;line-height:1;cursor:pointer;}
+    .pos-draft-dismiss:hover{background:#fff1f2;color:#be123c;border-color:#fecdd3;}
+    .pos-draft-reopen{display:inline-flex;align-items:center;gap:7px;margin-bottom:12px;padding:7px 11px;border:1px solid #cbd5e1;border-radius:10px;background:#f8fafc;color:#0f4c5c;font-size:10px;font-weight:900;cursor:pointer;}
+    #orderForm #deliveryDraftReopen{grid-column:1/-1!important;grid-row:1!important;justify-self:start;}
+    #storeBookingForm #storeBookingDraftReopen{grid-column:1/-1!important;grid-row:1!important;justify-self:start;}
     .pos-draft-info{display:flex;align-items:center;gap:8px;min-width:0}.pos-draft-icon{width:30px;height:30px;border-radius:10px;background:#0f4c5c;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;flex:0 0 auto}.pos-draft-copy{min-width:0}.pos-draft-copy b{display:block;font-size:10px;color:#0f172a}.pos-draft-copy span{display:block;font-size:9px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pos-draft-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.pos-draft-btn{border:1px solid #cbd5e1;background:#fff;color:#0f4c5c;border-radius:9px;padding:6px 9px;font-size:9px;font-weight:800;cursor:pointer;transition:.15s}.pos-draft-btn:hover{transform:translateY(-1px);box-shadow:0 3px 8px rgba(15,23,42,.08)}.pos-draft-btn.primary{background:#0f4c5c;color:#fff;border-color:#0f4c5c}.pos-draft-btn.danger{color:#b91c1c}.pos-draft-status{font-size:8px;font-weight:800;color:#64748b;margin-right:auto}.pos-draft-bar.has-draft{border-color:#93c5fd;background:linear-gradient(135deg,#eff6ff,#f8fafc)}
 
     /* ===== POS FULL-WORKSPACE + STRICT HIERARCHICAL CATALOG ===== */
@@ -2001,7 +2008,9 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     <button type="button" class="pos-draft-btn danger" onclick="clearPosDraft('delivery')">🗑️ مسح</button>
   </div>
   <span id="deliveryDraftClock" class="pos-draft-status"></span>
+  <button type="button" class="pos-draft-dismiss" onclick="setPosDraftNoticeVisibility('delivery',true)" aria-label="إخفاء شريط المسودة" title="إخفاء شريط المسودة">×</button>
 </div>
+<button type="button" id="deliveryDraftReopen" class="pos-draft-reopen" hidden onclick="setPosDraftNoticeVisibility('delivery',false)">📝 إظهار مسودة الفاتورة</button>
 
   <!-- بيانات العميل / يسار -->
   <section class="pos-panel pos-customer-panel">
@@ -2252,7 +2261,9 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     <button type="button" class="pos-draft-btn danger" onclick="clearPosDraft('store')">🗑️ مسح</button>
   </div>
   <span id="storeBookingDraftClock" class="pos-draft-status"></span>
+  <button type="button" class="pos-draft-dismiss" onclick="setPosDraftNoticeVisibility('store',true)" aria-label="إخفاء شريط المسودة" title="إخفاء شريط المسودة">×</button>
 </div>
+<button type="button" id="storeBookingDraftReopen" class="pos-draft-reopen" hidden onclick="setPosDraftNoticeVisibility('store',false)">📝 إظهار مسودة الحجز</button>
 
             <div class="store-booking-form-grid store-pos-customer">
               <div class="store-booking-field"><label class="store-booking-label">اسم العميل</label><input id="storeBookingCustomerName" class="store-booking-input" required placeholder="اسم العميل"></div>
@@ -3650,6 +3661,15 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     let draftSaveTimers={delivery:null,store:null};
     let draftAutoSaveBound=false;
     function posDraftStorageKey(type){const user=currentUser?.username||'guest';return `hamaksha_pos_draft_${type}_${user}`;}
+    /* تغيير: إخفاء شريط المسودة لا يوقف الحفظ، مع إمكانية إظهاره من زر صغير. */
+    function posDraftNoticeHiddenKey(type){return `hamaksha_pos_draft_notice_hidden_${type}_${currentUser?.username||'guest'}`;}
+    function setPosDraftNoticeVisibility(type,hidden,persist=true){
+      const bar=document.getElementById(type==='delivery'?'deliveryDraftBar':'storeBookingDraftBar');
+      const reopen=document.getElementById(type==='delivery'?'deliveryDraftReopen':'storeBookingDraftReopen');
+      if(bar)bar.hidden=!!hidden;
+      if(reopen)reopen.hidden=!hidden;
+      if(persist){try{localStorage.setItem(posDraftNoticeHiddenKey(type),hidden?'1':'0');}catch(e){}}
+    }
     function posDraftHasMeaningfulData(type){
       if(type==='delivery'){
         return !!(invoiceItems.length||document.getElementById('custName')?.value.trim()||document.getElementById('custPhone')?.value.trim()||document.getElementById('custAddress')?.value.trim()||document.getElementById('custOrderId')?.value.trim());
@@ -3701,7 +3721,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       bind(document.getElementById('orderForm'),'delivery');bind(document.getElementById('storeBookingForm'),'store');
       window.addEventListener('beforeunload',()=>{savePosDraft('delivery',false);savePosDraft('store',false);});
     }
-    function initPosDrafts(){if(APP_MODE!=='staff'||!currentUser)return;installPosDraftAutoSave();renderPosDraftStatus('delivery');renderPosDraftStatus('store');}
+    function initPosDrafts(){if(APP_MODE!=='staff'||!currentUser)return;installPosDraftAutoSave();['delivery','store'].forEach(type=>{let hidden=false;try{hidden=localStorage.getItem(posDraftNoticeHiddenKey(type))==='1';}catch(e){}setPosDraftNoticeVisibility(type,hidden,false);renderPosDraftStatus(type);});}
 
     function switchTab(tabName) {
       if(APP_MODE !== 'staff') tabName = 'track';
