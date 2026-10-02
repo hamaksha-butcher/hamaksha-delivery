@@ -2322,7 +2322,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         <div class="store-booking-panel">
           <div class="store-booking-panel-head">
             <div><span class="pos-kicker">NEW STORE BOOKING</span><h3>📝 تسجيل حجز جديد</h3><p>سجّل العميل والموعد والأصناف ثم اطبع إيصال 80mm للحجز.</p></div>
-            <button type="button" class="store-action-btn" onclick="resetStoreBookingForm()">↺ فاتورة جديدة</button>
+            <div class="flex gap-2"><button type="button" class="store-action-btn" onclick="switchTab('store-bookings')">📅 سجل الحجوزات</button><button type="button" class="store-action-btn" onclick="resetStoreBookingForm()">↺ حجز جديد</button></div>
           </div>
 
           <form id="storeBookingForm" class="store-pos-form" onsubmit="submitStoreBooking(event)">
@@ -2411,8 +2411,19 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
           <div id="storeBookingResult" class="store-booking-result hidden"></div>
         </div>
 
+      </div>
+    </section>
+
+    <!-- تغيير: فصل تقويم الحجوزات وسجلها في صفحة مستقلة عن إنشاء الحجز. -->
+    <section id="sec-store-bookings" class="hidden space-y-6 max-w-7xl mx-auto">
+      <div class="store-booking-hero">
+        <span class="store-booking-badge">STORE BOOKINGS · CALENDAR & HISTORY</span>
+        <h2>📅 سجل حجوزات المحل</h2>
+        <p>تقويم الحجوزات والبحث في حجوزات اليوم والقادمة وكل الحجوزات.</p>
+      </div>
+      <div class="store-booking-page store-bookings-ledger-page">
         <div class="store-booking-panel">
-          <div class="store-booking-panel-head"><div><span class="pos-kicker">BOOKINGS DESK</span><h3>📅 كشف حجوزات المحل</h3><p>اليوم، الحجوزات القادمة، والبحث المتقدم في جميع الحجوزات.</p></div><button type="button" class="store-action-btn" onclick="resetStoreBookingListFilters()">↺ تحديث</button></div>
+          <div class="store-booking-panel-head"><div><span class="pos-kicker">BOOKINGS DESK</span><h3>📅 كشف حجوزات المحل</h3><p>اليوم، الحجوزات القادمة، والبحث المتقدم في جميع الحجوزات.</p></div><div class="flex gap-2"><button type="button" class="store-action-btn" onclick="resetStoreBookingListFilters()">↺ تحديث</button><button type="button" class="store-action-btn" onclick="switchTab('store-booking')">＋ حجز جديد</button></div></div>
           <div class="store-booking-overview">
             <div class="store-overview-card"><span>اليوم</span><b id="storeBookingTodayCount">0</b></div>
             <div class="store-overview-card"><span>القادمة</span><b id="storeBookingUpcomingCount">0</b></div>
@@ -3618,7 +3629,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     function openNotification(id){
       const n=notificationsCache.find(x=>x.id===id); if(!n)return; n.read=true; saveNotificationStore(); renderNotificationCenter(); closeNotifications();
       if(n.orderKey && APP_MODE==='staff'){
-        if(String(n.orderKey).startsWith('STORE-')){ switchTab('store-booking'); setTimeout(()=>openStoreBookingByKey(n.orderKey),140); }
+        if(String(n.orderKey).startsWith('STORE-')){ switchTab('store-bookings'); setTimeout(()=>openStoreBookingByKey(n.orderKey),140); }
         else if(currentUser?.role==='driver') fetchDriverOrder(n.orderKey);
         else if(currentUser?.role==='admin'||currentUser?.role==='cashier'){ switchTab(currentUser.role==='admin'?'order-history':'admin'); setTimeout(()=>{ const search=document.getElementById('searchFilter'); if(search){search.value=n.orderKey; applyFilters(); search.focus();} },120); }
       }
@@ -3730,6 +3741,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       admin: 'إنشاء طلب',
       'order-history': 'سجل الطلبات',
       'store-booking': 'حجز المحل',
+      'store-bookings': 'سجل حجوزات المحل',
       analytics: 'التقارير والتحصيل',
       prices: 'أسعار اللحوم',
       customers: 'العملاء',
@@ -3841,6 +3853,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       if(tabName === 'activity' && (!currentUser || currentUser.role !== 'admin' || !(isSuperUser() || canUser('users')))) return alert('عذراً، سجل النشاط مخصص للإدارة المخولة فقط.');
       if(tabName === 'settings' && (!currentUser || currentUser.role !== 'admin')) return alert('عذراً، الإعدادات مخصصة للإدارة فقط.');
       if(tabName === 'store-booking' && (!currentUser || (currentUser.role !== 'admin' && !canUser('storeBookings')))) return alert('حجز المحل غير متاح لهذا الحساب.');
+      if(tabName === 'store-bookings' && (!currentUser || (currentUser.role !== 'admin' && !canUser('storeBookings')))) return alert('سجل حجوزات المحل غير متاح لهذا الحساب.');
 
       // Always update the visible page first.
       document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
@@ -3912,8 +3925,8 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       } catch(err) { console.error('Profile render error:', err); }
 
       try {
-        if(tabName === 'store-booking') {
-          attachInvoicePriceListener(); renderPosDraftStatus('store');
+        if(tabName === 'store-booking' || tabName === 'store-bookings') {
+          if(tabName === 'store-booking'){attachInvoicePriceListener();renderPosDraftStatus('store');}
           initStoreBookingPage();
           renderStoreBookingToday();
         }
@@ -3946,6 +3959,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       { id:'admin', icon:'📝', label:'إنشاء طلب', className:'tab-btn' },
       { id:'order-history', icon:'📚', label:'سجل الطلبات', className:'tab-btn admin-only-orders hidden' },
       { id:'store-booking', icon:'🏪', label:'حجز المحل', className:'tab-btn' },
+      { id:'store-bookings', icon:'📅', label:'سجل حجوزات المحل', className:'tab-btn perm-store-bookings hidden' },
       { id:'analytics', icon:'💰', label:'التقارير والتحصيل', className:'tab-btn perm-analytics hidden' },
       { id:'prices', icon:'🏷️', label:'أسعار اللحوم', className:'tab-btn perm-prices hidden' },
       { id:'customers', icon:'👥', label:'العملاء', className:'tab-btn perm-customers hidden' },
@@ -4225,7 +4239,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       const recentOrders=document.getElementById('cashierRecentOrders');
       if(recentOrders){recentOrders.innerHTML=todayOrders.slice().sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0)).slice(0,8).map(o=>`<button type="button" class="cashier-mini-item" onclick="switchTab('admin');setTimeout(()=>openOrderDetails(${htmlJsArg(o.key)}),80)"><span>#${escapeHtml(o.orderId||o.key)} · ${escapeHtml(o.customerName||'عميل')}</span><b>${Number(o.totalCash||0).toLocaleString('ar-EG')} ج.م</b></button>`).join('')||'<div class="cashier-mini-item">لا توجد فواتير توصيل اليوم.</div>';}
       const recentBookings=document.getElementById('cashierRecentBookings');
-      if(recentBookings){recentBookings.innerHTML=todayBookings.slice(0,8).map(b=>`<button type="button" class="cashier-mini-item" onclick="switchTab('store-booking')"><span>#${escapeHtml(b.bookingNumber||b.key)} · ${escapeHtml(b.customerName||'عميل')}</span><b>${escapeHtml(b.pickupTime||'—')}</b></button>`).join('')||'<div class="cashier-mini-item">لا توجد حجوزات اليوم.</div>';}
+      if(recentBookings){recentBookings.innerHTML=todayBookings.slice(0,8).map(b=>`<button type="button" class="cashier-mini-item" onclick="switchTab('store-bookings');setTimeout(()=>openStoreBookingByKey(${htmlJsArg(b.key)}),100)"><span>#${escapeHtml(b.bookingNumber||b.key)} · ${escapeHtml(b.customerName||'عميل')}</span><b>${escapeHtml(b.pickupTime||'—')}</b></button>`).join('')||'<div class="cashier-mini-item">لا توجد حجوزات اليوم.</div>';}
     }
 
     // --- 📜 سجل نشاط النظام ---
@@ -4297,6 +4311,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       document.getElementById('tab-dashboard')?.classList.toggle('hidden',!(currentUser&&currentUser.role==='admin'));
       document.getElementById('tab-cashier-home')?.classList.toggle('hidden',!(currentUser&&currentUser.role==='cashier'));
       document.getElementById('tab-store-booking')?.classList.toggle('hidden',!(currentUser && (currentUser.role==='admin' || canUser('storeBookings'))));
+      document.getElementById('tab-store-bookings')?.classList.toggle('hidden',!(currentUser && (currentUser.role==='admin' || canUser('storeBookings'))));
       document.getElementById('tab-admin')?.classList.toggle('hidden',!(currentUser && (currentUser.role==='admin'||currentUser.role==='cashier')));
       document.getElementById('addPriceBtn')?.classList.toggle('hidden',!canUser('prices'));
       document.querySelectorAll('.perm-users').forEach(el=>el.classList.toggle('hidden',!canUser('users')));
@@ -6644,7 +6659,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
           ? '<span class="type" style="background:#dbeafe;color:#1d4ed8">🛵 دليفري</span>'
           : '<span class="type" style="background:#dcfce7;color:#166534">💳 دفعة</span>';
         const openAction=x.kind==='store'
-          ? `switchTab('store-booking');setTimeout(()=>openStoreBookingByKey(${htmlJsArg(x.key)}),120)`
+          ? `switchTab('store-bookings');setTimeout(()=>openStoreBookingByKey(${htmlJsArg(x.key)}),120)`
           : x.kind==='delivery'
           ? `switchTab(currentUser?.role==='admin'?'order-history':'admin');setTimeout(()=>{const q=document.getElementById('searchFilter');if(q){q.value=${htmlJsArg(x.id)};applyFilters();}},120)`
           : `void(0)`;
