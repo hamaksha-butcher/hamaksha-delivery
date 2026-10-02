@@ -155,6 +155,7 @@
     :root {
       --primary-color: #7f1d1d;
       --secondary-color: #f59e0b;
+      --accent-color: #fbbf24;
       --bg-color: #f6f7fb;
       --surface-color: #ffffff;
       --surface-soft: #f8fafc;
@@ -230,6 +231,19 @@
     body.theme-modern .bg-white {
       border-radius: var(--radius-lg);
     }
+    /* توحيد ألوان الواجهات القديمة والجديدة مع الثيم المختار ورفع وضوح النصوص الثانوية. */
+    body.theme-modern [class~="bg-slate-50"],body.theme-modern [class~="bg-slate-100"],body.theme-modern [class~="bg-gray-50"],body.theme-modern [class~="bg-gray-100"]{background-color:var(--surface-soft)!important}
+    body.theme-modern [class~="text-slate-900"],body.theme-modern [class~="text-slate-800"],body.theme-modern [class~="text-slate-700"],body.theme-modern [class~="text-gray-900"],body.theme-modern [class~="text-gray-800"],body.theme-modern [class~="text-gray-700"],body.theme-modern [class~="text-gray-600"]{color:var(--text-color)!important}
+    body.theme-modern [class~="text-slate-500"],body.theme-modern [class~="text-slate-400"],body.theme-modern [class~="text-gray-500"],body.theme-modern [class~="text-gray-400"]{color:var(--muted-color)!important}
+    body.theme-modern [class~="border-slate-100"],body.theme-modern [class~="border-slate-200"],body.theme-modern [class~="border-gray-100"],body.theme-modern [class~="border-gray-200"]{border-color:var(--border-color)!important}
+    body.theme-modern input::placeholder,body.theme-modern textarea::placeholder{color:var(--muted-color)!important;opacity:1!important}
+    body.theme-modern [class*="text-gray-400"],body.theme-modern [class*="text-gray-500"],body.theme-modern [class*="text-slate-400"],body.theme-modern [class*="text-slate-500"]{color:var(--muted-color)!important}
+    body.theme-modern [class*="bg-gray-50"],body.theme-modern [class*="bg-slate-50"],body.theme-modern [class*="bg-amber-50"]{background-color:var(--surface-soft)!important}
+    body.theme-modern .bg-amber-500.text-white,body.theme-modern .bg-amber-600.text-white{background-color:var(--primary-color)!important;color:#fff!important}
+    body.theme-modern .settings-card,body.theme-modern .customer-card,body.theme-modern .customer-record-card,body.theme-modern .order-card,body.theme-modern .order-item-card,body.theme-modern .store-booking-card,body.theme-modern .store-overview-card,body.theme-modern .dashboard-panel,body.theme-modern .dashboard-kpi,body.theme-modern .modal-panel{background-color:var(--surface-color)!important;border-color:var(--border-color)!important;color:var(--text-color)!important}
+    body.theme-modern .settings-note,body.theme-modern .customer-record-meta,body.theme-modern .store-booking-edit-section,body.theme-modern .invoice-items-shell,body.theme-modern .pos-panel,body.theme-modern .pos-catalog-panel{background-color:var(--surface-soft)!important;border-color:var(--border-color)!important;color:var(--text-color)!important}
+    body.theme-modern[data-theme-preset="midnight"]{color-scheme:dark}
+    body.theme-modern:not([data-theme-preset="midnight"]){color-scheme:light}
 
     /* تحسين عناصر اختيار الثيم */
     .theme-options { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:10px; }
@@ -2035,6 +2049,12 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     #storeBookingEditModal .store-booking-edit-footer button{min-height:42px!important;padding:10px 12px!important;font-size:10px!important;}
     @media(max-width:950px){#storeBookingEditModal{z-index:100010!important;padding:10px!important}#storeBookingEditModal .store-booking-edit-dialog{width:min(760px,calc(100vw - 20px))!important;height:auto!important;max-height:calc(100dvh - 20px)!important;display:flex!important;flex-direction:column!important;overflow:auto!important}#storeBookingEditModal .store-booking-edit-items-section{min-height:350px!important}#storeBookingEditModal .store-booking-edit-items-section .store-booking-edit-items{max-height:35vh!important}}
 
+.theme-quick-button{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--border-color,#dbe3ea);border-radius:11px;padding:7px 10px;background:var(--surface-soft,#f8fafc);color:var(--text-color,#172033);font-size:10px;font-weight:900;cursor:pointer;white-space:nowrap}
+.theme-picker-modal{position:fixed;inset:0;z-index:100020;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(2,6,23,.72);backdrop-filter:blur(6px)}.theme-picker-modal.open{display:flex}
+.theme-picker-dialog{width:min(800px,100%);max-height:calc(100dvh - 32px);overflow:auto;padding:20px;border:1px solid var(--border-color,#dbe3ea);border-radius:22px;background:var(--surface-color,#fff);color:var(--text-color,#172033);box-shadow:0 26px 70px rgba(15,23,42,.28)}
+.theme-picker-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:13px;margin-bottom:14px;border-bottom:1px solid var(--border-color,#dbe3ea)}.theme-picker-head h3{font-size:17px;font-weight:1000;color:var(--text-color,#172033)}.theme-picker-head p{margin-top:3px;font-size:10px;color:var(--muted-color,#536174)}
+.theme-picker-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:9px!important}.theme-picker-grid .theme-choice{min-height:74px!important;background:var(--surface-soft,#f8fafc)!important}.theme-picker-grid .theme-choice span:last-child{font-size:10px!important}
+@media(max-width:650px){.theme-picker-dialog{padding:14px}.theme-picker-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.theme-picker-head h3{font-size:14px}}
 </style>
 
 </head>
@@ -2133,7 +2153,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
           لم يتم تسجيل الدخول
         </span>
       </div>
-      <div class="text-[11px] text-gray-400 font-semibold">🔒 نظام محمي ومقيد الصلاحيات</div>
+      <div class="flex items-center gap-2"><button id="themeQuickButton" type="button" class="theme-quick-button hidden" onclick="openThemePickerModal()">🎨 المظهر</button><div class="text-[11px] text-gray-400 font-semibold">🔒 نظام محمي ومقيد الصلاحيات</div></div>
     </div>
 
     <!-- 🧾 نقطة البيع - الواجهة الأولى للكاشير -->
@@ -2940,15 +2960,18 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <div class="settings-card">
-          <div class="settings-card-head"><div><span class="settings-icon">🎨</span><div><h3>المظهر والثيم</h3><p>اختار الشكل المناسب للشغل أو الهوية البصرية.</p></div></div><span class="settings-pill">7 ثيمات</span></div>
+          <div class="settings-card-head"><div><span class="settings-icon">🎨</span><div><h3>المظهر والثيم</h3><p>اختار الشكل المناسب للشغل أو الهوية البصرية.</p></div></div><span class="settings-pill">10 ثيمات</span></div>
           <div class="theme-options settings-theme-grid" role="group" aria-label="اختيار الثيم">
             <button type="button" class="theme-choice active" data-theme-choice="hamkasha" onclick="changeThemePreset('hamkasha')"><span class="theme-swatch" style="background:linear-gradient(90deg,#7f1d1d 0 65%,#f59e0b 65% 100%)"></span><span>حمكشة</span></button>
-            <button type="button" class="theme-choice" data-theme-choice="ocean" onclick="changeThemePreset('ocean')"><span class="theme-swatch" style="background:linear-gradient(90deg,#0f172a 0 65%,#38bdf8 65% 100%)"></span><span>Ocean</span></button>
-            <button type="button" class="theme-choice" data-theme-choice="emerald" onclick="changeThemePreset('emerald')"><span class="theme-swatch" style="background:linear-gradient(90deg,#064e3b 0 65%,#34d399 65% 100%)"></span><span>Emerald</span></button>
-            <button type="button" class="theme-choice" data-theme-choice="violet" onclick="changeThemePreset('violet')"><span class="theme-swatch" style="background:linear-gradient(90deg,#312e81 0 65%,#a78bfa 65% 100%)"></span><span>Violet</span></button>
-            <button type="button" class="theme-choice" data-theme-choice="sunset" onclick="changeThemePreset('sunset')"><span class="theme-swatch" style="background:linear-gradient(90deg,#9a3412 0 65%,#fb923c 65% 100%)"></span><span>Sunset</span></button>
-            <button type="button" class="theme-choice" data-theme-choice="midnight" onclick="changeThemePreset('midnight')"><span class="theme-swatch" style="background:linear-gradient(90deg,#020617 0 65%,#fbbf24 65% 100%)"></span><span>Midnight</span></button>
-            <button type="button" class="theme-choice" data-theme-choice="butcher" onclick="changeThemePreset('butcher')"><span class="theme-swatch" style="background:linear-gradient(90deg,#4a1118 0 55%,#b87333 55% 78%,#f4ead7 78% 100%)"></span><span>Butcher Pro</span></button>
+            <button type="button" class="theme-choice" data-theme-choice="ocean" onclick="changeThemePreset('ocean')"><span class="theme-swatch" style="background:linear-gradient(90deg,#0f172a 0 65%,#38bdf8 65% 100%)"></span><span>محيطي</span></button>
+            <button type="button" class="theme-choice" data-theme-choice="emerald" onclick="changeThemePreset('emerald')"><span class="theme-swatch" style="background:linear-gradient(90deg,#064e3b 0 65%,#34d399 65% 100%)"></span><span>زمردي</span></button>
+            <button type="button" class="theme-choice" data-theme-choice="violet" onclick="changeThemePreset('violet')"><span class="theme-swatch" style="background:linear-gradient(90deg,#312e81 0 65%,#a78bfa 65% 100%)"></span><span>بنفسجي</span></button>
+            <button type="button" class="theme-choice" data-theme-choice="sunset" onclick="changeThemePreset('sunset')"><span class="theme-swatch" style="background:linear-gradient(90deg,#9a3412 0 65%,#fb923c 65% 100%)"></span><span>غروب</span></button>
+            <button type="button" class="theme-choice" data-theme-choice="midnight" onclick="changeThemePreset('midnight')"><span class="theme-swatch" style="background:linear-gradient(90deg,#020617 0 65%,#fbbf24 65% 100%)"></span><span>منتصف الليل</span></button>
+            <button type="button" class="theme-choice" data-theme-choice="butcher" onclick="changeThemePreset('butcher')"><span class="theme-swatch" style="background:linear-gradient(90deg,#4a1118 0 55%,#b87333 55% 78%,#f4ead7 78% 100%)"></span><span>احترافي</span></button>
+            <button type="button" class="theme-choice" data-theme-choice="aqua" onclick="changeThemePreset('aqua')"><span class="theme-swatch" style="background:linear-gradient(90deg,#073b43 0 58%,#0b7f89 58% 78%,#8de1dc 78% 100%)"></span><span>مائي هادئ</span></button>
+            <button type="button" class="theme-choice" data-theme-choice="graphite" onclick="changeThemePreset('graphite')"><span class="theme-swatch" style="background:linear-gradient(90deg,#273449 0 62%,#0891b2 62% 82%,#dce7ef 82% 100%)"></span><span>جرافيت</span></button>
+            <button type="button" class="theme-choice" data-theme-choice="coral" onclick="changeThemePreset('coral')"><span class="theme-swatch" style="background:linear-gradient(90deg,#7f2440 0 60%,#e87979 60% 80%,#ffdfd6 80% 100%)"></span><span>مرجاني</span></button>
           </div>
         </div>
         <div class="settings-card">
@@ -3653,6 +3676,24 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         <button type="button" class="store-booking-edit-convert" id="storeBookingEditConvertBtn" onclick="convertEditedStoreBookingToDelivery()">🛵 تحويل لدليفري</button>
         <button type="button" class="store-booking-edit-cancel" onclick="closeStoreBookingEditModal()">إلغاء</button>
         <button type="button" class="store-booking-edit-cancel" onclick="printEditedStoreBooking()">🧾 طباعة 80mm</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="themePickerModal" class="theme-picker-modal no-print" aria-hidden="true" onclick="if(event.target===this)closeThemePickerModal()">
+    <div class="theme-picker-dialog" role="dialog" aria-modal="true" aria-labelledby="themePickerTitle">
+      <div class="theme-picker-head"><div><span class="pos-kicker">APPEARANCE</span><h3 id="themePickerTitle">🎨 اختر ثيم الموقع</h3><p>تتغير ألوان الصفحات والنماذج والقوائم بالكامل.</p></div><button type="button" class="store-action-btn" onclick="closeThemePickerModal()" aria-label="إغلاق">✕</button></div>
+      <div class="theme-options theme-picker-grid" role="group" aria-label="اختيار ثيم الموقع">
+        <button type="button" class="theme-choice" data-theme-choice="hamkasha" onclick="changeThemePreset('hamkasha')"><span class="theme-swatch" style="background:linear-gradient(90deg,#7f1d1d 0 65%,#f59e0b 65% 100%)"></span><span>حمكشة</span></button>
+        <button type="button" class="theme-choice" data-theme-choice="ocean" onclick="changeThemePreset('ocean')"><span class="theme-swatch" style="background:linear-gradient(90deg,#0f4c5c 0 65%,#38bdf8 65% 100%)"></span><span>محيطي</span></button>
+        <button type="button" class="theme-choice" data-theme-choice="emerald" onclick="changeThemePreset('emerald')"><span class="theme-swatch" style="background:linear-gradient(90deg,#065f46 0 65%,#34d399 65% 100%)"></span><span>زمردي</span></button>
+        <button type="button" class="theme-choice" data-theme-choice="violet" onclick="changeThemePreset('violet')"><span class="theme-swatch" style="background:linear-gradient(90deg,#312e81 0 65%,#a78bfa 65% 100%)"></span><span>بنفسجي</span></button>
+        <button type="button" class="theme-choice" data-theme-choice="sunset" onclick="changeThemePreset('sunset')"><span class="theme-swatch" style="background:linear-gradient(90deg,#9a3412 0 65%,#fb923c 65% 100%)"></span><span>غروب</span></button>
+        <button type="button" class="theme-choice" data-theme-choice="midnight" onclick="changeThemePreset('midnight')"><span class="theme-swatch" style="background:linear-gradient(90deg,#020617 0 65%,#fbbf24 65% 100%)"></span><span>منتصف الليل</span></button>
+        <button type="button" class="theme-choice" data-theme-choice="butcher" onclick="changeThemePreset('butcher')"><span class="theme-swatch" style="background:linear-gradient(90deg,#4a1118 0 55%,#b87333 55% 78%,#f4ead7 78% 100%)"></span><span>الجزارة</span></button>
+        <button type="button" class="theme-choice" data-theme-choice="aqua" onclick="changeThemePreset('aqua')"><span class="theme-swatch" style="background:linear-gradient(90deg,#073b43 0 58%,#0b7f89 58% 78%,#8de1dc 78% 100%)"></span><span>مائي هادئ</span></button>
+        <button type="button" class="theme-choice" data-theme-choice="graphite" onclick="changeThemePreset('graphite')"><span class="theme-swatch" style="background:linear-gradient(90deg,#273449 0 62%,#0891b2 62% 82%,#dce7ef 82% 100%)"></span><span>جرافيت</span></button>
+        <button type="button" class="theme-choice" data-theme-choice="coral" onclick="changeThemePreset('coral')"><span class="theme-swatch" style="background:linear-gradient(90deg,#7f2440 0 60%,#e87979 60% 80%,#ffdfd6 80% 100%)"></span><span>مرجاني</span></button>
       </div>
     </div>
   </div>
@@ -4613,6 +4654,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       document.querySelectorAll('.perm-users').forEach(el=>el.classList.toggle('hidden',!canUser('users')));
       document.querySelectorAll('.activity-only').forEach(el=>el.classList.toggle('hidden',!(currentUser && currentUser.role==='admin' && (isSuperUser() || canUser('users')))));
       document.querySelectorAll('.admin-only-settings').forEach(el=>el.classList.toggle('hidden',!(currentUser && currentUser.role==='admin')));
+      document.getElementById('themeQuickButton')?.classList.toggle('hidden',!canUseThemePicker());
       document.getElementById('usersPageAuthLock')?.classList.toggle('hidden',!!currentUser && canUser('users'));
       document.getElementById('usersPageContent')?.classList.toggle('hidden',!(currentUser && canUser('users')));
       document.querySelectorAll('.perm-customers').forEach(el=>el.classList.toggle('hidden',!canManageCustomers()));
@@ -4639,19 +4681,23 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     function resetAppSettings(){ localStorage.removeItem('hamaksha_app_settings'); localStorage.removeItem('hamaksha_theme'); applyStoreIdentity(DEFAULT_APP_SETTINGS); changeThemePreset('hamkasha',false); loadAppSettings(); const dp=document.getElementById('deliveryPrice'); if(dp) dp.value=DEFAULT_APP_SETTINGS.defaultDelivery; const status=document.getElementById('settingsSaveStatus'); if(status){status.innerText='↺ تمت استعادة الإعدادات الافتراضية.';status.classList.remove('hidden');setTimeout(()=>status.classList.add('hidden'),2500);} }
 
     const THEME_PRESETS = {
-      hamkasha: { primary:'#7f1d1d', secondary:'#f59e0b', bg:'#f6f7fb', surface:'#ffffff', soft:'#f8fafc', text:'#172033', muted:'#64748b', border:'#e5e7eb', sidebar:'#111827', accent:'#fbbf24', ring:'rgba(127,29,29,.18)', shadow:'rgba(15,23,42,.08)' },
-      ocean: { primary:'#0f4c5c', secondary:'#38bdf8', bg:'#f4f8fb', surface:'#ffffff', soft:'#f0f7fb', text:'#102a43', muted:'#627d98', border:'#dbe7ef', sidebar:'#0b1f2a', accent:'#38bdf8', ring:'rgba(56,189,248,.20)', shadow:'rgba(15,76,92,.10)' },
-      emerald: { primary:'#065f46', secondary:'#34d399', bg:'#f3f8f6', surface:'#ffffff', soft:'#f0fdf7', text:'#16352b', muted:'#647e73', border:'#dbe9e3', sidebar:'#08251d', accent:'#34d399', ring:'rgba(52,211,153,.20)', shadow:'rgba(6,95,70,.10)' },
-      violet: { primary:'#4338ca', secondary:'#a78bfa', bg:'#f6f5fb', surface:'#ffffff', soft:'#f4f3ff', text:'#25213b', muted:'#6b6680', border:'#e6e2f0', sidebar:'#1d1b3a', accent:'#c4b5fd', ring:'rgba(167,139,250,.20)', shadow:'rgba(67,56,202,.10)' },
-      sunset: { primary:'#9a3412', secondary:'#fb923c', bg:'#fbf7f3', surface:'#ffffff', soft:'#fff7ed', text:'#3b2118', muted:'#80675d', border:'#eee1d8', sidebar:'#2a1710', accent:'#fdba74', ring:'rgba(251,146,60,.20)', shadow:'rgba(154,52,18,.10)' },
-      midnight: { primary:'#0f172a', secondary:'#fbbf24', bg:'#0b1120', surface:'#111827', soft:'#172033', text:'#f8fafc', muted:'#94a3b8', border:'#263244', sidebar:'#020617', accent:'#fbbf24', ring:'rgba(251,191,36,.20)', shadow:'rgba(0,0,0,.28)' },
-      butcher: { primary:'#7f1d2d', secondary:'#b87333', bg:'#f4ead7', surface:'#fffaf2', soft:'#f8f0e3', text:'#2f211b', muted:'#76645a', border:'#e3d2bd', sidebar:'#211519', accent:'#d89b5b', ring:'rgba(127,29,45,.20)', shadow:'rgba(67,35,24,.12)' }
+      hamkasha: { primary:'#7f1d1d', secondary:'#f59e0b', bg:'#f6f7fb', surface:'#ffffff', soft:'#f8fafc', text:'#172033', muted:'#536174', border:'#d9e0e8', sidebar:'#111827', accent:'#fbbf24', ring:'rgba(127,29,29,.18)', shadow:'rgba(15,23,42,.08)' },
+      ocean: { primary:'#0f4c5c', secondary:'#38bdf8', bg:'#f4f8fb', surface:'#ffffff', soft:'#f0f7fb', text:'#102a43', muted:'#506b84', border:'#d4e2eb', sidebar:'#0b1f2a', accent:'#38bdf8', ring:'rgba(56,189,248,.20)', shadow:'rgba(15,76,92,.10)' },
+      emerald: { primary:'#065f46', secondary:'#34d399', bg:'#f3f8f6', surface:'#ffffff', soft:'#f0fdf7', text:'#16352b', muted:'#52695f', border:'#d3e3db', sidebar:'#08251d', accent:'#34d399', ring:'rgba(52,211,153,.20)', shadow:'rgba(6,95,70,.10)' },
+      violet: { primary:'#4338ca', secondary:'#a78bfa', bg:'#f6f5fb', surface:'#ffffff', soft:'#f4f3ff', text:'#25213b', muted:'#5e5871', border:'#dfdbea', sidebar:'#1d1b3a', accent:'#c4b5fd', ring:'rgba(167,139,250,.20)', shadow:'rgba(67,56,202,.10)' },
+      sunset: { primary:'#9a3412', secondary:'#fb923c', bg:'#fbf7f3', surface:'#ffffff', soft:'#fff7ed', text:'#3b2118', muted:'#6d554b', border:'#eadbd1', sidebar:'#2a1710', accent:'#fdba74', ring:'rgba(251,146,60,.20)', shadow:'rgba(154,52,18,.10)' },
+      midnight: { primary:'#0f172a', secondary:'#fbbf24', bg:'#0b1120', surface:'#111827', soft:'#172033', text:'#f8fafc', muted:'#c0cad7', border:'#354257', sidebar:'#020617', accent:'#fbbf24', ring:'rgba(251,191,36,.20)', shadow:'rgba(0,0,0,.28)' },
+      butcher: { primary:'#7f1d2d', secondary:'#b87333', bg:'#f4ead7', surface:'#fffaf2', soft:'#f8f0e3', text:'#2f211b', muted:'#65534a', border:'#dfcbb3', sidebar:'#211519', accent:'#d89b5b', ring:'rgba(127,29,45,.20)', shadow:'rgba(67,35,24,.12)' },
+      aqua: { primary:'#0b6670', secondary:'#128c96', bg:'#edf8f8', surface:'#ffffff', soft:'#e8f5f5', text:'#12343a', muted:'#48666b', border:'#c6dfe1', sidebar:'#073b43', accent:'#65d6d0', ring:'rgba(11,102,112,.18)', shadow:'rgba(7,59,67,.10)' },
+      graphite: { primary:'#334155', secondary:'#087e9b', bg:'#f2f5f8', surface:'#ffffff', soft:'#eaf0f5', text:'#1e293b', muted:'#536477', border:'#d3dde7', sidebar:'#172233', accent:'#22b8cf', ring:'rgba(8,126,155,.18)', shadow:'rgba(30,41,59,.10)' },
+      coral: { primary:'#7f2440', secondary:'#b83e5c', bg:'#fff5f5', surface:'#ffffff', soft:'#fff0ee', text:'#3c2029', muted:'#70515b', border:'#ecd5d8', sidebar:'#351a27', accent:'#f29a83', ring:'rgba(184,62,92,.18)', shadow:'rgba(86,29,50,.10)' }
     };
 
     function applyThemeVars(theme) {
       const root=document.documentElement, body=document.body;
       root.style.setProperty('--primary-color', theme.primary);
       root.style.setProperty('--secondary-color', theme.secondary);
+      root.style.setProperty('--accent-color', theme.accent||theme.secondary);
       root.style.setProperty('--bg-color', theme.bg);
       root.style.setProperty('--surface-color', theme.surface);
       root.style.setProperty('--surface-soft', theme.soft);
@@ -4668,9 +4714,15 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     function changeThemePreset(name, persist=true) {
       const theme=THEME_PRESETS[name] || THEME_PRESETS.hamkasha;
       applyThemeVars(theme);
+      document.body.dataset.themePreset=THEME_PRESETS[name]?name:'hamkasha';
       document.querySelectorAll('[data-theme-choice]').forEach(btn=>btn.classList.toggle('active', btn.dataset.themeChoice===name));
       if(persist) localStorage.setItem('hamaksha_theme', name);
     }
+
+    function canUseThemePicker(){return APP_MODE==='staff'&&!!currentUser&&['admin','cashier'].includes(currentUser.role);}
+    function openThemePickerModal(){if(!canUseThemePicker())return alert('اختيار الثيم متاح للإدارة والكاشير فقط.');const modal=document.getElementById('themePickerModal');if(!modal)return;if(modal.parentElement!==document.body)document.body.appendChild(modal);modal.classList.add('open');modal.setAttribute('aria-hidden','false');}
+    function closeThemePickerModal(){const modal=document.getElementById('themePickerModal');modal?.classList.remove('open');modal?.setAttribute('aria-hidden','true');}
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('themePickerModal')?.classList.contains('open'))closeThemePickerModal();});
 
     function changeTheme(primary, secondary, bg, isDark = false) {
       /* توافق خلفي مع الاستدعاءات القديمة */
