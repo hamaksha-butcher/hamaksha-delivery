@@ -765,6 +765,16 @@
     .pos-tab.active{background:var(--surface-color);color:var(--text-color);box-shadow:0 4px 10px rgba(15,23,42,.08);position:relative;}
     .pos-tab.active:after{content:'';position:absolute;left:15%;right:15%;bottom:0;height:2px;background:var(--primary-color);border-radius:999px;}
     .pos-tab-muted{opacity:.6;}
+    /* تغيير: تفعيل تبويب العروض وإظهار عناصر العرض وسعرها بوضوح. */
+    .pos-tabs .pos-tab{cursor:pointer;}
+    .pos-offer-card{position:relative;}
+    .pos-offer-badge{position:absolute;top:9px;left:9px;padding:4px 7px;border-radius:999px;background:#fff1f2;color:#be123c;font-size:9px;font-weight:1000;}
+    .pos-offer-prices{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;}
+    .pos-offer-old-price{font-size:10px;color:#94a3b8;text-decoration:line-through;}
+    .pos-offer-new-price{font-size:12px;font-weight:1000;color:#b42332;}
+    .pos-offer-empty{grid-column:1/-1;display:grid;place-items:center;min-height:240px;padding:24px;border:1px dashed var(--border-color);border-radius:18px;background:var(--surface-soft);color:var(--muted-color);text-align:center;font-size:12px;font-weight:800;}
+    .price-item-offer-action{padding:5px 8px;border:1px solid #fecdd3;border-radius:8px;background:#fff1f2;color:#be123c;font-size:9px;font-weight:900;cursor:pointer;}
+    .price-item-offer-action.active{border-color:#86efac;background:#f0fdf4;color:#15803d;}
     .pos-catalog-search{width:100%;border:1px solid var(--border-color);background:var(--surface-color);color:var(--text-color);border-radius:12px;padding:10px 34px 10px 10px;font-size:10px;outline:none;}
     .pos-catalog-search:focus{border-color:var(--primary-color);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary-color) 9%,transparent);}
     .pos-search-icon{position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--muted-color);font-size:18px;line-height:1;}
@@ -2064,8 +2074,8 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
   <!-- كتالوج المنتجات / يمين -->
   <section class="pos-panel pos-catalog-panel">
     <div class="pos-tabs">
-      <button type="button" class="pos-tab active" id="posProductsTab">المنتجات</button>
-      <span class="pos-tab-muted">🔥 عروض</span>
+      <button type="button" class="pos-tab active" id="posProductsTab" onclick="setNewOrderCatalogTab('products')">المنتجات</button>
+      <button type="button" class="pos-tab" id="posOffersTab" onclick="setNewOrderCatalogTab('offers')">🔥 عروض</button>
     </div>
     <div class="pos-catalog-head">
       <div>
@@ -3036,6 +3046,20 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         <input type="text" id="priceUnit" value="كيلو" class="w-full border p-2.5 rounded-xl text-xs">
       </div>
       <button onclick="savePriceItem()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">حفظ الصنف 💾</button>
+    </div>
+  </div>
+
+  <!-- تغيير: نافذة إعداد/إيقاف عرض المنتج مع الاحتفاظ بسعره الأصلي. -->
+  <div id="priceOfferModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 text-right shadow-2xl border">
+      <div class="flex justify-between items-center border-b pb-2"><h3 class="font-bold text-sm text-gray-800">🔥 إعداد عرض للمنتج</h3><button type="button" onclick="closePriceOfferModal()" class="text-gray-400 hover:text-gray-600 font-bold">✕</button></div>
+      <input type="hidden" id="priceOfferKey">
+      <div><label class="block text-[11px] font-bold text-gray-700 mb-1">المنتج</label><input id="priceOfferName" readonly class="w-full border p-2.5 rounded-xl text-xs bg-gray-50"></div>
+      <div><label class="block text-[11px] font-bold text-gray-700 mb-1">السعر الأصلي (ج.م)</label><input id="priceOfferBase" readonly type="number" class="w-full border p-2.5 rounded-xl text-xs font-mono bg-gray-50"></div>
+      <label class="flex items-center gap-2 p-3 rounded-xl border bg-rose-50 text-xs font-bold text-rose-800"><input type="checkbox" id="priceOfferEnabled" checked> تفعيل العرض لهذا المنتج</label>
+      <div><label class="block text-[11px] font-bold text-gray-700 mb-1">سعر العرض (ج.م)</label><input id="priceOfferValue" type="number" min="0" step="0.01" class="w-full border p-2.5 rounded-xl text-xs font-mono font-bold" placeholder="أدخل سعرًا أقل من السعر الأصلي"></div>
+      <p class="text-[10px] leading-5 text-gray-500">سيظل السعر الأصلي محفوظًا، وسيظهر سعر العرض في صفحة الطلب والفاتورة عند اختياره.</p>
+      <button type="button" onclick="saveProductOffer()" class="w-full bg-rose-700 hover:bg-rose-800 text-white font-bold py-2.5 rounded-xl text-xs shadow">حفظ العرض 💾</button>
     </div>
   </div>
 
@@ -4314,6 +4338,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     let newOrderCatalogMain = '';
     let newOrderCatalogSub = '';
     let newOrderCatalogSearch = '';
+    let newOrderCatalogTab = 'products';
     /* تغيير: قيمة منفصلة لفتح الأصناف التي لا تنتمي إلى قسم فرعي مسمى. */
     const DIRECT_SUBCATEGORY_KEY='__direct__';
     function getNewOrderCatalogData(){
@@ -4323,6 +4348,8 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         main:item.mainCategory||item.main||'أصناف أخرى',
         sub:item.subCategory||item.sub||'',
         price:Number(item.price||0),
+        offerPrice:Number(item.offerPrice||0),
+        isOffer:item.isOffer===true||item.isOffer==='true'||Number(item.isOffer)===1,
         priceDisplay:menuPriceText(item),
         unit:item.unit||'كيلو'
       }));
@@ -4331,6 +4358,18 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       const rows=getNewOrderCatalogData();
       const search=String(newOrderCatalogSearch||'').trim().toLowerCase();
       return search?rows.filter(r=>`${r.name} ${r.main} ${r.sub}`.toLowerCase().includes(search)):rows;
+    }
+    /* تغيير: التبديل بين كتالوج المنتجات والعروض النشطة. */
+    function setNewOrderCatalogTab(tab){
+      newOrderCatalogTab=tab==='offers'?'offers':'products';
+      newOrderCatalogMain='';newOrderCatalogSub='';
+      document.getElementById('posProductsTab')?.classList.toggle('active',newOrderCatalogTab==='products');
+      document.getElementById('posOffersTab')?.classList.toggle('active',newOrderCatalogTab==='offers');
+      const heading=document.querySelector('#orderForm .pos-catalog-head h3');
+      const description=document.querySelector('#orderForm .pos-catalog-head p');
+      if(heading)heading.innerText=newOrderCatalogTab==='offers'?'🔥 العروض المتاحة':'🧾 اختار الصنف';
+      if(description)description.innerText=newOrderCatalogTab==='offers'?'اختر منتجًا من العروض النشطة بالسعر المخفّض.':'ابدأ بالقسم الرئيسي ثم اختر الصنف والسعر والكمية.';
+      renderNewOrderCatalog();
     }
     let editOrderCatalogMain = '';
     let editOrderCatalogSub = '';
@@ -4407,9 +4446,17 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       if(!catEl||!prodEl)return;
       const rows=getCatalogMatches();
       const mains=[...new Set(rows.map(r=>r.main))];
-      if(!newOrderCatalogMain||!mains.includes(newOrderCatalogMain)){newOrderCatalogMain='';newOrderCatalogSub='';}
       const addBar=document.getElementById('invoiceNewAddBar');
       const selectedKey=document.getElementById('invoiceItemProduct')?.value||'';
+      if(newOrderCatalogTab==='offers'){
+        const offers=rows.filter(r=>r.isOffer&&r.offerPrice>0&&r.price>r.offerPrice);
+        catEl.style.display='none';prodEl.style.display='block';
+        prodEl.innerHTML=offers.length?`<div class="pos-items-grid">${offers.map(r=>`<button type="button" class="pos-product-card pos-offer-card${r.key===selectedKey?' selected':''}" data-key="${escapeHtml(r.key)}" onclick="chooseNewInvoiceProduct(${htmlJsArg(r.key)})"><span class="pos-offer-badge">🔥 عرض</span><span class="pos-product-name">${escapeHtml(r.name)}</span><span class="pos-offer-prices"><del class="pos-offer-old-price">${escapeHtml(r.priceDisplay)} ج.م/${escapeHtml(r.unit)}</del><strong class="pos-offer-new-price">${r.offerPrice.toLocaleString('ar-EG')} ج.م/${escapeHtml(r.unit)}</strong></span></button>`).join('')}</div>`:'<div class="pos-offer-empty"><div><div class="text-3xl mb-2">🏷️</div><b>لا توجد عروض نشطة حاليًا</b><p class="mt-2 font-normal">يمكنك تفعيل العروض من صفحة أسعار اللحوم.</p></div></div>';
+        const hint=document.getElementById('invoiceCatalogHint');if(hint)hint.innerText=offers.length?`${offers.length} عروض نشطة`:'لا توجد عروض';
+        if(addBar)addBar.style.display=selectedKey?'grid':'none';
+        return;
+      }
+      if(!newOrderCatalogMain||!mains.includes(newOrderCatalogMain)){newOrderCatalogMain='';newOrderCatalogSub='';}
       if(!newOrderCatalogMain){
         catEl.style.display='grid';
         catEl.innerHTML=mains.map(main=>{const count=rows.filter(r=>r.main===main).length;const subCount=new Set(rows.filter(r=>r.main===main).map(r=>r.sub||'')).size;return `<button type="button" class="pos-category-card" onclick="selectNewOrderCategory(${htmlJsArg(main)})"><span class="pos-category-icon">${getCatalogMainCategoryIcon(main)}</span><b>${escapeHtml(main)}</b><small>${subCount} قسم فرعي · ${count} صنف</small></button>`;}).join('');
@@ -4447,6 +4494,9 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     function chooseNewInvoiceProduct(key){
       const select=document.getElementById('invoiceItemProduct');if(!select)return;
       select.value=key;handleInvoiceProductChange('new');
+      /* تغيير: تطبيق سعر العرض تلقائيًا على سعر الوحدة عند اختيار منتج مخفّض. */
+      const offerRow=getNewOrderCatalogData().find(r=>String(r.key)===String(key));
+      if(offerRow?.isOffer&&offerRow.offerPrice>0&&offerRow.offerPrice<offerRow.price){const priceInput=document.getElementById('invoiceItemUnitPrice');if(priceInput)priceInput.value=String(offerRow.offerPrice);}
       const label=document.getElementById('selectedInvoiceProductLabel');const opt=select.selectedOptions?.[0];
       if(label)label.innerText=opt?.dataset?.name||'الصنف المختار';
       document.querySelectorAll('#invoiceProductGrid .pos-product-card').forEach(b=>b.classList.toggle('selected',b.dataset.key===key));
@@ -6070,8 +6120,11 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
           });
           return `<section class="price-sub-group"><div class="price-sub-head"><div><b>${escapeHtml(sub||'أصناف مباشرة')}</b></div><span>${items.length} صنف</span></div><div class="price-sub-body">${items.map(({key,item,isOfficial})=>{
             const priceText=menuPriceText(item);const subText=item.subCategory||'';
-            const editButton=canEditPrices&&!String(key).startsWith('menu::')?`<div class="price-item-actions"><button class="price-item-action bg-blue-50 text-blue-700" onclick="openEditPriceModal('${escapeHtml(key)}')">✏️ تعديل</button><button class="price-item-action bg-red-50 text-red-700" onclick="deletePriceItem('${escapeHtml(key)}')">🗑️ حذف</button></div>`:'';
-            return `<article class="price-item-card"><div class="price-item-head"><div><div class="price-item-name">${escapeHtml(item.name||'صنف بدون اسم')}</div><div class="text-[8px] text-gray-400 font-bold mt-1">السعر لكل ${escapeHtml(item.unit||'كيلو')}</div></div><div class="price-item-value"><b>${escapeHtml(priceText)}</b><small>ج.م</small></div></div><div class="price-item-meta"><span>${isOfficial?'✓ منيو رسمي':escapeHtml(subText||main)}</span>${editButton}</div></article>`;
+            const editButton=canEditPrices&&!String(key).startsWith('menu::')?`<button class="price-item-action bg-blue-50 text-blue-700" onclick="openEditPriceModal(${htmlJsArg(key)})">✏️ تعديل</button><button class="price-item-action bg-red-50 text-red-700" onclick="deletePriceItem(${htmlJsArg(key)})">🗑️ حذف</button>`:'';
+            const offerButton=canEditPrices?`<button class="price-item-offer-action ${item.isOffer?'active':''}" onclick="openPriceOfferModal(${htmlJsArg(key)})">${item.isOffer?'🔥 تعديل العرض':'🏷️ إعداد عرض'}</button>`:'';
+            const actions=(editButton||offerButton)?`<div class="price-item-actions">${editButton}${offerButton}</div>`:'';
+            const offerBadge=item.isOffer&&Number(item.offerPrice)>0?`<small class="text-rose-700 font-black">عرض: ${Number(item.offerPrice).toLocaleString('ar-EG')} ج.م</small>`:'';
+            return `<article class="price-item-card"><div class="price-item-head"><div><div class="price-item-name">${escapeHtml(item.name||'صنف بدون اسم')}</div><div class="text-[8px] text-gray-400 font-bold mt-1">السعر لكل ${escapeHtml(item.unit||'كيلو')}</div></div><div class="price-item-value"><b>${escapeHtml(priceText)}</b><small>ج.م</small></div></div><div class="price-item-meta"><span>${isOfficial?'✓ منيو رسمي':escapeHtml(subText||main)} ${offerBadge}</span>${actions}</div></article>`;
           }).join('')}</div></section>`;
         }).join('');
         return `<section class="price-main-group"><div class="price-main-head"><div class="price-main-title"><span class="price-main-icon">🥩</span><div><b>${escapeHtml(main)}</b><small>${mainEntries.length} صنف · ${subNames.length} قسم فرعي</small></div></div><button type="button" class="price-group-toggle" onclick="setPriceMainCollapsed(${htmlJsArg(main)},${!collapsed})">${collapsed?'▾ عرض الأصناف':'▴ إخفاء الأصناف'}</button></div>${collapsed?'':`<div class="price-main-body">${body}</div>`}</section>`;
@@ -6130,6 +6183,40 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
     function closeEditPriceModal() {
       document.getElementById('editPriceModal').classList.add('hidden');
+    }
+
+    /* تغيير: إعداد سعر عرض مستقل مع الحفاظ على السعر الأساسي في عقدة prices الحالية. */
+    function openPriceOfferModal(key){
+      if(!canUser('prices'))return alert('إعداد العروض متاح لمن لديه صلاحية الأسعار فقط.');
+      const entry=getMergedMenuPriceEntries().find(row=>String(row.key)===String(key));
+      if(!entry)return alert('تعذر العثور على المنتج. حدّث قائمة الأسعار ثم حاول مرة أخرى.');
+      document.getElementById('priceOfferKey').value=key;
+      document.getElementById('priceOfferName').value=entry.item.name||'';
+      document.getElementById('priceOfferBase').value=Number(entry.item.price||0);
+      document.getElementById('priceOfferEnabled').checked=!!entry.item.isOffer;
+      document.getElementById('priceOfferValue').value=entry.item.offerPrice||'';
+      document.getElementById('priceOfferModal').classList.remove('hidden');
+    }
+    function closePriceOfferModal(){document.getElementById('priceOfferModal')?.classList.add('hidden');}
+    async function saveProductOffer(){
+      if(!canUser('prices'))return alert('إعداد العروض متاح لمن لديه صلاحية الأسعار فقط.');
+      const key=document.getElementById('priceOfferKey').value;
+      const entry=getMergedMenuPriceEntries().find(row=>String(row.key)===String(key));
+      if(!entry)return alert('تعذر العثور على المنتج.');
+      const enabled=!!document.getElementById('priceOfferEnabled').checked;
+      const basePrice=Number(entry.item.price||0),offerPrice=Number(document.getElementById('priceOfferValue').value||0);
+      if(enabled&&(!offerPrice||offerPrice>=basePrice))return alert('أدخل سعر عرض أكبر من صفر وأقل من السعر الأصلي.');
+      const matched=Object.entries(pricesCache||{}).find(([dbKey,item])=>dbKey===key||(entry.item.menuId&&String(item?.menuId||'')===String(entry.item.menuId)))||Object.entries(pricesCache||{}).find(([,item])=>normalizeMenuName(item?.name||'')===normalizeMenuName(entry.item.name||''));
+      if(!matched&&!enabled){closePriceOfferModal();return;}
+      try{
+        const patch={isOffer:enabled,offerPrice:enabled?offerPrice:null,offerUpdatedAt:Date.now(),offerUpdatedBy:currentUser.username};
+        let dbKey=matched?.[0];
+        if(dbKey)await db.ref('prices/'+dbKey).update(patch);
+        else{dbKey=db.ref('prices').push().key;await db.ref('prices/'+dbKey).set({...entry.item,...patch});}
+        await logActivity('update','price',`${enabled?'تفعيل عرض':'إيقاف عرض'} للمنتج ${entry.item.name}`,dbKey,{basePrice,offerPrice:enabled?offerPrice:null});
+        closePriceOfferModal();
+        alert(enabled?'تم حفظ العرض، وسيظهر في تبويب العروض ويُطبق سعره عند اختيار المنتج ✅':'تم إيقاف العرض بنجاح ✅');
+      }catch(error){console.error('Save product offer failed:',error);alert('تعذر حفظ العرض. تحقق من صلاحية التعديل على قائمة الأسعار ثم أعد المحاولة.');}
     }
 
     function savePriceItem() {
