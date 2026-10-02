@@ -3182,6 +3182,32 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     </section>
 
     <!-- 4️⃣ واجهة المندوب -->
+    <section id="sec-cash-custody" class="hidden space-y-5 max-w-7xl mx-auto">
+      <div class="rounded-3xl bg-gradient-to-l from-emerald-900 to-emerald-700 text-white p-6 shadow-xl">
+        <div class="text-xs font-bold text-emerald-100">متابعة النقدية اليومية</div><h2 class="text-2xl font-black mt-1">💵 عهدة وتسوية المندوبين</h2>
+        <p class="text-xs text-emerald-100 mt-2">تُضاف طلبات الكاش تلقائيًا للعهدة عند تأكيد التسليم. سجّل التوريدات وأقفل اليوم بعد مراجعة العجز.</p>
+      </div>
+      <div class="bg-white rounded-3xl border border-gray-100 shadow p-5 space-y-4">
+        <div class="grid sm:grid-cols-3 gap-3">
+          <label class="text-xs font-bold">اليوم<input id="cashCustodyDate" type="date" class="w-full border rounded-xl p-3 mt-1" onchange="renderCashCustody()"></label>
+          <label class="text-xs font-bold">المندوب<select id="cashCustodyDriver" class="w-full border rounded-xl p-3 mt-1" onchange="renderCashCustody()"><option value="">كل المندوبين</option></select></label>
+          <div class="rounded-2xl bg-amber-50 p-3 text-xs font-bold text-amber-900">العجز = قيمة طلبات الكاش المسلّمة − إجمالي التوريدات المسجلة.</div>
+        </div>
+        <div id="cashCustodySummary" class="grid sm:grid-cols-4 gap-3"></div>
+        <div class="overflow-x-auto"><table class="w-full text-right text-xs"><thead class="bg-gray-50"><tr><th class="p-3">المندوب</th><th class="p-3">طلبات كاش مسلّمة</th><th class="p-3">المطلوب توريده</th><th class="p-3">المورّد</th><th class="p-3">العجز</th><th class="p-3">الإجراء</th></tr></thead><tbody id="cashCustodyRows"></tbody></table></div>
+      </div>
+      <div class="grid lg:grid-cols-2 gap-4">
+        <form class="bg-white rounded-3xl border p-5 space-y-3" onsubmit="recordDriverCashDeposit(event)">
+          <h3 class="font-black text-sm">➕ تسجيل توريد مندوب</h3><p class="text-xs text-gray-500">كل توريد يُحفظ كسجل مستقل ولا يُحذف عند إقفال اليوم.</p>
+          <label class="block text-xs font-bold">المندوب<select id="cashDepositDriver" required class="w-full border rounded-xl p-3 mt-1"></select></label>
+          <label class="block text-xs font-bold">المبلغ المورّد<input id="cashDepositAmount" type="number" min="0.01" step="0.01" required class="w-full border rounded-xl p-3 mt-1" placeholder="0.00"></label>
+          <label class="block text-xs font-bold">ملاحظة / رقم إيصال<input id="cashDepositNote" class="w-full border rounded-xl p-3 mt-1" placeholder="اختياري"></label>
+          <button class="bg-emerald-700 text-white rounded-xl px-5 py-3 text-xs font-black">حفظ التوريد</button>
+        </form>
+        <div class="bg-white rounded-3xl border p-5 space-y-3"><div><h3 class="font-black text-sm">📒 سجل التوريدات والإقفالات</h3><p class="text-xs text-gray-500">السجل محفوظ بالتاريخ والمستخدم الذي سجّل العملية.</p></div><div id="cashCustodyHistory" class="space-y-2 max-h-80 overflow-auto"></div></div>
+      </div>
+    </section>
+
     <section id="sec-driver" class="hidden space-y-5">
       <div id="driverAuthLock" class="bg-white rounded-3xl shadow-xl p-8 text-center max-w-md mx-auto space-y-4 border border-amber-100">
         <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center mx-auto text-3xl shadow-sm">🛵</div>
@@ -3806,6 +3832,10 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
     const APP_MODE = new URLSearchParams(window.location.search).get('mode') === 'staff' ? 'staff' : 'customer';
     let allOrdersCache = {};
+    let driverCashDepositsCache = {};
+    let driverCashClosuresCache = {};
+    let driverCashDepositsRef = null;
+    let driverCashClosuresRef = null;
     let driverOrdersCache = {};
     let allUsersCache = {};
     let driverDirectoryCache = {};
@@ -4205,6 +4235,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       const allowed={
         'cashier-home':currentUser.role==='cashier',dashboard:currentUser.role==='admin',
         admin:currentUser.role==='admin'||currentUser.role==='cashier',
+        'cash-custody':currentUser.role==='admin',
         'order-history':canViewOrderHistory(),analytics:canUser('analytics'),prices:canUser('prices'),
         customers:canManageCustomers(),users:canUser('users'),
         activity:currentUser.role==='admin'&&(isSuperUser()||canUser('users')),
@@ -4222,6 +4253,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       // Permission guards
       if(tabName === 'cashier-home' && (!currentUser || currentUser.role !== 'cashier')) return alert('نقطة البيع مخصصة لحساب الكاشير فقط.');
       if(tabName === 'dashboard' && (!currentUser || currentUser.role !== 'admin')) return alert('لوحة التحكم الرئيسية مخصصة للإدارة فقط.');
+      if(tabName === 'cash-custody' && (!currentUser || currentUser.role !== 'admin')) return alert('تسويات عهدة المندوبين متاحة للإدارة فقط.');
       if(tabName === 'admin' && (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'cashier'))) return alert('الفواتير متاحة للإدارة والكاشير فقط.');
       if(tabName === 'order-history' && !canViewOrderHistory()) return alert('سجل الطلبات غير متاح لهذا الحساب.');
       if(tabName === 'analytics' && !canUser('analytics')) return alert('عذراً، لا تملك صلاحية الاطلاع على التقارير والداشبورد.');
@@ -4301,6 +4333,8 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         if(tabName === 'settings') loadAppSettings();
       } catch(err) { console.error('Settings render error:', err); }
 
+      if(tabName === 'cash-custody') loadCashCustody();
+
       try {
         if(tabName === 'profile') renderMyProfile();
       } catch(err) { console.error('Profile render error:', err); }
@@ -4339,6 +4373,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       { id:'cashier-home', icon:'🧾', label:'نقطة البيع', className:'tab-btn cashier-only' },
       { id:'admin', icon:'📝', label:'إنشاء طلب', className:'tab-btn' },
       { id:'order-history', icon:'📚', label:'سجل الطلبات', className:'tab-btn perm-order-history hidden' },
+      { id:'cash-custody', icon:'💵', label:'عهدة المندوبين', className:'tab-btn admin-only-settings hidden' },
       { id:'store-booking', icon:'🏪', label:'حجز المحل', className:'tab-btn' },
       { id:'store-bookings', icon:'📅', label:'سجل حجوزات المحل', className:'tab-btn perm-store-bookings hidden' },
       { id:'analytics', icon:'💰', label:'التقارير والتحصيل', className:'tab-btn perm-analytics hidden' },
@@ -4534,7 +4569,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       // تظل صلاحيات تعديل الطلبات أو حذفها محكومة بدوال الصلاحيات المنفصلة أدناه.
       staffOrdersRef = db.ref('orders');
       staffOrdersRef.on('value',snap=>{
-        allOrdersCache=snap.val()||{}; Object.keys(allOrdersCache).forEach(k=>enforceOrderLocationState(k,allOrdersCache[k])); processOrderNotifications(allOrdersCache); applyFilters(); renderQuickInvoiceProducts(); renderCashierHome();
+        allOrdersCache=snap.val()||{}; Object.keys(allOrdersCache).forEach(k=>enforceOrderLocationState(k,allOrdersCache[k])); processOrderNotifications(allOrdersCache); applyFilters(); renderQuickInvoiceProducts(); renderCashierHome();renderCashCustody();
         if(!document.getElementById('sec-dashboard').classList.contains('hidden')) renderDashboard();
         if(!document.getElementById('sec-analytics').classList.contains('hidden')) { renderAnalytics(); renderCommentsList(); }
         renderDashboardMap();
@@ -4701,6 +4736,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       document.querySelector('.perm-analytics')?.classList.toggle('hidden',!canUser('analytics'));
       document.querySelector('.perm-prices')?.classList.toggle('hidden',!canUser('prices'));
       document.getElementById('tab-dashboard')?.classList.toggle('hidden',!(currentUser&&currentUser.role==='admin'));
+      document.getElementById('tab-cash-custody')?.classList.toggle('hidden',!(currentUser&&currentUser.role==='admin'));
       document.getElementById('tab-cashier-home')?.classList.toggle('hidden',!(currentUser&&currentUser.role==='cashier'));
       document.getElementById('tab-store-booking')?.classList.toggle('hidden',!(currentUser && (currentUser.role==='admin' || canUser('storeBookings'))));
       document.getElementById('tab-store-bookings')?.classList.toggle('hidden',!(currentUser && (currentUser.role==='admin' || canUser('storeBookings'))));
@@ -5845,7 +5881,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
     // تغيير: كل تعديل تشغيلي للطلب يحفظ المستخدم والوقت مع سجل النشاط الحالي.
     function getOrderAuditUpdate(){return {updatedBy:String(currentUser?.username||'غير معروف'),updatedAt:Date.now()};}
-    function updateOrderStatus(orderKey, newStatus) { if(APP_MODE!=='staff'||!currentUser||(currentUser.role!=='admin'&&currentUser.role!=='cashier')||(currentUser.role==='cashier'&&!canUser('edit'))||!allOrdersCache[orderKey]) return; const before=allOrdersCache[orderKey].status,stopped=STOPPED_LOCATION_STATUSES.includes(newStatus);if(stopped)stopLocalOrderWatches(orderKey);db.ref('orders/'+orderKey).update({status:newStatus,...(stopped?{locationTrackingActive:false,lat:null,lng:null,custLat:null,custLng:null,locationUpdatedAt:null,customerLocationUpdatedAt:null,locationStoppedAt:Date.now()}:{}),...getOrderAuditUpdate()}).then(()=>logActivity('update','order',`تحديث حالة الطلب #${allOrdersCache[orderKey].orderId||orderKey} إلى ${newStatus}`,orderKey,{before,after:newStatus})).catch(err=>{console.error(err);alert('تعذر تحديث حالة الطلب.');}); }
+    function updateOrderStatus(orderKey, newStatus) { if(APP_MODE!=='staff'||!currentUser||(currentUser.role!=='admin'&&currentUser.role!=='cashier')||(currentUser.role==='cashier'&&!canUser('edit'))||!allOrdersCache[orderKey]) return; const order=allOrdersCache[orderKey],before=order.status,stopped=STOPPED_LOCATION_STATUSES.includes(newStatus);if(stopped)stopLocalOrderWatches(orderKey);db.ref('orders/'+orderKey).update({status:newStatus,...(newStatus==='تم التسليم بنجاح ✅'?{deliveryDate:new Date().toISOString().slice(0,10)}:{}),...(stopped?{locationTrackingActive:false,lat:null,lng:null,custLat:null,custLng:null,locationUpdatedAt:null,customerLocationUpdatedAt:null,locationStoppedAt:Date.now()}:{}),...getOrderAuditUpdate()}).then(async()=>{await recordCashCustodyOnDelivery(orderKey,order,newStatus);logActivity('update','order',`تحديث حالة الطلب #${order.orderId||orderKey} إلى ${newStatus}`,orderKey,{before,after:newStatus});}).catch(err=>{console.error(err);alert('تعذر تحديث حالة الطلب.');}); }
 
     function getPaymentText(method) {
       if(method === 'vodafone') return '📱 فودافون كاش';
@@ -7346,7 +7382,35 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     function getDriverOrderKeyFromInput(id){const typed=String(id||'').trim();if(!typed)return null;if(driverOrdersCache[typed])return typed;return Object.keys(driverOrdersCache).find(k=>driverOrdersCache[k]?.orderId===typed)||(Object.keys(driverOrdersCache).find(k=>String(driverOrdersCache[k]?.orderId||'').includes(typed))||null);}
     function populateDriverOrderCard(key,data){currentDriverOrderKey=key;enforceOrderLocationState(key,data);renderOrderLiveMap(data,'driver');document.getElementById('orderId').value=data.orderId||key;document.getElementById('dCustName').innerText=data.customerName||data.name||'--';document.getElementById('dCustAddress').innerText=data.address||'--';document.getElementById('dPayMethod').innerText=getPaymentText(data.paymentMethod);document.getElementById('dTotalCash').innerText=(data.totalCash||((data.orderPrice||0)+(data.deliveryPrice||0)+(data.paymentFee||0)))+' ج.م';const driverItems=normalizeInvoiceItems(data.items||[]),driverItemsEl=document.getElementById('driverInvoiceItems');if(driverItemsEl)driverItemsEl.innerHTML=driverItems.length?`<table class="invoice-details-table"><thead><tr><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead><tbody>${driverItems.map(it=>`<tr><td><b>${escapeHtml(it.name)}</b></td><td>${Number(it.qty).toLocaleString('ar-EG')}</td><td>${Number(it.unitPrice).toLocaleString('ar-EG')} ج.م</td><td><b>${Number(it.total).toLocaleString('ar-EG')} ج.م</b></td></tr>`).join('')}</tbody></table>`:'<div class="text-[10px] text-gray-400 text-center py-2">لا توجد أصناف مفصلة.</div>';document.getElementById('dStatus').innerText=data.status||'--';document.getElementById('driverStatusSelect').value=data.status||'جاري تحضير اللحوم 🥩';document.getElementById('driverOrderCard').classList.remove('hidden');setTimeout(()=>renderOrderLiveMap(data,'driver'),180);}
     function fetchDriverOrder(keyOverride=null){if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='driver')return;const key=getDriverOrderKeyFromInput(keyOverride||document.getElementById('orderId').value.trim());if(!key)return alert('عذراً، هذا الطلب غير مسند إليك أو غير موجود ضمن طلباتك.');populateDriverOrderCard(key,driverOrdersCache[key]);}
-    function driverChangeStatus(newStatus){if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='driver')return;const key=currentDriverOrderKey||getDriverOrderKeyFromInput(document.getElementById('orderId').value.trim());if(!key||!driverOrdersCache[key])return alert('اختر طلباً من طلباتك أولاً.');const stopped=STOPPED_LOCATION_STATUSES.includes(newStatus);if(stopped)stopLocalOrderWatches(key);db.ref('orders/'+key).update({status:newStatus,...(stopped?{locationTrackingActive:false,lat:null,lng:null,custLat:null,custLng:null,locationUpdatedAt:null,customerLocationUpdatedAt:null,locationStoppedAt:Date.now()}:{}),...getOrderAuditUpdate()}).then(()=>{document.getElementById('driverStatus').innerText='✅ تم تحديث حالة الطلب إلى: '+newStatus;logActivity('update','order',`تحديث حالة الطلب #${driverOrdersCache[key].orderId||key} إلى ${newStatus}`,key,{status:newStatus,updatedBy:currentUser.username});}).catch(err=>{console.error(err);alert('تعذر تحديث حالة الطلب.');});}
+    function driverChangeStatus(newStatus){if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='driver')return;const key=currentDriverOrderKey||getDriverOrderKeyFromInput(document.getElementById('orderId').value.trim());if(!key||!driverOrdersCache[key])return alert('اختر طلباً من طلباتك أولاً.');const order=driverOrdersCache[key],stopped=STOPPED_LOCATION_STATUSES.includes(newStatus);if(stopped)stopLocalOrderWatches(key);db.ref('orders/'+key).update({status:newStatus,...(newStatus==='تم التسليم بنجاح ✅'?{deliveryDate:new Date().toISOString().slice(0,10)}:{}),...(stopped?{locationTrackingActive:false,lat:null,lng:null,custLat:null,custLng:null,locationUpdatedAt:null,customerLocationUpdatedAt:null,locationStoppedAt:Date.now()}:{}),...getOrderAuditUpdate()}).then(async()=>{await recordCashCustodyOnDelivery(key,order,newStatus);document.getElementById('driverStatus').innerText='✅ تم تحديث حالة الطلب إلى: '+newStatus;logActivity('update','order',`تحديث حالة الطلب #${order.orderId||key} إلى ${newStatus}`,key,{status:newStatus,updatedBy:currentUser.username});}).catch(err=>{console.error(err);alert('تعذر تحديث حالة الطلب.');});}
+    function cashCustodySafeKey(value){return encodeURIComponent(String(value||'unknown'));}
+    function loadCashCustody(){
+      if(!currentUser||currentUser.role!=='admin')return;
+      const dateEl=document.getElementById('cashCustodyDate');if(dateEl&&!dateEl.value)dateEl.value=new Date().toISOString().slice(0,10);
+      if(!driverCashDepositsRef){driverCashDepositsRef=db.ref('driverCashDeposits');driverCashDepositsRef.on('value',s=>{driverCashDepositsCache=s.val()||{};renderCashCustody();});}
+      if(!driverCashClosuresRef){driverCashClosuresRef=db.ref('driverCashClosures');driverCashClosuresRef.on('value',s=>{driverCashClosuresCache=s.val()||{};renderCashCustody();});}
+      renderCashCustody();
+    }
+    function getCashCustodyDayData(date){
+      const orders=Object.entries(allOrdersCache||{}).filter(([,o])=>o&&o.paymentMethod==='cash'&&o.status==='تم التسليم بنجاح ✅'&&(o.deliveryDate||o.date)===date);
+      const deposits=[];Object.entries(driverCashDepositsCache||{}).forEach(([driver,rows])=>Object.entries(rows||{}).forEach(([id,r])=>{if(r&&r.date===date)deposits.push({...r,id,driver:r.driver||decodeURIComponent(driver)});}));
+      return {orders,deposits};
+    }
+    function renderCashCustody(){
+      const rowsEl=document.getElementById('cashCustodyRows');if(!rowsEl)return;
+      const date=document.getElementById('cashCustodyDate')?.value||new Date().toISOString().slice(0,10),selected=document.getElementById('cashCustodyDriver')?.value||'';
+      const {orders,deposits}=getCashCustodyDayData(date),drivers=[...new Set([...orders.map(([,o])=>o.driver),...deposits.map(d=>d.driver)].filter(x=>x&&x!=='غير محدد'))].sort((a,b)=>a.localeCompare(b,'ar'));
+      ['cashCustodyDriver','cashDepositDriver'].forEach(id=>{const s=document.getElementById(id);if(!s)return;const old=s.value;s.innerHTML=(id==='cashCustodyDriver'?'<option value="">كل المندوبين</option>':'<option value="">اختر المندوب</option>')+drivers.map(d=>`<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('');if([...s.options].some(o=>o.value===old))s.value=old;});
+      const visibleDrivers=selected?[selected]:drivers;let expectedAll=0,depositedAll=0;
+      const html=visibleDrivers.map(driver=>{const driverOrders=orders.filter(([,o])=>o.driver===driver),driverDeposits=deposits.filter(d=>d.driver===driver),expected=driverOrders.reduce((n,[,o])=>n+Number(o.totalCash||((o.orderPrice||0)+(o.deliveryPrice||0)+(o.paymentFee||0))),0),deposited=driverDeposits.reduce((n,d)=>n+Number(d.amount||0),0),shortage=Math.max(0,expected-deposited);expectedAll+=expected;depositedAll+=deposited;return `<tr class="border-t"><td class="p-3 font-black">${escapeHtml(driver)}</td><td class="p-3">${driverOrders.length.toLocaleString('ar-EG')}</td><td class="p-3 font-bold">${expected.toLocaleString('ar-EG')} ج.م</td><td class="p-3 text-emerald-700 font-bold">${deposited.toLocaleString('ar-EG')} ج.م</td><td class="p-3 ${shortage?'text-red-700':'text-emerald-700'} font-black">${shortage.toLocaleString('ar-EG')} ج.م</td><td class="p-3"><button type="button" class="rounded-lg bg-amber-100 text-amber-900 px-3 py-2 font-bold" onclick="closeDriverCashDay(${htmlJsArg(driver)},${expected},${deposited})">مراجعة وإقفال اليوم</button></td></tr>`;}).join('');
+      const summary=document.getElementById('cashCustodySummary');if(summary)summary.innerHTML=[["طلبات كاش مسلّمة",orders.filter(([,o])=>!selected||o.driver===selected).length.toLocaleString('ar-EG')],["قيمة العهدة",expectedAll.toLocaleString('ar-EG')+' ج.م'],["إجمالي التوريد",depositedAll.toLocaleString('ar-EG')+' ج.م'],["العجز الحالي",Math.max(0,expectedAll-depositedAll).toLocaleString('ar-EG')+' ج.م']].map(([a,b])=>`<div class="rounded-2xl border bg-gray-50 p-4"><div class="text-[10px] text-gray-500">${a}</div><b class="block mt-1 text-lg">${b}</b></div>`).join('');
+      rowsEl.innerHTML=html||'<tr><td colspan="6" class="p-5 text-center text-gray-400">لا توجد طلبات كاش مسلّمة أو توريدات لهذا اليوم.</td></tr>';
+      const history=document.getElementById('cashCustodyHistory');if(history){const events=[];deposits.filter(d=>!selected||d.driver===selected).forEach(d=>events.push({at:d.createdAt,html:`<b>توريد · ${escapeHtml(d.driver)}</b> — ${Number(d.amount||0).toLocaleString('ar-EG')} ج.م · ${escapeHtml(d.note||'بدون ملاحظة')} <span class="text-gray-400">· ${escapeHtml(d.createdBy||'')}</span>`}));Object.entries(driverCashClosuresCache||{}).forEach(([driver,records])=>Object.entries(records||{}).forEach(([id,c])=>{if(c?.date===date&&(!selected||c.driver===selected))events.push({at:c.createdAt,html:`<b>إقفال يوم · ${escapeHtml(c.driver)}</b> — عجز مسجل ${Number(c.shortage||0).toLocaleString('ar-EG')} ج.م · ${escapeHtml(c.note||'')} <span class="text-gray-400">· ${escapeHtml(c.closedBy||'')}</span>`});}));history.innerHTML=events.sort((a,b)=>Number(b.at||0)-Number(a.at||0)).map(e=>`<div class="rounded-xl border bg-gray-50 p-3 text-xs">${e.html}<div class="text-[10px] text-gray-400 mt-1">${e.at?new Date(e.at).toLocaleString('ar-EG'):''}</div></div>`).join('')||'<div class="text-xs text-gray-400 text-center p-5">لا توجد توريدات أو إقفالات مسجلة لهذا اليوم.</div>';}
+    }
+    async function recordDriverCashDeposit(e){e.preventDefault();if(!currentUser||currentUser.role!=='admin')return;const driver=document.getElementById('cashDepositDriver').value,amount=Number(document.getElementById('cashDepositAmount').value),note=document.getElementById('cashDepositNote').value.trim();if(!driver||!Number.isFinite(amount)||amount<=0)return alert('اختر المندوب واكتب مبلغ توريد صحيحًا.');const date=document.getElementById('cashCustodyDate').value||new Date().toISOString().slice(0,10),record={driver,amount,note,date,createdAt:Date.now(),createdBy:currentUser.username||'الإدارة'};try{await db.ref(`driverCashDeposits/${cashCustodySafeKey(driver)}`).push(record);logActivity('create','driverCashDeposit',`تسجيل توريد ${amount} ج.م للمندوب ${driver}`,null,record);e.target.reset();renderCashCustody();}catch(err){console.error(err);alert('تعذر حفظ التوريد.');}}
+    async function closeDriverCashDay(driver,expected,deposited){if(!currentUser||currentUser.role!=='admin')return;const shortage=Math.max(0,Number(expected)-Number(deposited)),note=prompt(shortage?`العجز ${shortage.toLocaleString('ar-EG')} ج.م. اكتب سبب العجز أو كيفية تسويته لإقفال اليوم:`:'لا يوجد عجز. اكتب ملاحظة الإقفال (اختياري):');if(note===null)return;if(shortage&&!note.trim())return alert('اكتب سبب العجز أو طريقة تسويته قبل الإقفال.');const date=document.getElementById('cashCustodyDate').value||new Date().toISOString().slice(0,10),record={driver,date,expected:Number(expected),deposited:Number(deposited),shortage,note:note.trim(),closedAt:Date.now(),createdAt:Date.now(),closedBy:currentUser.username||'الإدارة'};try{await db.ref(`driverCashClosures/${cashCustodySafeKey(driver)}`).push(record);logActivity('create','driverCashClosure',`إقفال عهدة ${driver} بتاريخ ${date} بعجز ${shortage} ج.م`,null,record);renderCashCustody();alert(shortage?`تم حفظ الإقفال وتوثيق العجز ${shortage} ج.م.`:'تم حفظ الإقفال بدون عجز.');}catch(err){console.error(err);alert('تعذر حفظ إقفال اليوم.');}}
+    async function recordCashCustodyOnDelivery(orderKey,order,newStatus){if(newStatus!=='تم التسليم بنجاح ✅'||order?.paymentMethod!=='cash'||!order?.driver||order.driver==='غير محدد')return;const driver=String(order.driver),safeDriver=cashCustodySafeKey(driver),safeOrder=cashCustodySafeKey(orderKey),deliveredAt=Date.now(),payload={orderKey,orderId:order.orderId||orderKey,driver,amount:Number(order.totalCash||((order.orderPrice||0)+(order.deliveryPrice||0)+(order.paymentFee||0))),date:new Date(deliveredAt).toISOString().slice(0,10),deliveredAt,createdBy:currentUser?.username||'غير معروف'};try{await db.ref(`driverCashCustody/${safeDriver}/${safeOrder}`).transaction(old=>old||payload);await db.ref('orders/'+orderKey).update({deliveryDate:payload.date,deliveryConfirmedAt:deliveredAt});}catch(err){console.warn('تعذر إنشاء قيد عهدة المندوب:',err);}}
+
     let watchId=null;
     function startDelivery(){if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='driver')return;const key=currentDriverOrderKey||getDriverOrderKeyFromInput(document.getElementById('orderId').value.trim()),order=driverOrdersCache[key];if(!key||!order)return alert('اختر طلباً من طلباتك أولاً.');if(isOrderLocationStopped(order))return alert('لا يمكن بث الموقع لطلب منتهٍ أو محول لحجز محل.');if(!navigator.geolocation)return alert('المتصفح لا يدعم تحديد الموقع الجغرافي');if(watchId){stopDelivery();return;}driverWatchOrderKey=key;watchId=navigator.geolocation.watchPosition(pos=>{if(driverWatchOrderKey!==key)return;const c=pos.coords;db.ref('orders/'+key).update({lat:c.latitude,lng:c.longitude,locationAccuracy:c.accuracy,locationUpdatedAt:Date.now(),locationTrackingActive:true}).catch(console.warn);document.getElementById('driverStatus').innerText='📍 يتم الآن بث موقعك الحي بدقة '+Math.round(c.accuracy)+'م';document.getElementById('startBtn').innerText='🔄 جاري بث اللوكيشن حياً...';document.getElementById('stopBtn').classList.remove('hidden');},()=>alert('تعذر الوصول إلى نظام تحديد المواقع (GPS)'),{maximumAge:0,timeout:20000,enableHighAccuracy:true});}
     function stopDelivery(){if(watchId){navigator.geolocation.clearWatch(watchId);watchId=null;}driverWatchOrderKey=null;document.getElementById('driverStatus').innerText='🛑 تم إيقاف بث الموقع الحي.';document.getElementById('startBtn').innerText='📍 بدء بث اللوكيشن الحي Live (اختياري)';document.getElementById('stopBtn').classList.add('hidden');}
