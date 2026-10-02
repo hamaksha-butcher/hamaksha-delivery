@@ -1260,7 +1260,7 @@ main.app-main{position:relative!important;z-index:1!important;margin-right:var(-
 body.cashier-mode #sec-cashier-home{display:block!important;}
 body.cashier-mode #tab-cashier-home{display:flex!important;}
 body.cashier-mode #tab-admin{display:flex!important;}
-body.cashier-mode #sec-order-history{display:none!important;}
+/* تغيير: سجل الطلبات صار صفحة مشتركة للكاشير عند منحه صلاحيتها. */
 body.cashier-mode #sec-admin .customer-history-card{display:none!important;}
 body.cashier-mode #sec-admin .order-form-card{padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;}
 body.cashier-mode #sec-admin .order-form-hero{padding:10px 12px!important;border-radius:18px!important;margin-bottom:10px!important;}
@@ -3754,7 +3754,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       if(n.orderKey && APP_MODE==='staff'){
         if(String(n.orderKey).startsWith('STORE-')){ switchTab('store-bookings'); setTimeout(()=>openStoreBookingByKey(n.orderKey),140); }
         else if(currentUser?.role==='driver') fetchDriverOrder(n.orderKey);
-        else if(currentUser?.role==='admin'||currentUser?.role==='cashier'){ switchTab(currentUser.role==='admin'?'order-history':'admin'); setTimeout(()=>{ const search=document.getElementById('searchFilter'); if(search){search.value=n.orderKey; applyFilters(); search.focus();} },120); }
+        else if(currentUser?.role==='admin'||currentUser?.role==='cashier'){ switchTab(canViewOrderHistory()?'order-history':'admin'); setTimeout(()=>{ const search=document.getElementById('searchFilter'); if(search){search.value=n.orderKey; applyFilters(); search.focus();} },120); }
       }
     }
     document.addEventListener('click',(event)=>{
@@ -3842,6 +3842,15 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         return !!p[action];
       }
       return false;
+    }
+
+    // تغيير: سجل الطلبات متاح للمالك والإدمن الفرعي، وللكاشير بحسب الصلاحية.
+    function canViewOrderHistory(){
+      if(!currentUser)return false;
+      if(currentUser.role==='admin'||isSuperUser())return true;
+      if(currentUser.role!=='cashier')return false;
+      const perms=currentUser.perms||{};
+      return Object.prototype.hasOwnProperty.call(perms,'orderHistory')?!!perms.orderHistory:!!perms.sales;
     }
 
     function canViewAllDrivers() { return isSuperUser() || canUser('viewAllDrivers'); }
@@ -3968,7 +3977,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       if(tabName === 'cashier-home' && (!currentUser || currentUser.role !== 'cashier')) return alert('نقطة البيع مخصصة لحساب الكاشير فقط.');
       if(tabName === 'dashboard' && (!currentUser || currentUser.role !== 'admin')) return alert('لوحة التحكم الرئيسية مخصصة للإدارة فقط.');
       if(tabName === 'admin' && (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'cashier'))) return alert('الفواتير متاحة للإدارة والكاشير فقط.');
-      if(tabName === 'order-history' && (!currentUser || currentUser.role !== 'admin')) return alert('سجل الطلبات متاح لحسابات الإدارة فقط.');
+      if(tabName === 'order-history' && !canViewOrderHistory()) return alert('سجل الطلبات غير متاح لهذا الحساب.');
       if(tabName === 'analytics' && !canUser('analytics')) return alert('عذراً، لا تملك صلاحية الاطلاع على التقارير والداشبورد.');
       if(tabName === 'prices' && !canUser('prices')) return alert('عذراً، لا تملك صلاحية الاطلاع على قائمة الأسعار.');
       if(tabName === 'customers' && !canManageCustomers()) return alert('عذراً، لا تملك صلاحية إدارة قاعدة العملاء.');
@@ -4080,7 +4089,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       { id:'dashboard', icon:'📊', label:'الرئيسية', className:'tab-btn' },
       { id:'cashier-home', icon:'🧾', label:'نقطة البيع', className:'tab-btn cashier-only' },
       { id:'admin', icon:'📝', label:'إنشاء طلب', className:'tab-btn' },
-      { id:'order-history', icon:'📚', label:'سجل الطلبات', className:'tab-btn admin-only-orders hidden' },
+      { id:'order-history', icon:'📚', label:'سجل الطلبات', className:'tab-btn perm-order-history hidden' },
       { id:'store-booking', icon:'🏪', label:'حجز المحل', className:'tab-btn' },
       { id:'store-bookings', icon:'📅', label:'سجل حجوزات المحل', className:'tab-btn perm-store-bookings hidden' },
       { id:'analytics', icon:'💰', label:'التقارير والتحصيل', className:'tab-btn perm-analytics hidden' },
@@ -4443,7 +4452,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       document.getElementById('usersPageAuthLock')?.classList.toggle('hidden',!!currentUser && canUser('users'));
       document.getElementById('usersPageContent')?.classList.toggle('hidden',!(currentUser && canUser('users')));
       document.querySelectorAll('.perm-customers').forEach(el=>el.classList.toggle('hidden',!canManageCustomers()));
-      document.querySelectorAll('.admin-only-orders').forEach(el=>el.classList.toggle('hidden',!(currentUser && currentUser.role==='admin')));
+      document.querySelectorAll('.perm-order-history').forEach(el=>el.classList.toggle('hidden',!canViewOrderHistory()));
       document.getElementById('exportActionBtns')?.classList.toggle('hidden',!canUser('print'));
       /* تغيير: عرض أدوات التوزيع الذكي فقط للحسابات الممنوح لها هذا الإذن. */
       document.querySelectorAll('.smart-driver-action').forEach(el=>el.classList.toggle('hidden',!canUser('smartAssign')));
@@ -4858,7 +4867,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       if (!username || !pass) return alert('يرجى ملء جميع البيانات');
       if (username.toLowerCase() === 'asma') return alert('اسم المستخدم asma محجوز للحساب الرئيسي.');
 
-      const perms = role==='cashier' ? { edit:true, delete:false, print:true, analytics:false, prices:false, users:false, viewAllDrivers:false, smartAssign:false, sales:true, storeBookings:true, customers:true } : { edit:false, delete:false, print:false, analytics:false, prices:false, users:false, viewAllDrivers:false, smartAssign:false };
+      const perms = role==='cashier' ? { edit:true, delete:false, print:true, analytics:false, prices:false, users:false, viewAllDrivers:false, smartAssign:false, sales:true, orderHistory:true, storeBookings:true, customers:true } : { edit:false, delete:false, print:false, analytics:false, prices:false, users:false, viewAllDrivers:false, smartAssign:false };
       db.ref('users').push({ username, pass, role, perms })
         .then(async () => { await logActivity('create','user',`إضافة حساب مستخدم ${username} (${role})`,username,{role}); clearNewUserForm(); alert('تمت إضافة المستخدم بنجاح ✅'); renderUsersList(); })
         .catch(err => { console.error(err); alert('تعذر إضافة الحساب حالياً.'); });
@@ -4944,7 +4953,8 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         const roleClass=isAsma?'users-role-owner':(u.role==='admin'?'users-role-admin':u.role==='cashier'?'users-role-cashier':'users-role-driver');
         const granted=['edit','delete','print','analytics','prices','users','viewAllDrivers','smartAssign'].filter(k=>!!perms[k]).length;
         const actions=!isAsma?`<div class="flex items-center gap-1.5 shrink-0"><button onclick="openEditUserModal('${id}')" class="users-action edit">✏️ تعديل</button><button onclick="deleteUser('${id}')" class="users-action delete">🗑️ حذف</button></div>`:'';
-        const permissionBlock=(isSuperUser()&&!isAsma&&u.role==='cashier')?`<div class="users-permissions-box"><div class="flex items-center justify-between gap-2 border-b border-amber-200 pb-2"><p class="font-black text-amber-900">🔐 صلاحيات الكاشير</p><span class="users-permission-count">${['sales','storeBookings','customers','edit','print','smartAssign'].filter(k=>!!perms[k]).length}/6</span></div><div class="users-permissions-grid"><label><input type="checkbox" ${perms.sales?'checked':''} onchange="toggleAdminPermission('${id}','sales',this.checked)"> تسجيل الفواتير 🧾</label><label><input type="checkbox" ${perms.storeBookings?'checked':''} onchange="toggleAdminPermission('${id}','storeBookings',this.checked)"> حجز المحل 🏪</label><label><input type="checkbox" ${perms.customers?'checked':''} onchange="toggleAdminPermission('${id}','customers',this.checked)"> العملاء 👥</label><label><input type="checkbox" ${perms.edit?'checked':''} onchange="toggleAdminPermission('${id}','edit',this.checked)"> تعديل الفواتير ✏️</label><label><input type="checkbox" ${perms.print?'checked':''} onchange="toggleAdminPermission('${id}','print',this.checked)"> الطباعة 🖨️</label><label><input type="checkbox" ${perms.smartAssign?'checked':''} onchange="toggleAdminPermission('${id}','smartAssign',this.checked)"> التوزيع الذكي للمندوب 🤖</label></div></div>`:(u.role==='admin'&&!isAsma&&isSuperUser())?`<div class="users-permissions-box"><div class="flex items-center justify-between gap-2 border-b border-amber-200 pb-2"><p class="font-black text-amber-900">🔐 صلاحيات الأدمن الفرعي</p><span class="users-permission-count">${granted}/8</span></div><div class="users-permissions-grid"><label><input type="checkbox" ${perms.edit?'checked':''} onchange="toggleAdminPermission('${id}','edit',this.checked)"> تعديل الطلبات ✏️</label><label><input type="checkbox" ${perms.delete?'checked':''} onchange="toggleAdminPermission('${id}','delete',this.checked)"> حذف الطلبات 🗑️</label><label><input type="checkbox" ${perms.print?'checked':''} onchange="toggleAdminPermission('${id}','print',this.checked)"> طباعة وتصدير 🖨️</label><label><input type="checkbox" ${perms.analytics?'checked':''} onchange="toggleAdminPermission('${id}','analytics',this.checked)"> التقارير 📊</label><label><input type="checkbox" ${perms.prices?'checked':''} onchange="toggleAdminPermission('${id}','prices',this.checked)"> الأسعار 🏷️</label><label><input type="checkbox" ${perms.users?'checked':''} onchange="toggleAdminPermission('${id}','users',this.checked)"> المستخدمون 👥</label><label><input type="checkbox" ${perms.viewAllDrivers?'checked':''} onchange="toggleAdminPermission('${id}','viewAllDrivers',this.checked)"> عرض جميع المناديب والأوردرات 🧭</label><label><input type="checkbox" ${perms.smartAssign?'checked':''} onchange="toggleAdminPermission('${id}','smartAssign',this.checked)"> التوزيع الذكي للمندوب 🤖</label></div></div>`:'';
+        const cashierPermissions=['sales','orderHistory','storeBookings','customers','edit','print','smartAssign'];
+        const permissionBlock=(isSuperUser()&&!isAsma&&u.role==='cashier')?`<div class="users-permissions-box"><div class="flex items-center justify-between gap-2 border-b border-amber-200 pb-2"><p class="font-black text-amber-900">🔐 صلاحيات الكاشير</p><span class="users-permission-count">${cashierPermissions.filter(k=>!!perms[k]||(k==='orderHistory'&&!Object.prototype.hasOwnProperty.call(perms,k)&&!!perms.sales)).length}/7</span></div><div class="users-permissions-grid"><label><input type="checkbox" ${perms.sales?'checked':''} onchange="toggleAdminPermission('${id}','sales',this.checked)"> تسجيل الفواتير 🧾</label><label><input type="checkbox" ${perms.orderHistory??perms.sales?'checked':''} onchange="toggleAdminPermission('${id}','orderHistory',this.checked)"> سجل الطلبات 📚</label><label><input type="checkbox" ${perms.storeBookings?'checked':''} onchange="toggleAdminPermission('${id}','storeBookings',this.checked)"> حجز المحل وسجل الحجوزات 🏪</label><label><input type="checkbox" ${perms.customers?'checked':''} onchange="toggleAdminPermission('${id}','customers',this.checked)"> العملاء 👥</label><label><input type="checkbox" ${perms.edit?'checked':''} onchange="toggleAdminPermission('${id}','edit',this.checked)"> تعديل الفواتير ✏️</label><label><input type="checkbox" ${perms.print?'checked':''} onchange="toggleAdminPermission('${id}','print',this.checked)"> الطباعة 🖨️</label><label><input type="checkbox" ${perms.smartAssign?'checked':''} onchange="toggleAdminPermission('${id}','smartAssign',this.checked)"> التوزيع الذكي للمندوب 🤖</label></div></div>`:(u.role==='admin'&&!isAsma&&isSuperUser())?`<div class="users-permissions-box"><div class="flex items-center justify-between gap-2 border-b border-amber-200 pb-2"><p class="font-black text-amber-900">🔐 صلاحيات الأدمن الفرعي</p><span class="users-permission-count">${granted}/8</span></div><div class="users-permissions-grid"><label><input type="checkbox" ${perms.edit?'checked':''} onchange="toggleAdminPermission('${id}','edit',this.checked)"> تعديل الطلبات ✏️</label><label><input type="checkbox" ${perms.delete?'checked':''} onchange="toggleAdminPermission('${id}','delete',this.checked)"> حذف الطلبات 🗑️</label><label><input type="checkbox" ${perms.print?'checked':''} onchange="toggleAdminPermission('${id}','print',this.checked)"> طباعة وتصدير 🖨️</label><label><input type="checkbox" ${perms.analytics?'checked':''} onchange="toggleAdminPermission('${id}','analytics',this.checked)"> التقارير 📊</label><label><input type="checkbox" ${perms.prices?'checked':''} onchange="toggleAdminPermission('${id}','prices',this.checked)"> الأسعار 🏷️</label><label><input type="checkbox" ${perms.users?'checked':''} onchange="toggleAdminPermission('${id}','users',this.checked)"> المستخدمون 👥</label><label><input type="checkbox" ${perms.viewAllDrivers?'checked':''} onchange="toggleAdminPermission('${id}','viewAllDrivers',this.checked)"> عرض جميع المناديب والأوردرات 🧭</label><label><input type="checkbox" ${perms.smartAssign?'checked':''} onchange="toggleAdminPermission('${id}','smartAssign',this.checked)"> التوزيع الذكي للمندوب 🤖</label></div></div>`:'';
         return `<div class="users-card"><div class="users-card-top"><div class="flex items-center gap-3 min-w-0"><div class="users-avatar">${isAsma?'👑':(u.role==='admin'?'🛡️':u.role==='cashier'?'🧾':'🛵')}</div><div class="min-w-0"><div class="flex flex-wrap items-center gap-1.5"><b class="users-name">${escapeHtml(u.username||'')}</b><span class="users-role ${roleClass}">${roleTitle}</span></div><div class="users-meta">${isAsma?'حساب رئيسي محمي':'حساب تشغيل للنظام'} ${u.role==='admin'&&!isAsma?`• ${granted} صلاحيات ممنوحة`:''}</div></div></div>${actions}</div>${permissionBlock}</div>`;
       }).join('');
     }
@@ -6843,7 +6853,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         const openAction=x.kind==='store'
           ? `switchTab('store-bookings');setTimeout(()=>openStoreBookingByKey(${htmlJsArg(x.key)}),120)`
           : x.kind==='delivery'
-          ? `switchTab(currentUser?.role==='admin'?'order-history':'admin');setTimeout(()=>{const q=document.getElementById('searchFilter');if(q){q.value=${htmlJsArg(x.id)};applyFilters();}},120)`
+          ? `switchTab(canViewOrderHistory()?'order-history':'admin');setTimeout(()=>{const q=document.getElementById('searchFilter');if(q){q.value=${htmlJsArg(x.id)};applyFilters();}},120)`
           : `void(0)`;
         return `<div class="customer-full-row" data-kind="${x.kind}">
           <div><div class="id">#${escapeHtml(x.id)}</div>${type}</div>
