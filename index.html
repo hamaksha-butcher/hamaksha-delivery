@@ -574,6 +574,8 @@
     .dashboard-primary-btn { background:var(--primary-color); }
     .dashboard-auth-icon { width:72px; height:72px; margin:0 auto; display:flex; align-items:center; justify-content:center; border-radius:22px; font-size:34px; background:color-mix(in srgb,var(--primary-color) 12%, white); color:var(--primary-color); border:1px solid color-mix(in srgb,var(--primary-color) 18%, white); }
     .dashboard-kpi { position:relative; overflow:hidden; min-height:154px; padding:17px; border-radius:22px; border:1px solid var(--border-color); background:var(--surface-color); box-shadow:0 12px 30px var(--shadow-color); transition:transform .18s ease, box-shadow .18s ease; }
+    .dashboard-kpi[role="button"] { cursor:pointer; }
+    .dashboard-kpi[role="button"]:focus-visible { outline:3px solid var(--secondary-color,#f59e0b); outline-offset:3px; }
     .dashboard-kpi::after { content:""; position:absolute; left:-16px; bottom:-28px; width:90px; height:90px; border-radius:999px; opacity:.08; }
     .dashboard-kpi:hover { transform:translateY(-3px); box-shadow:0 18px 38px var(--shadow-color); }
     .kpi-blue::after { background:#3b82f6; } .kpi-green::after { background:#10b981; } .kpi-amber::after { background:#f59e0b; } .kpi-red::after { background:#ef4444; } .kpi-purple::after { background:#8b5cf6; }
@@ -2255,30 +2257,37 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
         <!-- KPI Cards -->
         <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
-          <div class="dashboard-kpi kpi-blue">
+          <div class="dashboard-kpi kpi-blue" role="button" tabindex="0" onclick="openDashboardKpi('today')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openDashboardKpi('today')}">
             <div class="kpi-top"><span class="kpi-icon">📦</span><span class="kpi-label">طلبات اليوم</span></div>
             <div id="dashTodayOrders" class="kpi-value">0</div>
             <div class="kpi-foot"><span>إجمالي الطلبات المسجلة اليوم</span></div>
           </div>
-          <div class="dashboard-kpi kpi-green">
+          <div class="dashboard-kpi kpi-green" role="button" tabindex="0" onclick="openDashboardKpi('delivered')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openDashboardKpi('delivered')}">
             <div class="kpi-top"><span class="kpi-icon">✅</span><span class="kpi-label">تم التسليم</span></div>
             <div id="dashDelivered" class="kpi-value">0</div>
             <div class="kpi-foot"><span>طلبات مكتملة</span></div>
           </div>
-          <div class="dashboard-kpi kpi-amber">
+          <div class="dashboard-kpi kpi-amber" role="button" tabindex="0" onclick="openDashboardKpi('delivery')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openDashboardKpi('delivery')}">
             <div class="kpi-top"><span class="kpi-icon">🛵</span><span class="kpi-label">قيد التوصيل</span></div>
             <div id="dashOutForDelivery" class="kpi-value">0</div>
             <div class="kpi-foot"><span>مندوبون على الطريق</span></div>
           </div>
-          <div class="dashboard-kpi kpi-red">
+          <div class="dashboard-kpi kpi-red" role="button" tabindex="0" onclick="openDashboardKpi('preparing')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openDashboardKpi('preparing')}">
             <div class="kpi-top"><span class="kpi-icon">⏳</span><span class="kpi-label">قيد التحضير</span></div>
             <div id="dashPreparing" class="kpi-value">0</div>
             <div class="kpi-foot"><span>تحتاج متابعة المطبخ</span></div>
           </div>
-          <div class="dashboard-kpi kpi-purple col-span-2 md:col-span-4 xl:col-span-1">
+          <div class="dashboard-kpi kpi-purple col-span-2 md:col-span-4 xl:col-span-1" role="button" tabindex="0" onclick="openDashboardKpi('cash')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openDashboardKpi('cash')}">
             <div class="kpi-top"><span class="kpi-icon">💰</span><span class="kpi-label">تحصيل اليوم</span></div>
             <div id="dashCash" class="kpi-value currency">0 ج.م</div>
             <div class="kpi-foot"><span>المبالغ المحصلة</span></div>
+          </div>
+        </div>
+
+        <div id="dashboardKpiModal" class="hidden fixed inset-0 z-[100050] bg-slate-950/60 backdrop-blur-sm p-3 sm:p-6 items-center justify-center" onclick="if(event.target===this)closeDashboardKpiModal()" role="dialog" aria-modal="true" aria-labelledby="dashboardKpiTitle">
+          <div class="w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-3xl bg-white shadow-2xl flex flex-col">
+            <div class="flex items-start justify-between gap-3 p-5 border-b bg-slate-50"><div><div id="dashboardKpiValue" class="text-2xl font-black text-slate-900"></div><h3 id="dashboardKpiTitle" class="text-sm font-black mt-1"></h3><p id="dashboardKpiSubtitle" class="text-[10px] text-slate-500 mt-1"></p></div><button type="button" onclick="closeDashboardKpiModal()" class="rounded-xl bg-white border px-3 py-2 font-black text-slate-600 hover:bg-slate-100" aria-label="إغلاق">✕</button></div>
+            <div id="dashboardKpiRows" class="p-4 overflow-y-auto space-y-2"></div>
           </div>
         </div>
 
@@ -6065,6 +6074,24 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     }
 
     // --- 📊 لوحة التحكم الرئيسية الجديدة ---
+    function closeDashboardKpiModal(){document.getElementById('dashboardKpiModal')?.classList.add('hidden');}
+    function openDashboardKpi(type){
+      if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin')return;
+      const today=new Date().toISOString().split('T')[0],all=Object.entries(allOrdersCache||{}).map(([key,o])=>({key,...(o||{})})).filter(o=>o.date===today);
+      const definitions={
+        today:{title:'طلبات اليوم',value:document.getElementById('dashTodayOrders')?.innerText||'0',items:all},
+        delivered:{title:'طلبات تم تسليمها اليوم',value:document.getElementById('dashDelivered')?.innerText||'0',items:all.filter(o=>o.status==='تم التسليم بنجاح ✅')},
+        delivery:{title:'طلبات قيد التوصيل',value:document.getElementById('dashOutForDelivery')?.innerText||'0',items:all.filter(o=>o.status==='خرج للتوصيل 🛵'||o.status==='جاهز للتوصيل 📦')},
+        preparing:{title:'طلبات قيد التحضير',value:document.getElementById('dashPreparing')?.innerText||'0',items:all.filter(o=>o.status!=='تم التسليم بنجاح ✅'&&o.status!=='خرج للتوصيل 🛵'&&o.status!=='جاهز للتوصيل 📦'&&o.status!=='ملغي ❌')},
+        cash:{title:'الطلبات التي تم تحصيلها اليوم',value:document.getElementById('dashCash')?.innerText||'0 ج.م',items:all.filter(o=>o.status==='تم التسليم بنجاح ✅')}
+      };
+      const info=definitions[type];if(!info)return;
+      const title=document.getElementById('dashboardKpiTitle'),value=document.getElementById('dashboardKpiValue'),subtitle=document.getElementById('dashboardKpiSubtitle'),rows=document.getElementById('dashboardKpiRows');
+      if(title)title.innerText=info.title;if(value)value.innerText=info.value;if(subtitle)subtitle.innerText=`${info.items.length.toLocaleString('ar-EG')} سجل بتاريخ ${formatDateDMY(today)}`;
+      if(rows){const sorted=info.items.sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0));rows.innerHTML=sorted.map(o=>{const total=Number(o.totalCash||((o.orderPrice||0)+(o.deliveryPrice||0)+(o.paymentFee||0)))||0;return `<button type="button" class="w-full text-right rounded-2xl border bg-slate-50 hover:bg-slate-100 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2" onclick="closeDashboardKpiModal();openOrderDetails(${htmlJsArg(o.key)})"><span class="min-w-0"><b class="block text-xs text-slate-900">#${escapeHtml(o.orderId||o.key)} · ${escapeHtml(o.customerName||o.name||'عميل')}</b><span class="block mt-1 text-[10px] text-slate-500">${escapeHtml(o.status||'بدون حالة')} · المندوب: ${escapeHtml(o.driver||'غير محدد')}</span></span><b class="text-xs text-emerald-700">${total.toLocaleString('ar-EG')} ج.م</b></button>`;}).join('')||'<div class="rounded-2xl border border-dashed p-8 text-center text-xs text-slate-400">لا توجد سجلات ضمن هذا المؤشر اليوم.</div>';}
+      document.getElementById('dashboardKpiModal')?.classList.remove('hidden');
+    }
+
     function renderDashboard() {
       if(APP_MODE!=='staff'||!currentUser||currentUser.role!=='admin') return;
 
