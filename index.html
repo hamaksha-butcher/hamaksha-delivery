@@ -1535,6 +1535,14 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     #sec-admin #orderForm .pos-cart-panel{min-width:0;overflow:hidden;}
     #sec-admin #orderForm .pos-cart-table-wrap{min-width:0;}
     #sec-admin #orderForm .pos-cart-checkout-grid{grid-template-columns:minmax(0,.85fr) minmax(0,1.35fr);}
+    /* تغيير: شريط الإضافة صار ضمن تدفق الكتالوج ولا يطفو فوق الفئات أو الأصناف. */
+    #sec-admin #orderForm .pos-catalog-panel #invoiceNewAddBar{position:static!important;inset:auto!important;z-index:auto!important;flex:0 0 auto!important;margin:10px 0 0!important;box-shadow:none!important;grid-template-columns:minmax(140px,1.2fr) minmax(138px,.8fr) minmax(110px,.65fr) auto;}
+    #sec-admin #orderForm #invoiceCategoryGrid,#sec-admin #orderForm #invoiceProductGrid{flex:1 1 0!important;min-height:80px!important;max-height:none!important;overflow:auto!important;overscroll-behavior:contain;}
+    #sec-admin #orderForm .pos-quantity-control{display:grid;grid-template-columns:34px minmax(0,1fr) 34px;gap:5px;align-items:center;direction:rtl;}
+    #sec-admin #orderForm .pos-quantity-control .pos-qty-field{width:100%;min-width:0;text-align:center;}
+    #sec-admin #orderForm .pos-qty-step-btn{display:grid;place-items:center;width:34px;height:38px;border:1px solid #c8dbe5;border-radius:10px;background:#fff;color:#0b5869;font-size:20px;font-weight:1000;line-height:1;cursor:pointer;transition:background .15s,border-color .15s,transform .15s;}
+    #sec-admin #orderForm .pos-qty-step-btn:hover{border-color:#0f7185;background:#eaf6f8;}
+    #sec-admin #orderForm .pos-qty-step-btn:active{transform:scale(.95);}
     @media(max-width:860px){
       #sec-admin #orderForm.pos-order-form{display:flex!important;flex-direction:column!important;height:auto!important;min-height:0!important;overflow:visible!important;}
       #sec-admin #orderForm .pos-customer-panel{order:1!important;width:100%!important;}
@@ -1542,6 +1550,8 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       #sec-admin #orderForm .pos-catalog-panel{order:3!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;position:static!important;}
       #sec-admin #orderForm .pos-submit-btn{order:4!important;width:100%!important;}
       #sec-admin #orderForm .pos-cart-checkout-grid{grid-template-columns:1fr 1.4fr;}
+      #sec-admin #orderForm .pos-catalog-panel #invoiceNewAddBar{grid-template-columns:minmax(140px,1.2fr) minmax(138px,.8fr) minmax(110px,.65fr) auto;}
+      #sec-admin #orderForm #invoiceCategoryGrid,#sec-admin #orderForm #invoiceProductGrid{flex:0 1 auto!important;min-height:90px!important;max-height:360px!important;}
     }
     @media(max-width:560px){
       #sec-admin #orderForm .pos-cart-checkout-grid{grid-template-columns:1fr;}
@@ -1922,17 +1932,12 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     <div id="invoiceNewAddBar" class="pos-add-bar">
       <div class="pos-selected-product"><small>الصنف المختار</small><b id="selectedInvoiceProductLabel">لم يتم اختيار صنف</b></div>
       <div>
-        <label class="order-label">الكمية</label>
-        <input type="number" id="invoiceItemQty" class="invoice-field pos-qty-field" min="0.01" step="0.01" value="1" inputmode="decimal">
-        <div class="cashier-qty-tools" aria-label="كميات سريعة">
-          <span class="qty-step-label">سريع:</span>
-          <button type="button" class="qty-step-btn" onclick="setCashierQty('invoice',0.25)">¼</button>
-          <button type="button" class="qty-step-btn" onclick="setCashierQty('invoice',0.5)">½</button>
-          <button type="button" class="qty-step-btn" onclick="setCashierQty('invoice',0.75)">¾</button>
-          <button type="button" class="qty-step-btn active" onclick="setCashierQty('invoice',1)">1</button>
-          <button type="button" class="qty-step-btn" onclick="setCashierQty('invoice',1.25)">1¼</button>
-          <button type="button" class="qty-step-btn" onclick="setCashierQty('invoice',1.5)">1½</button>
-          <button type="button" class="qty-step-btn" onclick="setCashierQty('invoice',2)">2</button>
+        <label class="order-label">الكمية <span class="text-[9px] text-slate-500">(كل ضغطة 250 جم)</span></label>
+        <!-- تغيير: تحكم مباشر بالكمية بخطوات 250 جرام بدل أزرار الكسور. -->
+        <div class="pos-quantity-control" aria-label="تعديل الكمية بمقدار 250 جرام">
+          <button type="button" class="pos-qty-step-btn" onclick="adjustNewInvoiceQty(0.25)" aria-label="زيادة 250 جرام" title="زيادة 250 جرام">＋</button>
+          <input type="number" id="invoiceItemQty" class="invoice-field pos-qty-field" min="0.25" step="0.25" value="1" inputmode="decimal" aria-label="الكمية بالكيلو">
+          <button type="button" class="pos-qty-step-btn" onclick="adjustNewInvoiceQty(-0.25)" aria-label="نقصان 250 جرام" title="نقصان 250 جرام">−</button>
         </div>
       </div>
       <div><label class="order-label">سعر الوحدة</label><input type="number" id="invoiceItemUnitPrice" class="invoice-field" min="0" step="0.01" value="0" inputmode="decimal"></div>
@@ -4316,6 +4321,14 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       });
     }
 
+    // تغيير: زياد/نقص كمية صنف الفاتورة الجديدة بخطوات ثابتة مقدارها ربع كيلو.
+    function adjustNewInvoiceQty(delta){
+      const input=document.getElementById('invoiceItemQty');if(!input)return;
+      const current=Number(input.value)||0.25;
+      const next=Math.max(0.25,Math.round((current+Number(delta||0))*100)/100);
+      input.value=String(next);input.dispatchEvent(new Event('input',{bubbles:true}));input.focus();
+    }
+
     function addCashierQtyAndFocus(target,value){setCashierQty(target,value);}
 
     function addInvoiceItem(mode){const isEdit=mode==='edit',select=document.getElementById(isEdit?'editInvoiceItemProduct':'invoiceItemProduct'),qtyEl=document.getElementById(isEdit?'editInvoiceItemQty':'invoiceItemQty'),priceEl=document.getElementById(isEdit?'editInvoiceItemUnitPrice':'invoiceItemUnitPrice'),nameEl=document.getElementById(isEdit?'editInvoiceItemName':'invoiceItemName'),unitEl=document.getElementById(isEdit?'editInvoiceItemUnit':'invoiceItemUnit'),product=select?.value||'',qty=Number(qtyEl?.value)||0,unitPrice=Number(priceEl?.value)||0,name=(product==='__custom__'?(nameEl?.value||'').trim():(select?.selectedOptions?.[0]?.dataset?.name||nameEl?.value||'').trim()),unit=(unitEl?.value||select?.selectedOptions?.[0]?.dataset?.unit||'كيلو').trim()||'كيلو';if(!name)return alert('اكتب اسم الصنف أو اختر صنفًا من القائمة.');if(qty<=0)return alert('أدخل كمية صحيحة.');if(unitPrice<=0)return alert('أدخل سعر وحدة صحيحًا قبل إضافة الصنف.');const items=getInvoiceItemsState(mode);const priceKey=product&&product!=='__custom__'?product:null;const existing=items.find(it=>it.priceKey===priceKey&&it.name===name&&Number(it.unitPrice)===unitPrice&&it.unit===unit);if(existing){existing.qty=Number(existing.qty||0)+qty;existing.total=existing.qty*existing.unitPrice;}else{items.push({name,qty,unitPrice,unit,total:qty*unitPrice,priceKey});}setInvoiceItemsState(mode,items);if(isEdit)editInvoiceItemsTouched=true;renderInvoiceItems(mode);syncOrderPriceFromInvoice(mode);if(select)select.value='';if(isEdit)renderEditOrderCatalog();if(qtyEl)qtyEl.value='1';if(priceEl){priceEl.value='0';priceEl.placeholder='0';}if(nameEl)nameEl.value='';if(unitEl)unitEl.value='كيلو';document.getElementById(isEdit?'editInvoiceCustomNameWrap':'invoiceCustomNameWrap')?.classList.remove('show');}
@@ -4332,7 +4345,6 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     function attachInvoicePriceListener(){if(invoicePriceListenerAttached)return;invoicePriceListenerAttached=true;db.ref('prices').on('value',snap=>{pricesCache=snap.val()||{};renderInvoiceProductOptions();renderStoreBookingCatalog();});}
 
     // --- 💳 حساب طريقة الدفع والعمولة والتوتال ---
-    // تغيير: لا توجد حقول مدفوع/متبقي في الواجهة؛ الكاش يسجل كرصيد مستحق حتى تحديث حالة الدفع لاحقًا.
     function updatePaymentSettlement(grandTotal) {
       const method=document.getElementById('paymentMethod')?.value||'cash';
       const isCash=method==='cash';
