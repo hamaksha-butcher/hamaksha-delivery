@@ -1510,31 +1510,56 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     #storeBookingForm{display:grid!important;grid-template-columns:minmax(320px,360px) minmax(0,1fr)!important;grid-template-rows:auto auto auto!important;align-items:start!important;gap:12px!important;padding:0!important;height:auto!important;min-height:0!important;overflow:visible!important;}
     #storeBookingForm>*{direction:rtl!important;min-width:0!important;}
     #storeBookingForm #storeBookingDraftBar,#storeBookingForm #storeBookingDraftReopen{grid-column:1/-1!important;grid-row:1!important;}
+    #sec-store-booking .store-booking-form-card{width:100%!important;max-width:none!important;margin:0!important;border-radius:20px!important;}
+    #sec-store-booking .store-booking-page{display:block!important;width:100%!important;max-width:none!important;}
+    #storeBookingForm{width:100%!important;grid-template-rows:auto auto auto auto!important;}
     #storeBookingForm .store-pos-customer{grid-column:1!important;grid-row:2!important;display:block!important;min-height:0!important;height:auto!important;max-height:none!important;overflow:visible!important;padding:14px!important;}
     #storeBookingForm .store-booking-fields-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;}
     #storeBookingForm .store-booking-fields-grid .store-booking-history-wide,#storeBookingForm .store-booking-fields-grid .store-booking-notes-wide{grid-column:1/-1!important;}
     #storeBookingForm .store-booking-mini-history{margin-top:0!important;}
-    #storeBookingForm .store-pos-catalog{grid-column:2!important;grid-row:2 / span 2!important;width:100%!important;min-width:0!important;min-height:calc(100dvh - 240px)!important;height:auto!important;max-height:none!important;display:flex!important;flex-direction:column!important;gap:10px!important;margin:0!important;padding:18px!important;overflow:hidden!important;align-self:stretch!important;}
-    #storeBookingForm .store-booking-catalog-toolbar{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;flex-wrap:wrap!important;}
-    #storeBookingForm .store-booking-search{width:min(420px,100%)!important;min-height:46px!important;font-size:11px!important;}
-    #storeBookingForm #storeBookingMainGrid{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))!important;gap:12px!important;flex:0 0 auto!important;}
+    #storeBookingForm .store-pos-catalog{grid-column:2!important;grid-row:2 / span 2!important;width:100%!important;min-width:0!important;min-height:calc(100dvh - 235px)!important;height:calc(100dvh - 235px)!important;max-height:calc(100dvh - 235px)!important;display:flex!important;flex-direction:column!important;gap:10px!important;margin:0!important;padding:18px!important;overflow:hidden!important;align-self:stretch!important;}
+    #storeBookingForm .pos-catalog-head{gap:14px!important;padding-bottom:14px!important;margin-bottom:0!important;}
+    #storeBookingForm .pos-catalog-head h3{font-size:15px!important;line-height:1.5!important;}
+    #storeBookingForm .pos-catalog-head p{font-size:10px!important;line-height:1.7!important;}
+    #storeBookingForm #storeBookingSearch{min-height:50px!important;padding-top:12px!important;padding-bottom:12px!important;border-radius:15px!important;font-size:11px!important;}
+    #storeBookingForm #storeBookingMainGrid{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))!important;gap:12px!important;flex:0 0 auto!important;max-height:min(38vh,340px)!important;overflow:auto!important;align-content:start!important;padding:2px 3px 7px!important;}
+    #storeBookingForm #storeBookingMainGrid .pos-category-card{min-height:126px!important;padding:13px 10px 12px!important;border-radius:18px!important;gap:9px!important;background:linear-gradient(160deg,var(--surface-color),var(--surface-soft))!important;box-shadow:0 5px 16px rgba(15,23,42,.045)!important;}
+    #storeBookingForm #storeBookingMainGrid .pos-category-card:hover,#storeBookingForm #storeBookingMainGrid .pos-category-card.active{transform:translateY(-2px)!important;box-shadow:0 12px 24px color-mix(in srgb,var(--primary-color) 12%,transparent)!important;}
+    #storeBookingForm #storeBookingMainGrid .pos-category-icon{width:48px!important;height:48px!important;border-radius:15px!important;font-size:24px!important;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--primary-color) 7%,transparent)!important;}
+    #storeBookingForm #storeBookingMainGrid .pos-category-card b{font-size:11px!important;line-height:1.55!important;white-space:normal!important;overflow-wrap:anywhere!important;text-align:center!important;}
+    #storeBookingForm #storeBookingMainGrid .pos-category-card small{font-size:8px!important;line-height:1.5!important;text-align:center!important;}
     #storeBookingForm #storeBookingCatalogContent{display:flex;flex:1 1 auto!important;flex-direction:column!important;min-height:100px!important;overflow:auto!important;overscroll-behavior:contain!important;scrollbar-gutter:stable!important;}
     #storeBookingForm #storeBookingCatalogContent .store-sub-grid,#storeBookingForm #storeBookingCatalogContent .store-products-grid{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))!important;gap:12px!important;}
-    #storeBookingForm .store-pos-selected{display:none!important;grid-template-columns:minmax(130px,1.2fr) minmax(110px,.7fr) minmax(110px,.7fr) auto!important;gap:10px!important;align-items:end!important;margin-top:auto!important;padding:13px!important;position:sticky!important;bottom:0!important;z-index:3!important;border:1px solid var(--border-color,#dbe4ed)!important;border-radius:16px!important;background:var(--surface-soft,#f8fafc)!important;box-shadow:0 -8px 20px rgba(15,23,42,.08)!important;}
+    #storeBookingForm #storeBookingCatalogContent .pos-subcategory-card{min-height:68px!important;padding:12px!important;}
+    #storeBookingForm #storeBookingCatalogContent .pos-subcategory-card b{font-size:10px!important;}
+    #storeBookingForm #storeBookingCatalogContent .pos-product-card{min-height:90px!important;padding:11px!important;}
+    #storeBookingForm #storeBookingCatalogContent .pos-product-name{font-size:10px!important;}
+    #storeBookingForm #storeBookingCatalogContent .pos-product-price{font-size:9px!important;}
+    #storeBookingForm .store-pos-selected{display:none!important;grid-template-columns:minmax(130px,1.45fr) minmax(160px,.75fr) minmax(145px,.65fr) auto!important;gap:10px!important;align-items:end!important;margin-top:auto!important;padding:13px!important;position:sticky!important;bottom:0!important;z-index:3!important;border:1px solid var(--border-color,#dbe4ed)!important;border-radius:16px!important;background:var(--surface-soft,#f8fafc)!important;box-shadow:0 -8px 20px rgba(15,23,42,.08)!important;}
     #storeBookingForm .store-pos-selected[style*="display: grid"]{display:grid!important;}
     #storeBookingForm .store-pos-cart-panel{grid-column:1!important;grid-row:3!important;display:flex!important;flex-direction:column!important;gap:10px!important;padding:14px!important;min-width:0!important;overflow:visible!important;}
     #storeBookingForm .store-pos-cart-head{grid-column:auto!important;grid-row:auto!important;margin:0!important;}
-    #storeBookingForm .store-pos-cart-table{grid-column:auto!important;grid-row:auto!important;width:100%!important;max-height:260px!important;overflow:auto!important;margin:0!important;}
-    #storeBookingForm .store-pos-cart-total,#storeBookingForm .store-pos-payment,#storeBookingForm .store-pos-meta,#storeBookingForm .store-pos-submit{grid-column:auto!important;grid-row:auto!important;width:100%!important;margin:0!important;}
+    #storeBookingForm .store-pos-cart-table{grid-column:auto!important;grid-row:auto!important;width:100%!important;max-height:260px!important;overflow:hidden!important;margin:0!important;}
+    #storeBookingForm .store-pos-cart-table .invoice-items-table{width:100%!important;min-width:0!important;table-layout:fixed!important;font-size:7px!important;}
+    #storeBookingForm .store-pos-cart-table .invoice-items-table th,#storeBookingForm .store-pos-cart-table .invoice-items-table td{padding:4px 2px!important;font-size:7px!important;line-height:1.35!important;white-space:normal!important;overflow-wrap:anywhere!important;}
+    #storeBookingForm .store-pos-cart-table .invoice-items-table th:nth-child(1),#storeBookingForm .store-pos-cart-table .invoice-items-table td:nth-child(1){width:27%;}
+    #storeBookingForm .store-pos-cart-table .invoice-items-table th:nth-child(2),#storeBookingForm .store-pos-cart-table .invoice-items-table td:nth-child(2){width:10%;}
+    #storeBookingForm .store-pos-cart-table .invoice-items-table th:nth-child(3),#storeBookingForm .store-pos-cart-table .invoice-items-table td:nth-child(3){width:13%;}
+    #storeBookingForm .store-pos-cart-table .invoice-items-table th:nth-child(4),#storeBookingForm .store-pos-cart-table .invoice-items-table td:nth-child(4){width:18%;}
+    #storeBookingForm .store-pos-cart-table .invoice-items-table th:nth-child(5),#storeBookingForm .store-pos-cart-table .invoice-items-table td:nth-child(5){width:17%;}
+    #storeBookingForm .store-pos-cart-table .invoice-items-table th:nth-child(6),#storeBookingForm .store-pos-cart-table .invoice-items-table td:nth-child(6){width:15%;}
+    #storeBookingForm .store-pos-cart-total,#storeBookingForm .store-pos-payment,#storeBookingForm .store-pos-meta{grid-column:auto!important;grid-row:auto!important;width:100%!important;margin:0!important;}
+    #storeBookingForm .store-pos-submit{grid-column:1!important;grid-row:4!important;width:100%!important;margin:0!important;min-height:48px!important;}
     #storeBookingForm .store-pos-payment{padding:12px!important;}
     #storeBookingForm .store-pos-meta{grid-template-columns:1fr 1fr!important;gap:9px!important;}
     #storeBookingForm .store-pos-submit{min-height:48px!important;}
     @media(max-width:950px){
       #storeBookingForm{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto!important;}
-      #storeBookingForm #storeBookingDraftBar,#storeBookingForm #storeBookingDraftReopen,#storeBookingForm .store-pos-customer,#storeBookingForm .store-pos-cart-panel,#storeBookingForm .store-pos-catalog{grid-column:1!important;grid-row:auto!important;width:100%!important;min-height:0!important;height:auto!important;max-height:none!important;}
+      #storeBookingForm #storeBookingDraftBar,#storeBookingForm #storeBookingDraftReopen,#storeBookingForm .store-pos-customer,#storeBookingForm .store-pos-cart-panel,#storeBookingForm .store-pos-catalog,#storeBookingForm .store-pos-submit{grid-column:1!important;grid-row:auto!important;width:100%!important;min-height:0!important;height:auto!important;max-height:none!important;}
       #storeBookingForm .store-pos-customer{order:1!important;}
       #storeBookingForm .store-pos-cart-panel{order:2!important;}
       #storeBookingForm .store-pos-catalog{order:3!important;overflow:visible!important;}
+      #storeBookingForm .store-pos-submit{order:4!important;min-height:48px!important;}
       #storeBookingForm #storeBookingCatalogContent{overflow:visible!important;}
       #storeBookingForm .store-pos-selected{position:static!important;}
     }
@@ -1545,6 +1570,8 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       #storeBookingForm .store-pos-selected .store-selected-name,#storeBookingForm .store-pos-selected .store-add-btn{grid-column:1/-1!important;}
       #storeBookingForm .store-pos-meta{grid-template-columns:1fr!important;}
       #storeBookingForm .store-pos-payment .store-payment-status{grid-template-columns:1fr!important;}
+      #storeBookingForm #storeBookingMainGrid .pos-category-card{min-height:112px!important;padding:10px 7px!important;gap:7px!important;}
+      #storeBookingForm #storeBookingMainGrid .pos-category-icon{width:42px!important;height:42px!important;border-radius:13px!important;font-size:21px!important;}
     }
 
     /* تغيير: ترتيب شاشة إنشاء الطلب وفق تدفق العمل الجديد. */
@@ -1792,6 +1819,62 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       body.cashier-mode #sec-admin #orderForm .pos-catalog-panel{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;}
       body.cashier-mode #sec-admin #orderForm #invoiceCategoryGrid,
       body.cashier-mode #sec-admin #orderForm #invoiceProductGrid{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;}
+    }
+
+    /* تغيير: مطابقة نهائية لكتالوج حجز المحل مع إنشاء الطلب، مع إبقاء بيانات الحجز وسلوكه كما هما. */
+    @media(min-width:861px){
+      #sec-store-booking .store-booking-form-card{height:auto!important;min-height:0!important;max-height:none!important;display:block!important;overflow:visible!important;}
+      #storeBookingForm.pos-order-form{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;align-items:start!important;}
+      #storeBookingForm .store-pos-catalog{
+        align-self:start!important;height:auto!important;min-height:570px!important;max-height:none!important;
+        overflow:visible!important;gap:4px!important;
+        background:linear-gradient(180deg,var(--surface-color) 0%,color-mix(in srgb,var(--surface-soft) 38%,var(--surface-color)) 100%)!important;
+      }
+      #storeBookingForm #storeBookingMainGrid,
+      #storeBookingForm #storeBookingCatalogContent,
+      #storeBookingForm #storeBookingCatalogContent .store-sub-grid,
+      #storeBookingForm #storeBookingCatalogContent .store-products-grid{
+        flex:0 0 auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;
+        scrollbar-width:none!important;
+      }
+      #storeBookingForm #storeBookingMainGrid::-webkit-scrollbar,
+      #storeBookingForm #storeBookingCatalogContent::-webkit-scrollbar{display:none!important;}
+      #storeBookingForm #storeBookingMainGrid{
+        grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-auto-rows:minmax(164px,auto)!important;
+        align-content:start!important;gap:14px!important;padding:12px 4px!important;
+      }
+      #storeBookingForm #storeBookingCatalogContent{display:flex!important;flex-direction:column!important;gap:10px!important;}
+      #storeBookingForm #storeBookingCatalogContent .store-sub-grid,
+      #storeBookingForm #storeBookingCatalogContent .store-products-grid{
+        grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-auto-rows:minmax(148px,auto)!important;
+        align-content:start!important;gap:14px!important;padding:4px!important;
+      }
+      #storeBookingForm #storeBookingMainGrid .pos-category-card{
+        min-height:164px!important;height:auto!important;padding:18px 14px!important;gap:12px!important;border-radius:20px!important;
+        background:var(--surface-color)!important;box-shadow:0 8px 22px rgba(20,50,70,.06)!important;
+      }
+      #storeBookingForm #storeBookingMainGrid .pos-category-icon{width:58px!important;height:58px!important;border-radius:18px!important;font-size:30px!important;background:linear-gradient(145deg,#edf7f8,#dcecef)!important;}
+      #storeBookingForm #storeBookingMainGrid .pos-category-card b{font-size:13px!important;line-height:1.55!important;}
+      #storeBookingForm #storeBookingMainGrid .pos-category-card small{font-size:10px!important;}
+      #storeBookingForm #storeBookingCatalogContent .pos-subcategory-card,
+      #storeBookingForm #storeBookingCatalogContent .pos-product-card{min-height:148px!important;height:auto!important;}
+      #storeBookingForm .store-pos-selected{position:static!important;inset:auto!important;margin:10px 0 0!important;box-shadow:none!important;}
+      #storeBookingForm .pos-quantity-control{display:grid!important;grid-template-columns:42px minmax(70px,1fr) 42px!important;gap:8px!important;align-items:center!important;}
+      #storeBookingForm .pos-qty-step-btn{width:42px!important;min-height:42px!important;border:1px solid var(--border-color,#d6e2ea)!important;border-radius:12px!important;background:#fff!important;color:var(--primary-color,#0b5664)!important;font-size:21px!important;font-weight:900!important;}
+      #storeBookingForm .pos-qty-field{width:100%!important;min-width:0!important;text-align:center!important;}
+    }
+    @media(min-width:861px) and (max-width:1150px){
+      #storeBookingForm #storeBookingCatalogContent .store-products-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+    }
+    @media(max-width:860px){
+      #sec-store-booking .store-booking-form-card,#storeBookingForm.pos-order-form{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;}
+      #storeBookingForm .store-pos-catalog{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;}
+      #storeBookingForm #storeBookingMainGrid,#storeBookingForm #storeBookingCatalogContent{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;}
+      #storeBookingForm #storeBookingCatalogContent .store-sub-grid,
+      #storeBookingForm #storeBookingCatalogContent .store-products-grid{min-height:0!important;grid-auto-rows:minmax(140px,auto)!important;}
+      #storeBookingForm #storeBookingCatalogContent .pos-subcategory-card,
+      #storeBookingForm #storeBookingCatalogContent .pos-product-card{height:auto!important;min-height:140px!important;}
+      #storeBookingForm .store-pos-selected{position:static!important;}
     }
 
 </style>
@@ -2307,25 +2390,18 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     </section>
     <!-- 🏪 حجز المحل - مسار مستقل وفاتورة 80mm مميزة -->
     <section id="sec-store-booking" class="hidden space-y-6 max-w-7xl mx-auto">
-      <div class="store-booking-hero">
-        <span class="store-booking-badge">STORE PICKUP · 80MM RECEIPT</span>
-        <h2>🏪 حجز المحل</h2>
-        <p>واجهة مستقلة للحجوزات والاستلام من المحل — بدون مندوب، مع فاتورة 80mm مميزة وعلامة محل واضحة.</p>
-        <div class="store-booking-hero-meta">
-          <span class="store-booking-chip">🧾 فاتورة حجز مستقلة</span>
-          <span class="store-booking-chip">🏷️ رقم حجز خاص</span>
-          <span class="store-booking-chip">💳 دفع / عربون / غير مدفوع</span>
-        </div>
-      </div>
-
-      <div class="store-booking-page">
-        <div class="store-booking-panel">
-          <div class="store-booking-panel-head">
-            <div><span class="pos-kicker">NEW STORE BOOKING</span><h3>📝 تسجيل حجز جديد</h3><p>سجّل العميل والموعد والأصناف ثم اطبع إيصال 80mm للحجز.</p></div>
-            <div class="flex gap-2"><button type="button" class="store-action-btn" onclick="switchTab('store-bookings')">📅 سجل الحجوزات</button><button type="button" class="store-action-btn" onclick="resetStoreBookingForm()">↺ حجز جديد</button></div>
+      <!-- تغيير: استخدام بطاقة وعنوان وخطوات صفحة إنشاء الطلب مع إبقاء تدفق بيانات الحجز. -->
+      <div class="order-form-card bg-white rounded-2xl shadow-xl p-5 border border-amber-100 space-y-4 store-booking-form-card">
+        <div class="order-form-hero rounded-2xl p-4 text-white">
+          <div class="flex items-start justify-between gap-3">
+            <div><div class="text-[10px] font-black opacity-75 uppercase tracking-wider">STORE BOOKING</div><h2 class="text-lg font-black mt-1">تسجيل حجز جديد 🏪</h2><p class="text-[10px] mt-1 opacity-80">سجّل بيانات العميل والأصناف وموعد الاستلام، ثم أنشئ فاتورة الحجز.</p></div>
+            <div class="flex flex-wrap gap-2"><button type="button" onclick="switchTab('store-bookings')" class="order-smart-btn">📅 سجل الحجوزات</button><button type="button" onclick="resetStoreBookingForm()" class="order-smart-btn">↺ حجز جديد</button></div>
           </div>
+          <div class="grid grid-cols-3 gap-2 mt-4"><div class="order-step active"><span>1</span><small>العميل</small></div><div class="order-step"><span>2</span><small>الأصناف</small></div><div class="order-step"><span>3</span><small>موعد الاستلام</small></div></div>
+        </div>
 
-          <form id="storeBookingForm" class="store-pos-form" onsubmit="submitStoreBooking(event)">
+        <div class="store-booking-page">
+          <form id="storeBookingForm" class="store-pos-form pos-order-form" onsubmit="submitStoreBooking(event)">
 
 <div id="storeBookingDraftBar" class="pos-draft-bar" data-draft-type="store">
   <div class="pos-draft-info"><div class="pos-draft-icon">📝</div><div class="pos-draft-copy"><b>مسودة الحجز</b><span id="storeBookingDraftStatus">الحفظ التلقائي غير نشط حتى تبدأ الحجز</span></div></div>
@@ -2354,43 +2430,31 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
             <!-- تغيير: بطاقة الأصناف تأخذ العمود الأوسع مثل كتالوج صفحة إنشاء الطلب. -->
             <section class="store-booking-catalog pos-panel pos-catalog-panel store-pos-catalog">
-              <div class="store-booking-catalog-toolbar">
-                <div><span class="pos-kicker">PRODUCT CATALOG</span><div class="store-booking-catalog-title">🥩 اختر الأصناف من الرئيسية ثم الفرعية</div></div>
-                <input id="storeBookingSearch" class="store-booking-input store-booking-search" placeholder="🔎 بحث عن صنف" oninput="filterStoreBookingCatalog(this.value)">
-              </div>
-              <div id="storeBookingMainGrid" class="store-main-grid"></div>
+              <div class="pos-catalog-head"><div><span class="pos-kicker">MENU</span><h3>🧾 اختار صنف الحجز</h3><p>ابدأ بالقسم الرئيسي ثم اختر القسم الفرعي والصنف.</p></div><span class="pos-mini-badge">الأسعار من المنيو</span></div>
+              <div class="relative mt-3"><span class="pos-search-icon">⌕</span><input id="storeBookingSearch" class="store-booking-input store-booking-search pos-catalog-search" placeholder="ابحث باسم الصنف أو القسم..." oninput="filterStoreBookingCatalog(this.value)"></div>
+              <div id="storeBookingMainGrid" class="store-main-grid pos-category-grid"></div>
               <div id="storeBookingCatalogContent"></div>
 
-            <div class="store-selected-row store-pos-selected">
+            <div class="store-selected-row pos-add-bar store-pos-selected">
               <div class="store-selected-name"><small>الصنف المختار</small><b id="storeBookingSelectedLabel">لم يتم اختيار صنف</b></div>
               <div>
-        <label class="store-booking-label">الكمية</label>
-        <input id="storeBookingItemQty" type="number" min="0.01" step="0.01" value="1" class="store-booking-input text-center" inputmode="decimal">
-        <div class="cashier-qty-tools" aria-label="كميات سريعة">
-          <span class="qty-step-label">سريع:</span>
-          <button type="button" class="qty-step-btn" onclick="setCashierQty('store',0.25)">¼</button>
-          <button type="button" class="qty-step-btn" onclick="setCashierQty('store',0.5)">½</button>
-          <button type="button" class="qty-step-btn" onclick="setCashierQty('store',0.75)">¾</button>
-          <button type="button" class="qty-step-btn active" onclick="setCashierQty('store',1)">1</button>
-          <button type="button" class="qty-step-btn" onclick="setCashierQty('store',1.25)">1¼</button>
-          <button type="button" class="qty-step-btn" onclick="setCashierQty('store',1.5)">1½</button>
-          <button type="button" class="qty-step-btn" onclick="setCashierQty('store',2)">2</button>
-        </div>
-      </div>
-              <div><label class="store-booking-label">سعر الوحدة</label><input id="storeBookingItemUnitPrice" type="number" min="0" step="0.01" value="0" class="store-booking-input text-center" inputmode="decimal"></div>
-              <button type="button" class="store-add-btn" onclick="addStoreBookingItem()">＋ إضافة للفاتورة</button>
+                <label class="order-label">الكمية <span class="text-[9px] text-slate-500">(كل ضغطة 250 جم)</span></label>
+                <div class="pos-quantity-control" aria-label="تعديل الكمية بمقدار 250 جرام"><button type="button" class="pos-qty-step-btn" onclick="adjustStoreBookingQty(0.25)" aria-label="زيادة 250 جرام" title="زيادة 250 جرام">＋</button><input id="storeBookingItemQty" type="number" min="0.25" step="0.25" value="1" class="store-booking-input invoice-field pos-qty-field" inputmode="decimal" aria-label="الكمية بالكيلو"><button type="button" class="pos-qty-step-btn" onclick="adjustStoreBookingQty(-0.25)" aria-label="نقصان 250 جرام" title="نقصان 250 جرام">−</button></div>
+              </div>
+              <div><label class="order-label">سعر الوحدة</label><input id="storeBookingItemUnitPrice" type="number" min="0" step="0.01" value="0" class="store-booking-input invoice-field text-center" inputmode="decimal"></div>
+              <button type="button" class="store-add-btn invoice-add-btn pos-add-line-btn" onclick="addStoreBookingItem()">＋ إضافة للفاتورة</button>
             </div>
 
             </section>
 
             <!-- تغيير: جمع السلة والدفع وحالة الحجز في لوحة واحدة على يسار الكتالوج. -->
             <section class="pos-panel pos-cart-panel store-pos-cart-panel">
-            <div class="store-booking-panel-head store-pos-cart-head" style="margin-top:12px;margin-bottom:0"><div><span class="pos-kicker">INVOICE</span><h3>🧾 أصناف الحجز</h3></div><span id="storeBookingCartCount" class="customer-history-summary">0 أصناف</span></div>
-            <div class="store-cart-table-wrap store-pos-cart-table"><table class="store-cart-table"><thead><tr><th>الصنف</th><th>الوحدة</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th><th>حذف</th></tr></thead><tbody id="storeBookingItemsBody"><tr><td colspan="6" class="store-empty">السلة فارغة — اختر صنفًا من المنيو.</td></tr></tbody></table></div>
-            <div class="store-total-box store-pos-cart-total"><span>إجمالي الأصناف</span><b id="storeBookingItemsTotal">0 ج.م</b></div>
+            <div class="store-booking-panel-head pos-panel-head store-pos-cart-head" style="margin-top:12px;margin-bottom:0"><div><span class="pos-kicker">INVOICE</span><h3>🧾 أصناف الحجز</h3></div><span id="storeBookingCartCount" class="customer-history-summary">0 أصناف</span></div>
+            <div class="store-cart-table-wrap invoice-items-table-wrap pos-cart-table-wrap store-pos-cart-table"><table class="store-cart-table invoice-items-table"><thead><tr><th>الصنف</th><th>الوحدة</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th><th>حذف</th></tr></thead><tbody id="storeBookingItemsBody"><tr><td colspan="6" class="store-empty">السلة فارغة — اختر صنفًا من المنيو.</td></tr></tbody></table></div>
+            <div class="store-total-box invoice-items-total pos-cart-total store-pos-cart-total"><span>إجمالي الأصناف</span><b id="storeBookingItemsTotal">0 ج.م</b></div>
 
             <div class="store-payment-card store-pos-payment">
-              <div class="store-booking-panel-head" style="margin-bottom:0;padding-bottom:8px"><div><span class="pos-kicker">SETTLEMENT</span><h3>💳 حالة الدفع</h3></div><span id="storeBookingPaymentBadge" class="store-booking-status">غير مدفوع</span></div>
+              <div class="store-booking-panel-head pos-panel-head" style="margin-bottom:0;padding-bottom:8px"><div><span class="pos-kicker">SETTLEMENT</span><h3>💳 حالة الدفع</h3></div><span id="storeBookingPaymentBadge" class="store-booking-status">غير مدفوع</span></div>
               <div class="store-payment-status">
                 <button type="button" class="store-payment-option active" id="storePayUnpaid" onclick="setStoreBookingPayment('unpaid')">🔴 غير مدفوع</button>
                 <button type="button" class="store-payment-option" id="storePayDeposit" onclick="setStoreBookingPayment('deposit')">🟠 عربون</button>
@@ -2405,8 +2469,9 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
               <div class="store-booking-field"><label class="store-booking-label">رقم الحجز</label><input id="storeBookingNumberPreview" class="store-booking-input font-mono" readonly></div>
             </div>
 
-            <button type="submit" class="store-submit-btn store-pos-submit">🏪 حفظ الحجز وإنشاء الفاتورة</button>
             </section>
+            <!-- تغيير: فصل زر التأكيد عن بطاقة السلة بنفس موضع زر تسجيل الطلب. -->
+            <button type="submit" class="order-submit-btn pos-submit-btn store-pos-submit"><span>🏪 حفظ الحجز وإنشاء الفاتورة</span><small>حفظ الأصناف والحسابات وموعد الاستلام</small></button>
           </form>
           <div id="storeBookingResult" class="store-booking-result hidden"></div>
         </div>
@@ -5009,7 +5074,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       const selected=storeBookingSelectedProductKey;
       if(!storeBookingMain){
         mainEl.style.display='grid';
-        mainEl.innerHTML=mains.map(main=>{const mainRows=rows.filter(r=>r.main===main),subCount=new Set(mainRows.map(r=>r.sub||'')).size;return `<button type="button" class="store-main-card" onclick="selectStoreBookingMain(${htmlJsArg(main)})"><b>🥩 ${escapeHtml(main)}</b><small>${subCount} قسم فرعي · ${mainRows.length} صنف</small></button>`;}).join('');
+        mainEl.innerHTML=mains.map(main=>{const mainRows=rows.filter(r=>r.main===main),subCount=new Set(mainRows.map(r=>r.sub||'')).size;return `<button type="button" class="pos-category-card store-main-card" onclick="selectStoreBookingMain(${htmlJsArg(main)})"><span class="pos-category-icon">${getCatalogMainCategoryIcon(main)}</span><b>${escapeHtml(main)}</b><small>${subCount} قسم فرعي · ${mainRows.length} صنف</small></button>`;}).join('');
         contentEl.innerHTML='';contentEl.style.display='none';
         if(!selected)document.querySelector('.store-pos-selected')?.style?.setProperty('display','none');
         return;
@@ -5017,15 +5082,15 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       mainEl.style.display='none';contentEl.style.display='block';
       const mainRows=rows.filter(r=>r.main===storeBookingMain),subs=[...new Set(mainRows.map(r=>r.sub||''))];
       if(!storeBookingSub){
-        const crumb=`<div class="store-breadcrumb"><div class="store-breadcrumb-path"><span>المجموعة الرئيسية:</span><b>${escapeHtml(storeBookingMain)}</b></div><button type="button" class="store-back-btn" onclick="resetStoreBookingCatalog()">↩ الرئيسية</button></div>`;
-        const subButtons=subs.map(sub=>{const count=mainRows.filter(r=>r.sub===sub).length;return `<button type="button" class="store-sub-card" onclick="selectStoreBookingSub(${htmlJsArg(sub)})"><b>▦ ${escapeHtml(sub||'أصناف مباشرة')}</b><small>${count} صنف</small></button>`;}).join('');
-        contentEl.innerHTML=crumb+(subs.length?`<div class="store-sub-grid">${subButtons}</div>`:'<div class="store-empty mt-2">لا توجد أقسام فرعية داخل هذه المجموعة.</div>');
+        const crumb=`<div class="pos-breadcrumb store-breadcrumb"><div class="pos-breadcrumb-path store-breadcrumb-path"><span>المجموعة الرئيسية:</span><b>${escapeHtml(storeBookingMain)}</b></div><button type="button" class="pos-back-btn store-back-btn" onclick="resetStoreBookingCatalog()">↩ الرئيسية</button></div>`;
+        const subButtons=subs.map(sub=>{const count=mainRows.filter(r=>r.sub===sub).length;return `<button type="button" class="pos-subcategory-card store-sub-card" onclick="selectStoreBookingSub(${htmlJsArg(sub)})"><span class="pos-subcategory-icon">▦</span><b>${escapeHtml(sub||'أصناف مباشرة')}</b><small>${count} صنف</small></button>`;}).join('');
+        contentEl.innerHTML=crumb+(subs.length?`<div class="pos-subcategory-grid store-sub-grid">${subButtons}</div>`:'<div class="store-empty mt-2">لا توجد أقسام فرعية داخل هذه المجموعة.</div>');
         if(!selected)document.querySelector('.store-pos-selected')?.style?.setProperty('display','none');
         return;
       }
       const targetRows=mainRows.filter(r=>r.sub===storeBookingSub);
-      const crumb=`<div class="store-breadcrumb"><div class="store-breadcrumb-path"><span>${escapeHtml(storeBookingMain)}</span><span>←</span><b>${escapeHtml(storeBookingSub||'أصناف مباشرة')}</b></div><div class="flex gap-1.5"><button type="button" class="store-back-btn" onclick="selectStoreBookingSub('')">↩ الفروع</button><button type="button" class="store-back-btn" onclick="resetStoreBookingCatalog()">↩ الرئيسية</button></div></div>`;
-      const products=targetRows.length?`<div class="store-products-grid">${targetRows.map(r=>`<button type="button" class="store-product-card ${selected===r.key?'selected':''}" onclick="chooseStoreBookingProduct(${htmlJsArg(r.key)})"><b>${escapeHtml(r.name)}</b><span>${escapeHtml(r.priceDisplay)} ج.م/${escapeHtml(r.unit)}</span></button>`).join('')}</div>`:'<div class="store-empty mt-2">لا توجد أصناف داخل هذه الفئة الفرعية.</div>';
+      const crumb=`<div class="pos-breadcrumb store-breadcrumb"><div class="pos-breadcrumb-path store-breadcrumb-path"><span>${escapeHtml(storeBookingMain)}</span><span>←</span><b>${escapeHtml(storeBookingSub||'أصناف مباشرة')}</b></div><div class="flex gap-1.5"><button type="button" class="pos-back-btn store-back-btn" onclick="selectStoreBookingSub('')">↩ الفروع</button><button type="button" class="pos-back-btn store-back-btn" onclick="resetStoreBookingCatalog()">↩ الرئيسية</button></div></div>`;
+      const products=targetRows.length?`<div class="pos-items-grid store-products-grid">${targetRows.map(r=>`<button type="button" class="pos-product-card store-product-card ${selected===r.key?'selected':''}" onclick="chooseStoreBookingProduct(${htmlJsArg(r.key)})"><b class="pos-product-name">${escapeHtml(r.name)}</b><span class="pos-product-price">${escapeHtml(r.priceDisplay)} ج.م/${escapeHtml(r.unit)}</span></button>`).join('')}</div>`:'<div class="store-empty mt-2">لا توجد أصناف داخل هذه الفئة الفرعية.</div>';
       contentEl.innerHTML=crumb+products;
       if(selected)document.querySelector('.store-pos-selected')?.style?.setProperty('display','grid');
     }
@@ -5041,6 +5106,8 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       const qty=document.getElementById('storeBookingItemQty');if(qty){qty.value='1';qty.focus();}
       renderStoreBookingCatalog();
     }
+    /* تغيير: نفس تحكم الكمية في إنشاء الطلب، بزيادة أو نقصان 250 جرام لكل ضغطة. */
+    function adjustStoreBookingQty(delta){const input=document.getElementById('storeBookingItemQty');if(!input)return;const current=Number(input.value)||1;input.value=Math.max(.25,Math.round((current+delta)*100)/100);input.dispatchEvent(new Event('input',{bubbles:true}));}
     function addStoreBookingItem(){
       const key=storeBookingSelectedProductKey,row=getStoreBookingCatalogRows().find(r=>r.key===key);if(!row)return alert('اختار صنفًا من المنيو أولاً.');
       const qty=Number(document.getElementById('storeBookingItemQty')?.value)||0,unitPrice=Number(document.getElementById('storeBookingItemUnitPrice')?.value)||0;
