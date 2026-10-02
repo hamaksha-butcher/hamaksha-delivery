@@ -1500,6 +1500,47 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       #sec-admin #invoiceCategoryGrid .pos-category-card b{font-size:10px!important;}
     }
 
+    /* تغيير: توحيد صفحة حجز المحل مع تخطيط إنشاء الطلب مع الحفاظ على حقول الحجز الحالية. */
+    #storeBookingForm{display:grid!important;grid-template-columns:minmax(320px,360px) minmax(0,1fr)!important;grid-template-rows:auto auto auto!important;align-items:start!important;gap:12px!important;padding:0!important;height:auto!important;min-height:0!important;overflow:visible!important;}
+    #storeBookingForm>*{direction:rtl!important;min-width:0!important;}
+    #storeBookingForm #storeBookingDraftBar,#storeBookingForm #storeBookingDraftReopen{grid-column:1/-1!important;grid-row:1!important;}
+    #storeBookingForm .store-pos-customer{grid-column:1!important;grid-row:2!important;display:block!important;min-height:0!important;height:auto!important;max-height:none!important;overflow:visible!important;padding:14px!important;}
+    #storeBookingForm .store-booking-fields-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;}
+    #storeBookingForm .store-booking-fields-grid .store-booking-history-wide,#storeBookingForm .store-booking-fields-grid .store-booking-notes-wide{grid-column:1/-1!important;}
+    #storeBookingForm .store-booking-mini-history{margin-top:0!important;}
+    #storeBookingForm .store-pos-catalog{grid-column:2!important;grid-row:2 / span 2!important;width:100%!important;min-width:0!important;min-height:calc(100dvh - 240px)!important;height:auto!important;max-height:none!important;display:flex!important;flex-direction:column!important;gap:10px!important;margin:0!important;padding:18px!important;overflow:hidden!important;align-self:stretch!important;}
+    #storeBookingForm .store-booking-catalog-toolbar{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;flex-wrap:wrap!important;}
+    #storeBookingForm .store-booking-search{width:min(420px,100%)!important;min-height:46px!important;font-size:11px!important;}
+    #storeBookingForm #storeBookingMainGrid{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))!important;gap:12px!important;flex:0 0 auto!important;}
+    #storeBookingForm #storeBookingCatalogContent{display:flex;flex:1 1 auto!important;flex-direction:column!important;min-height:100px!important;overflow:auto!important;overscroll-behavior:contain!important;scrollbar-gutter:stable!important;}
+    #storeBookingForm #storeBookingCatalogContent .store-sub-grid,#storeBookingForm #storeBookingCatalogContent .store-products-grid{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))!important;gap:12px!important;}
+    #storeBookingForm .store-pos-selected{display:none!important;grid-template-columns:minmax(130px,1.2fr) minmax(110px,.7fr) minmax(110px,.7fr) auto!important;gap:10px!important;align-items:end!important;margin-top:auto!important;padding:13px!important;position:sticky!important;bottom:0!important;z-index:3!important;border:1px solid var(--border-color,#dbe4ed)!important;border-radius:16px!important;background:var(--surface-soft,#f8fafc)!important;box-shadow:0 -8px 20px rgba(15,23,42,.08)!important;}
+    #storeBookingForm .store-pos-selected[style*="display: grid"]{display:grid!important;}
+    #storeBookingForm .store-pos-cart-panel{grid-column:1!important;grid-row:3!important;display:flex!important;flex-direction:column!important;gap:10px!important;padding:14px!important;min-width:0!important;overflow:visible!important;}
+    #storeBookingForm .store-pos-cart-head{grid-column:auto!important;grid-row:auto!important;margin:0!important;}
+    #storeBookingForm .store-pos-cart-table{grid-column:auto!important;grid-row:auto!important;width:100%!important;max-height:260px!important;overflow:auto!important;margin:0!important;}
+    #storeBookingForm .store-pos-cart-total,#storeBookingForm .store-pos-payment,#storeBookingForm .store-pos-meta,#storeBookingForm .store-pos-submit{grid-column:auto!important;grid-row:auto!important;width:100%!important;margin:0!important;}
+    #storeBookingForm .store-pos-payment{padding:12px!important;}
+    #storeBookingForm .store-pos-meta{grid-template-columns:1fr 1fr!important;gap:9px!important;}
+    #storeBookingForm .store-pos-submit{min-height:48px!important;}
+    @media(max-width:950px){
+      #storeBookingForm{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto!important;}
+      #storeBookingForm #storeBookingDraftBar,#storeBookingForm #storeBookingDraftReopen,#storeBookingForm .store-pos-customer,#storeBookingForm .store-pos-cart-panel,#storeBookingForm .store-pos-catalog{grid-column:1!important;grid-row:auto!important;width:100%!important;min-height:0!important;height:auto!important;max-height:none!important;}
+      #storeBookingForm .store-pos-customer{order:1!important;}
+      #storeBookingForm .store-pos-cart-panel{order:2!important;}
+      #storeBookingForm .store-pos-catalog{order:3!important;overflow:visible!important;}
+      #storeBookingForm #storeBookingCatalogContent{overflow:visible!important;}
+      #storeBookingForm .store-pos-selected{position:static!important;}
+    }
+    @media(max-width:600px){
+      #storeBookingForm .store-booking-fields-grid{grid-template-columns:1fr!important;}
+      #storeBookingForm .store-booking-fields-grid .store-booking-history-wide,#storeBookingForm .store-booking-fields-grid .store-booking-notes-wide{grid-column:auto!important;}
+      #storeBookingForm .store-pos-selected{grid-template-columns:1fr 1fr!important;}
+      #storeBookingForm .store-pos-selected .store-selected-name,#storeBookingForm .store-pos-selected .store-add-btn{grid-column:1/-1!important;}
+      #storeBookingForm .store-pos-meta{grid-template-columns:1fr!important;}
+      #storeBookingForm .store-pos-payment .store-payment-status{grid-template-columns:1fr!important;}
+    }
+
     /* تغيير: ترتيب شاشة إنشاء الطلب وفق تدفق العمل الجديد. */
     #sec-admin #orderForm.pos-order-form{grid-template-columns:minmax(300px,360px) minmax(0,1fr)!important;grid-template-rows:auto auto auto auto!important;align-items:start!important;}
     #sec-admin #orderForm .pos-customer-panel{grid-column:1!important;grid-row:2!important;}
@@ -2292,22 +2333,27 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 </div>
 <button type="button" id="storeBookingDraftReopen" class="pos-draft-reopen" hidden onclick="setPosDraftNoticeVisibility('store',false)">📝 إظهار مسودة الحجز</button>
 
-            <div class="store-booking-form-grid store-pos-customer">
-              <div class="store-booking-field"><label class="store-booking-label">اسم العميل</label><input id="storeBookingCustomerName" class="store-booking-input" required placeholder="اسم العميل"></div>
-              <div class="store-booking-field"><label class="store-booking-label">رقم الهاتف</label><input id="storeBookingCustomerPhone" class="store-booking-input" dir="ltr" required placeholder="01xxxxxxxxx" oninput="lookupStoreBookingCustomer(this.value)"><input type="hidden" id="storeBookingCustomerKey" value=""><div class="store-booking-customer-tools"><span id="storeBookingCustomerStatus" class="store-booking-customer-status">عميل جديد — سيتم حفظه تلقائيًا</span><button type="button" class="store-action-btn" onclick="openCustomerPickerModal('store')">👥 قاعدة العملاء</button></div><div id="storeBookingCustomerHistory" class="store-booking-mini-history"><div class="store-booking-mini-history-head">📜 آخر عمليات العميل</div><div id="storeBookingCustomerHistoryList" class="store-booking-mini-history-list"><div class="text-[7px] text-slate-400">اكتب رقم العميل لعرض تاريخه.</div></div></div></div>
-              <div class="store-booking-field"><label class="store-booking-label">تاريخ الاستلام</label><input id="storeBookingPickupDate" type="date" class="store-booking-input" required dir="ltr"></div>
-              <div class="store-booking-field"><label class="store-booking-label">وقت الاستلام</label><input id="storeBookingPickupTime" type="time" class="store-booking-input" required dir="ltr"></div>
-              <div class="store-booking-field" style="grid-column:1/-1"><label class="store-booking-label">ملاحظات الحجز</label><textarea id="storeBookingNotes" class="store-booking-textarea" placeholder="مثال: تقطيع وسط — الاستلام بعد 6 مساءً"></textarea></div>
-            </div>
+            <!-- تغيير: تنظيم بيانات العميل وموعد الاستلام في بطاقة مستقلة مثل صفحة إنشاء الطلب. -->
+            <section class="pos-panel pos-customer-panel store-pos-customer">
+              <div class="pos-panel-head"><div><span class="pos-kicker">CUSTOMER & PICKUP</span><h3>👤 العميل وموعد الاستلام</h3><p>بيانات الحجز الأساسية في مكان واحد</p></div><button type="button" onclick="openCustomerPickerModal('store')" class="pos-small-btn">👥 قاعدة العملاء</button></div>
+              <div class="store-booking-form-grid store-booking-fields-grid">
+                <div class="store-booking-field"><label class="store-booking-label">اسم العميل</label><input id="storeBookingCustomerName" class="store-booking-input" required placeholder="اسم العميل"></div>
+                <div class="store-booking-field"><label class="store-booking-label">رقم الهاتف</label><input id="storeBookingCustomerPhone" class="store-booking-input" dir="ltr" required placeholder="01xxxxxxxxx" oninput="lookupStoreBookingCustomer(this.value)"><input type="hidden" id="storeBookingCustomerKey" value=""><div class="store-booking-customer-tools"><span id="storeBookingCustomerStatus" class="store-booking-customer-status">عميل جديد — سيتم حفظه تلقائيًا</span></div></div>
+                <div id="storeBookingCustomerHistory" class="store-booking-mini-history store-booking-history-wide"><div class="store-booking-mini-history-head">📜 آخر عمليات العميل</div><div id="storeBookingCustomerHistoryList" class="store-booking-mini-history-list"><div class="text-[7px] text-slate-400">اكتب رقم العميل لعرض تاريخه.</div></div></div>
+                <div class="store-booking-field"><label class="store-booking-label">تاريخ الاستلام</label><input id="storeBookingPickupDate" type="date" class="store-booking-input" required dir="ltr"></div>
+                <div class="store-booking-field"><label class="store-booking-label">وقت الاستلام</label><input id="storeBookingPickupTime" type="time" class="store-booking-input" required dir="ltr"></div>
+                <div class="store-booking-field store-booking-notes-wide"><label class="store-booking-label">ملاحظات الحجز</label><textarea id="storeBookingNotes" class="store-booking-textarea" placeholder="مثال: تقطيع وسط — الاستلام بعد 6 مساءً"></textarea></div>
+              </div>
+            </section>
 
-            <div class="store-booking-catalog store-pos-catalog">
+            <!-- تغيير: بطاقة الأصناف تأخذ العمود الأوسع مثل كتالوج صفحة إنشاء الطلب. -->
+            <section class="store-booking-catalog pos-panel pos-catalog-panel store-pos-catalog">
               <div class="store-booking-catalog-toolbar">
                 <div><span class="pos-kicker">PRODUCT CATALOG</span><div class="store-booking-catalog-title">🥩 اختر الأصناف من الرئيسية ثم الفرعية</div></div>
                 <input id="storeBookingSearch" class="store-booking-input store-booking-search" placeholder="🔎 بحث عن صنف" oninput="filterStoreBookingCatalog(this.value)">
               </div>
               <div id="storeBookingMainGrid" class="store-main-grid"></div>
               <div id="storeBookingCatalogContent"></div>
-            </div>
 
             <div class="store-selected-row store-pos-selected">
               <div class="store-selected-name"><small>الصنف المختار</small><b id="storeBookingSelectedLabel">لم يتم اختيار صنف</b></div>
@@ -2329,6 +2375,10 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
               <button type="button" class="store-add-btn" onclick="addStoreBookingItem()">＋ إضافة للفاتورة</button>
             </div>
 
+            </section>
+
+            <!-- تغيير: جمع السلة والدفع وحالة الحجز في لوحة واحدة على يسار الكتالوج. -->
+            <section class="pos-panel pos-cart-panel store-pos-cart-panel">
             <div class="store-booking-panel-head store-pos-cart-head" style="margin-top:12px;margin-bottom:0"><div><span class="pos-kicker">INVOICE</span><h3>🧾 أصناف الحجز</h3></div><span id="storeBookingCartCount" class="customer-history-summary">0 أصناف</span></div>
             <div class="store-cart-table-wrap store-pos-cart-table"><table class="store-cart-table"><thead><tr><th>الصنف</th><th>الوحدة</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th><th>حذف</th></tr></thead><tbody id="storeBookingItemsBody"><tr><td colspan="6" class="store-empty">السلة فارغة — اختر صنفًا من المنيو.</td></tr></tbody></table></div>
             <div class="store-total-box store-pos-cart-total"><span>إجمالي الأصناف</span><b id="storeBookingItemsTotal">0 ج.م</b></div>
@@ -2350,6 +2400,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
             </div>
 
             <button type="submit" class="store-submit-btn store-pos-submit">🏪 حفظ الحجز وإنشاء الفاتورة</button>
+            </section>
           </form>
           <div id="storeBookingResult" class="store-booking-result hidden"></div>
         </div>
