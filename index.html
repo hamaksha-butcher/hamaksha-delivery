@@ -1898,6 +1898,25 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     #storeBookingForm .store-pos-customer .store-booking-pickup-fields{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;padding-top:12px!important;border-top:1px solid var(--border-color,#dbe4ed)!important;}
     #storeBookingForm .store-pos-customer .store-booking-pickup-fields .store-booking-notes-wide{grid-column:1/-1!important;}
     @media(max-width:600px){#storeBookingForm .store-pos-customer .store-booking-pickup-fields{grid-template-columns:1fr!important;}#storeBookingForm .store-pos-customer .store-booking-pickup-fields .store-booking-notes-wide{grid-column:auto!important;}}
+    /* تغيير: تكبير قراءة أصناف سلة حجز المحل مع إبقاء الجدول مناسبًا لعرض اللوحة. */
+    #storeBookingForm .store-pos-cart-head h3{font-size:16px!important;line-height:1.5!important;}
+    #storeBookingForm .store-pos-cart-head #storeBookingCartCount{font-size:11px!important;}
+    #storeBookingForm .store-pos-cart-table .invoice-items-table{font-size:11px!important;}
+    #storeBookingForm .store-pos-cart-table .invoice-items-table th{font-size:10px!important;line-height:1.5!important;padding:8px 5px!important;}
+    #storeBookingForm .store-pos-cart-table .invoice-items-table td{font-size:12px!important;line-height:1.6!important;padding:8px 5px!important;}
+    #storeBookingForm .store-pos-cart-table .invoice-items-table td:first-child{font-weight:800!important;}
+    #storeBookingForm .store-pos-cart-table .invoice-line-input{font-size:12px!important;font-weight:800!important;min-height:36px!important;}
+    #storeBookingForm .store-pos-cart-table .invoice-qty-controls button,
+    #storeBookingForm .store-pos-cart-table .invoice-remove-btn{font-size:14px!important;min-width:34px!important;min-height:34px!important;}
+    #storeBookingForm .store-pos-cart-total span:first-child{font-size:12px!important;}
+    #storeBookingForm .store-pos-cart-total b{font-size:16px!important;font-weight:900!important;}
+    @media(max-width:600px){
+      #storeBookingForm .store-pos-cart-table .invoice-items-table th{font-size:9px!important;padding:7px 3px!important;}
+      #storeBookingForm .store-pos-cart-table .invoice-items-table td{font-size:10px!important;padding:7px 3px!important;}
+      #storeBookingForm .store-pos-cart-table .invoice-line-input{font-size:10px!important;min-height:32px!important;}
+      #storeBookingForm .store-pos-cart-table .invoice-qty-controls button,
+      #storeBookingForm .store-pos-cart-table .invoice-remove-btn{font-size:12px!important;min-width:30px!important;min-height:30px!important;}
+    }
 
 </style>
 
