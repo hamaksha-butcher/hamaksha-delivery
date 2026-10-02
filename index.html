@@ -1599,29 +1599,32 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       #sec-admin #orderForm .pos-payment-panel .grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
     }
 
-    /* تغيير: توسيع مساحة الأصناف في الشاشات الكبيرة وملء الفراغ داخل لوحة الكتالوج. */
+    /* تغيير: تصميم متوازن للكتالوج؛ مساحة تصفح واضحة وبطاقات بأحجام طبيعية دون تمدد مبالغ فيه. */
     @media(min-width:861px){
-      #sec-admin #orderForm.pos-order-form{align-items:stretch!important;}
       #sec-admin #orderForm .pos-catalog-panel{
-        align-self:stretch!important;
-        height:calc(100dvh - 150px)!important;
-        min-height:620px!important;
+        height:clamp(570px,76dvh,790px)!important;
+        min-height:570px!important;
         display:flex!important;
         flex-direction:column!important;
-        overflow:hidden!important;
+        gap:4px!important;
+        background:linear-gradient(180deg,var(--surface-color) 0%,color-mix(in srgb,var(--surface-soft) 38%,var(--surface-color)) 100%)!important;
       }
       #sec-admin #orderForm #invoiceCategoryGrid{
         flex:1 1 auto!important;
-        min-height:220px!important;
+        min-height:260px!important;
         max-height:none!important;
-        grid-auto-rows:minmax(150px,1fr)!important;
+        grid-template-columns:repeat(3,minmax(0,1fr))!important;
+        grid-auto-rows:minmax(164px,1fr)!important;
         align-content:stretch!important;
+        gap:14px!important;
+        padding:12px 4px!important;
       }
       /* display:flex يتغلب على display:block الذي يضبطه عارض الأقسام عبر JavaScript. */
       #sec-admin #orderForm .pos-catalog-panel #invoiceProductGrid{
         display:flex!important;
         flex:1 1 auto!important;
         flex-direction:column!important;
+        gap:10px!important;
         min-height:0!important;
         max-height:none!important;
         overflow:auto!important;
@@ -1629,23 +1632,38 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       #sec-admin #orderForm #invoiceProductGrid .pos-subcategory-grid,
       #sec-admin #orderForm #invoiceProductGrid .pos-items-grid{
         flex:1 0 auto!important;
-        min-height:100%!important;
+        min-height:260px!important;
         align-content:stretch!important;
-        grid-auto-rows:minmax(180px,1fr)!important;
+        grid-template-columns:repeat(3,minmax(0,1fr))!important;
+        grid-auto-rows:minmax(164px,1fr)!important;
+        gap:14px!important;
+        padding:4px!important;
       }
       #sec-admin #orderForm #invoiceProductGrid .pos-subcategory-card,
-      #sec-admin #orderForm #invoiceProductGrid .pos-product-card{
-        min-height:180px!important;
-        height:100%!important;
+      #sec-admin #orderForm #invoiceProductGrid .pos-product-card{min-height:164px!important;height:100%!important;}
+      #sec-admin #orderForm #invoiceCategoryGrid .pos-category-card{
+        min-height:164px!important;
+        padding:18px 14px!important;
+        gap:12px!important;
+        border-radius:20px!important;
+        background:var(--surface-color)!important;
+        box-shadow:0 8px 22px rgba(20,50,70,.06)!important;
       }
+      #sec-admin #orderForm #invoiceCategoryGrid .pos-category-icon{
+        width:58px!important;height:58px!important;border-radius:18px!important;
+        font-size:30px!important;background:linear-gradient(145deg,#edf7f8,#dcecef)!important;
+      }
+      #sec-admin #orderForm #invoiceCategoryGrid .pos-category-card b{font-size:13px!important;line-height:1.55!important;}
+      #sec-admin #orderForm #invoiceCategoryGrid .pos-category-card small{font-size:10px!important;}
     }
-    /* تغيير: على الشاشات الصغيرة يظل المحتوى طبيعيًا دون فرض ارتفاع الشاشة. */
+    /* تغيير: شاشات الجوال تعرض المحتوى بارتفاع تلقائي وبطاقات قابلة للالتفاف. */
     @media(max-width:860px){
+      #sec-admin #orderForm .pos-catalog-panel{height:auto!important;min-height:0!important;}
       #sec-admin #orderForm .pos-catalog-panel #invoiceProductGrid{display:block!important;}
       #sec-admin #orderForm #invoiceProductGrid .pos-subcategory-grid,
-      #sec-admin #orderForm #invoiceProductGrid .pos-items-grid{min-height:0!important;grid-auto-rows:minmax(150px,auto)!important;}
+      #sec-admin #orderForm #invoiceProductGrid .pos-items-grid{min-height:0!important;grid-auto-rows:minmax(140px,auto)!important;}
       #sec-admin #orderForm #invoiceProductGrid .pos-subcategory-card,
-      #sec-admin #orderForm #invoiceProductGrid .pos-product-card{height:auto!important;min-height:150px!important;}
+      #sec-admin #orderForm #invoiceProductGrid .pos-product-card{height:auto!important;min-height:140px!important;}
     }
 
 </style>
@@ -4248,6 +4266,18 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     let editOrderCatalogMain = '';
     let editOrderCatalogSub = '';
     let editOrderCatalogSearch = '';
+    /* تغيير: اختيار رمز بصري مناسب للفئة اعتمادًا على اسمها. */
+    function getCatalogMainCategoryIcon(name){
+      const value=String(name||'').toLowerCase();
+      if(/دواجن|فراخ|دجاج|chicken|poultry/.test(value))return '🐔';
+      if(/ضاني|ماعز|خروف|羊|lamb|mutton/.test(value))return '🐑';
+      if(/سمك|أسماك|بحري|fish|seafood/.test(value))return '🐟';
+      if(/كبد|كلاوي|قلب|أحشاء|كوارع|كرشة|لحمية|مصنعات|مفروم|سجق|برجر/.test(value))return '🍖';
+      if(/كماليات|توابل|تتبيل|إضافات|اضافات|ملحقات/.test(value))return '🧂';
+      if(/عروض|خصم|عرض/.test(value))return '🏷️';
+      if(/لحوم|لحم|بقري|عجالي|بتلو|لحمة|meat|beef/.test(value))return '🥩';
+      return '🔪';
+    }
     function getCatalogRowsForEditSearch(){
       const rows=getNewOrderCatalogData();
       const q=String(editOrderCatalogSearch||'').trim().toLowerCase();
@@ -4263,7 +4293,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       const selectedKey=document.getElementById('editInvoiceItemProduct')?.value||'';
       if(!editOrderCatalogMain){
         catEl.style.display='grid';
-        catEl.innerHTML=mains.map(main=>{const rowsForMain=rows.filter(r=>r.main===main),subCount=new Set(rowsForMain.map(r=>r.sub||'')).size;return `<button type="button" class="pos-category-card" onclick="selectEditOrderCategory(${htmlJsArg(main)})"><span class="pos-category-icon">🥩</span><b>${escapeHtml(main)}</b><small>${subCount} قسم فرعي · ${rowsForMain.length} صنف</small></button>`;}).join('');
+        catEl.innerHTML=mains.map(main=>{const rowsForMain=rows.filter(r=>r.main===main),subCount=new Set(rowsForMain.map(r=>r.sub||'')).size;return `<button type="button" class="pos-category-card" onclick="selectEditOrderCategory(${htmlJsArg(main)})"><span class="pos-category-icon">${getCatalogMainCategoryIcon(main)}</span><b>${escapeHtml(main)}</b><small>${subCount} قسم فرعي · ${rowsForMain.length} صنف</small></button>`;}).join('');
         prodEl.innerHTML='';prodEl.style.display='none';
         const hint=document.getElementById('editInvoiceCatalogHint');if(hint)hint.innerText=rows.length?`${mains.length} مجموعات رئيسية`:'المنيو فارغة';
         if(addGrid&&!selectedKey)addGrid.style.display='none';
@@ -4312,7 +4342,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       const selectedKey=document.getElementById('invoiceItemProduct')?.value||'';
       if(!newOrderCatalogMain){
         catEl.style.display='grid';
-        catEl.innerHTML=mains.map(main=>{const count=rows.filter(r=>r.main===main).length;const subCount=new Set(rows.filter(r=>r.main===main).map(r=>r.sub||'')).size;return `<button type="button" class="pos-category-card" onclick="selectNewOrderCategory(${htmlJsArg(main)})"><span class="pos-category-icon">🥩</span><b>${escapeHtml(main)}</b><small>${subCount} قسم فرعي · ${count} صنف</small></button>`;}).join('');
+        catEl.innerHTML=mains.map(main=>{const count=rows.filter(r=>r.main===main).length;const subCount=new Set(rows.filter(r=>r.main===main).map(r=>r.sub||'')).size;return `<button type="button" class="pos-category-card" onclick="selectNewOrderCategory(${htmlJsArg(main)})"><span class="pos-category-icon">${getCatalogMainCategoryIcon(main)}</span><b>${escapeHtml(main)}</b><small>${subCount} قسم فرعي · ${count} صنف</small></button>`;}).join('');
         prodEl.innerHTML='';
         prodEl.style.display='none';
         const hint=document.getElementById('invoiceCatalogHint');if(hint)hint.innerText=rows.length?`${mains.length} مجموعات رئيسية`:'المنيو فارغة';
