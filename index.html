@@ -4294,6 +4294,8 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     let newOrderCatalogMain = '';
     let newOrderCatalogSub = '';
     let newOrderCatalogSearch = '';
+    /* تغيير: قيمة منفصلة لفتح الأصناف التي لا تنتمي إلى قسم فرعي مسمى. */
+    const DIRECT_SUBCATEGORY_KEY='__direct__';
     function getNewOrderCatalogData(){
       return getMergedMenuPriceEntries().map(({key,item})=>({
         key,
@@ -4348,19 +4350,20 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       }
       catEl.style.display='none';prodEl.style.display='block';
       const mainRows=rows.filter(r=>r.main===editOrderCatalogMain),subs=[...new Set(mainRows.map(r=>r.sub||''))];
-      if(!editOrderCatalogSub){
+      if(editOrderCatalogSub===''){
         const breadcrumb=`<div class="pos-breadcrumb"><div class="pos-breadcrumb-path"><span>المجموعة الرئيسية:</span><b>${escapeHtml(editOrderCatalogMain)}</b></div><button type="button" class="pos-back-btn" onclick="resetEditOrderCatalog()">↩ الرئيسية</button></div>`;
-        const subButtons=subs.map(sub=>{const count=mainRows.filter(r=>r.sub===sub).length;return `<button type="button" class="pos-subcategory-card" onclick="selectEditOrderSubcategory(${htmlJsArg(sub)})"><span class="pos-subcategory-icon">▦</span><b>${escapeHtml(sub||'أصناف مباشرة')}</b><small>${count} صنف</small></button>`;}).join('');
+        const subButtons=subs.map(sub=>{const count=mainRows.filter(r=>r.sub===sub).length;const selection=sub===''?DIRECT_SUBCATEGORY_KEY:sub;return `<button type="button" class="pos-subcategory-card" onclick="selectEditOrderSubcategory(${htmlJsArg(selection)})"><span class="pos-subcategory-icon">${sub===''?'🧺':'▦'}</span><b>${escapeHtml(sub||'أصناف مباشرة')}</b><small>${count} صنف</small></button>`;}).join('');
         prodEl.innerHTML=breadcrumb+(subs.length?`<div class="pos-subcategory-grid">${subButtons}</div>`:'<div class="pos-hierarchy-empty">لا توجد أقسام فرعية داخل هذه المجموعة.</div>');
         const hint=document.getElementById('editInvoiceCatalogHint');if(hint)hint.innerText=`${subs.length} أقسام فرعية داخل ${editOrderCatalogMain}`;
         if(addGrid&&!selectedKey)addGrid.style.display='none';
         return;
       }
-      const targetRows=mainRows.filter(r=>r.sub===editOrderCatalogSub);
-      const breadcrumb=`<div class="pos-breadcrumb"><div class="pos-breadcrumb-path"><span>${escapeHtml(editOrderCatalogMain)}</span><span>←</span><b>${escapeHtml(editOrderCatalogSub||'أصناف مباشرة')}</b></div><div class="flex items-center gap-1.5"><button type="button" class="pos-back-btn" onclick="selectEditOrderSubcategory('')">↩ الفروع</button><button type="button" class="pos-back-btn" onclick="resetEditOrderCatalog()">↩ الرئيسية</button></div></div>`;
+      const targetRows=mainRows.filter(r=>editOrderCatalogSub===DIRECT_SUBCATEGORY_KEY?!r.sub:r.sub===editOrderCatalogSub);
+      const currentSubLabel=editOrderCatalogSub===DIRECT_SUBCATEGORY_KEY?'أصناف مباشرة':editOrderCatalogSub;
+      const breadcrumb=`<div class="pos-breadcrumb"><div class="pos-breadcrumb-path"><span>${escapeHtml(editOrderCatalogMain)}</span><span>←</span><b>${escapeHtml(currentSubLabel)}</b></div><div class="flex items-center gap-1.5"><button type="button" class="pos-back-btn" onclick="selectEditOrderSubcategory('')">↩ الفروع</button><button type="button" class="pos-back-btn" onclick="resetEditOrderCatalog()">↩ الرئيسية</button></div></div>`;
       const productHtml=targetRows.length?`<div class="pos-items-grid">${targetRows.map(r=>`<button type="button" class="pos-product-card" data-key="${escapeHtml(r.key)}" onclick="chooseEditInvoiceProduct(${htmlJsArg(r.key)})"><span class="pos-product-name">${escapeHtml(r.name)}</span><span class="pos-product-price">${escapeHtml(r.priceDisplay)} ج.م/${escapeHtml(r.unit)}</span></button>`).join('')}</div>`:'<div class="pos-hierarchy-empty">لا توجد أصناف داخل هذه الفئة الفرعية.</div>';
       prodEl.innerHTML=breadcrumb+productHtml;
-      const hint=document.getElementById('editInvoiceCatalogHint');if(hint)hint.innerText=`${targetRows.length} أصناف داخل ${editOrderCatalogSub}`;
+      const hint=document.getElementById('editInvoiceCatalogHint');if(hint)hint.innerText=`${targetRows.length} أصناف داخل ${currentSubLabel}`;
       document.querySelectorAll('#editInvoiceProductGrid .pos-product-card').forEach(b=>b.classList.toggle('selected',b.dataset.key===selectedKey));
       if(addGrid)addGrid.style.display=selectedKey?'grid':'none';
     }
@@ -4400,19 +4403,20 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       prodEl.style.display='block';
       const mainRows=rows.filter(r=>r.main===newOrderCatalogMain);
       const subs=[...new Set(mainRows.map(r=>r.sub||''))];
-      if(!newOrderCatalogSub){
+      if(newOrderCatalogSub===''){
         const breadcrumb=`<div class="pos-breadcrumb"><div class="pos-breadcrumb-path"><span>المجموعة الرئيسية:</span><b>${escapeHtml(newOrderCatalogMain)}</b></div><button type="button" class="pos-back-btn" onclick="resetNewOrderCategory()">↩ الرئيسية</button></div>`;
-        const subButtons=subs.map(sub=>{const count=mainRows.filter(r=>r.sub===sub).length;return `<button type="button" class="pos-subcategory-card" onclick="selectNewOrderSubcategory(${htmlJsArg(sub)})"><span class="pos-subcategory-icon">▦</span><b>${escapeHtml(sub||'أصناف مباشرة')}</b><small>${count} صنف</small></button>`;}).join('');
+        const subButtons=subs.map(sub=>{const count=mainRows.filter(r=>r.sub===sub).length;const selection=sub===''?DIRECT_SUBCATEGORY_KEY:sub;return `<button type="button" class="pos-subcategory-card" onclick="selectNewOrderSubcategory(${htmlJsArg(selection)})"><span class="pos-subcategory-icon">${sub===''?'🧺':'▦'}</span><b>${escapeHtml(sub||'أصناف مباشرة')}</b><small>${count} صنف</small></button>`;}).join('');
         prodEl.innerHTML=breadcrumb+(subs.length?`<div class="pos-subcategory-grid">${subButtons}</div>`:'<div class="pos-hierarchy-empty">لا توجد أقسام فرعية داخل هذه المجموعة.</div>');
         const hint=document.getElementById('invoiceCatalogHint');if(hint)hint.innerText=`${subs.length} أقسام فرعية داخل ${newOrderCatalogMain}`;
         if(addBar)addBar.style.display='none';
         return;
       }
-      const targetRows=mainRows.filter(r=>r.sub===newOrderCatalogSub);
-      const breadcrumb=`<div class="pos-breadcrumb"><div class="pos-breadcrumb-path"><span>${escapeHtml(newOrderCatalogMain)}</span><span>←</span><b>${escapeHtml(newOrderCatalogSub||'أصناف مباشرة')}</b></div><div class="flex items-center gap-1.5"><button type="button" class="pos-back-btn" onclick="selectNewOrderSubcategory('')">↩ الفروع</button><button type="button" class="pos-back-btn" onclick="resetNewOrderCategory()">↩ الرئيسية</button></div></div>`;
+      const targetRows=mainRows.filter(r=>newOrderCatalogSub===DIRECT_SUBCATEGORY_KEY?!r.sub:r.sub===newOrderCatalogSub);
+      const currentSubLabel=newOrderCatalogSub===DIRECT_SUBCATEGORY_KEY?'أصناف مباشرة':newOrderCatalogSub;
+      const breadcrumb=`<div class="pos-breadcrumb"><div class="pos-breadcrumb-path"><span>${escapeHtml(newOrderCatalogMain)}</span><span>←</span><b>${escapeHtml(currentSubLabel)}</b></div><div class="flex items-center gap-1.5"><button type="button" class="pos-back-btn" onclick="selectNewOrderSubcategory('')">↩ الفروع</button><button type="button" class="pos-back-btn" onclick="resetNewOrderCategory()">↩ الرئيسية</button></div></div>`;
       const productHtml=targetRows.length?`<div class="pos-items-grid">${targetRows.map(r=>`<button type="button" class="pos-product-card" data-key="${escapeHtml(r.key)}" onclick="chooseNewInvoiceProduct(${htmlJsArg(r.key)})"><span class="pos-product-name">${escapeHtml(r.name)}</span><span class="pos-product-price">${escapeHtml(r.priceDisplay)} ج.م/${escapeHtml(r.unit)}</span></button>`).join('')}</div>`:'<div class="pos-hierarchy-empty">لا توجد أصناف داخل هذه الفئة الفرعية.</div>';
       prodEl.innerHTML=breadcrumb+productHtml;
-      const hint=document.getElementById('invoiceCatalogHint');if(hint)hint.innerText=`${targetRows.length} أصناف داخل ${newOrderCatalogSub}`;
+      const hint=document.getElementById('invoiceCatalogHint');if(hint)hint.innerText=`${targetRows.length} أصناف داخل ${currentSubLabel}`;
       document.querySelectorAll('#invoiceProductGrid .pos-product-card').forEach(b=>b.classList.toggle('selected',b.dataset.key===selectedKey));
       if(addBar)addBar.style.display=selectedKey?'grid':'none';
     }
