@@ -4305,7 +4305,9 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     function startAdminOrdersListener() {
       if(APP_MODE!=='staff' || !currentUser || (currentUser.role!=='admin' && currentUser.role!=='cashier')) return;
       try { staffOrdersRef?.off(); } catch(e){}
-      staffOrdersRef = canViewAllDrivers() ? db.ref('orders') : db.ref('orders').orderByChild('createdBy').equalTo(currentUser.username);
+      // تغيير: سجل الطلبات يعرض كل طلبات الموقع للإدارة والكاشير، بغض النظر عن منشئ الطلب.
+      // تظل صلاحيات تعديل الطلبات أو حذفها محكومة بدوال الصلاحيات المنفصلة أدناه.
+      staffOrdersRef = db.ref('orders');
       staffOrdersRef.on('value',snap=>{
         allOrdersCache=snap.val()||{}; processOrderNotifications(allOrdersCache); applyFilters(); renderQuickInvoiceProducts(); renderCashierHome();
         if(!document.getElementById('sec-dashboard').classList.contains('hidden')) renderDashboard();
