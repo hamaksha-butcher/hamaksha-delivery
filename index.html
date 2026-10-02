@@ -5753,9 +5753,13 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     // تغيير: تجميع عدد الطلبات حسب منشئها لمعرفة أكثر المستخدمين تسجيلًا ضمن النتائج المعروضة.
     function renderOrderCreatorStats(rows){
       const box=document.getElementById('orderCreatorStats');if(!box)return;
-      const counts={};(rows||[]).forEach(order=>{const username=String(order.createdBy||'غير مسجل');counts[username]=(counts[username]||0)+1;});
-      const ranked=Object.entries(counts).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'ar'));
-      box.innerHTML=ranked.length?`<div class="order-creator-stats-head"><b>👥 عدد الطلبات حسب المستخدم</b><span>حسب النتائج والفلاتر الحالية</span></div><div class="order-creator-stats-list">${ranked.slice(0,8).map(([username,total],index)=>`<div class="order-creator-stat ${index===0?'top':''}"><span>${index===0?'🏆':'👤'} ${escapeHtml(username)}</span><b>${total.toLocaleString('ar-EG')} طلب</b></div>`).join('')}</div>`:'<div class="order-creator-stats-head"><b>👥 عدد الطلبات حسب المستخدم</b><span>لا توجد نتائج حالية</span></div>';
+      const selected=document.getElementById('orderCreatorFilter')?.value||'ALL';
+      // تغيير: لا يظهر الملخص إلا عند اختيار مستخدم بعينه من فلتر المنشئ.
+      if(!selected.startsWith('USER:')){box.classList.add('hidden');box.innerHTML='';return;}
+      const username=decodeURIComponent(selected.slice(5));
+      const total=(rows||[]).filter(order=>String(order.createdBy||'').trim()===username).length;
+      box.classList.remove('hidden');
+      box.innerHTML=`<div class="order-creator-stats-head"><b>👥 إجمالي الطلبات التي سجلها ${escapeHtml(username)}</b><span>حسب الفلاتر الحالية</span></div><div class="order-creator-stats-list"><div class="order-creator-stat top"><span>🏆 ${escapeHtml(username)}</span><b>${total.toLocaleString('ar-EG')} طلب</b></div></div>`;
     }
 
     // --- 📊 لوحة التحكم الرئيسية الجديدة ---
