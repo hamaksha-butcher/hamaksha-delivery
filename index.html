@@ -493,6 +493,8 @@
     #sec-order-history .order-action-btn:focus-visible{outline:3px solid #0ea5e9;outline-offset:2px;}
     #sec-order-history .order-action-btn:hover{transform:translateY(-2px);box-shadow:0 7px 14px rgba(15,23,42,.16);}
     #sec-order-history .order-action-btn.payment-quick-btn{border-color:rgba(15,118,110,.28);}
+    /* تغيير: مربع وصف مخصص يظهر فور المرور على أيقونة الإجراء. */
+    #orderActionTooltip{position:fixed;z-index:99999;display:none;max-width:min(280px,calc(100vw - 16px));padding:7px 10px;border:1px solid rgba(255,255,255,.16);border-radius:7px;background:#1e293b;color:#fff;font-size:12px;font-weight:800;line-height:1.4;white-space:nowrap;box-shadow:0 8px 20px rgba(15,23,42,.28);pointer-events:none;}
     @media(max-width:640px){#sec-order-history .order-action-btn{flex-basis:40px;width:40px;min-width:40px;height:40px;font-size:16px;}}
     .orders-empty-state { padding: 36px 16px; text-align: center; color: #94a3b8; }
     @media (max-width: 640px) {
@@ -5748,13 +5750,13 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
             </td>
             <td class="p-3 align-top text-center no-print">
               <div class="flex flex-wrap items-center justify-center gap-1.5">
-                <button onclick="openOrderDetails('${key}')" class="order-action-btn bg-slate-100 hover:bg-slate-200 text-slate-800" title="تفاصيل الطلب" aria-label="تفاصيل الطلب">👁️</button>
-                <button onclick="shareWhatsApp('${key}')" class="order-action-btn bg-emerald-100 hover:bg-emerald-200 text-emerald-800" title="إرسال تفاصيل الطلب عبر واتساب" aria-label="إرسال عبر واتساب">💬</button>
-                <button onclick="printThermalInvoice('${key}')" class="order-action-btn bg-slate-200 hover:bg-slate-300 text-slate-800" title="طباعة فاتورة 80mm" aria-label="طباعة الفاتورة">🧾</button>
-                ${canEdit ? `<button onclick="toggleOrderPayment('${key}')" class="order-action-btn payment-quick-btn ${paymentState.isPaid ? 'bg-amber-100 hover:bg-amber-200 text-amber-800' : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800'}" title="${paymentState.isPaid ? 'تسجيل غير مدفوع' : 'تسجيل مدفوع'}" aria-label="${paymentState.isPaid ? 'تسجيل غير مدفوع' : 'تسجيل مدفوع'}">${paymentState.isPaid ? '↩️' : '💳'}</button>` : ''}
-                ${canEdit ? `<button onclick="openEditModal('${key}')" class="order-action-btn bg-blue-100 hover:bg-blue-200 text-blue-800" title="تعديل الطلب" aria-label="تعديل الطلب">✏️</button>` : ''}
-                ${canEdit ? `<button onclick="openConversionModal('delivery','${key}')" class="order-action-btn bg-violet-100 hover:bg-violet-200 text-violet-800" title="تحويل إلى حجز محل" aria-label="تحويل إلى حجز محل">🏪</button>` : ''}
-                ${canDelete ? `<button onclick="deleteOrder('${key}')" class="order-action-btn bg-red-100 hover:bg-red-200 text-red-700" title="حذف الطلب" aria-label="حذف الطلب">🗑️</button>` : ''}
+                <button onclick="openOrderDetails('${key}')" class="order-action-btn bg-slate-100 hover:bg-slate-200 text-slate-800" data-tooltip="تفاصيل الطلب" aria-label="تفاصيل الطلب">👁️</button>
+                <button onclick="shareWhatsApp('${key}')" class="order-action-btn bg-emerald-100 hover:bg-emerald-200 text-emerald-800" data-tooltip="إرسال تفاصيل الطلب عبر واتساب" aria-label="إرسال عبر واتساب">💬</button>
+                <button onclick="printThermalInvoice('${key}')" class="order-action-btn bg-slate-200 hover:bg-slate-300 text-slate-800" data-tooltip="طباعة فاتورة 80mm" aria-label="طباعة الفاتورة">🧾</button>
+                ${canEdit ? `<button onclick="toggleOrderPayment('${key}')" class="order-action-btn payment-quick-btn ${paymentState.isPaid ? 'bg-amber-100 hover:bg-amber-200 text-amber-800' : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800'}" data-tooltip="${paymentState.isPaid ? 'تسجيل غير مدفوع' : 'تسجيل مدفوع'}" aria-label="${paymentState.isPaid ? 'تسجيل غير مدفوع' : 'تسجيل مدفوع'}">${paymentState.isPaid ? '↩️' : '💳'}</button>` : ''}
+                ${canEdit ? `<button onclick="openEditModal('${key}')" class="order-action-btn bg-blue-100 hover:bg-blue-200 text-blue-800" data-tooltip="تعديل الطلب" aria-label="تعديل الطلب">✏️</button>` : ''}
+                ${canEdit ? `<button onclick="openConversionModal('delivery','${key}')" class="order-action-btn bg-violet-100 hover:bg-violet-200 text-violet-800" data-tooltip="تحويل إلى حجز محل" aria-label="تحويل إلى حجز محل">🏪</button>` : ''}
+                ${canDelete ? `<button onclick="deleteOrder('${key}')" class="order-action-btn bg-red-100 hover:bg-red-200 text-red-700" data-tooltip="حذف الطلب" aria-label="حذف الطلب">🗑️</button>` : ''}
               </div>
             </td>
           `;
@@ -5779,6 +5781,19 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       const total=(rows||[]).filter(order=>String(order.createdBy||'').trim()===username).length;
       box.classList.remove('hidden');
       box.innerHTML=`<div class="order-creator-stats-head"><b>👥 إجمالي الطلبات التي سجلها ${escapeHtml(username)}</b><span>حسب الفلاتر الحالية</span></div><div class="order-creator-stats-list"><div class="order-creator-stat top"><span>🏆 ${escapeHtml(username)}</span><b>${total.toLocaleString('ar-EG')} طلب</b></div></div>`;
+    }
+
+    // تغيير: تلميح فوري موحد لأزرار الإجراءات، ويعمل مع الصفوف التي يعاد رسمها ديناميكيًا.
+    function installOrderActionTooltips(){
+      if(document.getElementById('orderActionTooltip'))return;
+      const tip=document.createElement('div');tip.id='orderActionTooltip';tip.setAttribute('role','tooltip');document.body.appendChild(tip);
+      const show=button=>{if(!button)return;tip.textContent=button.dataset.tooltip||button.getAttribute('aria-label')||'';if(!tip.textContent)return;tip.style.display='block';const rect=button.getBoundingClientRect(),tipRect=tip.getBoundingClientRect();let left=rect.left+(rect.width-tipRect.width)/2;left=Math.max(8,Math.min(left,window.innerWidth-tipRect.width-8));let top=rect.bottom+6;if(top+tipRect.height>window.innerHeight-8)top=rect.top-tipRect.height-6;tip.style.left=`${left}px`;tip.style.top=`${Math.max(8,top)}px`;};
+      const hide=()=>{tip.style.display='none';};
+      document.addEventListener('pointerover',event=>{const button=event.target.closest?.('#sec-order-history .order-action-btn[data-tooltip]');if(button&&!button.contains(event.relatedTarget))show(button);});
+      document.addEventListener('pointerout',event=>{const button=event.target.closest?.('#sec-order-history .order-action-btn[data-tooltip]');if(button&&!button.contains(event.relatedTarget))hide();});
+      document.addEventListener('focusin',event=>show(event.target.closest?.('#sec-order-history .order-action-btn[data-tooltip]')));
+      document.addEventListener('focusout',event=>{if(event.target.closest?.('#sec-order-history .order-action-btn[data-tooltip]'))hide();});
+      window.addEventListener('scroll',hide,true);window.addEventListener('resize',hide);
     }
 
     // --- 📊 لوحة التحكم الرئيسية الجديدة ---
@@ -7116,7 +7131,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
       document.getElementById('appSidebar')?.style.setProperty('display','none','important');
       document.getElementById('userBadgeBar')?.style.setProperty('display','none','important');switchTab('driver');
     }
-    window.addEventListener('DOMContentLoaded',()=>{installDirectSidebarButtons();if(APP_MODE==='staff'){document.body.classList.add('staff-logged-out');document.body.classList.remove('customer-public-mode','driver-private-mode','cashier-mode','auth-modal-open');}applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();if(APP_MODE!=='staff'){startPublicCommentsListener();applyCustomerPublicMode();return;}loadRememberedLogin();startPublicCommentsListener();renderInvoiceProductOptions();checkSavedSession();if(currentUser){document.body.classList.remove('staff-logged-out');}updateUIByPermissions();});
+    window.addEventListener('DOMContentLoaded',()=>{installOrderActionTooltips();installDirectSidebarButtons();if(APP_MODE==='staff'){document.body.classList.add('staff-logged-out');document.body.classList.remove('customer-public-mode','driver-private-mode','cashier-mode','auth-modal-open');}applyStoreIdentity(getAppSettings());loadSavedTheme();loadAppSettings();if(APP_MODE!=='staff'){startPublicCommentsListener();applyCustomerPublicMode();return;}loadRememberedLogin();startPublicCommentsListener();renderInvoiceProductOptions();checkSavedSession();if(currentUser){document.body.classList.remove('staff-logged-out');}updateUIByPermissions();});
 </script>
 
 </body>
