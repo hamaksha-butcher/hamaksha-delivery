@@ -1731,6 +1731,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     #sec-admin #orderForm .pos-cart-total span:last-child{font-size:14px!important;font-weight:900!important;}
     /* تغيير: فاتورة التوصيل للكاشير تستخدم صفحة الكتالوج كاملة بلا صناديق تمرير قصيرة. */
     @media(min-width:861px){
+      body.cashier-mode #sec-admin .order-form-card{height:auto!important;min-height:0!important;max-height:none!important;display:block!important;overflow:visible!important;}
       body.cashier-mode #sec-admin #orderForm.pos-order-form{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;}
       body.cashier-mode #sec-admin #orderForm .pos-catalog-panel{height:auto!important;min-height:570px!important;max-height:none!important;overflow:visible!important;}
       body.cashier-mode #sec-admin #orderForm #invoiceCategoryGrid,
@@ -1739,6 +1740,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     }
     @media(min-width:861px) and (max-width:1150px){body.cashier-mode #sec-admin #orderForm #invoiceProductGrid .pos-items-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;}}
     @media(max-width:860px){
+      body.cashier-mode #sec-admin .order-form-card{height:auto!important;min-height:0!important;max-height:none!important;display:block!important;overflow:visible!important;}
       body.cashier-mode #sec-admin #orderForm.pos-order-form{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;}
       body.cashier-mode #sec-admin #orderForm .pos-catalog-panel{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;}
       body.cashier-mode #sec-admin #orderForm #invoiceCategoryGrid,
