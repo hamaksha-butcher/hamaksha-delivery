@@ -2690,7 +2690,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
 
             <div class="store-payment-card store-pos-payment">
               <div class="store-booking-panel-head pos-panel-head" style="margin-bottom:0;padding-bottom:8px"><div><span class="pos-kicker">SETTLEMENT</span><h3>💳 حالة الدفع</h3></div><span id="storeBookingPaymentBadge" class="store-booking-status">غير مدفوع</span></div>
-              <div class="mb-3"><label class="store-booking-label">طريقة الدفع</label><select id="storeBookingPaymentMethod" class="store-booking-select" onchange="setStoreBookingPaymentMethod(this.value)"><option value="cash_at_store">💵 كاش في المحل</option><option value="visa">💳 فيزا</option></select></div>
+              <div class="mb-3"><label class="store-booking-label">طريقة الدفع</label><select id="storeBookingPaymentMethod" class="store-booking-select" onchange="setStoreBookingPaymentMethod(this.value)"><option value="cash_at_store">💵 كاش في المحل</option><option value="visa">💳 فيزا</option><option value="instapay">⚡ إنستا باي</option><option value="vodafone_cash">📱 فودافون كاش</option></select></div>
               <div class="store-payment-status">
                 <button type="button" class="store-payment-option active" id="storePayUnpaid" onclick="setStoreBookingPayment('unpaid')">🔴 غير مدفوع</button>
                 <button type="button" class="store-payment-option" id="storePayDeposit" onclick="setStoreBookingPayment('deposit')">🟠 عربون</button>
@@ -3669,7 +3669,7 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
         <div class="store-booking-edit-field"><label>رقم الهاتف</label><input id="storeBookingEditCustomerPhone" type="text" dir="ltr"></div>
         <div class="store-booking-edit-field"><label>تاريخ الاستلام</label><input id="storeBookingEditPickupDate" type="date" dir="ltr"></div>
         <div class="store-booking-edit-field"><label>وقت الاستلام</label><input id="storeBookingEditPickupTime" type="time" dir="ltr"></div>
-        <div class="store-booking-edit-field"><label>طريقة الدفع</label><select id="storeBookingEditPaymentMethod"><option value="cash_at_store">💵 كاش في المحل</option><option value="visa">💳 فيزا</option></select></div>
+        <div class="store-booking-edit-field"><label>طريقة الدفع</label><select id="storeBookingEditPaymentMethod"><option value="cash_at_store">💵 كاش في المحل</option><option value="visa">💳 فيزا</option><option value="instapay">⚡ إنستا باي</option><option value="vodafone_cash">📱 فودافون كاش</option></select></div>
         <div class="store-booking-edit-field"><label>حالة الحجز</label><select id="storeBookingEditStatus"><option value="محجوز 🟡">محجوز 🟡</option><option value="جاهز للاستلام 📦">جاهز للاستلام 📦</option><option value="تم الاستلام ✅">تم الاستلام ✅</option><option value="ملغي ❌">ملغي ❌</option></select></div>
         <div class="store-booking-edit-field"><label>رقم الحجز</label><input id="storeBookingEditBookingNumber" type="text" readonly></div>
         <div class="store-booking-edit-field store-booking-edit-span"><label>ملاحظات الحجز</label><textarea id="storeBookingEditNotes" placeholder="ملاحظات التقطيع أو الاستلام"></textarea></div>
@@ -5532,8 +5532,8 @@ body.cashier-mode #sec-cashier-home:not(.hidden){display:block!important;}
     function setStoreBookingQty(i,value){const it=storeBookingItems[i];if(!it)return;it.qty=Math.max(.01,Number(value)||.01);it.total=it.qty*it.unitPrice;renderStoreBookingItems();}
     function setStoreBookingPrice(i,value){const it=storeBookingItems[i];if(!it)return;it.unitPrice=Math.max(0,Number(value)||0);it.total=it.qty*it.unitPrice;renderStoreBookingItems();}
     function removeStoreBookingItem(i){storeBookingItems.splice(i,1);renderStoreBookingItems();}
-    function setStoreBookingPaymentMethod(method){storeBookingPaymentMethod=method==='visa'?'visa':'cash_at_store';const select=document.getElementById('storeBookingPaymentMethod');if(select)select.value=storeBookingPaymentMethod;}
-    function getStoreBookingPaymentMethodLabel(method){return method==='visa'?'فيزا':method==='cash_at_store'?'كاش في المحل':'غير محدد';}
+    function setStoreBookingPaymentMethod(method){storeBookingPaymentMethod=['cash_at_store','visa','instapay','vodafone_cash'].includes(method)?method:'cash_at_store';const select=document.getElementById('storeBookingPaymentMethod');if(select)select.value=storeBookingPaymentMethod;}
+    function getStoreBookingPaymentMethodLabel(method){return ({cash_at_store:'كاش في المحل',visa:'فيزا',instapay:'إنستا باي',vodafone_cash:'فودافون كاش'})[method]||'غير محدد';}
     function setStoreBookingPayment(mode){storeBookingPaymentMode=mode;document.querySelectorAll('.store-payment-option').forEach(b=>b.classList.remove('active'));const map={unpaid:'storePayUnpaid',deposit:'storePayDeposit',paid:'storePayPaid'};document.getElementById(map[mode])?.classList.add('active');renderStoreBookingPaymentSummary();}
     function renderStoreBookingPaymentSummary(){
       const total=storeBookingItems.reduce((s,it)=>s+Number(it.total||0),0);let paid=0;
